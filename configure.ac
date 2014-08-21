@@ -109,15 +109,6 @@ AC_ARG_ENABLE(proc,
 dnl dnl ******************** DONE WITH USER INPUT *********************
 dnl dnl ***        Now Configuration                               ****
 dnl dnl ***************************************************************
-
-if test "X${do_tests}X" == "XyesX" ;
-then
- AC_MSG_NOTICE([ Enabling automatic running of tests for make check ])
-else
- AC_MSG_NOTICE([ make check will make but not run the tests ])
-fi
-
-AM_CONDITIONAL(RUN_TESTS, [ test "X${do_tests}X" == "XyesX" ] )
 dnl 
 dnl     ***************************************************************
 dnl     ***       There are two distinct branches depending         ***
@@ -151,14 +142,14 @@ if test "X${QDPXX_GIVEN}X" = "XyesX"; then
      fi
 
 
-     AC_SUBST(SSEXX_AUX_CFLAGS, "`${QDPXX_CONFIG} --cxxflags`")
-     AC_MSG_NOTICE([QDP++ compile flags: ${SSEXX_AUX_CFLAGS}])
+     AC_SUBST(QPHIX_AUX_CFLAGS, "`${QDPXX_CONFIG} --cxxflags`")
+     AC_MSG_NOTICE([QDP++ compile flags: ${QPHIX_AUX_CFLAGS}])
 
-     AC_SUBST(SSEXX_AUX_LDFLAGS,  "`${QDPXX_CONFIG} --ldflags`")
-     AC_MSG_NOTICE([QDP++ linking flags: ${SSEXX_AUX_LDFLAGS}])
+     AC_SUBST(QPHIX_AUX_LDFLAGS,  "`${QDPXX_CONFIG} --ldflags`")
+     AC_MSG_NOTICE([QDP++ linking flags: ${QPHIX_AUX_LDFLAGS}])
 
-     AC_SUBST(SSEXX_AUX_LIBS,     "`${QDPXX_CONFIG} --libs`")
-     AC_MSG_NOTICE([QDP++ libraries flags: ${SSEXX_AUX_LIBS}])
+     AC_SUBST(QPHIX_AUX_LIBS,     "`${QDPXX_CONFIG} --libs`")
+     AC_MSG_NOTICE([QDP++ libraries flags: ${QPHIX_AUX_LIBS}])
 
      QDPXX_ND="`${QDPXX_CONFIG} --Nd`"
      AC_MSG_NOTICE([QDP++ spacetime dimension: ${QDPXX_ND}])
@@ -176,9 +167,9 @@ if test "X${QDPXX_GIVEN}X" = "XyesX"; then
      dnl This function is defined in acinclude.m4
      dnl it tries to try to compile the program 
      PAC_QDPXX_LINK_CXX_FUNC(
-	${SSEXX_AUX_CFLAGS},
-	${SSEXX_AUX_LDFLAGS},
-	${SSEXX_AUX_LIBS},
+	${QPHIX_AUX_CFLAGS},
+	${QPHIX_AUX_LDFLAGS},
+	${QPHIX_AUX_LIBS},
 	,
 	,
 	[qdpxx_link_ok=yes],
@@ -206,9 +197,9 @@ else
      case "${PARALLEL_ARCH}" in
 	  scalar)
 		AC_MSG_NOTICE([ Scalar Build! Not checking for QMP ])
-		AC_SUBST(SSEXX_AUX_CFLAGS)
-		AC_SUBST(SSEXX_AUX_LDFLAGS)
-		AC_SUBST(SSEXX_AUX_LIBS)
+		AC_SUBST(QPHIX_AUX_CFLAGS)
+		AC_SUBST(QPHIX_AUX_LDFLAGS)
+		AC_SUBST(QPHIX_AUX_LIBS)
 		;;
 
 	  parscalar)
@@ -224,14 +215,14 @@ else
 		dnl look for flags needed for QMP
 		if test "X${QMP_CONFIG}X" != "XX" ; then
 		   AC_MSG_NOTICE([Found QMP configuration program ${QMP_CONFIG}])
-		   AC_SUBST(SSEXX_AUX_CFLAGS,  "`${QMP_CONFIG} --cflags`")
-		   AC_MSG_NOTICE([QMP compile flags: ${SSEXX_AUX_CFLAGS}])
+		   AC_SUBST(QPHIX_AUX_CFLAGS,  "`${QMP_CONFIG} --cflags`")
+		   AC_MSG_NOTICE([QMP compile flags: ${QPHIX_AUX_CFLAGS}])
 
-		   AC_SUBST(SSEXX_AUX_LDFLAGS, "`${QMP_CONFIG} --ldflags`")
-		   AC_MSG_NOTICE([QMP linking flags: ${SSEXX_AUX_LDFLAGS}])
+		   AC_SUBST(QPHIX_AUX_LDFLAGS, "`${QMP_CONFIG} --ldflags`")
+		   AC_MSG_NOTICE([QMP linking flags: ${QPHIX_AUX_LDFLAGS}])
 
-		   AC_SUBST(SSEXX_AUX_LIBS,    "`${QMP_CONFIG} --libs`")
-		   AC_MSG_NOTICE([QMP libraries flags: ${SSEXX_AUX_LIBS}])
+		   AC_SUBST(QPHIX_AUX_LIBS,    "`${QMP_CONFIG} --libs`")
+		   AC_MSG_NOTICE([QMP libraries flags: ${QPHIX_AUX_LIBS}])
 		else 
 		   AC_MSG_WARN([QMP configuration program qmp-config not found.])
 		   AC_MSG_WARN([Set environment variables QMP_CFLAGS QMP_LDFAGS QMP_LIBS before configure])
@@ -240,9 +231,9 @@ else
 		dnl verify we can compile and link against QMP, if needed
 		AC_PROG_CXX
 		PAC_QMP_LINK_CC_FUNC(
-			[${SSEXX_AUX_CFLAGS}],
-			[${SSEXX_AUX_LDFLAGS}],
-			[${SSEXX_AUX_LIBS}],
+			[${QPHIX_AUX_CFLAGS}],
+			[${QPHIX_AUX_LDFLAGS}],
+			[${QPHIX_AUX_LIBS}],
 			,
 			,
 			[qmp_link_ok=yes],
@@ -279,11 +270,11 @@ dnl ************************************************************************
 
 case ${PARALLEL_ARCH} in
 scalar)
-	AC_DEFINE_UNQUOTED(CPP_DSLASH_SCALAR, [1], [Scalar Arch])
+	AC_DEFINE_UNQUOTED(QPHIX_SCALAR, [1], [Scalar Arch])
 	;;
 parscalar)
-	AC_DEFINE_UNQUOTED(CPP_DSLASH_PARSCALAR, [1], [Parscalar Arch])
-	AC_DEFINE_UNQUOTED(QMP_COMMS,[1], [QMP Comms])
+	AC_DEFINE_UNQUOTED(QPHIX_PARSCALAR, [1], [Parscalar Arch])
+	AC_DEFINE_UNQUOTED(QPHIX_QMP_COMMS,[1], [QMP Comms])
 	;;
 *)
 	AC_MSG_ERROR([Unsupported parallel arch])
@@ -293,108 +284,59 @@ esac
 case ${SOALEN} in
 4)
 	AC_MSG_NOTICE([Building for SOALEN=4])
-	AC_DEFINE_UNQUOTED(SOALEN,[4], [SOALEN is 4])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
 	;;
 8)
 	AC_MSG_NOTICE([Building for SOALEN=8])
-	AC_DEFINE_UNQUOTED(SOALEN,[8], [SOALEN is 8])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[8], [SOALEN is 8])
 	;;
 16)
 	AC_MSG_NOTICE([Building for SOALEN=16])
-	AC_DEFINE_UNQUOTED(SOALEN,[16], [SOALEN is 16])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[16], [SOALEN is 16])
 	;;
 *)
 	AC_MSG_ERROR([Unsupported SOALEN])
 	;;
 esac
 
-AM_CONDITIONAL(SCALAR, [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
-AM_CONDITIONAL(PARSCALAR, [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
-AM_CONDITIONAL(BUILD_QDP_PACKERS, [ test "X${QDPXX_GIVEN}X" == "XyesX" ])				 
-
-dnl NOCOMPUTE DIagnostic
-if test "X${nocompute_enabled}X" == "XyesX";
-then 
-     AC_MSG_NOTICE([Disabling The Compute Parts of the Dslash])
-     AC_DEFINE([SSEDSLASH_4D_NOCOMPUTE],[1],[Disable computation in 4D kernels])
-fi
-
-if test "X${nocomms_enabled}X" == "XyesX";
-then 
-     AC_MSG_NOTICE([Disabling the Comms in the Dslash])
-     AC_DEFINE([SSEDSLASH_4D_NOCOMMS],[1],[Disable computation in 4D kernels])
-fi
-
-
-dnl QMT Threads stuff
-if test "X${qmt_enabled}X" == "XyesX"; 
-then
-	AC_MSG_NOTICE([Configuring QMT Threading])
-	if test "X${omp_enabled}X" == "XyesX";
-	then 
-	  AC_MSG_ERROR([Cannot have OpenMP and QMT threading defined simultaneously])
-	fi
-
-	AC_DEFINE([DSLASH_USE_QMT_THREADS], [1], [ Use QMT Threads library ])
-	AC_SUBST(QMT_CFLAGS, "-I${QMT_HOME}/include")
-	AC_SUBST(QMT_LDFLAGS, "-L${QMT_HOME}/lib")
-	AC_SUBST(QMT_LIBS, "-lqmt -lpthread -lm")
-else 
-	AC_SUBST(QMT_CFLAGS, "")
-	AC_SUBST(QMT_LDFLAGS, "")
-	AC_SUBST(QMT_LIBS, "")
-
-fi
+AM_CONDITIONAL(QPHIX_SCALAR, [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
+AM_CONDITIONAL(QPHIX_PARSCALAR, [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
+AM_CONDITIONAL(QPHIX_BUILD_QDP_PACKERS, [ test "X${QDPXX_GIVEN}X" == "XyesX" ])				 
 
 if test "x${build_clover}x" == "xyesx";
 then
         AC_MSG_NOTICE([Enabling Clover Term])
-        AC_DEFINE([BUILD_CLOVER],[1], [ Build Clover Term ])
+        AC_DEFINE([QPHIX_BUILD_CLOVER],[1], [ Build Clover Term ])
 else
         AC_MSG_NOTICE([Not Building Clover Term])
 fi
 
 
 
-if test "X${omp_enabled}X" == "XyesX";
-then
-	AC_MSG_NOTICE([Configuring OpenMP Threading])
-	if test "X${qmt_enabled}X" == "XyesX";
-        then 
-          AC_MSG_ERROR([Cannot have OpenMP and QMT threading defined simultaneously])
-	fi
-	  
-	AC_DEFINE([DSLASH_USE_OMP_THREADS], [1], [ Use OpenMP Threads ])
-fi
-
 case ${proc} in
 AVX|avx) 
-	AC_DEFINE([AVX_SOURCE],[1], [ Generate AVX Specializations ])
+	AC_DEFINE([QPHIX_AVX_SOURCE],[1], [ Generate AVX Specializations ])
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
-	AC_DEFINE_UNQUOTED(VECLEN,[8],[AVX Vector length is 8 floats])
 	if [ $SOALEN -gt 8 ];
 	then 
 	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
 	fi		       	    
 ;;
 MIC|mic)
-	AC_DEFINE([MIC_SOURCE],[1], [ Generate MIC Specializations ])
+	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
-	AC_DEFINE_UNQUOTED(VECLEN,[16],[MIC Vector length is 16 floats])
 ;;
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
 	;;
 esac
 
-AM_CONDITIONAL(BUILD_QMT, [test "x${qmt_enabled}x" = "xyesx" ])
-AM_CONDITIONAL(BUILD_OMP, [test "x${omp_enabled}x" = "xyesx" ])
-AM_CONDITIONAL(BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
 
-AM_CONDITIONAL(BUILD_NOTHREADS, [ test "x${omp_enabled}x" = "xnox"  -a  "x${qmt_enabled}x" = "xnox" ])
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(include/Makefile)
+AC_CONFIG_FILES(include/qphix/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_OUTPUT

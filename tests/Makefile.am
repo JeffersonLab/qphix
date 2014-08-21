@@ -1,13 +1,13 @@
 INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include
 
-AM_CXXFLAGS=$(INCFLAGS) @SSEXX_AUX_CFLAGS@
-AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @SSEXX_AUX_LDFLAGS@
-LDADD = -lintel_solver @LIBS@ @SSEXX_AUX_LIBS@
+AM_CXXFLAGS=$(INCFLAGS) @QPHIX_AUX_CFLAGS@
+AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@
+LDADD = -lintel_solver @LIBS@ @QPHIX_AUX_LIBS@
 
 check_PROGRAMS = t_dslash
 check_PROGRAMS += time_dslash_noqdp
 
-if BUILD_CLOVER
+if QPHIX_BUILD_CLOVER
 check_PROGRAMS +=  t_clov_dslash t_clov_invert_from_file
 check_PROGRAMS += time_clov_noqdp
 endif

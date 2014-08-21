@@ -3,7 +3,6 @@
 #undef SEEK_SET
 #undef SEEK_CUR
 #undef SEEK_END
-#include "cpp_dslash.h"
 #include "qdp.h"
 using namespace QDP;
 
@@ -15,30 +14,30 @@ using namespace QDP;
 #include "reunit.h"
 #endif
 
-#include "geometry.h"
-#include "cpp_dslash_qdp_packer.h"
-#include "blas_new_c.h"
+#include "qphix/geometry.h"
+#include "qphix/qdp_packer.h"
+#include "qphix/blas_new_c.h"
 // Disabling Full M and CG tests until vectorized dslash 
 // works better
-#include "wilson.h"
-#include "invcg.h"
-#include "invbicgstab.h"
-#include "inv_richardson_multiprec.h"
+#include "qphix/wilson.h"
+#include "qphix/invcg.h"
+#include "qphix/invbicgstab.h"
+#include "qphix/inv_richardson_multiprec.h"
 #if 1
-#include "invbicgstab_test.h"
+#include "qphix/invbicgstab_test.h"
 #endif
 
 #include <omp.h>
 #if 0
-#include "memmap.h"
+#include "qphix/memmap.h"
 #endif
 
 using namespace Assertions;
 using namespace std;
-using namespace CPlusPlusWilsonDslash;
+using namespace QPhiX;
 
-#ifndef SOALEN
-#define SOALEN 4
+#ifndef QPHIX_SOALEN
+#define QPHIX_SOALEN 4
 #endif
 
 #if defined(MIC_SOURCE)

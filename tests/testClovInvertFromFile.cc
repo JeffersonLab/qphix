@@ -6,9 +6,9 @@
 #undef SEEK_CUR
 #undef SEEK_END
 
-#include "cpp_dslash.h"
-#include "cpp_clovdslash_scalar.h"
-#include "cpp_clovdslash_scalar_32bit.h"
+
+#include "qphix/clover_dslash_def.h"
+#include "qphix/clover_dslash_body.h"
 
 
 #include "qdp.h"
@@ -23,24 +23,24 @@ using namespace QDP;
 #endif
 
 
-#include "cpp_dslash_qdp_packer.h"
+#include "qphix/qdp_packer.h"
 #include "clover_term_qdp_w.h"
 
 #if 1
-#include "clover.h"
-#include "invcg.h"
-#include "invbicgstab.h"
-#include "inv_richardson_multiprec.h"
+#include "qphix/clover.h"
+#include "qphix/invcg.h"
+#include "qphix/invbicgstab.h"
+#include "qphix/inv_richardson_multiprec.h"
 #endif
 
 #include <omp.h>
 
 using namespace Assertions;
 using namespace std;
-using namespace CPlusPlusWilsonDslash;
+using namespace QPhiX;
 
-#ifndef SOALEN
-#define SOALEN 4
+#ifndef QPHIX_SOALEN
+#define QPHIX_SOALEN 4
 #endif
 
 #if defined(MIC_SOURCE)

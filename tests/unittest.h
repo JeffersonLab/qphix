@@ -5,7 +5,7 @@
 #include "qdp.h"
 #include <vector>
 
-#include <dslash_config.h>
+#include <qphix/qphix_config.h>
 using namespace QDP; 
 
 namespace Assertions { 

@@ -1,22 +1,23 @@
 
 #include "timeClovNoQDP.h"
 #include <omp.h>
-#include "cpp_dslash.h"
-#include "cpp_clovdslash_scalar.h"
-#include "clover.h"
+
+#include "qphix/clover_dslash_def.h"
+#include "qphix/clover_dslash_body.h"
+#include "qphix/clover.h"
 #if 1
-#include "blas.h"
-#include "invcg.h"
-#include "invbicgstab.h"
+#include "qphix/blas.h"
+#include "qphix/invcg.h"
+#include "qphix/invbicgstab.h"
 #endif
 
 #include <cstdlib>
 
 using namespace std;
-using namespace CPlusPlusWilsonDslash;
+using namespace QPhiX;
 
-#ifndef SOALEN
-#define SOALEN 4
+#ifndef QPHIX_SOALEN
+#define QPHIX_SOALEN 4
 #endif
 
 #if defined(MIC_SOURCE)
@@ -678,17 +679,17 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 
 
   if ( precision == FLOAT_PREC ) {
-    if ( SOALEN > VECLEN_SP ) { 
-      masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", SOALEN,VECLEN_SP);
+    if ( QPHIX_SOALEN > VECLEN_SP ) { 
+      masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);
       abort();
     }
     
     masterPrintf("TIMING IN SINGLE PRECISION \n");
     if ( compress12 ) { 
-      runTest<float,VECLEN_SP,SOALEN,true>(lattSize,qmp_geom);
+      runTest<float,VECLEN_SP,QPHIX_SOALEN,true>(lattSize,qmp_geom);
     }
     else { 
-      runTest<float,VECLEN_SP,SOALEN,false>(lattSize,qmp_geom);
+      runTest<float,VECLEN_SP,QPHIX_SOALEN,false>(lattSize,qmp_geom);
     }
   }
   
@@ -696,17 +697,17 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
   if( precision == HALF_PREC ) { 
 
 #if defined(MIC_SOURCE) 
-    if ( SOALEN > VECLEN_HP ) { 
-      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", SOALEN,VECLEN_DP);
+    if ( QPHIX_SOALEN > VECLEN_HP ) { 
+      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();
     }
     
     masterPrintf("TIMING IN HALF PRECISION \n");
     if ( compress12 ) { 
-      runTest<half,VECLEN_HP,SOALEN,true>(lattSize,qmp_geom);
+      runTest<half,VECLEN_HP,QPHIX_SOALEN,true>(lattSize,qmp_geom);
     }
     else { 
-      runTest<half,VECLEN_HP,SOALEN,false>(lattSize,qmp_geom);
+      runTest<half,VECLEN_HP,QPHIX_SOALEN,false>(lattSize,qmp_geom);
     }
 #else 
     masterPrintf("HALF precision is not supported for this architecture. Currently only available for MIC\n");
@@ -715,17 +716,17 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 
 
   if( precision == DOUBLE_PREC ) { 
-    if ( SOALEN > VECLEN_DP ) { 
-      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", SOALEN,VECLEN_DP);
+    if ( QPHIX_SOALEN > VECLEN_DP ) { 
+      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();
     }
     
     masterPrintf("TIMING IN DOUBLE PRECISION \n");
     if ( compress12 ) { 
-      runTest<double,VECLEN_DP,SOALEN,true>(lattSize,qmp_geom);
+      runTest<double,VECLEN_DP,QPHIX_SOALEN,true>(lattSize,qmp_geom);
     }
     else { 
-      runTest<double,VECLEN_DP,SOALEN,false>(lattSize,qmp_geom);
+      runTest<double,VECLEN_DP,QPHIX_SOALEN,false>(lattSize,qmp_geom);
     }
   }
 }
