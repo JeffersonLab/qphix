@@ -14,11 +14,6 @@ endif
 
 check_PROGRAMS += test_blas
 
-TESTS=
-if RUN_TESTS
-TESTS += $(check_PROGRAMS)
-endif
-
 bin_PROGRAMS = $(check_PROGRAMS)
 
 FRAMEWORK_SRCS =  unittest.h \
@@ -40,7 +35,7 @@ time_dslash_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	timeDslashNoQDP.h \
 	timeDslashNoQDP.cc
 
-if BUILD_CLOVER
+if QPHIX_BUILD_CLOVER
 t_clov_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testClovDslashFull.h \
 	testClovDslashFull.cc \
