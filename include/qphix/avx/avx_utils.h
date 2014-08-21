@@ -1,6 +1,8 @@
 #ifndef QPHIX_AVX_UTILS_H
 #define QPHIX_AVX_UTILS_H
 
+#include <immintrin.h>
+
 #if (ARCH == avx) || (ARCH == avx2)
 
 inline __m256d _mm256_int2mask_pd(unsigned int msk) {

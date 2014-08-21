@@ -1,7 +1,7 @@
 #ifndef QPHIX_BLAS_C_H
 #define QPHIX_BLAS_C_H
 
-namepace QPhiX { 
+namespace QPhiX { 
 
 
 template<typename FT, int veclen>

@@ -20,13 +20,13 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 #endif
 
-#if defined(AVX_SOURCE) 
+#if defined(QPHIX_AVX_SOURCE) 
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 #endif
@@ -696,7 +696,7 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 
   if( precision == HALF_PREC ) { 
 
-#if defined(MIC_SOURCE) 
+#if defined(QPHIX_MIC_SOURCE) 
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();

@@ -1,5 +1,5 @@
 nobase_include_HEADERS= \
-	dslash_config.h \
+	qphix_config.h \
 	dslash_utils.h
 
 nobase_include_HEADERS += \
@@ -43,7 +43,7 @@ nobase_include_HEADERS += clover.h \
 	clov_face.h
 endif
 
-nodist_include_HEADERS=dslash_config_internal.h
+nodist_include_HEADERS=qphix_config_internal.h
 
 nobase_include_HEADERS+= \
 	mic/dslash_mic_complete_specialization.h \

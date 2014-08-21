@@ -1,7 +1,6 @@
 #ifndef QPHIX_GEOMETRY_H
 #define QPHIX_GEOMETRY_H
 
-#include "qphix/dslash_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 
@@ -46,7 +45,7 @@ namespace QPhiX {
 
   typedef unsigned short half;
   
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
   float cvtHalf2Float(half val) {
     float ret;
     _mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
@@ -471,7 +470,7 @@ namespace QPhiX {
       }
 #else
       /* **** MPI HERE ******* */
-      if (  MPI_Isend( (void *)sendToDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d],  DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqSendToDir[d] ) != MPI_SUCCESS ) { 
+      if (  MPI_Isend( (void *)sendToDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d],  QPHIX_DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqSendToDir[d] ) != MPI_SUCCESS ) { 
 	QMP_error("Failed to start send in forward T direction\n");
 	QMP_abort(1);
       }
@@ -515,7 +514,7 @@ namespace QPhiX {
 	QMP_abort(1);
       }
 #else
-      if ( MPI_Irecv((void *)recvFromDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d], DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqRecvFromDir[d]) != MPI_SUCCESS ) { 
+      if ( MPI_Irecv((void *)recvFromDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d], QPHIX_DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqRecvFromDir[d]) != MPI_SUCCESS ) { 
 	QMP_error("Recv from dir failed\n");
 	QMP_abort(1);
       }

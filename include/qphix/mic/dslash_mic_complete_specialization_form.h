@@ -380,7 +380,7 @@ dslash_achimbdpsi_minus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 }
 #endif
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
 
 
 #if !defined(SOA) && !defined(COMPRESS12) && !defined(COMPRESS_SUFFIX)
@@ -639,7 +639,7 @@ face_finish_dir_minus<FPTYPE,VEC,SOA,COMPRESS12>(
 }
 #endif
 
-#endif // QMP_COMMS (outer)
+#endif // QPHIX_QMP_COMMS (outer)
 
 
 

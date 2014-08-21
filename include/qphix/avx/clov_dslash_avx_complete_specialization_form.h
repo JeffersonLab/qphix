@@ -336,7 +336,7 @@ clov_dslash_achimbdpsi_minus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 #endif
 
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
 
 #if !defined(SOA) && !defined(COMPRESS12) && !defined(COMPRESS_SUFFIX)
 template<typename FT, int veclen, int soalen, bool compress12>
@@ -480,7 +480,7 @@ face_clov_finish_dir_minus<FPTYPE,VEC,SOA,COMPRESS12>(
 }
 #endif // !defined(SOA) etc...
 
-#endif // QMP_COMMS
+#endif // QPHIX_QMP_COMMS
 
 
 

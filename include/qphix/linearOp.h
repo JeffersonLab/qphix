@@ -1,8 +1,8 @@
 #ifndef QPHIX_LINEAR_OPERATOR_H
 #define QPHIX_LINEAR_OPERATOR_H
 
-#include "qphix/dslash.h"
 
+#include <qphix/geometry.h>
 
 namespace QPhiX { 
 

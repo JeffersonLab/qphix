@@ -101,7 +101,7 @@ void processArgs(int argc, char *argv[]) {
 
 }
 
-using namespace CPlusPlusWilsonDslash;
+using namespace QPhiX;
 
 int main(int argc, char **argv)
 {

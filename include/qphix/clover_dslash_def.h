@@ -1,12 +1,12 @@
 
-#ifndef CPP_CLOVDSLASH_SCALAR_H
-#define CPP_CLOVDSLASH_SCALAR_H
+#ifndef QPHIX_CLOVER_DSLASH_DEF_H
+#define QPHIX_CLOVER_DSLASH_DEF_H
 
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
 
-namespace CPlusPlusWilsonDslash {
+namespace QPhiX {
 
     /* Specialize - Dslash of float */
   /* To note the clover block will already include anisotropy and probably also boundaries */

@@ -9,7 +9,7 @@
 #include "qphix/dslash_def.h"
 #include "qphix/qphix_config.h"
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 #include <immintrin.h>
 #endif
 
@@ -237,7 +237,7 @@ namespace QPhiX {
     }
   }
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 
   // Downconvert an array of float-vecs to an array of float 16 vecs
   void downconvert_array(const float *from, half *to, const unsigned int nvecs)
@@ -467,7 +467,7 @@ namespace QPhiX {
   }
 #endif // Build Clover
 
-#endif  // if defined(MIC_SOURCE)
+#endif  // if defined(QPHIX_MIC_SOURCE)
 
 };
 

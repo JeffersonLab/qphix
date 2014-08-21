@@ -41,20 +41,20 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 
-#elif defined(AVX_SOURCE) 
+#elif defined(QPHIX_AVX_SOURCE) 
 
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 
 #else
 
-#warning SCALAR_SOURCE
+#warning QPHIX_SCALAR_SOURCE
 #define VECLEN_DP 1
 #define VECLEN_SP 1
 
@@ -848,7 +848,7 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,8,false,UF, PhiF>();
     }
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
     if( compress12 ) { 
       runTest<float,VECLEN_SP,16,true,UF, PhiF>();
     }
@@ -861,7 +861,7 @@ testClovDslashFull::run(void)
 
 #if 0
   if( precision == HALF_PREC ) { 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<half,VECLEN_HP,4,true,UF, PhiF>();
@@ -895,7 +895,7 @@ testClovDslashFull::run(void)
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING" << endl;
     
-#if defined(AVX_SOURCE)
+#if defined(QPHIX_AVX_SOURCE)
     // Only AVX can do DP 2
     if( compress12 ) { 
       runTest<double,VECLEN_DP,2,true,UD, PhiD>();
@@ -912,7 +912,7 @@ testClovDslashFull::run(void)
       runTest<double,VECLEN_DP,4,false,UD, PhiD>();
     }
     
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
     // Only MIC can do DP 8
     if( compress12 ) { 
       runTest<double,VECLEN_DP,8,true,UD, PhiD>();

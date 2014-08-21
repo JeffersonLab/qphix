@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-#include "qphix/dslash_config.h"
+#include "qphix/qphix_config.h"
 #include "qphix/print_utils.h"
 
 using namespace std;

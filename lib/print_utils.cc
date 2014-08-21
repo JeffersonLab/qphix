@@ -1,6 +1,6 @@
 #include "qphix/print_utils.h"
 #include <map>
-namespace CPlusPlusWilsonDslash { 
+namespace QPhiX { 
 
   std::map<unsigned long, unsigned long>  buffer_alloc_map;
   std::map<unsigned long, unsigned long>  aligned_alloc_map;

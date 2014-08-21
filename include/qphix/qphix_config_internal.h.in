@@ -1,25 +1,4 @@
-/* include/dslash_config_internal.h.in.  Generated from configure.ac by autoheader.  */
-
-/* Generate AVX Specializations */
-#undef AVX_SOURCE
-
-/* Build Clover Term */
-#undef BUILD_CLOVER
-
-/* Parscalar Arch */
-#undef CPP_DSLASH_PARSCALAR
-
-/* Scalar Arch */
-#undef CPP_DSLASH_SCALAR
-
-/* Use OpenMP Threads */
-#undef DSLASH_USE_OMP_THREADS
-
-/* Use QMT Threads library */
-#undef DSLASH_USE_QMT_THREADS
-
-/* Generate MIC Specializations */
-#undef MIC_SOURCE
+/* include/qphix/qphix_config_internal.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Name of package */
 #undef PACKAGE
@@ -39,20 +18,26 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Generate AVX Specializations */
+#undef QPHIX_AVX_SOURCE
+
+/* Build Clover Term */
+#undef QPHIX_BUILD_CLOVER
+
+/* Generate MIC Specializations */
+#undef QPHIX_MIC_SOURCE
+
+/* Parscalar Arch */
+#undef QPHIX_PARSCALAR
+
 /* QMP Comms */
-#undef QMP_COMMS
+#undef QPHIX_QMP_COMMS
+
+/* Scalar Arch */
+#undef QPHIX_SCALAR
 
 /* SOALEN is 16 */
-#undef SOALEN
-
-/* Disable computation in 4D kernels */
-#undef SSEDSLASH_4D_NOCOMMS
-
-/* Disable computation in 4D kernels */
-#undef SSEDSLASH_4D_NOCOMPUTE
-
-/* MIC Vector length is 16 floats */
-#undef VECLEN
+#undef QPHIX_SOALEN
 
 /* Version number of package */
 #undef VERSION

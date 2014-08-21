@@ -2,7 +2,7 @@
 #define QPHIX_DSLASH_BODY_H
 
 #include <iostream>
-#include "qphix/dslash_config.h"
+#include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 #include <immintrin.h>

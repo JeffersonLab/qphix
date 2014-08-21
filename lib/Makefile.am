@@ -1,7 +1,7 @@
 TOPDIR=@top_srcdir@
 BUILDDIR=@top_builddir@
 
-AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @SSEXX_AUX_CFLAGS@
+AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @QPHIX_AUX_CFLAGS@
 
 lib_LIBRARIES = libintel_solver.a
 

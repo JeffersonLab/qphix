@@ -43,13 +43,13 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 
-#elif defined(AVX_SOURCE) 
+#elif defined(QPHIX_AVX_SOURCE) 
 
 #define VECLEN_SP 8
 #define VECLEN_DP 4
@@ -506,7 +506,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./qcdsf.632.01111.lime");
   double mass=-0.3321595;
   double clov_coeff=1.9192;
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);
@@ -517,7 +517,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./qcdsf.743.00600.lime");
   double mass=-0.3343108;
   double clov_coeff=1.9192;
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,8,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);
@@ -527,7 +527,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./cl3_64_128_b5p0_m0p3550_m0p3550_cfg_544.lime");
   double mass=-0.3550;
   double clov_coeff=1.90497469553511;
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);

@@ -1,7 +1,7 @@
 #ifndef QPHIX_BLAS_H
 #define QPHIX_BLAS_H
 
-#include "qphix/dslash_config.h"
+#include "qphix/qphix_config.h"
 #ifdef QPHIX_QMP_COMMS
 #include "qmp.h"
 #endif

@@ -4,7 +4,7 @@
 #include <cstdio>
 
 using namespace std;
-#include "dslash_config.h"
+#include "qphix/qphix_config.h"
 
 #ifdef CPP_DSLASH_PARSCALAR
 #include "qmp.h"

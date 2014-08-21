@@ -4,7 +4,7 @@
 
 
 #include <cerrno>
-#include "qphix/dslash_config.h"
+#include "qphix/qphix_config.h"
 #include "qphix/tsc.h"
 using namespace std;
 
@@ -65,7 +65,7 @@ void BUFFER_FREE(void *addr,size_t length)
   case 0:
     break;
   case EINVAL :
-    CPlusPlusWilsonDslash::localPrintf("munmap returned EINVAL\n");
+    QPhiX::localPrintf("munmap returned EINVAL\n");
     abort();
     break;
   default:
@@ -133,7 +133,7 @@ ALIGNED_FREE(void *addr)
 
 #endif // __MIC__
 
-#if defined(MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE)
 #warning including barrier
 #include "qphix/Barrier_mic.h"
 #else
@@ -149,7 +149,7 @@ ALIGNED_FREE(void *addr)
 #warning "Enabling QPHIX_QMP_COMMS"
 #endif
 
-namespace CPlusPlusWilsonDslash { 
+namespace QPhiX { 
 
   struct BlockPhase {
     int by;

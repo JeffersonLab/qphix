@@ -12,7 +12,7 @@ dnl initialise automake
 AM_INIT_AUTOMAKE
 
 dnl put defines in include sse/config.h
-AC_CONFIG_HEADERS([include/dslash_config_internal.h])
+AC_CONFIG_HEADERS([include/qphix/qphix_config_internal.h])
 dnl dnl **************************************************************
 dnl dnl ***                 Get User Options                       ***
 dnl dnl **************************************************************
