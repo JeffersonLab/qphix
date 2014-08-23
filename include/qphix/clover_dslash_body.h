@@ -13,6 +13,7 @@ namespace QPhiX
 
   
   /* Specialize - Dslash of float */
+#include "qphix/dslash_generated.h"
 #include "qphix/clov_dslash_generated.h"
 
     

@@ -15,7 +15,7 @@
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
 // No SOALEN, COMPRESS12, COMPRESS_SUFFIX -> generic template
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 
 
 
@@ -29,15 +29,15 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -47,15 +47,15 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -74,11 +74,11 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #undef COMPRESS12
@@ -89,11 +89,11 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #undef COMPRESS12
@@ -117,15 +117,15 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -135,15 +135,15 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/mic/dslash_qphix/mic_complete_specialization_form.h"
+#include "qphix/mic/dslash_mic_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX

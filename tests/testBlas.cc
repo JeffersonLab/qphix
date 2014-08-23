@@ -1,6 +1,7 @@
 #include "unittest.h"
 #include "testBlas.h"
 #include <omp.h>
+#include "qphix/qphix_config.h"
 #include "qphix/dslash_def.h"
 #include "qphix/wilson.h"
 #include "qphix/blas.h"
@@ -15,8 +16,16 @@ using namespace Assertions;
 #include "qphix/blas_new_c.h"
 
 
-void copy(  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1,
-	    Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2, 
+#ifdef  QPHIX_MIC_SOURCE
+#define VECLEN 16
+#endif
+
+#ifdef QPHIX_AVX_SOURCE
+#define VECLEN 8
+#endif
+
+void copy(  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1,
+	    Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2, 
 	    int N_blocks) 
 {
 
@@ -34,17 +43,17 @@ void copy(  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1,
 }
 
   
-void resetSpinors( Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*  x1,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y1,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y2,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z1,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z2,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t1,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t2,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w1,
-		   Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w2,
-		   const Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>& geom)
+void resetSpinors( Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*  x1,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y1,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y2,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z1,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z2,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t1,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t2,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w1,
+		   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w2,
+		   const Geometry<float,VECLEN,QPHIX_SOALEN,true>& geom)
 {
   double start, end;
   int Nt=geom.Nt();
@@ -155,29 +164,29 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   int By = Ny;
   int Bz = Nz;
   int N_simt = Sy*Sz;
-  Geometry<float, QPHIX_VECLEN, QPHIX_SOALEN,true> geom(subLattSize,
+  Geometry<float, VECLEN, QPHIX_SOALEN,true> geom(subLattSize,
 				       Ny,Nz,
 				       NCores,
 				       Sy,Sz,
 				       PadXY,PadXYZ,1);
 
-  typedef Geometry<float,QPHIX_VECLEN, QPHIX_SOALEN,true>::FourSpinorBlock Spinor;
+  typedef Geometry<float,VECLEN, QPHIX_SOALEN,true>::FourSpinorBlock Spinor;
   
  
 
   masterPrintf("Initializing Geometry\n");
 
   // Allocate data for the spinors
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y1=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y2=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z1=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z2=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t1=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t2=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w1=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
-  Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w2=(Geometry<float,QPHIX_VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* y2=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* z2=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* t2=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
+  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* w2=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
 
   int N_blocks =  geom.getPxyz()*geom.Nt();
   int len = N_blocks*QPHIX_SOALEN*4*3*2;
@@ -205,7 +214,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       yf1[s] = xf1[s];
     }
     float *yf2 = (float *)y2;
-    copySpinor<float,QPHIX_VECLEN>((float *)yf2, (float *)xf1,len);
+    copySpinor<float,VECLEN>((float *)yf2, (float *)xf1,len);
     
     try { 
       for(int s=0; s < len; s++) { 
@@ -230,9 +239,9 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       float *yf1 = (float *)y1;
 
 #if 0
-      copySpinor<float,QPHIX_VECLEN>((float *)yf2, (float *)x1, len, NCores, N_simt, bt);
+      copySpinor<float,VECLEN>((float *)yf2, (float *)x1, len, NCores, N_simt, bt);
 #else
-      copySpinor<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(y2, x1, geom, bt);
+      copySpinor<float,VECLEN,QPHIX_SOALEN,true>(y2, x1, geom, bt);
 #endif
 
       try { 
@@ -269,7 +278,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
    
     double tstart = omp_get_wtime();
     for(int i=0; i < titers; i++) { 
-      copySpinor<float,QPHIX_VECLEN>((float *)y1, (float *)x1,len);
+      copySpinor<float,VECLEN>((float *)y1, (float *)x1,len);
     }
     double tstop = omp_get_wtime();
     double ttime=tstop-tstart;
@@ -287,9 +296,9 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       
       for(int i=0; i < titers; i++) { 
 #if 0
-	copySpinor<float,QPHIX_VECLEN>((float *)y2, (float *)x1,len,NCores, N_simt, bt);
+	copySpinor<float,VECLEN>((float *)y2, (float *)x1,len,NCores, N_simt, bt);
 #else 
-	copySpinor<float,QPHIX_VECLEN, QPHIX_SOALEN,true>(y2, x1, geom, bt);
+	copySpinor<float,VECLEN, QPHIX_SOALEN,true>(y2, x1, geom, bt);
 #endif
       }
       double tstop = omp_get_wtime();
@@ -329,7 +338,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     float *xf2 = (float *)x2;
     float *yf2 = (float *)y2;
     
-    aypx<float,QPHIX_VECLEN>(ar, (float *)xf2, (float *)yf2, len);
+    aypx<float,VECLEN>(ar, (float *)xf2, (float *)yf2, len);
     
     try { 
       for(int s=0; s < len; s++) { 
@@ -350,7 +359,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       copy(t1,y2, N_blocks);
       float *xf2 = (float *)x2;
       float *yf2 = (float *)y2;
-      aypx<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
+      aypx<float,VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
       try { 
 #pragma omp parallel for collapse(6)
 	for(int t=0; t < Nt; t++) { 
@@ -384,7 +393,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     
     double tstart = omp_get_wtime();
     for(int i=0; i < titers; i++) { 
-      aypx<float,QPHIX_VECLEN>(ar, (float *)xf1, (float *)yf1,len);
+      aypx<float,VECLEN>(ar, (float *)xf1, (float *)yf1,len);
     }
     double tstop = omp_get_wtime();
     double ttime=tstop-tstart;
@@ -400,7 +409,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       double tstart = omp_get_wtime();
       
       for(int i=0; i < titers; i++) { 
-	aypx<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
+	aypx<float,VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
       }
       double tstop = omp_get_wtime();
       double ttime=tstop-tstart;
@@ -458,7 +467,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     copy(t1, y2, N_blocks);
 
     double norm2=0;
-    xmyNorm2Spinor<float,QPHIX_VECLEN>((float *)w2,(float *)x2, (float *)y2, norm2, len);
+    xmyNorm2Spinor<float,VECLEN>((float *)w2,(float *)x2, (float *)y2, norm2, len);
 
 
     float *w2f = (float *)w2;
@@ -489,7 +498,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       copy(z1, x2, N_blocks);
       copy(t1, y2, N_blocks);
       norm2=0;
-      xmyNorm2Spinor<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(w2,x2,y2, norm2, geom, bt);
+      xmyNorm2Spinor<float,VECLEN,QPHIX_SOALEN,true>(w2,x2,y2, norm2, geom, bt);
 
       try { 
 #pragma omp parallel for collapse(6)
@@ -532,7 +541,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     int titers=1000;
     double tstart = omp_get_wtime();
     for(int i=0; i < titers; i++) { 
-      xmyNorm2Spinor<float,QPHIX_VECLEN>((float *)w2, 
+      xmyNorm2Spinor<float,VECLEN>((float *)w2, 
 				   (float *)x2, 
 				   (float *)y2, 
 				   norm, len);
@@ -551,7 +560,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       double tstart = omp_get_wtime();
       
       for(int i=0; i < titers; i++) { 
-	xmyNorm2Spinor<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(w2, 
+	xmyNorm2Spinor<float,VECLEN,QPHIX_SOALEN,true>(w2, 
 					    x2, 
 					    y2, 
 					    norm, geom, bt );
@@ -620,7 +629,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     float *r2f  = (float *)z2;
     float *mmp2f = (float *)mmp1f; // Unchanged
     norm2 = 0;
-    rmammpNorm2rxpap<float,QPHIX_VECLEN>(r2f, ar, mmp2f, norm2, x2f, p2f, len);
+    rmammpNorm2rxpap<float,VECLEN>(r2f, ar, mmp2f, norm2, x2f, p2f, len);
     try { 
       for(int t=0; t < Nt; t++) { 
 	for(int z=0; z < Nz; z++) { 
@@ -690,7 +699,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       float *r2f  = (float *)z2;
       float *mmp2f = (float *)mmp1f; // Unchanged
       norm2 = 0;
-      rmammpNorm2rxpap<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
+      rmammpNorm2rxpap<float,VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
 
       try { 
 #pragma omp parallel for collapse(6)
@@ -761,7 +770,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     double tstart = omp_get_wtime();
     
     for(int i=0; i < titers; i++) { 
-      rmammpNorm2rxpap<float,QPHIX_VECLEN>(x2f, ar, p2f, norm2, r2f, mmp2f, len);
+      rmammpNorm2rxpap<float,VECLEN>(x2f, ar, p2f, norm2, r2f, mmp2f, len);
     }
     double tstop = omp_get_wtime();
     double ttime=tstop-tstart;
@@ -778,7 +787,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       tstart = omp_get_wtime();
       
       for(int i=0; i < titers; i++) { 
-	rmammpNorm2rxpap<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
+	rmammpNorm2rxpap<float,VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
       }
 
       double tstop = omp_get_wtime();
@@ -810,7 +819,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 
     // Unoptimized version
     copy(y1,y2,N_blocks);
-    norm2 = norm2Spinor<float,QPHIX_VECLEN>((float *)y2, len);
+    norm2 = norm2Spinor<float,VECLEN>((float *)y2, len);
 
     try { 
       assertion( toBool( fabs(norm2 - norm)/ norm < 2.0e-12 ));
@@ -823,7 +832,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 
     for(int bt =1 ; bt <=N_simt ; bt++) { 
       masterPrintf("ing norm2 with %d threads per core \n", bt);
-      norm2Spinor<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(norm2,y2, geom, bt);
+      norm2Spinor<float,VECLEN,QPHIX_SOALEN,true>(norm2,y2, geom, bt);
       try { 
 	assertion( toBool( fabs(norm2 - norm)/ norm < 2.0e-12 ));
 	masterPrintf("Sum OK\n");
@@ -840,7 +849,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     double tstart = omp_get_wtime();
 
     for(int i=0; i < titers; i++) { 
-      n2res = norm2Spinor<float,QPHIX_VECLEN>((float *)y2, len);
+      n2res = norm2Spinor<float,VECLEN>((float *)y2, len);
     }
     double tstop = omp_get_wtime();
     double ttime=tstop-tstart;
@@ -857,7 +866,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       double tstart = omp_get_wtime();
       
       for(int i=0; i < titers; i++) { 
-	norm2Spinor<float,QPHIX_VECLEN,QPHIX_SOALEN,true>(n2res,y2, geom, bt);
+	norm2Spinor<float,VECLEN,QPHIX_SOALEN,true>(n2res,y2, geom, bt);
       }
       double tstop = omp_get_wtime();
       double ttime=tstop-tstart;
