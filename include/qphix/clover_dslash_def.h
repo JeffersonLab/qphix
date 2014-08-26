@@ -35,6 +35,12 @@ namespace QPhiX {
 	       double dslash_aniso_t_
 	       );
 
+    ClovDslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+	       double t_boundary_, 
+	       double dslash_aniso_s_,
+	       double dslash_aniso_t_
+	       );
+
     /* Destructor */
     ~ClovDslash();
     
@@ -62,7 +68,10 @@ namespace QPhiX {
      
 
   private:
+    void init();
     Geometry<FT,veclen,soalen,compress12>* s;
+    const bool selfAllocGeom;
+
     int log2veclen;
     int log2soalen;
 

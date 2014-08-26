@@ -16,24 +16,10 @@ namespace QPhiX
 #include "qphix/dslash_generated.h"
 #include "qphix/clov_dslash_generated.h"
 
-    
-  /* Constructor */
   template<typename FT, int veclen, int soalen, bool compress12>
-    ClovDslash<FT, veclen, soalen,compress12>::ClovDslash(const int latt_size[],  
-					       int By_,
-					       int Bz_,
-					       int NCores_,
-					       int Sy_,
-					       int Sz_,
-					       int PadXY_, 
-					       int PadXYZ_,
-					       int MinCt_,
-					       double t_boundary_, 
-					       double dslash_aniso_s_,
-					       double dslash_aniso_t_) : By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), n_threads_per_core(Sy_*Sz_), t_boundary(t_boundary_), 
-    aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
+  void
+  ClovDslash<FT, veclen, soalen,compress12>::init()
   {
-
     // OK we need to set up log of veclen
     log2veclen = 0;
     int veclen_bits = veclen;
@@ -41,7 +27,7 @@ namespace QPhiX
       log2veclen++;
       veclen_bits = (veclen_bits >> 1);
     }
-
+    
     log2soalen = 0;
     int soalen_bits = soalen;
     while (soalen_bits > 1) {
@@ -53,13 +39,13 @@ namespace QPhiX
     
     
     // Get the shift table set up
-    s = new Geometry<FT, veclen, soalen, compress12>(latt_size,  By, Bz,NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+    
     
     int Nxh = s->Nxh();
     int Ny = s->Ny();
     int Nz = s->Nz();
     int Nt = s->Nt();
-
+    
     amIPtMin = s->amIPtMin();    
     amIPtMax = s->amIPtMax();
     // We must have Nxh be divisible by soalen 
@@ -67,7 +53,7 @@ namespace QPhiX
       printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n", Nxh, soalen);
       abort();
     }
-
+    
     // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
     int ngy = s->nGY();
     if( Ny % ngy != 0) {
@@ -76,26 +62,26 @@ namespace QPhiX
       abort();
     }
     
-
+    
     if ( Sy > By/ngy ) { 
       printf ("Warning Sy > By/nyg. Some threads may be idle\n");
     }
-
-
+    
+    
     // sanity: we ought to have at least 'expected_no of threads available'
-
+    
     int expected_threads = NCores * n_threads_per_core;
     if ( expected_threads != omp_get_max_threads() ) {
       cout << "Expected (Cores per Socket x Threads per Core)=" << expected_threads << " but found " << omp_get_max_threads() << "..." << endl;
       cout << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the CORES_PER_SOCKET and THREADS_PER_CORE env variables" << endl;
-	abort();
+      abort();
     }
-
-
+    
+    
     int nvecs = s->nVecs();
     int num_cores = s->getNumCores();
     int num_phases = s->getNumPhases();
-
+    
     // Allocate barriers
     gBar = new Barrier(num_cores*Sy*Sz, n_threads_per_core);
     barriers = new Barrier**[num_phases];
@@ -123,7 +109,7 @@ namespace QPhiX
 	barriers[ph][cid_t]->init(group_tid);
       }
     }
-
+    
     // Set up block info array. These are thread local
     // Indices run as (phases fastest and threads slowest)
     int num_blockinfo = num_phases*s->getNumCores()*n_threads_per_core;
@@ -132,7 +118,7 @@ namespace QPhiX
       fprintf(stderr, "Could not allocate Block Info array\n");
       abort();
     }
-
+    
     // Set up blockinfo
     masterPrintf("Setting Up Blockinfo array: num_phases=%d\n", num_phases);
 #pragma omp parallel shared(num_phases)
@@ -162,7 +148,7 @@ namespace QPhiX
       }
     } // OMP parallel
     masterPrintf("Phase info set up\n");
-
+    
     masterPrintf("Precomputing offsets\n");
     // Alloc tmpspc. It is thread local so we need one for
     // every thread
@@ -172,17 +158,17 @@ namespace QPhiX
       masterPrintf("Failed to allocate xy offset tmpspc\n");
       abort();
     }
-
+    
 #pragma omp parallel 
     {
       int tid = omp_get_thread_num();
       int *tmpspc = &(tmpspc_all[veclen*16*tid]);
-
+      
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
       int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
-
+      
       // Why is this needed. tmpspc should already be aligned.
       int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
       offs = &atmp[0];
@@ -205,17 +191,17 @@ namespace QPhiX
       int nyg = s->nGY();
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge scanline, in floats
       const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor scanline, in floats
-
+      
       if(tid == 0) {
-      // Initialize masks
-      xbmask_x0_xodd[0] = -1;
-      xbmask_x0_xodd[1] = -1;
-      xfmask_xn_xodd[0] = -1;
-      xfmask_xn_xodd[1] = -1;
-      ybmask_y0 = -1;
-      yfmask_yn = -1;
+	// Initialize masks
+	xbmask_x0_xodd[0] = -1;
+	xbmask_x0_xodd[1] = -1;
+	xfmask_xn_xodd[0] = -1;
+	xfmask_xn_xodd[1] = -1;
+	ybmask_y0 = -1;
+	yfmask_yn = -1;
       }
-
+      
       for(int y = 0; y < nyg; y++) {
 	// Various indexing things
 	int ind = y*soalen;
@@ -234,7 +220,7 @@ namespace QPhiX
 	      if(tid == 0) xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
 	    }
 	    xbOffs_xodd[y1][ind]    -= (spinor_line_in_floats - soalen);
-
+	    
 	  }
 	  xfOffs_xodd[y1][ind] = X + x;
 	  xfOffs_xn_xodd[y1][ind] = X + x;
@@ -264,9 +250,9 @@ namespace QPhiX
 	      if(tid == 0) ybmask_y0 &= ~(1 << ind); // reset the ind bit in the mask 
 	    }
 	  }
-
-
-
+	  
+	  
+	  
 	  ybOffs_yn0[ind] = X - nvecs*spinor_line_in_floats + x; // previous y-neighbor site offsets
 	  yfOffs_yn[ind] = X +  nvecs*spinor_line_in_floats + x; // next y-neighbor site offsets
 	  if(y == nyg - 1) {
@@ -279,9 +265,9 @@ namespace QPhiX
 	    }
 	    
 	  }
-
-
-
+	  
+	  
+	  
 	  yfOffs_ynn[ind] = X +  nvecs*spinor_line_in_floats + x; // next y-neighbor site offsets
 	  offs[ind] = X + x;  // site offsets for z & t neighbors
 	  
@@ -295,9 +281,42 @@ namespace QPhiX
     if( compress12 ) { 
       masterPrintf("WILL Use 12 compression\n");
     }
+    
+  }
 
+  /* Constructor */
+  template<typename FT, int veclen, int soalen, bool compress12>
+  ClovDslash<FT, veclen, soalen,compress12>::ClovDslash(
+							const Geometry<FT,veclen,soalen,compress12>* geom_,
+							double t_boundary_, 
+							double dslash_aniso_s_,
+							double dslash_aniso_t_) : 
+    selfAllocGeome(false), By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()), 
+    Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()), PadXYZ(geom_->getPadXYZ()), 
+    MinCt(geom_->getMinCt()), n_threads_per_core(geom_->getSy()*geom_->getSz()), t_boundary(t_boundary_), 
+    aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
+  {
+    init();
+  }
 
-
+    
+  /* Constructor */
+  template<typename FT, int veclen, int soalen, bool compress12>
+    ClovDslash<FT, veclen, soalen,compress12>::ClovDslash(const int latt_size[],  
+					       int By_,
+					       int Bz_,
+					       int NCores_,
+					       int Sy_,
+					       int Sz_,
+					       int PadXY_, 
+					       int PadXYZ_,
+					       int MinCt_,
+					       double t_boundary_, 
+					       double dslash_aniso_s_,
+							  double dslash_aniso_t_) : s(new Geometry<FT, veclen, soalen, compress12>(latt_size,  By_, Bz_,NCores_, Sy_, Sz_, PadXY_, PadXYZ_, MinCt_)), selfAllocGeom(true), By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), n_threads_per_core(Sy_*Sz_), t_boundary(t_boundary_), 
+    aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
+  {
+    init();
   }
     
 
@@ -317,7 +336,10 @@ namespace QPhiX
     
     ALIGNED_FREE(block_info);
     ALIGNED_FREE(tmpspc_all);
-    delete s;  
+
+    if( selfAllocGeom && s != 0x0 ) {
+      delete s;  
+    }
   }
 
  

@@ -36,6 +36,11 @@ namespace QPhiX
 	   double aniso_coeff_T_
 	   );
 
+    Dslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+	   double t_boundary_,
+	   double aniso_coeff_S_,
+	   double aniso_coeff_T_);
+
     /* Destructor */
     ~Dslash();
     
@@ -60,8 +65,11 @@ namespace QPhiX
     Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
   private:
     Geometry<FT,veclen,soalen,compress12>* s;
+    const bool selfAllocGeom;
     int log2veclen;
     int log2soalen;
+    void init();
+
 
     const  int n_threads_per_core;
 

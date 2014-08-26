@@ -27,7 +27,9 @@ namespace QPhiX
 			  int MinCt,
 			  double t_boundary_, 
 			  double aniso_fac_s_,
-			  double aniso_fac_t_): Mass(Mass_), D(new Dslash<FT, veclen,soalen,compress12>(latt_size,By,Bz,NCores,Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary_, aniso_fac_s_, aniso_fac_t_)), geom(D->getGeometry()) {
+			  double aniso_fac_t_): Mass(Mass_), D(new Dslash<FT, veclen,soalen,compress12>(latt_size,By,Bz,NCores,Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary_, aniso_fac_s_, aniso_fac_t_)) {
+
+      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
 
       u[0] = u_[0];
       u[1] = u_[1];
@@ -39,7 +41,26 @@ namespace QPhiX
 
     }
 
+    EvenOddWilsonOperator(const double Mass_,
+			  SU3MatrixBlock* u_[2],
+			  const Geometry<FT,veclen,soalen,compress12>* geom_,
+			  double t_boundary_, 
+			  double aniso_fac_s_,
+			  double aniso_fac_t_): Mass(Mass_), D(new Dslash<FT, veclen,soalen,compress12>(geom_, t_boundary_, aniso_fac_s_, aniso_fac_t_))
+      {
+
+	Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
+	u[0] = u_[0];
+	u[1] = u_[1];
+	tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
+	
+	mass_factor_alpha = (double)4 + Mass;
+	mass_factor_beta = (double)(0.25)/ mass_factor_alpha; 
+    }
+
+
     ~EvenOddWilsonOperator() {
+      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
       geom.free(tmp);
       delete D;
     }
@@ -51,12 +72,10 @@ namespace QPhiX
       D->dslashAChiMinusBDPsi(res, tmp, in, u[0], mass_factor_alpha, mass_factor_beta, isign, 0);
     }
 
-    Geometry<FT,veclen, soalen, compress12>& getGeometry() { return geom; }
+    Geometry<FT,veclen, soalen, compress12>& getGeometry() { return D->getGeometry(); }
   private:
     double Mass;
     Dslash<FT, veclen,soalen, compress12>* D;
-    Geometry<FT,veclen,soalen,compress12>& geom;
-
     SU3MatrixBlock *u[2];
     FourSpinorBlock *tmp;
     double mass_factor_alpha; 

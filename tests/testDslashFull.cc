@@ -351,6 +351,8 @@ testDslashFull::testDslash(const U& u, int t_bc)
   gaussian(psi);
 
 
+
+
   Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
   Geometry<T,V,S,compress>& geom= D32.getGeometry();
 

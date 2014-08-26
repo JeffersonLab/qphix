@@ -13,26 +13,12 @@ namespace QPhiX
 
 #include "qphix/dslash_generated.h"
 
-
-  /*! \brief Dslash Constructor 
-   *
-   * Sets up the Dslash.
+  /*! \brief initialization function
    */
-  template<typename FT, int veclen, int soalen, bool compress12>
-    Dslash<FT, veclen, soalen, compress12>::Dslash(const int latt_size[],  
-				     int By_,
-				     int Bz_,
-				     int NCores_,
-				     int Sy_,
-				     int Sz_,
-				     int PadXY_, 
-				     int PadXYZ_,
-				     int MinCt_,
-				     double t_boundary_,
-				     double aniso_coeff_S_,
-				     double aniso_coeff_T_) : By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), n_threads_per_core(Sy_*Sz_), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
-  {
 
+  template<typename FT, int veclen, int soalen, bool compress12>
+  void Dslash<FT, veclen, soalen, compress12>::init()
+  {
     // OK we need to set up log of veclen
     log2veclen = 0;
     int veclen_bits = veclen;
@@ -48,9 +34,6 @@ namespace QPhiX
       soalen_bits = (soalen_bits >> 1);
     }
     
-    // Get the shift table set up
-    s = new Geometry<FT, veclen, soalen,compress12>(latt_size,  By, Bz,NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
-    
     int Nxh = s->Nxh();
     int Ny = s->Ny();
     int Nz = s->Nz();
@@ -59,7 +42,7 @@ namespace QPhiX
     // Get info about our location in the time dimension
     amIPtMin = s->amIPtMin();
     amIPtMax = s->amIPtMax();
-
+    
     // We must have Nxh be divisible by soalen 
     if( Nxh % soalen != 0 ) {
       printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n", Nxh, soalen);
@@ -86,7 +69,7 @@ namespace QPhiX
     if ( expected_threads != omp_get_max_threads() ) {
       cout << "Expected (Cores per Socket x Threads per Core)=" << expected_threads << " but found " << omp_get_max_threads() << "..." << endl;
       cout << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the CORES_PER_SOCKET and THREADS_PER_CORE env variables" << endl;
-	abort();
+      abort();
     }
     
     
@@ -121,7 +104,7 @@ namespace QPhiX
 	barriers[ph][cid_t]->init(group_tid);
       }
     }
-
+    
     // Set up block info array. These are thread local
     // Indices run as (phases fastest and threads slowest)
     int num_blockinfo = num_phases*s->getNumCores()*n_threads_per_core;
@@ -130,7 +113,7 @@ namespace QPhiX
       fprintf(stderr, "Could not allocate Block Info array\n");
       abort();
     }
-
+    
     // Set up blockinfo
     masterPrintf("Setting Up Blockinfo array: num_phases=%d\n", num_phases);
 #pragma omp parallel shared(num_phases)
@@ -139,7 +122,7 @@ namespace QPhiX
       int cid = tid / n_threads_per_core;
       int smtid = tid - n_threads_per_core * cid;
       int ly = Ny/By;
-
+      
       for(int ph =0; ph < num_phases; ph++){ 
 	const CorePhase& phase = s->getCorePhase(ph);
 	BlockPhase& binfo = block_info[num_phases*tid+ph];
@@ -160,7 +143,7 @@ namespace QPhiX
       }
     } // OMP parallel
     masterPrintf("Phase info set up\n");
-
+    
     masterPrintf("Precomputing offsets\n");
     // Alloc tmpspc. It is thread local so we need one for
     // every thread
@@ -170,17 +153,17 @@ namespace QPhiX
       printf("Failed to allocate xy offset tmpspc\n");
       abort();
     }
-
+    
 #pragma omp parallel 
     {
       int tid = omp_get_thread_num();
       int *tmpspc = &(tmpspc_all[veclen*16*tid]);
-
+      
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
       int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
-
+      
       // Why is this needed. tmpspc should already be aligned.
       int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
       offs = &atmp[0];
@@ -203,17 +186,17 @@ namespace QPhiX
       int nyg = s->nGY();
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge scanline, in floats
       const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor scanline, in floats
-
+      
       if(tid == 0) {
-      // Initialize masks
-      xbmask_x0_xodd[0] = -1;
-      xbmask_x0_xodd[1] = -1;
-      xfmask_xn_xodd[0] = -1;
-      xfmask_xn_xodd[1] = -1;
-      ybmask_y0 = -1;
-      yfmask_yn = -1;
+	// Initialize masks
+	xbmask_x0_xodd[0] = -1;
+	xbmask_x0_xodd[1] = -1;
+	xfmask_xn_xodd[0] = -1;
+	xfmask_xn_xodd[1] = -1;
+	ybmask_y0 = -1;
+	yfmask_yn = -1;
       }
-
+      
       for(int y = 0; y < nyg; y++) {
 	// Various indexing things
 	int ind = y*soalen;
@@ -232,7 +215,7 @@ namespace QPhiX
 	      if(tid == 0) xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
 	    }
 	    xbOffs_xodd[y1][ind]    -= (spinor_line_in_floats - soalen);
-
+	    
 	  }
 	  xfOffs_xodd[y1][ind] = X + x;
 	  xfOffs_xn_xodd[y1][ind] = X + x;
@@ -283,13 +266,45 @@ namespace QPhiX
 	}
       }
     } // OMP parallel  
-    // Info 
+      // Info 
     if( compress12 ) { 
       masterPrintf("WILL Use 12 compression\n");
     }
+  }
+
+
+  template<typename FT, int veclen, int soalen, bool compress12>
+    Dslash<FT, veclen, soalen, compress12>::Dslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+						   double t_boundary_,
+						   double aniso_coeff_S_,
+						   double aniso_coeff_T_) : s(geom_), selfAllocGeom(false), By(geom_->getBy()),
+    Bz(geom_->getBz()), NCores(geom_->getNumCores()), Sy(geom_->getSy()), Sz(geom->getSz()), PadXY(geom_->getPadXY()), 
+    PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()), n_threads_per_core(geom_->getSy()*geom_->getSz()), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
+  {
+    init();
+  }
 
 
 
+  /*! \brief Dslash Constructor 
+   *
+   * Sets up the Dslash.
+   */
+  template<typename FT, int veclen, int soalen, bool compress12>
+    Dslash<FT, veclen, soalen, compress12>::Dslash(const int latt_size[],  
+				     int By_,
+				     int Bz_,
+				     int NCores_,
+				     int Sy_,
+				     int Sz_,
+				     int PadXY_, 
+				     int PadXYZ_,
+				     int MinCt_,
+				     double t_boundary_,
+				     double aniso_coeff_S_,
+						   double aniso_coeff_T_) : s(new Geometry<FT, veclen, soalen,compress12>(latt_size,  By_, Bz_,NCores_, Sy_, Sz_, PadXY_, PadXYZ_, MinCt_)), selfAllocGeom(true), By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), n_threads_per_core(Sy_*Sz_), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
+  {
+    init();
   }
     
 
@@ -297,7 +312,6 @@ namespace QPhiX
   template<typename FT, int veclen, int soalen,bool compress12>
     Dslash<FT,veclen,soalen,compress12>::~Dslash() { 
     masterPrintf("Freeing BlockInfo\n");
-    
     ALIGNED_FREE(block_info);
 
     masterPrintf("Freeing tmpspc_all\n");
@@ -314,11 +328,16 @@ namespace QPhiX
       }
       delete [] barriers[ph];
     }
-
-   
     delete [] barriers;
-    masterPrintf("Deleting Geometry\n");
-    delete s;  
+
+    if( selfAllocGeom && s != 0x0 ) {
+      masterPrintf("Deleting Geometry\n");
+      delete s;  
+    }
+    else { 
+      masterPrintf("Not freeing user supplied Geometry\n");
+    }
+
     masterPrintf("All Destructed\n");
   }
 
@@ -326,184 +345,182 @@ namespace QPhiX
  
   // The operator() that the user sees
   template<typename FT, int veclen, int soalen, bool compress12>
-    void Dslash<FT,veclen, soalen, compress12>::dslash(FourSpinorBlock* res, 
-						       const FourSpinorBlock* psi, 
-						       const SU3MatrixBlock* u, /* Gauge field suitably packed */
-						       int isign,
-						       int cb) 
-    {
-      
-      // Call the service functions
-      if (isign == 1) {  
-	DPsiPlus(u,psi,res,cb);
-      }
-
-      if( isign == -1) {
-	DPsiMinus(u,psi,res,cb);
-      }    
-
+  void Dslash<FT,veclen, soalen, compress12>::dslash(FourSpinorBlock* res, 
+						     const FourSpinorBlock* psi, 
+						     const SU3MatrixBlock* u, /* Gauge field suitably packed */
+						     int isign,
+						     int cb) 
+  {
+    // Call the service functions
+    if (isign == 1) {  
+      DPsiPlus(u,psi,res,cb);
     }
+    
+    if( isign == -1) {
+      DPsiMinus(u,psi,res,cb);
+    }    
+  }
+  
 
 
-
-  // The operator() that the user sees
+  
   template<typename FT, int veclen, int soalen, bool compress12>
-    void Dslash<FT,veclen,soalen,compress12>::dslashAChiMinusBDPsi(FourSpinorBlock* res, 
-								   const FourSpinorBlock* psi, 
-								   const FourSpinorBlock* chi, 
-								   const SU3MatrixBlock* u, /* Gauge field suitably packed */
-								   double alpha, 
-								   double beta, 
-								   int isign,
-								   int cb) 
-    {
-      
-      // Call the service functions
-      if (isign == 1) {  
-	DPsiPlusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,cb);
-      }
-      
-      if( isign == -1) {
-	DPsiMinusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,cb);
-      }    
+  void Dslash<FT,veclen,soalen,compress12>::dslashAChiMinusBDPsi(FourSpinorBlock* res, 
+								 const FourSpinorBlock* psi, 
+								 const FourSpinorBlock* chi, 
+								 const SU3MatrixBlock* u, /* Gauge field suitably packed */
+								 double alpha, 
+								 double beta, 
+								 int isign,
+								 int cb) 
+  {
+    
+    // Call the service functions
+    if (isign == 1) {  
+      DPsiPlusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,cb);
     }
-
-
-     // This Essentially threads over Y and Z with each thread doing a 'scanline' of X at a time
+    
+    if( isign == -1) {
+      DPsiMinusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,cb);
+    }    
+  }
+  
+  
+  // This Essentially threads over Y and Z with each thread doing a 'scanline' of X at a time
   //    void DyzPlus(size_t lo, size_t hi, int tid, const void *a)
   template<typename FT, int veclen, int soalen, bool compress12>
-    void Dslash<FT,veclen, soalen, compress12>::DyzPlus(int tid,
-							const FourSpinorBlock* psi, 
-							FourSpinorBlock* res,
-							const SU3MatrixBlock* u, 
-							int cb)
-    {
-      
-      const int Nxh = s->Nxh();
-      const int Nx = s->Nx();
-      const int Ny = s->Ny();
-      const int Nz = s->Nz();
-      const int Nt = s->Nt();
-      const int By = s->getBy();
-      const int Bz = s->getBz();
-      const int Sy = s->getSy();
-      const int Sz = s->getSz();
-      const int ngy= s->nGY();
-      const int Pxy = s->getPxy();
-      const int Pxyz = s->getPxyz();
-
-
-
-      // Get Core ID and SIMT ID
-      int cid = tid/n_threads_per_core;
-      int smtid = tid - n_threads_per_core*cid;
-
-      // Compute smt ID Y and Z indices
-      int smtid_z = smtid / Sy;
-      int smtid_y = smtid - Sy * smtid_z;
-     
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
-      int nvecs = s->nVecs();
-
-      const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
-      const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
-      
-      // Indexing constants
-      const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
-      const int NyV1 = Ny*V1;
-      const int NzNyV1 = Nz*Ny*V1;
-      
-      const int Nxm1 = 2*Nxh-1;
-      const int Nym1 = Ny-1;
-      const int Nzm1 = Nz-1;
-      const int Ntm1 = Nt-1;
-      
-      const int NyV1mV1 = V1*(Ny-1);
-      const int NzNyV1mNyV1 = V1*Ny*(Nz-1);
-      const int NtNzNyV1mNzNyV1 = V1*Nz*Ny*(Nt-1);
-      
-      const int nyg = s->nGY();
+  void Dslash<FT,veclen, soalen, compress12>::DyzPlus(int tid,
+						      const FourSpinorBlock* psi, 
+						      FourSpinorBlock* res,
+						      const SU3MatrixBlock* u, 
+						      int cb)
+  {
+    
+    const int Nxh = s->Nxh();
+    const int Nx = s->Nx();
+    const int Ny = s->Ny();
+    const int Nz = s->Nz();
+    const int Nt = s->Nt();
+    const int By = s->getBy();
+    const int Bz = s->getBz();
+    const int Sy = s->getSy();
+    const int Sz = s->getSz();
+    const int ngy= s->nGY();
+    const int Pxy = s->getPxy();
+    const int Pxyz = s->getPxyz();
+    
+    
+    
+    // Get Core ID and SIMT ID
+    int cid = tid/n_threads_per_core;
+    int smtid = tid - n_threads_per_core*cid;
+    
+    // Compute smt ID Y and Z indices
+    int smtid_z = smtid / Sy;
+    int smtid_y = smtid - Sy * smtid_z;
+    
+    unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    int nvecs = s->nVecs();
+    
+    const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
+    const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
+    
+    // Indexing constants
+    const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
+    const int NyV1 = Ny*V1;
+    const int NzNyV1 = Nz*Ny*V1;
+    
+    const int Nxm1 = 2*Nxh-1;
+    const int Nym1 = Ny-1;
+    const int Nzm1 = Nz-1;
+    const int Ntm1 = Nt-1;
+    
+    const int NyV1mV1 = V1*(Ny-1);
+    const int NzNyV1mNyV1 = V1*Ny*(Nz-1);
+    const int NtNzNyV1mNzNyV1 = V1*Nz*Ny*(Nt-1);
+    
+    const int nyg = s->nGY();
       // Get the number of checkerboarded sites and various indexing constants
-      int gprefdist=0;
-      int soprefdist=0;
-
-
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
-      int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
-      int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
-      int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
-      int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
-      int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
-      offs = &atmp[0];
-      xbOffs_xodd[0] = &atmp[veclen*1];
-      xbOffs_xodd[1] = &atmp[veclen*2];
-      xbOffs_x0_xodd[0] = &atmp[veclen*3];
-      xbOffs_x0_xodd[1] = &atmp[veclen*4];
-      xfOffs_xodd[0] = &atmp[veclen*5];
-      xfOffs_xodd[1] = &atmp[veclen*6];
-      xfOffs_xn_xodd[0] = &atmp[veclen*7];
-      xfOffs_xn_xodd[1] = &atmp[veclen*8];
-      ybOffs_yn0 = &atmp[veclen*9];
-      ybOffs_y0 = &atmp[veclen*10];
-      yfOffs_ynn = &atmp[veclen*11];
-      yfOffs_yn = &atmp[veclen*12];
-      gOffs = &atmp[veclen*13];
-      pfyOffs = &atmp[veclen*14];
+    int gprefdist=0;
+    int soprefdist=0;
+    
+    
+    __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
+    int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
+    int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
+    int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
+    int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
+    int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
+    offs = &atmp[0];
+    xbOffs_xodd[0] = &atmp[veclen*1];
+    xbOffs_xodd[1] = &atmp[veclen*2];
+    xbOffs_x0_xodd[0] = &atmp[veclen*3];
+    xbOffs_x0_xodd[1] = &atmp[veclen*4];
+    xfOffs_xodd[0] = &atmp[veclen*5];
+    xfOffs_xodd[1] = &atmp[veclen*6];
+    xfOffs_xn_xodd[0] = &atmp[veclen*7];
+    xfOffs_xn_xodd[1] = &atmp[veclen*8];
+    ybOffs_yn0 = &atmp[veclen*9];
+    ybOffs_y0 = &atmp[veclen*10];
+    yfOffs_ynn = &atmp[veclen*11];
+    yfOffs_yn = &atmp[veclen*12];
+    gOffs = &atmp[veclen*13];
+    pfyOffs = &atmp[veclen*14];
+    
+    
+    int num_phases = s->getNumPhases();
+    
+    for(int ph=0; ph < num_phases; ph++) { 
+      const CorePhase& phase = s->getCorePhase(ph);
+      const BlockPhase& binfo = block_info[tid*num_phases + ph];
       
-
-      int num_phases = s->getNumPhases();
+      int nActiveCores = phase.Cyz * phase.Ct;
+      if ( cid >= nActiveCores ) continue;
       
-      for(int ph=0; ph < num_phases; ph++) { 
-	const CorePhase& phase = s->getCorePhase(ph);
-	const BlockPhase& binfo = block_info[tid*num_phases + ph];
+      int ph_next = ph;
+      int Nct = binfo.nt;
+      
+      // Loop over timeslices
+      for(int ct = 0 ; ct < Nct; ct++) {
+	int t = ct + binfo.bt;
+	int ct_next = ct;
 	
-	int nActiveCores = phase.Cyz * phase.Ct;
-	if ( cid >= nActiveCores ) continue;
+	double forw_t_coeff = aniso_coeff_T;
+	double back_t_coeff = aniso_coeff_T;
 	
-	int ph_next = ph;
-	int Nct = binfo.nt;
+	accumulate[6]=-1;
+	accumulate[7]=-1; 
 	
-	// Loop over timeslices
-	for(int ct = 0 ; ct < Nct; ct++) {
-	  int t = ct + binfo.bt;
-	  int ct_next = ct;
-
-	  double forw_t_coeff = aniso_coeff_T;
-	  double back_t_coeff = aniso_coeff_T;
-
-	  accumulate[6]=-1;
-	  accumulate[7]=-1; 
-
-	  // If we are on timeslice 0, we should set back t_coeff and accumulate
-	  if( t == 0 ) {
-	    if( ! s->localT() ) { 
-	      accumulate[6] = 0;
-	    }
-	    else { 
-	      if ( amIPtMin ) {
-		// This can be in half precision now
-		
-		back_t_coeff *= t_boundary;
-	      }
+	// If we are on timeslice 0, we should set back t_coeff and accumulate
+	if( t == 0 ) {
+	  if( ! s->localT() ) { 
+	    accumulate[6] = 0;
+	  }
+	  else { 
+	    if ( amIPtMin ) {
+	      // This can be in half precision now
+	      
+	      back_t_coeff *= t_boundary;
 	    }
 	  }
-
-	  // If we are on timeslice 1, we should set forw t_coeff and accumulate flags
-	  if( t == Nt - 1 ) {
-	    if( ! s->localT() ) {
-	      accumulate[7] = 0;
-	    }
-	    else { 
-	      if ( amIPtMax ) {
-		forw_t_coeff *= t_boundary;
-	      }
+	}
+	
+	// If we are on timeslice 1, we should set forw t_coeff and accumulate flags
+	if( t == Nt - 1 ) {
+	  if( ! s->localT() ) {
+	    accumulate[7] = 0;
+	  }
+	  else { 
+	    if ( amIPtMax ) {
+	      forw_t_coeff *= t_boundary;
 	    }
 	  }
-	  
-
-
-	  // Loop over z. Start at smtid_z and work up to Ncz
-	  // (Ncz truncated for the last block so should be OK)
+	}
+	
+	
+	
+	// Loop over z. Start at smtid_z and work up to Ncz
+	// (Ncz truncated for the last block so should be OK)
 	  for( int cz = smtid_z; cz < Bz; cz += Sz ) {
 	    
 	    int z = cz + binfo.bz; // Add on origin of block
