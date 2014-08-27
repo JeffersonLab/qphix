@@ -108,10 +108,11 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   double coeff_t = (FT)(1);
   
   // Create Scalar Dslash Class
-  Dslash<FT,V,S,compress> D32(subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt,
-				  t_boundary, coeff_s,coeff_t);
+  Geometry<FT,V,S,compress> geom(subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
   
-  Geometry<FT,V,S,compress> geom = D32.getGeometry();
+  Dslash<FT,V,S,compress> D32(&geom, t_boundary, coeff_s,coeff_t);
+  
+  
   // Allocate data for the gauges
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
@@ -124,12 +125,10 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   double factor=0.08;
   
   masterPrintf("Initializing Fake Gauge Field: ");
-
-  Geometry<FT, V, S,compress>& g = D32.getGeometry();
-  int nvecs = g.nVecs();
-  int nyg = g.nGY();
-  int Pxy = g.getPxy();
-  int Pxyz = g.getPxyz();
+  int nvecs = geom.nVecs();
+  int nyg = geom.nGY();
+  int Pxy = geom.getPxy();
+  int Pxyz = geom.getPxyz();
   
   double start = omp_get_wtime();
 
@@ -322,14 +321,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   Spinor* c_odd=(Spinor*)geom.allocCBFourSpinor();
   
   
-  // Point to the second block of the array. Now there is padding on both ends.
-  /*
-  Spinor* psi_even=p_even+1;
-  Spinor* psi_odd=p_odd+1;
-  Spinor* chi_even=c_even+1;
-  Spinor* chi_odd=c_odd+1;
-  */
-  
+  // Point to the second block of the array. Now there is padding on both ends.  
   Spinor *psi_s[2] = { p_even, p_odd };
   Spinor *chi_s[2] = { c_even, c_odd };
     
@@ -436,7 +428,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1
   masterPrintf("Creating Wilson Op\n");
   double Mass=0.1;
-  EvenOddWilsonOperator<FT, V, S,compress> M(Mass, subLattSize, u_packed,  By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, coeff_s, coeff_t);
+  EvenOddWilsonOperator<FT, V, S,compress> M(Mass, u_packed, &geom, t_boundary, coeff_s, coeff_t);
 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   for(int isign=1; isign >= -1; isign -=2) {
@@ -483,7 +475,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   int max_iters=5000;
   int niters;
   double rsd_final;
-  int len = (g.getPxyz()*g.Nt()*sizeof(Spinor))/sizeof(FT); 
+  int len = (geom.getPxyz()*geom.Nt()*sizeof(Spinor))/sizeof(FT); 
   FT *c_s0 = (FT *)chi_s[0];
 
   {

@@ -285,10 +285,7 @@ namespace QPhiX {
 					      s.getSz(),
 					      s.getPadXY(),
 					      s.getPadXYZ(),
-					      s.getMinCt(),
-					      false); // dont alloc comms bufs
-
-					     
+					      s.getMinCt());
 					    
    GaugeF* tmp_cb0 = (GaugeF *)g_float.allocCBGauge();
    GaugeF* tmp_cb1 = (GaugeF *)g_float.allocCBGauge();
@@ -333,9 +330,7 @@ namespace QPhiX {
 						s.getSz(),
 						s.getPadXY(),
 						s.getPadXYZ(),
-						s.getMinCt(),
-						false);
-     
+						s.getMinCt());
      
      
      SpinorF* tmp_cb0_alloc = (SpinorF *)g_float.allocCBFourSpinor();
@@ -389,8 +384,7 @@ namespace QPhiX {
 						s.getSz(),
 						s.getPadXY(),
 						s.getPadXYZ(),
-						s.getMinCt(),
-						false);
+						s.getMinCt());
      
      
      // FIXME: CHECK THESE ALLOCATIONS
@@ -443,8 +437,8 @@ namespace QPhiX {
 						s.getSz(),
 						s.getPadXY(),
 						s.getPadXYZ(),
-						s.getMinCt(),
-						false);
+						s.getMinCt());
+				
      
      
      

@@ -12,38 +12,10 @@ namespace QPhiX
   public: 
     typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock SU3MatrixBlock;
-    // Constructor
-    // No anisotropy, all boundaries periodic for now.
-    EvenOddWilsonOperator(const double Mass_,
-			  const int latt_size[],
-			  SU3MatrixBlock* u_[2],
-			  int By, 
-			  int Bz, 
-			  int NCores,
-			  int Sy,
-			  int Sz,
-			  int PadXY, 
-			  int PadXYZ, 
-			  int MinCt,
-			  double t_boundary_, 
-			  double aniso_fac_s_,
-			  double aniso_fac_t_): Mass(Mass_), D(new Dslash<FT, veclen,soalen,compress12>(latt_size,By,Bz,NCores,Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary_, aniso_fac_s_, aniso_fac_t_)) {
-
-      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
-
-      u[0] = u_[0];
-      u[1] = u_[1];
-      tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
-
-      mass_factor_alpha = (double)4 + Mass;
-      mass_factor_beta = (double)(0.25)/ mass_factor_alpha; 
-      
-
-    }
 
     EvenOddWilsonOperator(const double Mass_,
 			  SU3MatrixBlock* u_[2],
-			  const Geometry<FT,veclen,soalen,compress12>* geom_,
+			  Geometry<FT,veclen,soalen,compress12>* geom_,
 			  double t_boundary_, 
 			  double aniso_fac_s_,
 			  double aniso_fac_t_): Mass(Mass_), D(new Dslash<FT, veclen,soalen,compress12>(geom_, t_boundary_, aniso_fac_s_, aniso_fac_t_))
@@ -76,7 +48,7 @@ namespace QPhiX
   private:
     double Mass;
     Dslash<FT, veclen,soalen, compress12>* D;
-    SU3MatrixBlock *u[2];
+    const SU3MatrixBlock *u[2];
     FourSpinorBlock *tmp;
     double mass_factor_alpha; 
     double mass_factor_beta;

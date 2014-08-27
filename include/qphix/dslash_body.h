@@ -40,8 +40,8 @@ namespace QPhiX
     int Nt = s->Nt();
     
     // Get info about our location in the time dimension
-    amIPtMin = s->amIPtMin();
-    amIPtMax = s->amIPtMax();
+    amIPtMin = comms->amIPtMin();
+    amIPtMax = comms->amIPtMax();
     
     // We must have Nxh be divisible by soalen 
     if( Nxh % soalen != 0 ) {
@@ -207,7 +207,7 @@ namespace QPhiX
 	  xbOffs_x0_xodd[y1][ind] = X + x - 1;
 	  xbOffs_xodd[y1][ind] = X + x - 1;
 	  if(x == 0) {
-	    if( s->localX() ) {
+	    if( comms->localX() ) {
 	      xbOffs_x0_xodd[y1][ind] -= (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
 	    }
 	    else {
@@ -226,7 +226,7 @@ namespace QPhiX
 	  xfOffs_xn_xodd[y2][ind] = X + x + 1;
 	  if(x == soalen - 1) {
 	    xfOffs_xodd[y2][ind] += (spinor_line_in_floats - soalen);
-	    if( s->localX() ) {
+	    if( comms->localX() ) {
 	      xfOffs_xn_xodd[y2][ind] += (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
 	    }
 	    else {
@@ -237,7 +237,7 @@ namespace QPhiX
 	  
 	  ybOffs_y0[ind] = X - nvecs*spinor_line_in_floats + x; // previous y-neighbor site offsets
 	  if(y == 0) {
-	    if( s->localY() ) { 
+	    if( comms->localY() ) { 
 	      ybOffs_y0[ind] += Ny*nvecs*spinor_line_in_floats;
 	    }
 	    else { 
@@ -248,7 +248,7 @@ namespace QPhiX
 	  ybOffs_yn0[ind] = X - nvecs*spinor_line_in_floats + x; // previous y-neighbor site offsets
 	  yfOffs_yn[ind] = X +  nvecs*spinor_line_in_floats + x; // next y-neighbor site offsets
 	  if(y == nyg - 1) {
-	    if ( s->localY() ) { 
+	    if ( comms->localY() ) { 
 	      yfOffs_yn[ind] -= Ny*nvecs*spinor_line_in_floats;
 	    }
 	    else {
@@ -274,39 +274,17 @@ namespace QPhiX
 
 
   template<typename FT, int veclen, int soalen, bool compress12>
-    Dslash<FT, veclen, soalen, compress12>::Dslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+    Dslash<FT, veclen, soalen, compress12>::Dslash(Geometry<FT,veclen, soalen,compress12>* geom_,
 						   double t_boundary_,
 						   double aniso_coeff_S_,
-						   double aniso_coeff_T_) : s(geom_), selfAllocGeom(false), By(geom_->getBy()),
-    Bz(geom_->getBz()), NCores(geom_->getNumCores()), Sy(geom_->getSy()), Sz(geom->getSz()), PadXY(geom_->getPadXY()), 
+						   double aniso_coeff_T_) : s(geom_), comms(new Comms<FT,veclen,soalen,compress12>(geom_)), By(geom_->getBy()),
+    Bz(geom_->getBz()), NCores(geom_->getNumCores()), Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()), 
     PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()), n_threads_per_core(geom_->getSy()*geom_->getSz()), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
   {
     init();
   }
 
 
-
-  /*! \brief Dslash Constructor 
-   *
-   * Sets up the Dslash.
-   */
-  template<typename FT, int veclen, int soalen, bool compress12>
-    Dslash<FT, veclen, soalen, compress12>::Dslash(const int latt_size[],  
-				     int By_,
-				     int Bz_,
-				     int NCores_,
-				     int Sy_,
-				     int Sz_,
-				     int PadXY_, 
-				     int PadXYZ_,
-				     int MinCt_,
-				     double t_boundary_,
-				     double aniso_coeff_S_,
-						   double aniso_coeff_T_) : s(new Geometry<FT, veclen, soalen,compress12>(latt_size,  By_, Bz_,NCores_, Sy_, Sz_, PadXY_, PadXYZ_, MinCt_)), selfAllocGeom(true), By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), n_threads_per_core(Sy_*Sz_), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
-  {
-    init();
-  }
-    
 
   // Destructor: Free tables etc
   template<typename FT, int veclen, int soalen,bool compress12>
@@ -330,13 +308,8 @@ namespace QPhiX
     }
     delete [] barriers;
 
-    if( selfAllocGeom && s != 0x0 ) {
-      masterPrintf("Deleting Geometry\n");
-      delete s;  
-    }
-    else { 
-      masterPrintf("Not freeing user supplied Geometry\n");
-    }
+    masterPrintf("Deleting Comms\n");
+    delete comms;
 
     masterPrintf("All Destructed\n");
   }
@@ -493,7 +466,7 @@ namespace QPhiX
 	
 	// If we are on timeslice 0, we should set back t_coeff and accumulate
 	if( t == 0 ) {
-	  if( ! s->localT() ) { 
+	  if( ! comms->localT() ) { 
 	    accumulate[6] = 0;
 	  }
 	  else { 
@@ -507,7 +480,7 @@ namespace QPhiX
 	
 	// If we are on timeslice 1, we should set forw t_coeff and accumulate flags
 	if( t == Nt - 1 ) {
-	  if( ! s->localT() ) {
+	  if( ! comms->localT() ) {
 	    accumulate[7] = 0;
 	  }
 	  else { 
@@ -525,7 +498,7 @@ namespace QPhiX
 	    
 	    int z = cz + binfo.bz; // Add on origin of block
 	    int cz_next = cz;
-	    if( ! s->localZ() ) { 
+	    if( ! comms->localZ() ) { 
 	      if( z == 0 ) {
 		accumulate[4] = 0;
 	      }
@@ -609,7 +582,7 @@ namespace QPhiX
 
 
 		if( soalen == veclen ) { 
-		  if(! s->localY() ) {
+		  if(! comms->localY() ) {
 		    accumulate[2] = (yi == 0 ? 0 : -1);
 		    accumulate[3] = (yi == Ny - 1 ? 0 : -1);
 		  }
@@ -758,7 +731,7 @@ namespace QPhiX
 
 	  // If we are on timeslice 0, we should set back t_coeff and accumulate
 	  if( t == 0 ) {
-	    if( ! s->localT() ) { 
+	    if( ! comms->localT() ) { 
 	      accumulate[6] = 0;
 	    }
 	    else { 
@@ -772,7 +745,7 @@ namespace QPhiX
 
 	  // If we are on timeslice 1, we should set forw t_coeff and accumulate flags
 	  if( t == Nt - 1 ) {
-	    if( ! s->localT() ) { 
+	    if( ! comms->localT() ) { 
 	      accumulate[7] = 0;
 	    }
 	    else { 
@@ -791,7 +764,7 @@ namespace QPhiX
 	    
 	    int z = cz + binfo.bz; // Add on origin of block
 	    int cz_next = cz;
-	    if( ! s->localZ() ) { 
+	    if( ! comms->localZ() ) { 
 	      if( z == 0 ) {
 		accumulate[4] = 0;
 	      }
@@ -874,18 +847,18 @@ namespace QPhiX
 
 
 		if( soalen == veclen ) { 
-		  if(! s->localY() ) {
+		  if(! comms->localY() ) {
 		    accumulate[2] = (yi == 0 ? 0 : -1);
 		    accumulate[3] = (yi == Ny - 1 ? 0 : -1);
 		  }
 		}
 
 #if 0
-		if(! s->localZ()) {
+		if(! comms->localZ()) {
 		  accumulate[4] = (z == 0 ? 0 : -1);
 		  accumulate[5] = (z == Nz - 1 ? 0 : -1);
 		}
-		if(! s->localT()) {
+		if(! comms->localT()) {
 		  accumulate[6] = (t == 0 ? 0 : -1);
 		  accumulate[7] = (t == Nt - 1 ? 0 : -1);
 		}
@@ -1041,7 +1014,7 @@ namespace QPhiX
 	  accumulate[7]=-1;
 
 	  if( t == 0 ) {
-	    if( ! s->localT() ) { 
+	    if( ! comms->localT() ) { 
 	      accumulate[6] = 0;
 	    }
 	    else { 
@@ -1052,7 +1025,7 @@ namespace QPhiX
 	  }
 
 	  if( t == Nt-1 ) {
-	    if( ! s->localT() ) { 
+	    if( ! comms->localT() ) { 
 	      accumulate[7] = 0;
 	    }
 	    else { 
@@ -1070,7 +1043,7 @@ namespace QPhiX
 	    
 	    int z = cz + binfo.bz; // Add on origin of block
 	    int cz_next = cz;
-	    if( ! s->localZ() ) { 
+	    if( ! comms->localZ() ) { 
 	      if( z == 0 ) {
 		accumulate[4] = 0;
 	      }
@@ -1155,7 +1128,7 @@ namespace QPhiX
 
 
 		if( soalen == veclen ) { 
-		  if(! s->localY() ) {
+		  if(! comms->localY() ) {
 		    accumulate[2] = (yi == 0 ? 0 : -1);
 		    accumulate[3] = (yi == Ny - 1 ? 0 : -1);
 		  }
@@ -1312,7 +1285,7 @@ namespace QPhiX
 	 
 	  if ( t == 0 ) { 
 	    // We get our face from a comms buf, and it will have its beta dealt with it
-	    if( ! s->localT() ) {    
+	    if( ! comms->localT() ) {    
 	      accumulate[6] = 0;
 	    }
 	    else {
@@ -1326,7 +1299,7 @@ namespace QPhiX
 
 
 	  if( t == Nt-1 ) {
-	    if( ! s->localT() ) { 
+	    if( ! comms->localT() ) { 
 	      accumulate[7] = 0;
 	    }
 	    else { 
@@ -1345,7 +1318,7 @@ namespace QPhiX
 	    
 	    int z = cz + binfo.bz; // Add on origin of block
 	    int cz_next = cz;
-	    if( ! s->localZ() ) { 
+	    if( ! comms->localZ() ) { 
 	      if( z == 0 ) {
 		accumulate[4] = 0;
 	      }
@@ -1429,7 +1402,7 @@ namespace QPhiX
 
 
 		if( soalen == veclen ) { 
-		  if(! s->localY() ) {
+		  if(! comms->localY() ) {
 		    accumulate[2] = (yi == 0 ? 0 : -1);
 		    accumulate[3] = (yi == Ny - 1 ? 0 : -1);
 		  }
@@ -1502,19 +1475,19 @@ namespace QPhiX
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
-	if( ! s->localDir(d)  ) {
-	  s->startRecvFromDir(2*d+0);   
-	  s->startRecvFromDir(2*d+1);
+	if( ! comms->localDir(d)  ) {
+	  comms->startRecvFromDir(2*d+0);   
+	  comms->startRecvFromDir(2*d+1);
 
 #pragma omp parallel 
 	  {
 	    int tid = omp_get_thread_num();
 
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+1], cb, d, 1, 1);
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+0], cb, d, 0, 1);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+1), cb, d, 1, 1);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+0), cb, d, 0, 1);
  	  }
-	  s->startSendDir(2*d+1);
-	  s->startSendDir(2*d+0);
+	  comms->startSendDir(2*d+1);
+	  comms->startSendDir(2*d+0);
 	}
 	}
 #endif   // QPHIX_QMP_COMMS
@@ -1528,17 +1501,17 @@ namespace QPhiX
 
 #ifdef  QPHIX_QMP_COMMS
 	for(int d = 3; d >= 0; d--) {
-	  if( ! s->localDir(d) ) { 
-	    s->finishSendDir(2*d+1);
-	    s->finishRecvFromDir(2*d+0);
-	    s->finishSendDir(2*d+0);
-	    s->finishRecvFromDir(2*d+1);
+	  if( ! comms->localDir(d) ) { 
+	    comms->finishSendDir(2*d+1);
+	    comms->finishRecvFromDir(2*d+0);
+	    comms->finishSendDir(2*d+0);
+	    comms->finishRecvFromDir(2*d+1);
 
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
-	      completeFaceDir(tid,s->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
-	      completeFaceDir(tid,s->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+0), res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+1), res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
 	    }
 	  }
 	}
@@ -1568,19 +1541,19 @@ namespace QPhiX
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
-	if( ! s->localDir(d)  ) {
-	  s->startRecvFromDir(2*d+0);   
-	  s->startRecvFromDir(2*d+1);
+	if( ! comms->localDir(d)  ) {
+	  comms->startRecvFromDir(2*d+0);   
+	  comms->startRecvFromDir(2*d+1);
 
 #pragma omp parallel 
 	  {
 	    int tid = omp_get_thread_num();
 
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+1], cb, d, 1, 0);
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+0], cb, d, 0, 0);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+1), cb, d, 1, 0);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+0), cb, d, 0, 0);
  	  }
-	  s->startSendDir(2*d+1);
-	  s->startSendDir(2*d+0);
+	  comms->startSendDir(2*d+1);
+	  comms->startSendDir(2*d+0);
 	}
 	}
 #endif   // QPHIX_QMP_COMMS
@@ -1594,18 +1567,18 @@ namespace QPhiX
 
 #ifdef  QPHIX_QMP_COMMS
 	for(int d = 3; d >= 0; d--) {
-	  if( ! s->localDir(d) ) { 
-	    s->finishSendDir(2*d+1);
-	    s->finishRecvFromDir(2*d+0);
-	    s->finishSendDir(2*d+0);
-	    s->finishRecvFromDir(2*d+1);
+	  if( ! comms->localDir(d) ) { 
+	    comms->finishSendDir(2*d+1);
+	    comms->finishRecvFromDir(2*d+0);
+	    comms->finishSendDir(2*d+0);
+	    comms->finishRecvFromDir(2*d+1);
 	    
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeFaceDir(tid,s->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
-	      completeFaceDir(tid,s->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+0), res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+1), res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
 	    }
 	  } // end if
 	} // end for
@@ -1641,19 +1614,19 @@ namespace QPhiX
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
-	if( ! s->localDir(d)  ) {
-	  s->startRecvFromDir(2*d+0);   
-	  s->startRecvFromDir(2*d+1);
+	if( ! comms->localDir(d)  ) {
+	  comms->startRecvFromDir(2*d+0);   
+	  comms->startRecvFromDir(2*d+1);
 
 #pragma omp parallel 
 	  {
 	    int tid = omp_get_thread_num();
 
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+1], cb, d, 1, 1);
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+0], cb, d, 0, 1);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+1), cb, d, 1, 1);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+0), cb, d, 0, 1);
  	  }
-	  s->startSendDir(2*d+1);
-	  s->startSendDir(2*d+0);
+	  comms->startSendDir(2*d+1);
+	  comms->startSendDir(2*d+0);
 	}
 	}
 #endif   // QPHIX_QMP_COMMS
@@ -1667,18 +1640,18 @@ namespace QPhiX
 
 #ifdef  QPHIX_QMP_COMMS
 	for(int d = 3; d >= 0; d--) {
-	  if( ! s->localDir(d) ) { 
-	    s->finishSendDir(2*d+1);
-	    s->finishRecvFromDir(2*d+0);
-	    s->finishSendDir(2*d+0);
-	    s->finishRecvFromDir(2*d+1);
+	  if( ! comms->localDir(d) ) { 
+	    comms->finishSendDir(2*d+1);
+	    comms->finishRecvFromDir(2*d+0);
+	    comms->finishSendDir(2*d+0);
+	    comms->finishRecvFromDir(2*d+1);
 	    
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeFaceDir(tid,s->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
-	      completeFaceDir(tid,s->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+0), res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+1), res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
 	    }
 	  } // end if
 	} // end for
@@ -1711,19 +1684,19 @@ namespace QPhiX
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
-	if( ! s->localDir(d)  ) {
-	  s->startRecvFromDir(2*d+0);   
-	  s->startRecvFromDir(2*d+1);
+	if( ! comms->localDir(d)  ) {
+	  comms->startRecvFromDir(2*d+0);   
+	  comms->startRecvFromDir(2*d+1);
 
 #pragma omp parallel 
 	  {
 	    int tid = omp_get_thread_num();
 
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+1], cb, d, 1, 0);
-	    packFaceDir(tid, psi_in, s->sendToDir[2*d+0], cb, d, 0, 0);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+1), cb, d, 1, 0);
+	    packFaceDir(tid, psi_in, comms->getSendToDirBuf(2*d+0), cb, d, 0, 0);
  	  }
-	  s->startSendDir(2*d+1);
-	  s->startSendDir(2*d+0);
+	  comms->startSendDir(2*d+1);
+	  comms->startSendDir(2*d+0);
 	}
 	}
 #endif   // QPHIX_QMP_COMMS
@@ -1737,18 +1710,18 @@ namespace QPhiX
 
 #ifdef  QPHIX_QMP_COMMS
 	for(int d = 3; d >= 0; d--) {
-	  if( ! s->localDir(d) ) { 
-	    s->finishSendDir(2*d+1);
-	    s->finishRecvFromDir(2*d+0);
-	    s->finishSendDir(2*d+0);
-	    s->finishRecvFromDir(2*d+1);
+	  if( ! comms->localDir(d) ) { 
+	    comms->finishSendDir(2*d+1);
+	    comms->finishRecvFromDir(2*d+0);
+	    comms->finishSendDir(2*d+0);
+	    comms->finishRecvFromDir(2*d+1);
 	    
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeFaceDir(tid,s->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
-	      completeFaceDir(tid,s->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+0), res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
+	      completeFaceDir(tid,comms->getRecvFromDirBuf(2*d+1), res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
 	    }
 	  } // end if
 	} // end for

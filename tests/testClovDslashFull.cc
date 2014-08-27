@@ -194,9 +194,10 @@ testClovDslashFull::runTest(void)
   double t_boundary = (double)(1);
   QDPIO::cout << "Instantiating ClovDslash<FT,"<<V<<","<<S<<">" << " with t_boundary = " << t_boundary <<  endl;
 
-  // Create Dslash
-  ClovDslash<FT,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
-  Geometry<FT,V,S,compress>& geom = D32.getGeometry();
+ 
+  Geometry<FT,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  
+  ClovDslash<FT,V,S,compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   // Make a random source
   QDPIO::cout << "Initializing QDP++ input spinor" << endl;
@@ -431,7 +432,7 @@ testClovDslashFull::runTest(void)
   t_boundary = (double)(-1);
   
   // Create Antiperiodic Dslash
-  ClovDslash<FT,V,S,compress> D32_ap(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  ClovDslash<FT,V,S,compress> D32_ap(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
  
   
   // Step 1: Convert u_test into one with antiperiodic BCs.
@@ -623,21 +624,13 @@ testClovDslashFull::runTest(void)
 #if 1
   QDPIO::cout << "Testing Even Odd Operator" << endl;
   t_boundary=(double)(-1);
-  EvenOddCloverOperator<FT,V,S,compress> M(Layout::subgridLattSize().slice(), 
-						 u_packed,  
-						 clov_packed[1], 
-						 invclov_packed[0],  
-						 By, 
-						 Bz, 
-						 NCores, 
-						 Sy,
-						 Sz,
-						 PadXY,
-						 PadXYZ,
-						 MinCt, 
-						 t_boundary,
-						 aniso_fac_s,
-						 aniso_fac_t);
+  EvenOddCloverOperator<FT,V,S,compress> M(u_packed,  
+					   clov_packed[1], 
+					   invclov_packed[0],  
+					   &geom,
+					   t_boundary,
+					   aniso_fac_s,
+					   aniso_fac_t);
   Phi ltmp=zero;
   Real betaFactor=Real(0.25);
    // Apply optimized
@@ -695,7 +688,7 @@ testClovDslashFull::runTest(void)
 
 #endif
 
-#if 0
+#if 1
   {
     chi = zero;
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
@@ -753,7 +746,7 @@ testClovDslashFull::runTest(void)
   }
 #endif
 
-#if 0
+#if 1
   {
     chi = zero;
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
@@ -831,7 +824,7 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,8,false,UF, PhiF>();
     }
 
-#if 0
+#if 1
   if( precision == FLOAT_PREC ) { 
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
@@ -859,7 +852,7 @@ testClovDslashFull::run(void)
   }
 #endif
 
-#if 0
+#if 1
   if( precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
@@ -891,7 +884,7 @@ testClovDslashFull::run(void)
   }
 #endif
 
-#if 0
+#if 1
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING" << endl;
     

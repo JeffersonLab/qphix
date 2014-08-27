@@ -5,6 +5,7 @@ nobase_include_HEADERS= \
 nobase_include_HEADERS += \
 	abs_solver.h \
 	geometry.h \
+	comms.h \
 	dslash_def.h \
 	dslash_body.h \
 	dslash_generated.h \

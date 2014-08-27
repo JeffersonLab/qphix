@@ -3,6 +3,7 @@
 
 #include "qphix/dslash_utils.h"
 #include "qphix/geometry.h"
+#include "qphix/comm.h"
 
 namespace QPhiX
 {
@@ -16,27 +17,8 @@ namespace QPhiX
     typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock TwoSpinorBlock;
     
-    /* Constructor */
-    /* Parameters: latt_size[] - total lattice size */
-    /*             getSiteCoords() - geometry function from external package */
-    /*             getLinearSiteIndex() - geometry function from external package */
-    /*             nodeNum() - geometry function from external package */
-    
-    Dslash(const int latt_size[], 
-	   int By_,
-	   int Bz_,
-	   int NCores_,
-	   int Sy_,
-	   int Sz_, 
-	   int PadXY_,
-	   int PadXYZ_,
-	   int MinCt_,
-	   double t_boundary_,
-	   double aniso_coeff_S_,
-	   double aniso_coeff_T_
-	   );
 
-    Dslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+    Dslash(Geometry<FT,veclen, soalen,compress12>* geom_,
 	   double t_boundary_,
 	   double aniso_coeff_S_,
 	   double aniso_coeff_T_);
@@ -65,7 +47,8 @@ namespace QPhiX
     Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
   private:
     Geometry<FT,veclen,soalen,compress12>* s;
-    const bool selfAllocGeom;
+    Comms<FT,veclen,soalen,compress12>* comms;
+
     int log2veclen;
     int log2soalen;
     void init();

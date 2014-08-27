@@ -351,24 +351,25 @@ testDslashFull::testDslash(const U& u, int t_bc)
   gaussian(psi);
 
 
+  
 
-
+#if 0
   Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  
   Geometry<T,V,S,compress>& geom= D32.getGeometry();
-
-  // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
-
-   Gauge* packed_gauge_cb0 = ( Gauge *)geom.allocCBGauge();
-   Gauge* packed_gauge_cb1 = ( Gauge *)geom.allocCBGauge();
-
-
-  // Over allocate, so that an unsigned load doesnt cause segfault accesing either end...
-   Spinor* psi_even=( Spinor*)geom.allocCBFourSpinor();
-   Spinor* psi_odd=( Spinor*)geom.allocCBFourSpinor();
-   Spinor* chi_even=( Spinor*)geom.allocCBFourSpinor();
-   Spinor* chi_odd=( Spinor*)geom.allocCBFourSpinor();
-
-
+#endif
+  
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  Dslash<T,V,S,compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
+  
+  Gauge* packed_gauge_cb0 = ( Gauge *)geom.allocCBGauge();
+  Gauge* packed_gauge_cb1 = ( Gauge *)geom.allocCBGauge();
+  Spinor* psi_even=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* psi_odd=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_even=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_odd=( Spinor*)geom.allocCBFourSpinor();
+  
+  
   QDPIO::cout << "Fields allocated" << endl;
  
   // Pack the gauge field
@@ -376,16 +377,20 @@ testDslashFull::testDslash(const U& u, int t_bc)
   //  qdp_pack_gauge< T,V,S,compress, U >(u, packed_gauge_cb0,packed_gauge_cb1, geom);
   qdp_pack_gauge<>(u, packed_gauge_cb0,packed_gauge_cb1, geom);
 
+ 
   QDPIO::cout << "done" << endl;
-    Gauge* u_packed[2];
+ 
+
+
+  
+  Gauge* u_packed[2];
   u_packed[0] = packed_gauge_cb0;
   u_packed[1] = packed_gauge_cb1;
 
-   Spinor *psi_s[2] = { psi_even, psi_odd };
-   Spinor *chi_s[2] = { chi_even, chi_odd };
-
+  Spinor *psi_s[2] = { psi_even, psi_odd };
+  Spinor *chi_s[2] = { chi_even, chi_odd };
+  
   QDPIO::cout << " Packing fermions..." ;	
-  //  qdp_pack_spinor< T,V,S, compress, Phi >(psi, psi_even, psi_odd, geom);
   qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     
   QDPIO::cout << "done" << endl; 
@@ -400,10 +405,10 @@ testDslashFull::testDslash(const U& u, int t_bc)
     u_test[mu] = factor*u[mu];
   }
   QDPIO::cout << "U field prepared" <<endl;
-
+  
   // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
   u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3]-1),
-  			Real(t_boundary), Real(1));
+		     Real(t_boundary), Real(1));
 
   QDPIO::cout << "BCs applied" << endl;
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
@@ -414,8 +419,6 @@ testDslashFull::testDslash(const U& u, int t_bc)
       int target_cb = cb;
 
       chi = zero;
-      //      qdp_pack_spinor<T,V,S, compress, Phi >(chi, chi_even, chi_odd, geom);
-
       
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
       
@@ -503,11 +506,18 @@ testDslashFull::testDslashAChiMBDPsi(const U& u, int t_bc)
   QDPIO::cout << "Filling psi with random noise" << endl;
   gaussian(psi);
 
+#if 0
   Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
   
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
   Geometry<T,V,S,compress>& geom= D32.getGeometry();
+#endif
 
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  
+  // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
+  Dslash<T,V,S,compress> D32(&geom,t_boundary, aniso_fac_s, aniso_fac_t);
+  
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
 
@@ -640,10 +650,8 @@ testDslashFull::testM(const U& u, int t_bc)
   QDPIO::cout << "Filling source spinor with gaussian noise" << endl;
   gaussian(psi);
 
-  Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
   
-  // NEED TO MOVE ALL THIS INTO DSLASH ATSOME POINT 
-  Geometry<T,V,S,compress>& geom= D32.getGeometry();
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
 
@@ -693,7 +701,7 @@ testDslashFull::testM(const U& u, int t_bc)
   			Real(t_boundary), Real(1));
 
   double Mass=0.1;
-  EvenOddWilsonOperator<T,V,S,compress> M(Mass, Layout::subgridLattSize().slice(), u_packed,  By, Bz, NCores, Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddWilsonOperator<T,V,S,compress> M(Mass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
 
 
@@ -781,10 +789,9 @@ testDslashFull::testCG(const U& u, int t_bc)
   double aniso_fac_t = (double)(1.4);
   double t_boundary = (double)(t_bc);
 
-  Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
   
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
-  Geometry<T,V,S,compress>& geom= D32.getGeometry();
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
 
@@ -834,7 +841,7 @@ testDslashFull::testCG(const U& u, int t_bc)
   			Real(t_boundary), Real(1));
 
   double Mass=0.1;
-  EvenOddWilsonOperator<T,V,S,compress> M(Mass, Layout::subgridLattSize().slice(), u_packed,  By, Bz, NCores, Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddWilsonOperator<T,V,S,compress> M(Mass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
   Real betaFactor=Real(0.25)/massFactor;
@@ -921,10 +928,10 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
   Phi psi, chi, chi2;
   gaussian(psi);
 
-  Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
   
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
-  Geometry<T,V,S,compress>& geom= D32.getGeometry();
+
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
 
@@ -969,7 +976,7 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
   			Real(t_boundary), Real(1));
 
   double Mass=0.1;
-  EvenOddWilsonOperator<T,V,S,compress> M(Mass, Layout::subgridLattSize().slice(), u_packed,  By, Bz, NCores, Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddWilsonOperator<T,V,S,compress> M(Mass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
   Real betaFactor=Real(0.25)/massFactor;
@@ -995,7 +1002,6 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
       solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
       double end = omp_get_wtime();
       
-      //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0], chi_s[1], chi, geom);
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
       
       // Multiply back 
@@ -1106,9 +1112,9 @@ testDslashFull::testRichardson(const U& u, int t_bc)
   			Real(t_boundary), Real(1));
 
   double Mass=0.001;
-  EvenOddWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, Layout::subgridLattSize().slice(), u_packed,  By, Bz, NCores, Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, u_packed, &geom_outer, t_boundary, aniso_fac_s, aniso_fac_t);
 
-  EvenOddWilsonOperator<T2,VEC2,SOA2,compress> M_inner(Mass, Layout::subgridLattSize().slice(), u_packed_inner,  By, Bz, NCores, Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddWilsonOperator<T2,VEC2,SOA2,compress> M_inner(Mass, u_packed_inner, &geom_inner, t_boundary, aniso_fac_s, aniso_fac_t);
 
 
   Phi ltmp=zero;

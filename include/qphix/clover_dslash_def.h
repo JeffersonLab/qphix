@@ -5,6 +5,7 @@
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
+#include <qphix/comm.h>
 
 namespace QPhiX {
 
@@ -19,23 +20,7 @@ namespace QPhiX {
     typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock TwoSpinorBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::CloverBlock CloverBlock;
 
- 
-    
-    ClovDslash(const int latt_size[], 
-	       int By_,
-	       int Bz_,
-	       int NCores_,
-	       int Sy_,
-	       int Sz_, 
-	       int PadXY_,
-	       int PadXYZ_,
-	       int MinCt_,
-	       double t_boundary_, 
-	       double dslash_aniso_s_,
-	       double dslash_aniso_t_
-	       );
-
-    ClovDslash(const Geometry<FT,veclen, soalen,compress12>* geom_,
+    ClovDslash(Geometry<FT,veclen, soalen,compress12>* geom_,
 	       double t_boundary_, 
 	       double dslash_aniso_s_,
 	       double dslash_aniso_t_
@@ -70,7 +55,7 @@ namespace QPhiX {
   private:
     void init();
     Geometry<FT,veclen,soalen,compress12>* s;
-    const bool selfAllocGeom;
+    Comms<FT,veclen,soalen,compress12>* comms;
 
     int log2veclen;
     int log2soalen;

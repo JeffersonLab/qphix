@@ -3,7 +3,7 @@ BUILDDIR=@top_builddir@
 
 AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @QPHIX_AUX_CFLAGS@
 
-lib_LIBRARIES = libintel_solver.a
+lib_LIBRARIES = libqphix_solver.a
 
-libintel_solver_a_SOURCES = \
+libqphix_solver_a_SOURCES = \
 	print_utils.cc

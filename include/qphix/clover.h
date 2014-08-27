@@ -12,39 +12,13 @@ namespace QPhiX {
     typedef typename Geometry<FT,veclen,soalen,compress12>::CloverBlock CloverBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock SU3MatrixBlock;
-    
-    // Constructor
-    // No anisotropy, all boundaries periodic for now.
-    EvenOddCloverOperator(const int *latt_size, 
-			  SU3MatrixBlock* u_[2],
-			  CloverBlock* clov_,
-			  CloverBlock* invclov_,
-			  int By, 
-			  int Bz, 
-			  int NCores,
-			  int Sy,
-			  int Sz,
-			  int PadXY, 
-			  int PadXYZ, 
-			  int MinCt,
-			  double t_boundary,
-			  double aniso_coeff_s,
-			  double aniso_coeff_t): D(new ClovDslash<FT, veclen,soalen,compress12>(latt_size,By,Bz,NCores,Sy,Sz,PadXY,PadXYZ,MinCt,t_boundary, aniso_coeff_s, aniso_coeff_t))
-    {
-      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
-      u[0] = u_[0];
-      u[1] = u_[1];
-      clov = clov_;
-      invclov = invclov_;
-      tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
-    }
-    
+
     // Constructor
     // No anisotropy, all boundaries periodic for now.
     EvenOddCloverOperator(  SU3MatrixBlock* u_[2],
 			    CloverBlock* clov_,
 			    CloverBlock* invclov_,
-			    const Geometry<FT,veclen,soalen,compress12>* geom_,
+			    Geometry<FT,veclen,soalen,compress12>* geom_,
 			    double t_boundary,
 			    double aniso_coeff_s,
 			    double aniso_coeff_t): D(new ClovDslash<FT, veclen,soalen,compress12>(geom_,t_boundary, aniso_coeff_s, aniso_coeff_t))
@@ -57,25 +31,8 @@ namespace QPhiX {
       tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
     }
     
-    EvenOddCloverOperator(const int *latt_size, 
-			  int By, 
-			  int Bz, 
-			  int NCores,
-			  int Sy,
-			  int Sz,
-			  int PadXY, 
-			  int PadXYZ, 
-			  int MinCt,
-			  bool compress12_,
-			  double t_boundary,
-			  double aniso_coeff_s,
-			  double aniso_coeff_t): D(new ClovDslash<FT, veclen,soalen,compress12>(latt_size,By,Bz,NCores,Sy,Sz,PadXY,PadXYZ,MinCt, t_boundary, aniso_coeff_s, aniso_coeff_t))
-    {
-      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
-      tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
-    }
-    
-    EvenOddCloverOperator(const Geometry<FT,veclen,soalen,compress12>* geom_,
+
+    EvenOddCloverOperator(Geometry<FT,veclen,soalen,compress12>* geom_,
 			  double t_boundary,
 			  double aniso_coeff_s,
 			  double aniso_coeff_t): D(new ClovDslash<FT, veclen,soalen,compress12>(geom_,t_boundary, aniso_coeff_s, aniso_coeff_t))
@@ -110,11 +67,10 @@ namespace QPhiX {
   private:
     double Mass;
     ClovDslash<FT, veclen,soalen,compress12>* D;
-    SU3MatrixBlock *u[2];
+    mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
+    mutable CloverBlock* clov;    // Mutable because of setFields
+    mutable CloverBlock* invclov; // Mutable because of setFields
     FourSpinorBlock *tmp;
-    CloverBlock* clov;
-    CloverBlock* invclov;
-
 						   }; // Class
 }; // Namespace
 

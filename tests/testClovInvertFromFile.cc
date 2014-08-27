@@ -229,11 +229,8 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
   
   double t_boundary=double(-1);
   // Create Dslash
-  ClovDslash<FT,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
-  Geometry<FT,V,S,compress>& geom = D32.getGeometry();
-
-  ClovDslash<FT2,V2,SOA2,compress> D32Inner(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
-  Geometry<FT2,V2,SOA2,compress>& geom_inner = D32Inner.getGeometry();
+  Geometry<FT,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  Geometry<FT2,V2,SOA2,compress> geom_inner(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
 
 
   // Make a random source
@@ -338,37 +335,21 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   int max_iters=5000;
 
-  EvenOddCloverOperator<FT,V,S,compress> M(Layout::subgridLattSize().slice(), 
-					   u_packed,  
+  EvenOddCloverOperator<FT,V,S,compress> M(u_packed,  
 					   clov_packed[1], 
 					   invclov_packed[0],  
-					   By, 
-					   Bz, 
-					   NCores, 
-					   Sy,
-					   Sz,
-					   PadXY,
-					   PadXYZ,
-					   MinCt, 
+					   &geom,
 					   t_boundary,
 					   aniso_fac_s,
 					   aniso_fac_t);
 
-  EvenOddCloverOperator<FT2,V2,SOA2,compress> M_inner(Layout::subgridLattSize().slice(), 
-						    u_packed_i,  
-						    clov_packed_i[1], 
-						    invclov_packed_i[0],  
-						    By, 
-						    Bz, 
-						    NCores, 
-						    Sy,
-						    Sz,
-						    PadXY,
-						    PadXYZ,
-						    MinCt, 
-						    t_boundary,
-						    aniso_fac_s,
-						    aniso_fac_t);
+  EvenOddCloverOperator<FT2,V2,SOA2,compress> M_inner(u_packed_i,  
+						      clov_packed_i[1], 
+						      invclov_packed_i[0],  
+						      &geom_inner,
+						      t_boundary,
+						      aniso_fac_s,
+						      aniso_fac_t);
   
   InvBiCGStab<FT,V,S,compress> solver(M, max_iters,1);
   solver.tune();
@@ -378,10 +359,10 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   // Delta = 0.05 for half prec
   InvRichardsonMultiPrec<FT,V,S,compress,FT2,V2,SOA2,compress> mixed_solver(M,solver_inner, 0.1,1,5000);
-
-  for(int run=0; run < 5; run++) { 
   
-
+  for(int run=0; run < 5; run++) { 
+    
+    
     Phi ltmp;
     double rsd_target=1.0e-10;
     Real betaFactor=Real(0.25);

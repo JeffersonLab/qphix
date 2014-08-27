@@ -111,9 +111,8 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   double coeff_t = (double)(1);
   
   // Create Scalar Dslash Class
-  ClovDslash<FT,V,S,compress> D32(subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, coeff_s, coeff_t);
-  
-  Geometry<FT,V,S,compress>& geom=D32.getGeometry();
+  Geometry<FT,V,S,compress> geom(subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  ClovDslash<FT,V,S,compress> D32(&geom, t_boundary, coeff_s, coeff_t);
 
   // Allocate data for the gauges
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
@@ -127,11 +126,11 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   double factor=0.08;
   masterPrintf("Initializing Fake Gauge Field: ");
   
-  Geometry<FT,V,S,compress>& g = D32.getGeometry();
-  int nvecs = g.nVecs();
-  int nyg = g.nGY();
-  int Pxy = g.getPxy();
-  int Pxyz = g.getPxyz();
+
+  int nvecs = geom.nVecs();
+  int nyg = geom.nGY();
+  int Pxy = geom.getPxy();
+  int Pxyz = geom.getPxyz();
   
   double start = omp_get_wtime();
 
@@ -488,7 +487,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1  
   masterPrintf("Creating EvenOdd Clover Op\n");
   
-  EvenOddCloverOperator<FT,V,S,compress> M(subLattSize, u_packed, A_cb0, A_inv_cb1, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, coeff_s, coeff_t);
+  EvenOddCloverOperator<FT,V,S,compress> M(u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
   
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   for(int isign=1; isign >= -1; isign -=2) {

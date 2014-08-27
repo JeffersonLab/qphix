@@ -6,7 +6,7 @@
 using namespace std;
 #include "qphix/qphix_config.h"
 
-#ifdef CPP_DSLASH_PARSCALAR
+#ifdef QPHIX_QMP_COMMS
 #include "qmp.h"
 #endif
 
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
   processArgs(argc,argv);
   omp_set_num_threads(NCores_user*Sy_user*Sz_user);
   
-#ifdef CPP_DSLASH_PARSCALAR
+#ifdef QPHIX_QMP_COMMS
   // Initialize QMP
     QMP_thread_level_t prv;
     if( QMP_init_msg_passing(&argc, &argv, QMP_THREAD_SINGLE, &prv) != QMP_SUCCESS ) { 
@@ -195,7 +195,7 @@ int main(int argc, char **argv)
   timeClovNoQDP test(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user,  iters, compress12, prec_user);
   
   test.run(nrow_in, qmp_geometry);
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
   QMP_finalize_msg_passing();
 #endif
 
