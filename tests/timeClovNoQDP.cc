@@ -692,6 +692,7 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
   
+#if 0
 
   if( precision == HALF_PREC ) { 
 
@@ -728,4 +729,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
       runTest<double,VECLEN_DP,QPHIX_SOALEN,false>(lattSize,qmp_geom);
     }
   }
+
+#endif
 }
