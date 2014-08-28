@@ -4,7 +4,7 @@
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 
-#ifdef QPHIX_PARSCALAR
+#ifdef QPHIX_QMP_COMMS
 #warning Enabling QMP in Dslash
 #undef SEEK_SET
 #undef SEEK_END
@@ -19,7 +19,7 @@
 
 // If this is defined send/recv start/wait in the T-direction will print source, destination and length info.
 // #define QMP_DIAGNOSTICS
-#endif // QPHIX_PARSCALAR
+#endif // QPHIX_QMP_COMMS
 
 
 #include <cstdlib>
@@ -108,9 +108,8 @@ namespace QPhiX {
 	     int Sz_,
 	     int PadXY_,
 	     int PadXYZ_,
-	     int MinCt_,
-	     bool doAlloc_=true)
-      : Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_), doAlloc(doAlloc_) 
+	     int MinCt_)
+      : Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_)
     {   
       Nx_ = latt_size[0];
       Ny_ = latt_size[1];
@@ -131,14 +130,6 @@ namespace QPhiX {
       Pxy = (nvecs_*Ny_+ PadXY);
       Pxyz = (Pxy*Nz_+ PadXYZ);
       
-
-
-      // Deal with the faces -- in terms of 2 spinors
-      NFaceDir_[0] = (Ny_ * Nz_ * Nt_)/2;
-      NFaceDir_[1] = (Nx_ * Nz_ * Nt_)/2;
-      NFaceDir_[2] = (Nx_ * Ny_ * Nt_)/2;
-      NFaceDir_[3] = (Nx_ * Ny_ * Nz_)/2;
-
        
       // Allos sizes 
       spinor_bytes = (Pxyz * Nt_ + 1)*sizeof(FourSpinorBlock);
@@ -147,10 +138,6 @@ namespace QPhiX {
 
       // Later one will work this out from QMP. While we are testing the buffers, I can set by hand.
       
-
-      for(int d = 0; d < 4; d++) localDir_[d] = true; 
-
- 
       // This works out the phase breakdown
       int ly = Ny_ / By;
       int lz = Nz_ / Bz;
@@ -171,184 +158,18 @@ namespace QPhiX {
 	//	masterPrintf("Phase %d: Cyz = %d Ct = %d, start = %d\n", n_phases, p.Cyz, p.Ct, p.startBlock);
 	n_phases++;
       }
-     
-
-#ifdef QPHIX_QMP_COMMS 
-      if ( doAlloc) { 
-	// We have QMP
-	// Decide which directions are local by appealing to 
-	// QMP geometry
-	const int* machine_size = QMP_get_logical_dimensions();
-	if( QMP_get_logical_number_of_dimensions() != 4 ) {
-	  QMP_error("Number of QMP logical dimensions must be 4");
-	  QMP_abort(1);
-	}
-	
-	for(int d = 0; d < 4; d++)
-	  if( machine_size[d] > 1 ) localDir_[d] = false;
-	
-	myRank = QMP_get_node_number();
-	const int *qmp_dims = QMP_get_logical_dimensions();
-	const int  *qmp_coords = QMP_get_logical_coordinates();
-	int fw_neigh_coords[4];
-	int bw_neigh_coords[4];
-	
-	totalBufSize = 0;
-	for(int d = 0; d < 4; d++) {
-	  if ( !localDir(d) ) {
-	    for(int dim=0; dim < 4; dim++) { 
-	      fw_neigh_coords[dim]=bw_neigh_coords[dim]=qmp_coords[dim];
-	    }
-	    bw_neigh_coords[d]--; if (bw_neigh_coords[d] < 0  ) bw_neigh_coords[d] = qmp_dims[d]-1;
-	    fw_neigh_coords[d]++; if (fw_neigh_coords[d] == qmp_dims[d] ) fw_neigh_coords[d] = 0;
-	    myNeighboursInDir[2*d+0] = QMP_get_node_number_from( bw_neigh_coords);
-	    myNeighboursInDir[2*d+1] = QMP_get_node_number_from( fw_neigh_coords);
-	    faceInBytes[d] = NFaceDir(d)*12*sizeof(T); //12 T elements of the half spinor
-	    totalBufSize += faceInBytes[d];
-	  }
-	  else {
-	    myNeighboursInDir[2*d+0]= myRank;
-	    myNeighboursInDir[2*d+1]= myRank;
-	    faceInBytes[d] = 0;
-	  }
-	}
-	totalBufSize *= 4; // 2 bufs for sends & 2 for recvs
-	
-	/*
-	  if(totalBufSize > 0) {
-	  commsBuf = (char*)BUFFER_MALLOC(totalBufSize, 4096);
-	  if ( commsBuf == 0x0 ) { 
-	  cerr << "Couldnt allocate comms buffer" << endl;
-	  abort();
-	  }
-	  }
-	  else {
-	  commsBuf = NULL;
-	  }
-	  int tmpptr = 0;
-	*/
-	for(int d = 0; d < 4; d++) {
-	  if(!localDir(d)) {
-	    sendToDir[2*d+0]   = (T*)ALIGNED_MALLOC(faceInBytes[d], 4096);
-	    sendToDir[2*d+1]   = (T*)ALIGNED_MALLOC(faceInBytes[d], 4096);
-	    recvFromDir[2*d+0] = (T*)ALIGNED_MALLOC(faceInBytes[d], 4096);
-	    recvFromDir[2*d+1] = (T*)ALIGNED_MALLOC(faceInBytes[d], 4096);
-	    
-#ifndef QPHIX_MPI_COMMS_CALLS
-	    msgmem_sendToDir[2*d+0] = QMP_declare_msgmem(sendToDir[2*d+0], faceInBytes[d]);
-	    msgmem_sendToDir[2*d+1] = QMP_declare_msgmem(sendToDir[2*d+1], faceInBytes[d]);
-	    msgmem_recvFromDir[2*d+0] = QMP_declare_msgmem(recvFromDir[2*d+0], faceInBytes[d]);
-	    msgmem_recvFromDir[2*d+1] = QMP_declare_msgmem(recvFromDir[2*d+1], faceInBytes[d]);
-	    
-	    mh_sendToDir[2*d+1] = QMP_declare_send_to(msgmem_sendToDir[2*d+1], myNeighboursInDir[2*d+1], 0);
-	    mh_recvFromDir[2*d+0] = QMP_declare_receive_from(msgmem_recvFromDir[2*d+0], myNeighboursInDir[2*d+0], 0);		
-	    mh_sendToDir[2*d+0] = QMP_declare_send_to(msgmem_sendToDir[2*d+0], myNeighboursInDir[2*d+0], 0);
-	    mh_recvFromDir[2*d+1] = QMP_declare_receive_from(msgmem_recvFromDir[2*d+1], myNeighboursInDir[2*d+1], 0);
-#endif
-	  }
-	  else {
-	    sendToDir[2*d+0]   = NULL;
-	    sendToDir[2*d+1]   = NULL;
-	    recvFromDir[2*d+0] = NULL;
-	    recvFromDir[2*d+1] = NULL;
-#ifndef QPHIX_MPI_COMMS_CALLS
-	    msgmem_sendToDir[2*d+0] = NULL;
-	    msgmem_sendToDir[2*d+1] = NULL;
-	    msgmem_recvFromDir[2*d+0] = NULL;
-	    msgmem_recvFromDir[2*d+1] = NULL;
-	    
-	    mh_sendToDir[2*d+1] = NULL;
-	    mh_recvFromDir[2*d+0] = NULL;
-	    mh_sendToDir[2*d+0] = NULL;
-	    mh_recvFromDir[2*d+1] = NULL;
-#endif
-	  }
-#ifdef QPHIX_MPI_COMMS_CALLS
-	  reqSendToDir[2*d+0] = reqRecvFromDir[2*d+0] = MPI_REQUEST_NULL;
-	  reqSendToDir[2*d+1] = reqRecvFromDir[2*d+1] = MPI_REQUEST_NULL;
-#endif
-	} // End loop over dir
-
-	// Determine if I am minimum/maximum in the time direction in the processor grid:
-	const int* logical_dimensions = QMP_get_logical_dimensions();
-	const int* logical_coordinates = QMP_get_logical_coordinates();
-	
-	amIPtMin_ = (logical_coordinates[3] == 0);
-	amIPtMax_ = (logical_coordinates[3] == (logical_dimensions[3]-1) );
-      }
-#else
-      // On a single node I am always both min and max
-      amIPtMin_ = true;
-      amIPtMax_ = true;
-#endif
-
     }
     
     
-    ~Geometry() {
-
-#ifdef QPHIX_QMP_COMMS
-	for(int d = 0; d < 4; d++) {
-		if(!localDir(d)) {
-#ifndef QPHIX_MPI_COMMS_CALLS
-			QMP_free_msghandle(mh_sendToDir[2*d+1]);
-			QMP_free_msghandle(mh_sendToDir[2*d+0]);
-			QMP_free_msghandle(mh_recvFromDir[2*d+1]);
-			QMP_free_msghandle(mh_recvFromDir[2*d+0]);
-			
-			QMP_free_msgmem(msgmem_sendToDir[2*d+1]);
-			QMP_free_msgmem(msgmem_sendToDir[2*d+0]);
-			QMP_free_msgmem(msgmem_recvFromDir[2*d+1]);
-			QMP_free_msgmem(msgmem_recvFromDir[2*d+0]);
-#endif
-		}
-	}
-
-	// Dont free
-	// if(commsBuf) BUFFER_FREE( commsBuf, totalBufSize  );
-#endif
-
-
-    }
+    ~Geometry() {}
 
     inline   int Nxh() const   { return Nxh_; } // Keep
     inline   int Nx()  const   { return Nx_; } // Keep
     inline   int Ny()  const   { return Ny_; } // Keep
     inline   int Nz()  const   { return Nz_; } // Keep
     inline   int Nt()  const   { return Nt_; }  //Keep
-
-    //inline   int NFaceZ() const { return NFaceZ_; }
-    //inline   int NFaceT() const { return NFaceT_; }
-
-
-    inline   int NFaceDir(int d) const { return NFaceDir_[d]; }
-
-
-    // Part of refactoring -- emulate old behaviour 
-    inline   bool localX() const { return localDir_[0]; }
-    inline   bool localY() const { return localDir_[1]; }
-
-    inline   bool localZ() const { return localDir_[2]; }
-    inline   bool localT() const { return localDir_[3]; }
-    inline   bool localDir(int d) const { return localDir_[d]; }
-
-
     inline int nVecs() const { return nvecs_; }
     inline int nGY() const { return ngy_; }
-
-
-
-    /* Am I the processor with smallest (t=0) in time */
-    inline bool amIPtMin() const 
-    {
-      return amIPtMin_;
-    }
-
-    /* Am I the process with the largest (t=P_t - 1)  coordinate in time */ 
-    inline bool amIPtMax() const 
-    {
-      return amIPtMax_;
-    }
 
 
     /*! \brief Checkerboarded FourSpinor Allocator
@@ -469,130 +290,6 @@ namespace QPhiX {
     }
 
 
-    void startSendDir(int d) {
-#ifdef QPHIX_QMP_COMMS
-#ifndef QPHIX_MPI_COMMS_CALLS
-      if( QMP_start(mh_sendToDir[d]) != QMP_SUCCESS ) { 
-	QMP_error("Failed to start send\n");
-	QMP_abort(1);
-      }
-#else
-      /* **** MPI HERE ******* */
-      if (  MPI_Isend( (void *)sendToDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d],  QPHIX_DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqSendToDir[d] ) != MPI_SUCCESS ) { 
-	QMP_error("Failed to start send in forward T direction\n");
-	QMP_abort(1);
-      }
-#endif
-
-#ifdef QMP_DIAGNOSTICS
-      printf("My Rank: %d, start send dir %d,  My Records: srce=%d, dest=%d len=%d\n", myRank, d, myRank, myNeighboursInDir[d], faceInBytes[d/2]);
-#endif
-     
-#endif // QPHIX_QMP_COMMS
-    }
-    
-    void finishSendDir(int d) {
-#ifdef QPHIX_QMP_COMMS
-
-#ifdef QMP_DIAGNOSTICS
-      printf("My Rank: %d, finish send dir %d,  My Records: srce=%d, dest=%d len=%d\n", myRank, d, myRank, myNeighboursInDir[d], faceInBytes[d/2]);
-#endif
-
-#ifndef QPHIX_MPI_COMMS_CALLS
-      if( QMP_wait(mh_sendToDir[d]) != QMP_SUCCESS ) { 
-	QMP_error("Failed to finish send\n");
-	QMP_abort(1);
-      }
-#else
-
-      /* **** MPI HERE ******* */
-      if (  MPI_Wait(&reqSendToDir[d], MPI_STATUS_IGNORE) != MPI_SUCCESS ) { 
-	QMP_error("Wait on send failed \n");
-	QMP_abort(1);
-      }
-#endif
-#endif // QMP COMMS
-    }
-
-    void startRecvFromDir(int d) { 
-#ifdef QPHIX_QMP_COMMS
-#ifndef QPHIX_MPI_COMMS_CALLS
-      if( QMP_start(mh_recvFromDir[d]) != QMP_SUCCESS ) { 
-	QMP_error("Failed to start recv\n");
-	QMP_abort(1);
-      }
-#else
-      if ( MPI_Irecv((void *)recvFromDir[d], faceInBytes[d/2], MPI_BYTE, myNeighboursInDir[d], QPHIX_DSLASH_MPI_TAG, MPI_COMM_WORLD, &reqRecvFromDir[d]) != MPI_SUCCESS ) { 
-	QMP_error("Recv from dir failed\n");
-	QMP_abort(1);
-      }
-#endif
-
-#ifdef QMP_DIAGNOSTICS
-      printf("My Rank: %d, start recv from dir %d,  My Records: srce=%d, dest=%d len=%d\n", myRank, d, myNeighboursInDir[d], myRank,  faceInBytes[d/2]);
-#endif
-#endif // QPHIX_QMP_COMMS
-    }
-
-    void finishRecvFromDir(int d) {
-#ifdef QPHIX_QMP_COMMS
-
-#ifdef QMP_DIAGNOSTICS
-      printf("My Rank: %d, finish recv from dir %d,  My Records: srce=%d, dest=%d len=%d\n", myRank, d, myNeighboursInDir[d], myRank,  faceInBytes[d/2]);
-#endif
-
-#ifndef QPHIX_MPI_COMMS_CALLS
-      if( QMP_wait(mh_recvFromDir[d]) != QMP_SUCCESS ) { 
-	QMP_error("Failed to finish recv dir\n");
-	QMP_abort(1);
-      }
-#else
-      if ( MPI_Wait(&reqRecvFromDir[d], MPI_STATUS_IGNORE) != QMP_SUCCESS ) { 
-	QMP_error("Wait on recv from dir failed\n");
-	QMP_abort(1);
-      }
-#endif
-#endif // QPHIX_QMP_COMMS
-    }
-
-    void progressComms() {
-#if 1
-#ifdef QPHIX_QMP_COMMS
-      int flag = 0;
-      MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
-#endif
-#endif
-    }
-
-#ifdef QPHIX_QMP_COMMS 
-    // Send buffers (the actual buffers)
-	char *commsBuf;
-	
-    T* sendToDir[8];
-
-    // Receive buffers (the actual buffers)
-    T*  recvFromDir[8];
-
-    // Ranks of the neighbours in the Y, Z and T directions
-    int myRank;
-    int myNeighboursInDir[8];
-
-    unsigned int faceInBytes[4];
-    size_t totalBufSize;
-
-    //  Hack for Karthik here: (Handles for the requests) 
-#ifdef QPHIX_MPI_COMMS_CALLS
-    MPI_Request reqSendToDir[8];
-    MPI_Request reqRecvFromDir[8];
-#else
-    QMP_msgmem_t msgmem_sendToDir[8];
-    QMP_msgmem_t msgmem_recvFromDir[8];
-    QMP_msghandle_t mh_sendToDir[8];
-    QMP_msghandle_t mh_recvFromDir[8];
-#endif // else MPI COMMS_CALLS
-#endif // QMP COMMS
-
-
     int getBy() const { return By; }
     int getBz() const { return Bz; }
     int getSy() const { return Sy; }
@@ -637,14 +334,6 @@ namespace QPhiX {
     const int num_cores;
 
 
-    int NFaceDir_[4];
-
-    bool localDir_[4];
-
-    bool amIPtMin_;
-    bool amIPtMax_;
-
-    bool doAlloc;
 
 
     int nvecs_;
