@@ -44,6 +44,7 @@ namespace QPhiX
       NFaceDir[2] = (geom->Nx() * geom->Ny() * geom->Nt())/2;
       NFaceDir[3] = (geom->Nx() * geom->Ny() * geom->Nz())/2;
       
+
       
       // We have QMP
       // Decide which directions are local by appealing to 
@@ -53,10 +54,17 @@ namespace QPhiX
 	QMP_error("Number of QMP logical dimensions must be 4");
 	QMP_abort(1);
       }
+
+
       
-      for(int d = 0; d < 4; d++)
-	if( machine_size[d] > 1 ) localDir_[d] = false;
-      
+      for(int d = 0; d < 4; d++) {
+	if( machine_size[d] > 1 ){
+	  localDir_[d] = false;
+	}
+	else {
+	  localDir_[d] = true;
+	}
+      }
       myRank = QMP_get_node_number();
       const int *qmp_dims = QMP_get_logical_dimensions();
       const int  *qmp_coords = QMP_get_logical_coordinates();
@@ -66,6 +74,7 @@ namespace QPhiX
       totalBufSize = 0;
       for(int d = 0; d < 4; d++) {
 	if ( !localDir(d) ) {
+	  cout << "Dir " << d << " is nonlocal " << endl;
 	  for(int dim=0; dim < 4; dim++) { 
 	    fw_neigh_coords[dim]=bw_neigh_coords[dim]=qmp_coords[dim];
 	  }
