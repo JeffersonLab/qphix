@@ -635,6 +635,7 @@ timeDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
 
+
 #if defined(QPHIX_MIC_SOURCE)
   if ( precision == HALF_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
@@ -653,7 +654,7 @@ timeDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
   }
 #endif
 
-  
+#if 1  
   if( precision == DOUBLE_PREC ) { 
     if ( QPHIX_SOALEN > VECLEN_DP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN, VECLEN_DP);
@@ -668,5 +669,5 @@ timeDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
       runTest<double,VECLEN_DP,QPHIX_SOALEN,false>(lattSize,qmp_geom);
     }
   }
-
+#endif
 }

@@ -108,8 +108,9 @@ namespace QPhiX {
 	     int Sz_,
 	     int PadXY_,
 	     int PadXYZ_,
-	     int MinCt_)
-      : Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_)
+	     int MinCt_,
+	     bool doAlloc_=true)
+      : Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_), doAlloc(doAlloc_) 
     {   
       Nx_ = latt_size[0];
       Ny_ = latt_size[1];
@@ -131,13 +132,13 @@ namespace QPhiX {
       Pxyz = (Pxy*Nz_+ PadXYZ);
       
 
-#if 0
+
       // Deal with the faces -- in terms of 2 spinors
       NFaceDir_[0] = (Ny_ * Nz_ * Nt_)/2;
       NFaceDir_[1] = (Nx_ * Nz_ * Nt_)/2;
       NFaceDir_[2] = (Nx_ * Ny_ * Nt_)/2;
       NFaceDir_[3] = (Nx_ * Ny_ * Nz_)/2;
-#endif
+
        
       // Allos sizes 
       spinor_bytes = (Pxyz * Nt_ + 1)*sizeof(FourSpinorBlock);
@@ -146,9 +147,9 @@ namespace QPhiX {
 
       // Later one will work this out from QMP. While we are testing the buffers, I can set by hand.
       
-#if 0
+
       for(int d = 0; d < 4; d++) localDir_[d] = true; 
-#endif
+
  
       // This works out the phase breakdown
       int ly = Ny_ / By;
@@ -171,7 +172,7 @@ namespace QPhiX {
 	n_phases++;
       }
      
-#if 0 
+
 #ifdef QPHIX_QMP_COMMS 
       if ( doAlloc) { 
 	// We have QMP
@@ -280,12 +281,12 @@ namespace QPhiX {
       amIPtMin_ = true;
       amIPtMax_ = true;
 #endif
-#endif
+
     }
     
     
     ~Geometry() {
-#if 0      
+
 #ifdef QPHIX_QMP_COMMS
 	for(int d = 0; d < 4; d++) {
 		if(!localDir(d)) {
@@ -306,7 +307,7 @@ namespace QPhiX {
 	// Dont free
 	// if(commsBuf) BUFFER_FREE( commsBuf, totalBufSize  );
 #endif
-#endif
+
 
     }
 
@@ -319,7 +320,7 @@ namespace QPhiX {
     //inline   int NFaceZ() const { return NFaceZ_; }
     //inline   int NFaceT() const { return NFaceT_; }
 
-#if 0
+
     inline   int NFaceDir(int d) const { return NFaceDir_[d]; }
 
 
@@ -330,13 +331,13 @@ namespace QPhiX {
     inline   bool localZ() const { return localDir_[2]; }
     inline   bool localT() const { return localDir_[3]; }
     inline   bool localDir(int d) const { return localDir_[d]; }
-#endif
+
 
     inline int nVecs() const { return nvecs_; }
     inline int nGY() const { return ngy_; }
 
 
-#if 0 
+
     /* Am I the processor with smallest (t=0) in time */
     inline bool amIPtMin() const 
     {
@@ -348,7 +349,7 @@ namespace QPhiX {
     {
       return amIPtMax_;
     }
-#endif
+
 
     /*! \brief Checkerboarded FourSpinor Allocator
      *
@@ -467,7 +468,7 @@ namespace QPhiX {
       BUFFER_FREE(p,clover_bytes);
     }
 
-#if 0
+
     void startSendDir(int d) {
 #ifdef QPHIX_QMP_COMMS
 #ifndef QPHIX_MPI_COMMS_CALLS
@@ -590,7 +591,7 @@ namespace QPhiX {
     QMP_msghandle_t mh_recvFromDir[8];
 #endif // else MPI COMMS_CALLS
 #endif // QMP COMMS
-#endif
+
 
     int getBy() const { return By; }
     int getBz() const { return Bz; }
@@ -635,7 +636,7 @@ namespace QPhiX {
     const int num_threads;
     const int num_cores;
 
-#if 0
+
     int NFaceDir_[4];
 
     bool localDir_[4];
@@ -644,7 +645,7 @@ namespace QPhiX {
     bool amIPtMax_;
 
     bool doAlloc;
-#endif
+
 
     int nvecs_;
     int ngy_;

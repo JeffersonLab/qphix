@@ -258,11 +258,11 @@ namespace QPhiX
       return amIPtMax_;
     }
 
-  private:
-    T* sendToDir[8];
     
-    // Receive buffers (the actual buffers)
-    T*  recvFromDir[8];
+    T* sendToDir[8]; // Send Buffers
+    T*  recvFromDir[8]; // Recv Buffers
+
+  private:
     
     // Ranks of the neighbours in the Y, Z and T directions
     int myRank;
