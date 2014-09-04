@@ -336,7 +336,6 @@ AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(include/Makefile)
-AC_CONFIG_FILES(include/qphix/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_OUTPUT
