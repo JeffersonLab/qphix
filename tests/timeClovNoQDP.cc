@@ -45,14 +45,14 @@ struct rsdTarget {
 
 
 template<>
-static const double rsdTarget<half>::value = (double)(1.0e-4);
+const double rsdTarget<half>::value = (double)(1.0e-4);
 
 template<>
-static const double rsdTarget<float>::value = (double)(1.0e-7);
+const double rsdTarget<float>::value = (double)(1.0e-7);
 
 
 template<>
-static const double rsdTarget<double>::value = (double)(1.0e-13);
+const double rsdTarget<double>::value = (double)(1.0e-13);
 
 
 template<typename FT, int V, int S, bool compress>

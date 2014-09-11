@@ -1,0 +1,7 @@
+TO Do:
+- Add other solvers
+- Clean out for non ICC compilers (work ongoing by Diptorup Deb, Renaissance Computing Institute, University of North Carolina, Chapel Hill
+- Add other processor targets: SSE, AVX2, AVX512...
+- Add other fermions Twisted Mass (Alexei Strelchenko, Fermilab)
+- Bullet proof a little
+- ... Your desiderata here...

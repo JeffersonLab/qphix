@@ -70,14 +70,14 @@ struct tolerance {
 };
 
 template<>
-static const Double tolerance<half>::small = Double(5.0e-3);
+const Double tolerance<half>::small = Double(5.0e-3);
 
 template<>
-static const Double tolerance<float>::small = Double(1.0e-6);
+const Double tolerance<float>::small = Double(1.0e-6);
 
 
 template<>
-static const Double tolerance<double>::small = Double(1.0e-13);
+const Double tolerance<double>::small = Double(1.0e-13);
 
 template<typename T>
 struct rsdTarget { 
@@ -85,14 +85,14 @@ struct rsdTarget {
 };
 
 template<>
-static const double rsdTarget<half>::value = (double)(1.0e-4);
+const double rsdTarget<half>::value = (double)(1.0e-4);
 
 template<>
-static const double rsdTarget<float>::value = (double)(1.0e-7);
+const double rsdTarget<float>::value = (double)(1.0e-7);
 
 
 template<>
-static const double rsdTarget<double>::value = (double)(1.0e-12);
+const double rsdTarget<double>::value = (double)(1.0e-12);
 
 
 void

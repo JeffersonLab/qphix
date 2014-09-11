@@ -148,6 +148,11 @@ namespace QPhiX
     {
       for(int d = 0; d < 4; d++) {
 	if(!localDir(d)) {
+	  ALIGNED_FREE(sendToDir[2*d+0]);
+	  ALIGNED_FREE(sendToDir[2*d+1]);
+	  ALIGNED_FREE(recvFromDir[2*d+0]);
+	  ALIGNED_FREE(recvFromDir[2*d+1]);
+
 #ifndef QPHIX_MPI_COMMS_CALLS
 	  QMP_free_msghandle(mh_sendToDir[2*d+1]);
 	  QMP_free_msghandle(mh_sendToDir[2*d+0]);
