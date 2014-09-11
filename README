@@ -1,11 +1,35 @@
 QPhiX Dslash and Solver Library: version 1.0.0
 ==============================================
 
-1) Licensing Copying and Distribution: Please see the LICENSE file
+Contents:
+ 1) Licensing, Copying and Distribution
+ 2) Even more Disclaimers
+ 3) Getting and building the library and running the tests
+    a) Getting the library
+    b) Dependencies 
+    c) Generating the build system
+    d) Configuring
+    e) Building and installing 
+    f) Running the tests
+
+ 4) Chroma integration
+   a) Minimum Chroma Commit ID
+   b) Confiugre options
+   c) XML snippets to drive the solver
+
+5) Minor comments about the code.
+==
+
+
+1) Licensing Copying and Distribution: 
+=====================================
+Please see the LICENSE file
 for the License. Jefferson Science Associates Copyright notice and Licens
 and Intel Corporation Copyright notices are also reproduced in the file COPYING
 
-2) Disclaimers: This is research software and while every effort has been made
+2) Disclaimers: 
+==============
+This is research software and while every effort has been made
 to ensure it performs correctly it is not certified or warranted to be free of
 errors, bugs. Nor is it certified or warranted that it will not crash, hang
 or in other way malfunction. We likewise cannot and will not guarantee any specific performance
@@ -13,7 +37,8 @@ on any specific system and use of this software is entirely at your own risk, as
 in the COPYRIGHT and LICENSE files
 
 3) Getting Building and Installing this library:
-=========================
+================================================
+
 The library is a C++ library and is mostly a collection of header files. This package also
 contains some test programs.
 	./t_dslash -- Test Wilson Dslash operator (against QDP++) 
@@ -47,7 +72,7 @@ Some funnies were observed with the BLAS routines using ICC fom Composer XE 2015
 
 Future compiler support is planned/ongoing. Please see TODO
 
-b) Generating the build system
+c) Generating the build system
  -----------------------------
 
  *) Obtain the source code distribution, which should have a toplevel directory called qphix
@@ -55,7 +80,7 @@ b) Generating the build system
 	 cd qphix
   	 autoreconf
 
-c) Configuring the package.
+d) Configuring the package.
  --------------------------
 
  The package has some components most of which can be selected with switches to configure:
@@ -97,13 +122,13 @@ E.g:
                   CXX="mpiicpc" \
                   CC="mpiicc"
 
-d) Building And Installing
+e) Building And Installing
 ---------------------------
  Once configured the package can be installed using "make; make install" 
  the test programs are build in the <install_dir>/tests/ directory and are installed in the <install_dir>/bin/ directory
  Since the test programs may check double precision solves as well it is recommended to build with a double precision build of QDP++
 
-e) Running the test programs
+f) Running the test programs
 
  The test programs need the following typical command line parameters:
 
@@ -130,8 +155,101 @@ E.g. a typical clover dslash test on a dual socket 8 core-per-socket Xeon System
 Whereas on a Xeon Phi 7120 it would be
 
 ./t_clov_dslash -x 32 -y 32 -z 32 -t 64 -by 4 -bz 4 -pxy 1 -pxyz 0 -c 60 -sy 1 -sz 4 -minct 1 -compress12 -geom 1 1 1 1 -i 500
- 
-Code Pointers:
+
+4) Integration with Chroma. 
+===========================
+
+  a) Minimum Chroma Revision:
+ ----------------------------
+  The minimum revision for using this library with Chroma is Git Commit ID:  
+  from the Chroma distribution on GitHub: https://github.com/JeffersonLab/chroma.git
+
+  b) Configuring Chroma for building with QPhiX 
+  ----------------------------------------------
+ 	QPhiX has been integrated with chroma as a LinOpSysSolver. To use the following configure options neeed to be passed to Chroma
+   
+       --with-qphix-solver=<QPhiX Install directory >      - specify the location of the installed QPhiX library
+        --enable-qphix-solver-arch=PROC                    - specify the QPhiX processor architecture (avx,mic)
+        --enable-qphix-solver-soalen=SOA                   - the SOA Length for the problem (4,8,16 etc as appropriate)
+        --enable-qphix-solver-compress12                   - add this option if 12 compression is required
+        --enable-qphix-solver-inner-type=f                 - precision of the inner solver for mixed prec: (h=half, f=single, d=double)
+        --enable-qphix-solver-inner-soalen=4               - SOA length of inner solver
+
+  c) XML Drivers; 
+  -------------
+
+    The XML tag group to use the lin op solver in Propagator applications looks like this for non-mixed precision solvers:
+
+       <InvertParam>
+          <invType>QPHIX_CLOVER_INVERTER</invType>
+          <SolverType>BICGSTAB</SolverType>
+          <MaxIter>1000</MaxIter>		<!-- Maximum iterations before giving up -->
+          <RsdTarget>1.0e-7</RsdTarget>		<!-- Desired Target relative residuum -->
+          <CloverParams>                         <!-- repeat params in the FermionAction, both Mass and Kappa are OK -->
+            <Kappa>0.115</Kappa>
+            <clovCoeff>2.0171</clovCoeff>
+            <clovCoeffR>2.0171</clovCoeffR>
+            <clovCoeffT>0.95</clovCoeffT>
+            <AnisoParam>
+              <anisoP>true</anisoP>
+              <t_dir>3</t_dir>
+              <xi_0>2.9</xi_0>
+              <nu>0.94</nu>
+            </AnisoParam>
+          </CloverParams>
+          <AntiPeriodicT>false</AntiPeriodicT>    <!-- set to true if BCs are antiperiodic -->
+          <Verbose>false</Verbose>
+          <NCores>16</NCores>                     <!-- number of cores per node -->
+          <ThreadsPerCore>2</ThreadsPerCore>      <!-- number of threads per core -->
+          <By>8</By>				  <!-- By and Bz block dimensions -->
+          <Bz>8</Bz>
+          <Sy>1</Sy>                              <!-- Sy and Sz hyperthread grid dimensions -->
+          <Sz>2</Sz>
+          <PadXY>1</PadXY>                        <!-- PadXY and PadXYZ padding factors -->
+          <PadXYZ>0</PadXYZ>
+          <MinCt>2</MinCt>                             <!-- Ct at start -- no of temporal blocks. Set equal to no of sockets -->
+          <RsdToleranceFactor>5.0</RsdToleranceFactor> <!-- tolerate slack between iterated and true residua, e,g, due to preconditioning etc -->
+          <Tune>true</Tune>                            <!-- tune BLAS routines prior to solve -->
+        </InvertParam>
+
+
+For the Iterative Refinement solver the XML is similar:
+
+	<InvertParam>
+          <invType>QPHIX_CLOVER_ITER_REFINE_BICGSTAB_INVERTER</invType>
+          <SolverType>BICGSTAB</SolverType>  <!-- Inner solver -->
+          <MaxIter>1000</MaxIter>	     <!-- Max outer iters -->
+          <RsdTarget>1.0e-7</RsdTarget>      <!-- Target relative residuum for outer solver -->
+          <Delta>0.1</Delta>		     <!-- Relative residuum drop factor in inner solve. Ie inner solve reduces residuum this much -->
+          <CloverParams>		     <!-- Action params same as in FermionAction -->
+            <Kappa>0.115</Kappa>
+            <clovCoeff>2.0171</clovCoeff>
+            <clovCoeffR>2.0171</clovCoeffR>
+            <clovCoeffT>0.95</clovCoeffT>
+            <AnisoParam>
+              <anisoP>true</anisoP>
+              <t_dir>3</t_dir>
+              <xi_0>2.9</xi_0>
+              <nu>0.94</nu>
+            </AnisoParam>
+          </CloverParams>
+          <AntiPeriodicT>false</AntiPeriodicT> <-- set to true for antiperiodic BCs -->
+          <Verbose>false</Verbose>
+          <NCores>16</NCores>			<!-- Number of cores per node -->
+          <ThreadsPerCore>2</ThreadsPerCore>    <!-- Number of threads per core -->
+          <By>8</By>				<!-- Blocking dimensions By and Bz -->
+          <Bz>8</Bz>
+          <Sy>1</Sy>				<!-- SMT Thread dimensions Sy and Sz -->
+          <Sz>2</Sz>
+          <PadXY>1</PadXY>			<!-- Padding dimensions PadXY and PadXYZ -->
+          <PadXYZ>0</PadXYZ>
+          <MinCt>1</MinCt>			<!-- Initial Ct = set to number of sockets -->
+          <RsdToleranceFactor>5.0</RsdToleranceFactor>   <!-- Slop factor tolerated between solver and true residua, e.g. due to preconditioning -->
+          <Tune>true</Tune>			<!-- set to true to tune BLAS -->
+        </InvertParam>
+
+g) General pointers about the code...
+-------------------------------------
 
  - this is a C++ code and uses templates
  - The code parameters Floating point type, Vector length, SOA length, and a boolean to indicate 12 compression are typically template parameters e.g.
@@ -186,6 +304,6 @@ From this one can easily construct the Schur preconditioned operators:
 e.g. y = (A - D A^{-1} D) x
 is constructed as  z = A^{-1}D x,  y = Ax - bDz 
 
---
+
 
 Happy Computing! Contact Balint Joo, bjoo@jlab.org
