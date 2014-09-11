@@ -11,7 +11,7 @@ namespace QPhiX {
   void masterPrintf(const char * format, ... )
   {
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
     if( QMP_is_primary_node() ) { 
 #endif
       va_list args;
@@ -19,7 +19,7 @@ namespace QPhiX {
       vprintf(format, args);
       va_end(args);
       fflush(stdout);
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
     }
 #endif
 
@@ -28,7 +28,7 @@ namespace QPhiX {
   void localPrintf(const char * format, ... )
   {
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
     int size = QMP_get_number_of_nodes();
     int rank = QMP_get_node_number();
 #else

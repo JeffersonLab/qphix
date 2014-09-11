@@ -101,6 +101,7 @@ d) Building And Installing
 ---------------------------
  Once configured the package can be installed using "make; make install" 
  the test programs are build in the <install_dir>/tests/ directory and are installed in the <install_dir>/bin/ directory
+ Since the test programs may check double precision solves as well it is recommended to build with a double precision build of QDP++
 
 e) Running the test programs
 
@@ -175,6 +176,15 @@ qphix/include/dslash_body.h and qphix/include/clover_dslash_body.h
 Please see the source code in the tests/ directory on how to set these up:
 
 e.g. in  tests/testDslashFull.cc 
+
+The Dslash operators themselves provide two main operations:
+      
+     y = D x            (or  y = A^{-1} D x)  -- called Dslash
+     z = a x - b D y    (or  z = A x - b D y) -- so called  'achimbdpsi' versions -- a,b are constants, A is the clover term)
+
+From this one can easily construct the Schur preconditioned operators: 
+e.g. y = (A - D A^{-1} D) x
+is constructed as  z = A^{-1}D x,  y = Ax - bDz 
 
 --
 
