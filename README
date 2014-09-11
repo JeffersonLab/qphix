@@ -162,6 +162,9 @@ Whereas on a Xeon Phi 7120 it would be
   a) Minimum Chroma Revision:
  ----------------------------
   The minimum revision for using this library with Chroma is Git Commit ID:  
+
+   e558743151ff30598b3d0e374b2ccb6fe95a5fbc
+
   from the Chroma distribution on GitHub: https://github.com/JeffersonLab/chroma.git
 
   b) Configuring Chroma for building with QPhiX 
