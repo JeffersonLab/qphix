@@ -24,7 +24,11 @@ Available targets are:
  sse  - For SSE -- untested
  scalar -- using C with Cilk+ notation  
 
-iii) Run the code with 'make' this will build the code generator and generate the code for the target.  The target specific code, will be placed in the subdirectory corresponding to the target (ie MIC code goes to mic/ AVX code goes to avx/ etc).
+iii) Run the code with 'make <target>' this will build the code generator and generate the code for the target.  The target specific code, will be placed in the subdirectory corresponding to the target (ie MIC code goes to mic/ AVX code goes to avx/ etc).
+
+e.g. set mode=mic
+followed by: make mic
+
 
 4) How is the target configured?
 ================================
