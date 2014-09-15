@@ -1,5 +1,5 @@
 
-mode=mic
+mode=avx
 
 mode:=$(strip $(mode))
 
@@ -9,10 +9,15 @@ include $(CONFFILE)
 CXXHOST  = icpc -O3 -g
 
 ifeq ($(mode),mic)
+
 ifeq ($(PRECISION),1)
 override VECLEN=16
 else
 override VECLEN=8
+endif
+
+ifeq ($(knl),1)
+DEFS += -DAVX512KNL
 endif
 endif
 
@@ -45,14 +50,6 @@ DEFS += -DNO_HW_MASKING
 DEFS += -DNO_MASKS
 endif
 
-ifeq ($(mode),sim)
-ifneq ($(knl),1)
-DEFS += -DUSE_OLD_INTRIN
-else
-DEFS += -DKNLSIM
-endif
-ENABLE_STREAMING_STORES=0
-endif
 
 # If streaming stores are enabled we
 # should definitely disable prefetching 

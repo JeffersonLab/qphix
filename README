@@ -1,0 +1,57 @@
+QPhiX Code Generator
+====================
+
+1) Licensing Copying and Distribution: 
+=====================================
+Please see the LICENSE file for the License.
+
+2) Disclaimers: 
+==============
+This is research software and while every effort has been made to ensure it performs correctly it is not certified or warranted to be free of errors, bugs. Nor is it certified or warranted that it will not crash, hang or in other way malfunction. We likewise cannot and will not guarantee any specific performance on any specific system and use of this software is entirely at your own risk, as is disclaimed in the COPYRIGHT and LICENSE files
+
+3) Building the Code
+====================
+ i) Edit the Makefile
+ ii) Replace the first line ('mode') to whichever target you are trying to generate code-for. e.g. for MIC set 
+
+mode=mic
+
+Available targets are:
+
+ mic - Xeon Phi
+ avx - Regular AVX 
+ avx2 - AVX2 (e.g. for Haswell) -- untested
+ sse  - For SSE -- untested
+ scalar -- using C with Cilk+ notation  
+
+iii) Run the code with 'make' this will build the code generator and generate the code for the target.  The target specific code, will be placed in the subdirectory corresponding to the target (ie MIC code goes to mic/ AVX code goes to avx/ etc).
+
+4) How is the target configured?
+================================
+
+For each target there is a separate customMake.<target> which sets Makefile variables for the target. In addition some of these variables can be over-ridden on the command line to make (such as PRECISION, SOALEN, AVX2, ENABLE_LOW_PRECISION) as is done in the Makefile
+
+Some env variables which affect the code generation are: 
+
+PREF_L1_SPINOR_IN -- Generate L1 prefetches for input spinors
+PREF_L2_SPINOR_IN -- Generate L2 prefetches for input spinors
+PREF_L1_SPINOR_OUT -- Generate L1 prefetches for output spinors
+PREF_L2_SPINOR_OUT -- Generate L2 prefetches for output spinors
+PREF_L1_GAUGE -- Generate L1 prefetches for input gauge fields
+PREF_L2_GAUGE -- Generate L2 prefetches for input gauge fields
+PREF_L1_CLOVER -- Generate L1 prefetches for input clover terms
+PREF_L2_CLOVER -- Generate L2 prefetches for in put clover terms
+
+USE_LDUNPK   -- Use Load/Unpack as opposed to gather
+USE_PKST     -- Use pack-store instead of scatter
+USE_SHUFFLES -- Use loads & shuffles to transpose spinor when SOALEN > 4
+NO_GPREF_L1  -- Generat a bunch of normal prefetches instead of gather prefetches for L1 
+NO_GPREF_L2  -- Generate a bunch of normal prefetches instead of gather prefetches for L2 
+ENABLE_STREAMING_STORES  -- Enable streaming stores for output spinor
+USE_PACKED_GAUGES        -- Use 2D xy packing for Gauges -- enabled
+USE_PACKED_CLOVER        --  Use 2D xy packing for Clover -- enabled
+
+
+
+
+
