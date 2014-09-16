@@ -392,7 +392,7 @@ namespace QPhiX
     int smtid_z = smtid / Sy;
     int smtid_y = smtid - Sy * smtid_z;
     
-    unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
     int nvecs = s->nVecs();
     
     const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -658,7 +658,7 @@ namespace QPhiX
       int smtid_z = smtid / Sy;
       int smtid_y = smtid - Sy * smtid_z;
      
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -945,7 +945,7 @@ namespace QPhiX
       int smtid_y = smtid - Sy * smtid_z;
      
 
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -1215,7 +1215,7 @@ namespace QPhiX
       int smtid_z = smtid / Sy;
       int smtid_y = smtid - Sy * smtid_z;
      
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
