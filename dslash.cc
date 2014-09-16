@@ -11,7 +11,11 @@ using namespace std;
 
 #if PRECISION == 1
 #if VECLEN == 16
+#ifdef AVX512KNL
+std::string ARCH_NAME="avx512";
+#else
 std::string ARCH_NAME="mic";
+#endif
 #elif VECLEN == 8
 #ifdef AVX2
 std::string ARCH_NAME="avx2";
@@ -25,7 +29,11 @@ std::string ARCH_NAME="scalar";
 #endif
 #elif PRECISION == 2
 #if VECLEN == 8
+#ifdef AVX512KNL
+std::string ARCH_NAME="avx512";
+#else
 std::string ARCH_NAME="mic";
+#endif
 #elif VECLEN == 4
 #ifdef AVX2
 std::string ARCH_NAME="avx2";

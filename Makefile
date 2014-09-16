@@ -15,10 +15,7 @@ override VECLEN=16
 else
 override VECLEN=8
 endif
-
-ifeq ($(knl),1)
-DEFS += -DAVX512KNL
-endif
+yesnolist += AVX512KNL
 endif
 
 ifeq ($(mode),avx)
@@ -104,9 +101,9 @@ all: codegen
 codegen: $(SOURCES) $(HEADERS) 
 	$(CXXHOST) $(DEFS) $(SOURCES) -o ./codegen
 
-.PHONY: cgen mic avx avx2 sse scalar
+.PHONY: cgen mic avx avx2 avx512 sse scalar
 
-cgen: mic avx avx2 sse scalar
+cgen: mic avx avx2 avx512 sse scalar
 
 mic:
 	mkdir -p ./mic
@@ -118,6 +115,18 @@ mic:
 	@make clean && make PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
 	@make clean && make PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
 	@make clean && make PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+
+avx512:
+	mkdir -p ./avx512
+	@make clean && make AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
+	@make clean && make AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && make AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+
 
 avx:
 	mkdir -p ./avx
@@ -152,6 +161,7 @@ cleanall:
 	rm -rf *.o ./codegen
 	rm -rf ./avx 
 	rm -rf ./avx2
+	rm -rf ./avx512
 	rm -rf ./mic
 	rm -rf ./sse
 	rm -rf ./scalar

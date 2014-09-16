@@ -1,5 +1,7 @@
 mode=mic
-knl=0
+
+# Generate AVX512 code for KNL/SKL
+AVX512KNL=0
 
 # Define compute precision (1=float, 2=double)
 PRECISION ?= 1
