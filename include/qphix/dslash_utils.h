@@ -6,6 +6,11 @@
 #include <cerrno>
 #include "qphix/qphix_config.h"
 #include "qphix/tsc.h"
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#include <immintrin.h>
+#endif
+
 using namespace std;
 
 // Options
