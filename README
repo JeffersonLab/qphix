@@ -63,7 +63,7 @@ USE_PACKED_GAUGES        -- Use 2D xy packing for Gauges -- enabled
 USE_PACKED_CLOVER        --  Use 2D xy packing for Clover -- enabled
 
 AVX2			 -- Generate AVX2 code (experimental)
-AVX512KNL		 -- together with mode=mic: Generate AVX512 code for Knight's Landing (untested)
+AVX512		 -- together with mode=mic: Generate AVX512 code for Knight's Landing (untested)
 
 
 5) How is the code organized

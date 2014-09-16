@@ -96,7 +96,7 @@ string StoreFVec::serialize() const
     }
 
     if(streaming) {
-#ifdef AVX512KNL
+#ifdef AVX512
         buf << "_mm512_stream_pd((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
 #else
         buf << "_mm512_storenrngo_pd((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
@@ -199,7 +199,7 @@ public:
             lmask = fullMask;
         }
 
-#ifndef AVX512KNL
+#ifndef AVX512
 
         if(!a->isHalfType()) {
             buf << v.getName() << " = _mm512_mask_loadunpacklo_pd(" << v.getName()
@@ -254,7 +254,7 @@ public:
             lmask = fullMask;
         }
 
-#ifndef AVX512KNL
+#ifndef AVX512
 
         if(!a->isHalfType()) {
             buf << "_mm512_mask_packstorelo_pd((void*)" << a->serialize() << ", "

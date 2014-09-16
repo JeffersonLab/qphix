@@ -15,7 +15,7 @@ override VECLEN=16
 else
 override VECLEN=8
 endif
-yesnolist += AVX512KNL
+yesnolist += AVX512
 endif
 
 ifeq ($(mode),avx)
