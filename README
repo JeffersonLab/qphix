@@ -29,6 +29,13 @@ iii) Run the code with 'make <target>' this will build the code generator and ge
 e.g. set mode=mic
 followed by: make mic
 
+The generated files will be dropped in the target directory, ie: 
+
+ ./mic
+ ./avx 
+ 
+etc which will be created in the root directory if they don't yet exist.
+
 
 4) How is the target configured?
 ================================
@@ -54,6 +61,10 @@ NO_GPREF_L2  -- Generate a bunch of normal prefetches instead of gather prefetch
 ENABLE_STREAMING_STORES  -- Enable streaming stores for output spinor
 USE_PACKED_GAUGES        -- Use 2D xy packing for Gauges -- enabled
 USE_PACKED_CLOVER        --  Use 2D xy packing for Clover -- enabled
+
+AVX2			 -- Generate AVX2 code (experimental)
+AVX512KNL		 -- together with mode=mic: Generate AVX512 code for Knight's Landing (untested)
+
 
 5) How is the code organized
 ============================

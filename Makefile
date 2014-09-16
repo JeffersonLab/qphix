@@ -109,6 +109,7 @@ codegen: $(SOURCES) $(HEADERS)
 cgen: mic avx avx2 sse scalar
 
 mic:
+	mkdir -p ./mic
 	@make clean && make PRECISION=2 SOALEN=8 && ./codegen
 	@make clean && make PRECISION=2 SOALEN=4 && ./codegen
 	@make clean && make PRECISION=1 SOALEN=16 && ./codegen
@@ -119,12 +120,14 @@ mic:
 	@make clean && make PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 avx:
+	mkdir -p ./avx
 	@make clean && make mode=avx PRECISION=2 SOALEN=2 && ./codegen
 	@make clean && make mode=avx PRECISION=2 SOALEN=4 && ./codegen
 	@make clean && make mode=avx PRECISION=1 SOALEN=8 && ./codegen
 	@make clean && make mode=avx PRECISION=1 SOALEN=4 && ./codegen
 
 avx2:
+	mkdir -p ./avx2
 	@make clean && make mode=avx PRECISION=2 SOALEN=2 AVX2=1 && ./codegen
 	@make clean && make mode=avx PRECISION=2 SOALEN=4 AVX2=1 && ./codegen
 	@make clean && make mode=avx PRECISION=1 SOALEN=8 AVX2=1 && ./codegen
@@ -133,10 +136,12 @@ avx2:
 	@make clean && make mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
 
 sse:
+	mkdir -p ./sse
 	@make clean && make mode=sse PRECISION=2 && ./codegen
 	@make clean && make mode=sse PRECISION=1 && ./codegen
 
 scalar:
+	mkdir -p ./scalar
 	@make clean && make mode=scalar PRECISION=2 && ./codegen
 	@make clean && make mode=scalar PRECISION=1 && ./codegen
 
@@ -144,8 +149,9 @@ clean:
 	rm -rf *.o ./codegen 
 
 cleanall: 
-	rm -rf *.o ./codegen avx/*dslash_* 
-	rm -rf avx2/*dslash_* 
-	rm -rf mic/*dslash_* 
-	rm -rf sse/*dslash_* 
-	rm -rf scalar/*dslash_*
+	rm -rf *.o ./codegen
+	rm -rf ./avx 
+	rm -rf ./avx2
+	rm -rf ./mic
+	rm -rf ./sse
+	rm -rf ./scalar
