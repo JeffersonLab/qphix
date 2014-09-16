@@ -76,7 +76,13 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i=0; i < S; i++) {
+              res_spinor[col][spin][reim][S] = rep<AT,double>((double)0);
+            }
+#else
+            res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
+#endif
 	  }
 	}
       }
@@ -122,7 +128,13 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    y_spinor[col][spin][reim][:] = a*y_spinor[col][spin][reim][:] + x_spinor[col][spin][reim][:];
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*y_spinor[col][spin][reim][i] + x_spinor[col][spin][reim][i];
+            }
+#else
+            y_spinor[col][spin][reim][:] = a*y_spinor[col][spin][reim][:] + x_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
@@ -216,7 +228,12 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    res_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i = 0; i < S; i++)
+              res_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
+#else
+            res_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#endif
 	    for(int s=0; s < S; s++) {
 	      reduction[s] += (double)res_spinor[col][spin][reim][s]*(double)res_spinor[col][spin][reim][s];
 	    }
@@ -265,15 +282,16 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
-	    
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i = 0; i < S; i++)
+              y_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
+#else
+            y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
-      
       BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
-      
-      
     }
    
  private: 
@@ -326,13 +344,22 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    r_spinor[col][spin][reim][:] = r_spinor[col][spin][reim][:] -  a * mmp_spinor[col][spin][reim][:];
-
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i = 0; i < S; i++)
+              r_spinor[col][spin][reim][i] = r_spinor[col][spin][reim][i] -  a * mmp_spinor[col][spin][reim][i];
+#else
+            r_spinor[col][spin][reim][:] = r_spinor[col][spin][reim][:] -  a * mmp_spinor[col][spin][reim][:];
+#endif
 	    for(int s =0 ; s < S; s++) { 
 	      reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
 	    }
 
-	    x_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] + a * p_spinor[col][spin][reim][:]; 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i = 0; i < S; i++)
+              x_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] + a * p_spinor[col][spin][reim][i];
+#else
+            x_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] + a * p_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
@@ -396,9 +423,15 @@ private:
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    x_spinor[col][spin][reim][:] += delta_x_spinor[col][spin][reim][:];
-	    r_spinor[col][spin][reim][:] -= delta_r_spinor[col][spin][reim][:];
-
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+            for(int i = 0; i < S; i++) {
+              x_spinor[col][spin][reim][i] += delta_x_spinor[col][spin][reim][i];
+              r_spinor[col][spin][reim][i] -= delta_r_spinor[col][spin][reim][i];
+            }
+#else
+            x_spinor[col][spin][reim][:] += delta_x_spinor[col][spin][reim][:];
+            r_spinor[col][spin][reim][:] -= delta_r_spinor[col][spin][reim][:];
+#endif
 	    for(int s =0 ; s < S; s++) { 
 	      reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
 	    }
