@@ -55,7 +55,11 @@ namespace QPhiX {
 
 	// printf("pkts = %d, pktsize=%d, mask=%X\n", npkts, pktsize, mask);
 	//MYASSERT(npkts == bufSize[dir]/pktsize/12);
-	__declspec(align(64)) int offs[veclen];
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+        int offs[veclen] __attribute__ ((aligned(64)));
+#else
+        __declspec(align(64)) int offs[veclen];
+#endif
 
 	int ind = 0;
 	for(int y=0; y < ngy; y++) { 
@@ -206,9 +210,13 @@ namespace QPhiX {
 		if(fb == 1) mask <<= ((ngy-1)*soalen);
 	}
 
-	__declspec(align(64)) int offs[veclen];
-	__declspec(align(64)) int gOffs[veclen];
-
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+        int offs[veclen] __attribute__ ((aligned(64)));
+        int gOffs[veclen] __attribute__ ((aligned(64)));
+#else
+        __declspec(align(64)) int offs[veclen];
+        __declspec(align(64)) int gOffs[veclen];
+#endif
 	int ind = 0;
 	for(int y=0; y < ngy; y++) { 
 		int X = (n_soa_x*y)*sizeof(FourSpinorBlock)/sizeof(FT);

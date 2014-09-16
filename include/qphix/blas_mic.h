@@ -9,7 +9,11 @@ template<>
 inline
   void xmyNorm2Spinor<float,16>(float* restrict res, float* restrict x, float* restrict y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
 {
-   __declspec(align(64)) double norm2res=0;
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res=0 __attribute__ ((aligned(64)));
+#else
+  __declspec(align(64)) double norm2res=0;
+#endif
   const int veclen = 16;
 #pragma omp parallel shared(norm_array) 
  {
@@ -99,7 +103,12 @@ inline
 void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restrict  mmp, double& cp, float* restrict  x, float* restrict p,int n, int n_cores, int n_simt, int n_blas_simt) 
 {
 
-   __declspec(align(64)) double norm2res=0;
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res=0 __attribute__ ((aligned(64)));
+#else
+  __declspec(align(64)) double norm2res=0;
+#endif
+
   const int veclen = 16;
 
 #pragma omp parallel shared(norm_array) 
@@ -202,7 +211,13 @@ template<>
 inline
 double norm2Spinor<float,16>(float* restrict res, int n, int n_cores, int n_simt, int n_blas_simt)
 {
-  __declspec(align(64)) double norm2res = 0;
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res=0 __attribute__ ((aligned(64)));
+#else
+  __declspec(align(64)) double norm2res=0;
+#endif
+
   const int veclen = 16;
 #pragma omp parallel shared(norm_array)
   {

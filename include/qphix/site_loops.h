@@ -13,10 +13,15 @@
 namespace QPhiX
 { 
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  static double new_norm_array[240][MAXV] __attribute__ ((aligned(64)));
+  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(64)));
+#else
   __declspec(align(64)) static double new_norm_array[240][MAXV];
- __declspec(align(64)) static double new_iprod_array[240][2][MAXV];
+  __declspec(align(64)) static double new_iprod_array[240][2][MAXV];
+#endif
 
- template<typename FT, int V, int S, bool compress,
+  template<typename FT, int V, int S, bool compress,
 	   typename SpinorFunctor >
   void siteLoopNoReduction( SpinorFunctor& theFunctor,
 			    const Geometry<FT,V,S,compress>& geom, 

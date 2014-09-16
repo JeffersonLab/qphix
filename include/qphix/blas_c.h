@@ -104,14 +104,23 @@ void aypx(FT a, FT* restrict x, FT* restrict y, int n)
 
 
 // Actually this is a MIC-ism (8 doubles=1 cacheline)
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+ static double norm_array[240][8] __attribute__ ((aligned(64)));
+#else
  __declspec(align(64)) static double norm_array[240][8];
+#endif
 
 template<typename FT, int veclen>
 inline
   void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
 {
  
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res __attribute__ ((aligned(64))) = 0;
+#else
   __declspec(align(64)) double norm2res = 0;
+#endif
+
 #pragma omp parallel shared(norm_array) 
  {
     // Self ID
@@ -171,7 +180,12 @@ template<typename FT, int veclen>
 inline
 double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_simt)
 {
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res __attribute__ ((aligned(64))) = 0;
+#else
   __declspec(align(64)) double norm2res = 0;
+#endif
 
  #pragma omp parallel shared(norm_array)
   {
@@ -229,7 +243,12 @@ void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp
 {
   // 240 is max num threads...  -- fix this later 
  
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  double norm2res __attribute__ ((aligned(64))) = 0;
+#else
   __declspec(align(64)) double norm2res = 0;
+#endif
+
 #pragma omp parallel shared(norm_array)
   {
     // Self ID

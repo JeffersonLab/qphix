@@ -66,7 +66,11 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       FT* resbase = &res[block][0][0][0][0];
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
+#endif
 
        // Now we are hopefully both in L1 and in the right layout so
       for(int col=0; col < 3; col++) { 
@@ -103,8 +107,13 @@ namespace QPhiX
       FT* ybase = &y[block][0][0][0][0];
       
       // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
 
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -142,7 +151,12 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       const FT* xbase=&x[block][0][0][0][0];
       
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+#endif
+
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       
       for(int col=0; col < 3; col++) { 
@@ -185,10 +199,15 @@ namespace QPhiX
       FT* resbase=&res[block][0][0][0][0];
       
       // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
-      
+#endif      
       
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -231,9 +250,14 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       const FT* xbase=&x[block][0][0][0][0];
       FT* ybase=&y[block][0][0][0][0];
-      
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -281,10 +305,17 @@ namespace QPhiX
       FT* xbase=&x[block][0][0][0][0];
       const FT* pbase=&p[block][0][0][0][0];
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor __attribute__ ((aligned(64))); 
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)mmp_spinor, mmpbase, nvec_in_spinor);
@@ -344,10 +375,17 @@ private:
       const FT* delta_rbase=&delta_r[block][0][0][0][0];
       int nvec_in_spinor = (3*4*2*S)/V;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);

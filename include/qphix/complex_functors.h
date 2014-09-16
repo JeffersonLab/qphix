@@ -23,9 +23,14 @@ namespace QPhiX  {
       int nvec_in_spinor = (3*4*2*S)/V;
       const FT* lbase=&l[block][0][0][0][0];
       const FT* rbase=&r[block][0][0][0][0];
-      
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock l_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock l_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
+#endif
 
       BLASUtils::streamInSpinor<FT,V>((AT *)l_spinor, lbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
@@ -78,10 +83,16 @@ namespace QPhiX  {
       const FT* rbase=&r[block][0][0][0][0];
       FT* pbase=&p[block][0][0][0][0];
       const FT* vbase=&v[block][0][0][0][0];
-      
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor  __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor  __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock v_spinor  __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock v_spinor;
+#endif
       
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)p_spinor, pbase, nvec_in_spinor);
@@ -89,8 +100,13 @@ namespace QPhiX  {
       
       for(int col=0; col < 3; col++){ 
 	for(int spin=0; spin < 4; spin++) { 
-	  __declspec(align(64)) AT tmp_cmpx[2][S];
-	  
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+          AT tmp_cmpx[2][S] __attribute__ ((aligned(64)));
+#else
+          __declspec(align(64)) AT tmp_cmpx[2][S];
+#endif
+
 	  // Evaluate: p = r + beta (p - omega v)
 	  //           p = r + beta tmp
 	  // with tmp = p - omega
@@ -140,10 +156,14 @@ private:
       int nvec_in_spinor = (3*4*2*S)/V;
       FT* sbase=&s[block][0][0][0][0];
       const FT* vbase=&v[block][0][0][0][0];
-      
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock s_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock v_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock s_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock v_spinor;
-
+#endif
       
       BLASUtils::streamInSpinor<FT,V>((AT *)s_spinor, sbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)v_spinor, vbase, nvec_in_spinor);
@@ -204,10 +224,17 @@ private:
       const FT* tbase=&t[block][0][0][0][0];
       const FT* pbase=&p[block][0][0][0][0];
       
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock t_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock t_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
+#endif
       
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);

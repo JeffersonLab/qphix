@@ -430,8 +430,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -698,8 +702,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -977,8 +985,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -1254,8 +1266,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
