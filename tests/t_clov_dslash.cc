@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <omp.h>
 using namespace QDP;
 using namespace std;
 

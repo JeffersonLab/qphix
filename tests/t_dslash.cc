@@ -7,6 +7,7 @@
 
 #include "testDslashFull.h"
 
+#include <omp.h>
 #include <iostream>
 #include <cstdio>
 using namespace QDP;

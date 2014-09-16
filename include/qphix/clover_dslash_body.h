@@ -2,6 +2,7 @@
 #define QPHIX_CLOVER_DSLASH_BODY_H
 
 #include <iostream>
+#include <omp.h>
 using namespace std;
 
 #include "qphix/qphix_config.h"

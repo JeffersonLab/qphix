@@ -6,7 +6,7 @@
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 #include <immintrin.h>
-
+#include <omp.h>
 
 namespace QPhiX
 {
