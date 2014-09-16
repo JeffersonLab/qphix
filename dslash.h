@@ -8,19 +8,19 @@ using namespace std;
 
 
 typedef struct {
-	const char *name;
-	int s[2][2];
-	void (*CVecFunc[2])(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+    const char *name;
+    int s[2][2];
+    void (*CVecFunc[2])(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
 //	void (*CVecFunc2)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
 } proj_ops;
 
 typedef struct {
-	const char *name;
-	int s2;
-	int s3;
-	void (*CVecFuncTop2)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-	void (*CVecFunc1)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-	void (*CVecFunc2)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+    const char *name;
+    int s2;
+    int s3;
+    void (*CVecFuncTop2)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+    void (*CVecFunc1)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+    void (*CVecFunc2)(InstVector& ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
 } recons_ops;
 
 

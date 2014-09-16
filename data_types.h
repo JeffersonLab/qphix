@@ -39,28 +39,29 @@ typedef LPTYPE CloverBaseType;
 #endif
 
 template<typename FT, int VL, int SL, bool compress12>
-class data_types {
+class data_types
+{
 public:
-	typedef FT Spinor[4][3][2][SL]; 
+    typedef FT Spinor[4][3][2][SL];
 #ifdef USE_PACKED_GAUGES
-	typedef FT Gauge[8][(compress12? 2 : 3)][3][2][VL]; 
+    typedef FT Gauge[8][(compress12? 2 : 3)][3][2][VL];
 #else
-	typedef FT Gauge[8][(compress12? 2 : 3)][3][2][SL]; 
+    typedef FT Gauge[8][(compress12? 2 : 3)][3][2][SL];
 #endif
 #ifdef USE_PACKED_CLOVER
-	typedef struct {
-		FT diag1[6][VL];
-		FT off_diag1[15][2][VL];
-		FT diag2[6][VL];
-		FT off_diag2[15][2][VL];
-	} Clover;
+    typedef struct {
+        FT diag1[6][VL];
+        FT off_diag1[15][2][VL];
+        FT diag2[6][VL];
+        FT off_diag2[15][2][VL];
+    } Clover;
 #else
-	typedef struct {
-		FT diag1[6][SL];
-		FT off_diag1[15][2][SL];
-		FT diag2[6][SL];
-		FT off_diag2[15][2][SL];
-	} Clover;
+    typedef struct {
+        FT diag1[6][SL];
+        FT off_diag1[15][2][SL];
+        FT diag2[6][SL];
+        FT off_diag2[15][2][SL];
+    } Clover;
 #endif
 };
 

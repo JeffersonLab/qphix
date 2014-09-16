@@ -1,5 +1,5 @@
 
-mode=avx
+mode=mic
 
 mode:=$(strip $(mode))
 

@@ -7,7 +7,7 @@ Please see the LICENSE file for the License.
 
 2) Disclaimers: 
 ==============
-This is research software and while every effort has been made to ensure it performs correctly it is not certified or warranted to be free of errors, bugs. Nor is it certified or warranted that it will not crash, hang or in other way malfunction. We likewise cannot and will not guarantee any specific performance on any specific system and use of this software is entirely at your own risk, as is disclaimed in the COPYRIGHT and LICENSE files
+This is research software and while every effort has been made to ensure it performs correctly it is not certified or warranted to be free of errors, bugs. Nor is it certified or warranted that it will not crash, hang or in other way malfunction. We likewise cannot and will not guarantee any specific performance on any specific system and use of this software is entirely at your own risk, as is disclaimed in the COPYRIGHT and LICENSE files. Further, some targets are experimental and incomplete. You have been warned.
 
 3) Building the Code
 ====================
@@ -22,7 +22,7 @@ Available targets are:
  avx - Regular AVX 
  avx2 - AVX2 (e.g. for Haswell) -- untested
  sse  - For SSE -- untested
- scalar -- using C with Cilk+ notation  
+ scalar -- C, scalar code (SOALEN=1)
 
 iii) Run the code with 'make <target>' this will build the code generator and generate the code for the target.  The target specific code, will be placed in the subdirectory corresponding to the target (ie MIC code goes to mic/ AVX code goes to avx/ etc).
 
