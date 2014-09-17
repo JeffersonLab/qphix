@@ -71,6 +71,9 @@ string chiOffs("offs");
 string clBase("clBase");
 string clOffs("gOffs");
 
+string mu_name("mu");
+string mu_inv_name("muinv");
+
 // Defines which dimensions are involved in SIMD blocking
 // Currently just X and Y
 bool requireAllOneCheck[4] = {true, true, false, false};
@@ -433,6 +436,47 @@ void generate_code(void)
                 }
             }
         }
+
+        {//twisted mass code:
+	    bool clover = false;
+	    string tmf_prefix = "tmf_";
+			
+	    for(int num_components=12; num_components <=18; num_components+=6) { 
+				compress12 = ( num_components==12 );
+
+				std::ostringstream filename;
+				filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
+				l2prefs.resize(0);
+				generateL2Prefetches(l2prefs,compress12, false, clover);
+				//dumpIVector(l2prefs, "prefetches.out");
+
+				// Dslash Plus
+				cout << "GENERATING tmf_dslash_"<<plusminus<<"_vec body" << endl;
+				// Flush instruction list
+				ivector.resize(0);
+
+				// Generate instructions
+				dslash_plain_body(ivector,compress12,clover, true, isPlus);
+				mergeIvectorWithL2Prefetches(ivector, l2prefs);
+				dumpIVector(ivector,filename.str());
+
+                                filename.str("");filename.clear();
+                                filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_achimbdpsi_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
+
+                                l2prefs.resize(0);
+                                generateL2Prefetches(l2prefs,compress12, true, clover);
+
+                                cout << "GENERATING tmf_dslash_achimbdpsi_"<<plusminus<<"_vec body" << endl;
+                                // Flush instruction list
+                                ivector.resize(0);
+
+                                // Generate instructions
+                                dslash_achimbdpsi_body(ivector,compress12,clover,true,isPlus);
+                                mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                                dumpIVector(ivector,filename.str());
+
+	   }
+	}//end of tmf code
 
         for(int dir = 0; dir < 2; dir++) {
             for(int dim = 0; dim < 4; dim++) {

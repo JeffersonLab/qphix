@@ -33,13 +33,16 @@ void recons_add(InstVector& ivector, recons_ops& ops, FVec outspinor[4][3][2], s
 void recons_add(InstVector& ivector, recons_ops& ops, FVec outspinor[4][3][2], string &mask, int s);
 void zeroResult(InstVector& ivector, FVec *outspinor);
 void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
-void achiResult(InstVector& ivector, bool clover);
+//void achiResult(InstVector& ivector, bool clover);
+void achiResult(InstVector& ivector, bool clover, bool twisted_mass, bool isPlus);
 void loadGaugeDir(InstVector& ivector, int dir, bool compress12);
 void matMultVec(InstVector& ivector, bool adjMul, int s);
 void matMultVec(InstVector& ivector, bool adjMul);
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+//void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus);
 // ***** ------- a chi - b D psi versions
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+//void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus);
 void pack_face_to_dir_dim_vec(InstVector& ivector, bool isPlus, int dir, int dim);
 void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover);
 

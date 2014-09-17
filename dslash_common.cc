@@ -15,6 +15,8 @@ extern string chiOffs;
 extern string clBase;
 extern string clOffs;
 
+extern string mu_name;
+extern string mu_inv_name;
 
 FVec b_S0_C0_RE("b_S0_C0_RE");
 FVec b_S0_C0_IM("b_S0_C0_IM");
@@ -220,6 +222,9 @@ FVec clov_offdiag[15][2]= {
 FVec zero("zero");
 FVec alpha_vec("alpha_vec");
 FVec beta_vec("beta_vec");
+
+FVec mu_vec("mu_vec");
+FVec mu_inv_vec("mu_inv_vec");
 
 FVec psi_S0_RE("psi_S0_RE");
 FVec psi_S0_IM("psi_S0_IM");
@@ -737,6 +742,57 @@ void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string
     }
 }
 
+void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool isPlus)
+{
+
+  declareFVecFromFVec(ivector, mu_vec);
+  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);//SpinorType -> data_types.h (use load instruction)
+
+  declareFVecFromFVec(ivector, mu_inv_vec);
+  loadBroadcastScalar(ivector, mu_inv_vec, mu_inv_name, SpinorType);//SpinorType -> data_types.h (use load instruction)
+
+  for(int col = 0; col < 3; col++)
+  {
+    for(int spin = 0; spin < 2; spin++)
+    {
+      FVec *sp = in_spinor[spin][col];
+
+      if(isPlus){
+        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+      }
+      else{
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
+        fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+      }
+
+      /*multiply by mu_inv_vec:*/
+      mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, "");
+      mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, "");
+    }
+
+    for(int spin = 2; spin < 4; spin++)
+    {
+      FVec *sp = in_spinor[spin][col];
+
+      if(isPlus){
+      	fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
+      	fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+      }
+      else{
+        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+      }
+
+      /*multiply by mu_inv_vec:*/
+      mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, "");
+      mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, "");
+    }
+  }
+
+}
+
+#if 0
 void achiResult(InstVector& ivector, bool clover)
 {
     PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
@@ -765,6 +821,67 @@ void achiResult(InstVector& ivector, bool clover)
         clover_term(ivector, chi_spinor, false);
     }
 }
+#endif
+
+void achiResult(InstVector& ivector, bool clover, bool twisted_mass, bool isPlus)
+{
+	PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
+	
+	if (clover) {
+		for(int col=0; col < 3; col++) { 
+			for(int spin=0; spin < 4; spin++){ 
+				LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase, chiOffs, spin, col, RE, false, "");
+				LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase, chiOffs, spin, col, IM, false, "");
+			}
+		}
+		// Apply clover term, and store result in out spinor. 
+		// This is only on the AChi - bDPsi op (achimbdpsi = true)
+		// This is only in body kernel (face = false)
+		clover_term(ivector, chi_spinor, false);
+	}
+        else if (twisted_mass) {
+                for(int col=0; col < 3; col++) {
+                        for(int spin=0; spin < 2; spin++){
+                                LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
+                                LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
+                                if(isPlus){
+                                	fnmaddFVec(ivector, out_spinor[spin][col][RE], mu_vec, tmp_1_im, tmp_1_re, "");
+                                	fmaddFVec(ivector, out_spinor[spin][col][IM], mu_vec, tmp_1_re, tmp_1_im, "");
+                                }
+                                else{
+                                        fmaddFVec(ivector, out_spinor[spin][col][RE], mu_vec, tmp_1_im, tmp_1_re, "");
+                                        fnmaddFVec(ivector, out_spinor[spin][col][IM], mu_vec, tmp_1_re, tmp_1_im, "");
+                                }
+                        }
+
+                        for(int spin=2; spin < 4; spin++){
+                                LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
+                                LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
+
+                                if(isPlus){
+                                	fmaddFVec(ivector, out_spinor[spin][col][RE], mu_vec, tmp_1_im, tmp_1_re, "");
+                                	fnmaddFVec(ivector, out_spinor[spin][col][IM], mu_vec, tmp_1_re, tmp_1_im, "");
+				}
+                                else{
+                                        fnmaddFVec(ivector, out_spinor[spin][col][RE], mu_vec, tmp_1_im, tmp_1_re, "");
+                                        fmaddFVec(ivector, out_spinor[spin][col][IM], mu_vec, tmp_1_re, tmp_1_im, "");
+                                }
+                        }
+
+                }                
+        }
+        else {
+                for(int col=0; col < 3; col++) {
+                        for(int spin=0; spin < 4; spin++){
+                                LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
+                                LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
+                                mulFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_re);
+                                mulFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_im);
+                        }
+                }
+        }
+}
+
 
 void loadGaugeDir(InstVector& ivector, int dir, bool compress12)
 {
@@ -806,7 +923,7 @@ void matMultVec(InstVector& ivector, bool adjMul)
 }
 
 
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus)
+void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -848,16 +965,15 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool i
 
     dslash_body(ivector, compress12, p_ops, rec_ops_bw, rec_ops_fw, *outspinor);
 
-    if(clover) {
-        clover_term(ivector, *outspinor, false);
-    }
+    if(clover) clover_term(ivector, *outspinor, false);
+    else if(twisted_mass) twisted_term(ivector, *outspinor, isPlus);
 
     // Store
     StreamFullSpinor(ivector, out_spinor, outBase, outOffs);
 }
 
 // ***** ------- a chi - b D psi versions
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus)
+void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -868,16 +984,24 @@ void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, b
     declare_chi(ivector);
 
     if(clover) {
-        declare_douts(ivector);
-        declare_clover(ivector);
+		declare_douts(ivector);
+		declare_clover(ivector);
+    }
+    else if(twisted_mass) {
+                declareFVecFromFVec(ivector, mu_vec);
+                loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);
+
+                //declareFVecFromFVec(ivector, mu_inv_vec);
+                //loadBroadcastScalar(ivector, mu_inv_vec, mu_inv_name, SpinorType);
+
     }
     else {
-        declareFVecFromFVec(ivector, alpha_vec);
-        loadBroadcastScalar(ivector, alpha_vec, alpha_name, SpinorType);
+		declareFVecFromFVec(ivector, alpha_vec);
+		loadBroadcastScalar(ivector, alpha_vec, alpha_name, SpinorType);
     }
 
     // Fill result with a*chi
-    achiResult(ivector, clover);
+    achiResult(ivector, clover, twisted_mass, isPlus);
 
     proj_ops *p_ops;
     recons_ops *rec_ops_bw;
