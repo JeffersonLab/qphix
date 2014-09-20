@@ -44,6 +44,13 @@ AC_ARG_ENABLE(clover,
      [ build_clover="no" ]
 )
 
+AC_ARG_ENABLE(twisted-mass,
+   AC_HELP_STRING([--enable-twisted-mass],
+     [ Enable building of twisted mass term. default is no ]),
+     [ build_twisted=${enableval}],
+     [ build_twisted="no" ]
+)
+
 dnl check for QMP -- needed for parallel configures
 AC_ARG_WITH(qmp,
   AC_HELP_STRING(
@@ -311,7 +318,13 @@ else
         AC_MSG_NOTICE([Not Building Clover Term])
 fi
 
-
+if test "x${build_twisted}x" == "xyesx";
+then
+        AC_MSG_NOTICE([Enabling Clover Term])
+        AC_DEFINE([QPHIX_BUILD_TWISTED_MASS],[1], [ Build Twisted Mass Term ])
+else
+        AC_MSG_NOTICE([Not Building Twisted Mass Term])
+fi
 
 case ${proc} in
 AVX|avx) 
@@ -332,6 +345,8 @@ MIC|mic)
 esac
 
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+
+AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS, [ test "x${build_twisted}x" = "xyesx" ])
 
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
