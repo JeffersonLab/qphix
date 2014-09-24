@@ -282,6 +282,10 @@ parscalar)
 esac
 
 case ${SOALEN} in
+1)
+	AC_MSG_NOTICE([Building for SOALEN=1])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[1], [SOALEN is 1])
+	;;
 4)
 	AC_MSG_NOTICE([Building for SOALEN=4])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
@@ -326,6 +330,10 @@ MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
+SCALAR|scalar)
+	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
+	AC_MSG_NOTICE([Configuring Scalar Specializations ])
+;;        
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
 	;;

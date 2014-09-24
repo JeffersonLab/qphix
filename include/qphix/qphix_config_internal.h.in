@@ -36,6 +36,9 @@
 /* Scalar Arch */
 #undef QPHIX_SCALAR
 
+/* Generate Scalar Specializations */
+#undef QPHIX_SCALAR_SOURCE
+
 /* SOALEN is 16 */
 #undef QPHIX_SOALEN
 

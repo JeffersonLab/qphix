@@ -54,13 +54,12 @@ using namespace QPhiX;
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 
-#else
-
+#elif defined(QPHIX_SCALAR_SOURCE)
 #warning SCALAR_SOURCE
 #define VECLEN_DP 1
 #define VECLEN_SP 1
-
 #endif
+
 template<typename T>
 struct tolerance { 
   static const Double small; // Always fail

@@ -24,6 +24,10 @@ using namespace Assertions;
 #define VECLEN 8
 #endif
 
+#ifdef QPHIX_SCALAR_SOURCE
+#define VECLEN 1
+#endif
+
 void copy(  Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1,
 	    Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x2, 
 	    int N_blocks) 

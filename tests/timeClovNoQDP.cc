@@ -31,6 +31,10 @@ using namespace QPhiX;
 #define VECLEN_DP 4
 #endif
 
+#if defined(QPHIX_SCALAR_SOURCE) 
+#define VECLEN_SP 1
+#define VECLEN_DP 1
+#endif
 
 
 #ifdef QMP_COMMS

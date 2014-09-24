@@ -49,12 +49,10 @@ using namespace QPhiX;
 
 #elif defined(QPHIX_AVX_SOURCE) 
 
-
-
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 
-#else
+#elif defined(QPHIX_SCALAR_SOURCE)
 #warning SCALAR_SOURCE
 #define VECLEN_SP 1
 #define VECLEN_DP 1
@@ -154,22 +152,38 @@ testDslashFull::run(void)
     }
     {
 
+      if( soalen == 1 ) { 
+#if defined(QPHIX_SCALAR_SOURCE)
+	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=1 " << endl;
+	testDslashWrapper<float,VECLEN_SP,1,UF,PhiF>(u_in);
+	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,1,UF,PhiF>(u_in);
+	testMWrapper<float,VECLEN_SP,1,UF,PhiF>(u_in);
+	testCGWrapper<float,VECLEN_SP,1,UF,PhiF>(u_in);
+	testBiCGStabWrapper<float,VECLEN_SP,1,UF,PhiF>(u_in);
+#endif
+      }
+
       if( soalen == 4 ) { 
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testBiCGStabWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+#endif
       }
 
+
       if( soalen == 8 ) {
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 	testDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testMWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testBiCGStabWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+#endif
       }
 
       if ( soalen == 16 ) { 
@@ -244,6 +258,20 @@ testDslashFull::run(void)
     }
     
     {
+
+      if( soalen == 1) {
+#if defined (QPHIX_SCALAR_SOURCE)
+	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=1 " << endl;
+	testDslashWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+	testMWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+	testCGWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+	testBiCGStabWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+	
+#endif
+      }
+
+
       if( soalen == 2) {
 #if defined (QPHIX_AVX_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
@@ -257,12 +285,14 @@ testDslashFull::run(void)
       }
 
       if( soalen == 4 ) { 
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
 	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+#endif
       }
 
       if( soalen == 8 ) { 
@@ -281,7 +311,7 @@ testDslashFull::run(void)
   }
 #endif // If 0
 
-#if 1
+#if 0
   {
     multi1d<LatticeColorMatrixD3> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
