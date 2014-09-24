@@ -24,9 +24,11 @@ void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2
 {
      
   double norm2res=0;
-  
+
+#if defined (__INTEL_COMPILER)  
 #pragma prefetch x,y
 #pragma unroll
+#endif
 #pragma omp parallel for reduction(+:norm2res)
   for(int i=0; i < n; i++){
       float tmpf = x[i]-y[i];

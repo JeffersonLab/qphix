@@ -1,6 +1,7 @@
 #ifndef QPHIX_REAL_FUNCTORS_H
 #define QPHIX_REAL_FUNCTORS_H
 
+#include "qphix/qphix_config.h"
 #include "qphix/blas_utils.h"
 #include "qphix/print_utils.h"
 
@@ -76,12 +77,12 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i=0; i < S; i++) {
-              res_spinor[col][spin][reim][S] = rep<AT,double>((double)0);
+              res_spinor[col][spin][reim][i] = rep<AT,double>((double)0);
             }
 #else
-            res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
+	   res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
 #endif
 	  }
 	}
@@ -128,7 +129,7 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i=0; i < S; i++) {
               y_spinor[col][spin][reim][i] = a*y_spinor[col][spin][reim][i] + x_spinor[col][spin][reim][i];
             }
@@ -228,7 +229,7 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN 
             for(int i = 0; i < S; i++)
               res_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
 #else
@@ -282,7 +283,7 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i = 0; i < S; i++)
               y_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
 #else
@@ -344,7 +345,7 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i = 0; i < S; i++)
               r_spinor[col][spin][reim][i] = r_spinor[col][spin][reim][i] -  a * mmp_spinor[col][spin][reim][i];
 #else
@@ -354,7 +355,7 @@ namespace QPhiX
 	      reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
 	    }
 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i = 0; i < S; i++)
               x_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] + a * p_spinor[col][spin][reim][i];
 #else
@@ -423,7 +424,7 @@ private:
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+#ifndef QPHIX_USE_CEAN
             for(int i = 0; i < S; i++) {
               x_spinor[col][spin][reim][i] += delta_x_spinor[col][spin][reim][i];
               r_spinor[col][spin][reim][i] -= delta_r_spinor[col][spin][reim][i];

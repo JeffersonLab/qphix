@@ -29,7 +29,39 @@ using namespace std;
 #define IM     (1)
 
 // Use _mm_malloc on non MIC for now.
-#define USE_MM_MALLOC  1
+#undef  USE_MM_MALLOC
+
+
+namespace QPhiX { 
+
+  struct BlockPhase {
+    int by;
+    int bz;
+    int bt;
+    int nt;
+    int group_tid;
+    int cid_t;
+    int cid_yz;
+
+  };
+
+
+ inline
+  void *aligned_malloc(int size, int alignment)
+    {
+      void *v;
+      int ok;
+      ok = posix_memalign((void **)&v, alignment, size);
+      if( ok != 0) {
+        return NULL;
+      }
+      return v;
+    }
+
+
+
+
+};
 
 #ifdef __MIC__
 
@@ -100,7 +132,7 @@ void* BUFFER_MALLOC(size_t size, int alignment)
 #ifdef USE_MM_MALLOC
   void* ret_val =  _mm_malloc(size, alignment);
 #else
-  void* ret_val =  aligned_malloc(size, alignment);
+  void* ret_val =  QPhiX::aligned_malloc(size, alignment);
 #endif
   return ret_val;
 }
@@ -121,7 +153,7 @@ void* ALIGNED_MALLOC(size_t size, unsigned int alignment)
 #ifdef USE_MM_MALLOC
   void* ret_val =  _mm_malloc(size, alignment);
 #else
-  void* ret_val =  aligned_malloc(size, alignment);
+  void* ret_val =  QPhiX::aligned_malloc(size, alignment);
 #endif
   return ret_val;
 }
@@ -154,35 +186,5 @@ ALIGNED_FREE(void *addr)
 #warning "Enabling QPHIX_QMP_COMMS"
 #endif
 
-namespace QPhiX { 
-
-  struct BlockPhase {
-    int by;
-    int bz;
-    int bt;
-    int nt;
-    int group_tid;
-    int cid_t;
-    int cid_yz;
-
-  };
-
-
- inline
-  void *aligned_malloc(int size, int alignment)
-    {
-      void *v;
-      int ok;
-      ok = posix_memalign((void **)&v, alignment, size);
-      if( ok != 0) {
-        return NULL;
-      }
-      return v;
-    }
-
-
-
-
-};
 
 #endif

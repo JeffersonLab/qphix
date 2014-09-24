@@ -36,6 +36,12 @@ AC_ARG_ENABLE(soalen,
      [SOALEN=8]
 )
 
+AC_ARG_ENABLE(cean,
+    AC_HELP_STRING([--enable-cean],
+      [ Enable Cilk Array Notation extentions ]),
+      [ USE_CEAN=${enableval}],
+      [ USE_CEAN="no" ]
+)
 
 AC_ARG_ENABLE(clover,
    AC_HELP_STRING([--enable-clover],
@@ -300,6 +306,15 @@ case ${SOALEN} in
 	;;
 *)
 	AC_MSG_ERROR([Unsupported SOALEN])
+	;;
+esac
+
+case ${USE_CEAN} in
+yes) 
+	AC_MSG_NOTICE([Enabling Cilk Notation Use])
+	AC_DEFINE_UNQUOTED(QPHIX_USE_CEAN,[1], [CEAN is on])
+	;;
+*)
 	;;
 esac
 

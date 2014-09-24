@@ -1,6 +1,10 @@
 #ifndef _DSLASH_SCALAR_COMPLETE_SPECIALIZATIONS_H_
 #define _DSLASH_SCALAR_COMPLETE_SPECIALIZATIONS_H_
 
+/* Disgusting hack to get rid of _mm_prefetches left in the generated scalar code */
+#define _mm_prefetch(a,b) {}
+
+
 #include "qphix/geometry.h"
 #define QUOTEME(M)       #M
 #define INCLUDE_FILE(PRE,FPTYPE,VLEN,SLEN,POST)  QUOTEME(PRE ## FPTYPE ## _ ## FPTYPE ## _v ## VLEN ## _s ## SLEN ## POST) 
@@ -78,5 +82,5 @@
 #undef INCLUDE_FILE
 #undef INCLUDE_FILE_VAR 
 
-
+#undef _mm_prefetch
 #endif

@@ -42,5 +42,8 @@
 /* SOALEN is 16 */
 #undef QPHIX_SOALEN
 
+/* CEAN is on */
+#undef QPHIX_USE_CEAN
+
 /* Version number of package */
 #undef VERSION

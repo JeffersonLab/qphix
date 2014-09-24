@@ -592,8 +592,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
+#ifdef QPHIX_USE_CEAN
 		pfyOffs[0:veclen/2] = ybOffs[0:veclen/2];
 		pfyOffs[veclen/2:veclen/2] = yfOffs[veclen/2:veclen/2];
+
+#else
+		for(int it=0; it < veclen/2; it++) {
+		  pfyOffs[it] = ybOffs[it];
+		  pfyOffs[it+veclen/2] = yfOffs[it+veclen/2];
+		}
+#endif
 
 
 		if( soalen == veclen ) { 
@@ -866,8 +874,17 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
+
+#ifdef QPHIX_USE_CEAN
 		pfyOffs[0:veclen/2] = ybOffs[0:veclen/2];
 		pfyOffs[veclen/2:veclen/2] = yfOffs[veclen/2:veclen/2];
+
+#else
+		for(int it=0; it < veclen/2; it++) {
+		  pfyOffs[it] = ybOffs[it];
+		  pfyOffs[it+veclen/2] = yfOffs[it+veclen/2];
+		}
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
@@ -1148,8 +1165,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
+#ifdef QPHIX_USE_CEAN
 		pfyOffs[0:veclen/2] = ybOffs[0:veclen/2];
 		pfyOffs[veclen/2:veclen/2] = yfOffs[veclen/2:veclen/2];
+
+#else
+		for(int it=0; it < veclen/2; it++) {
+		  pfyOffs[it] = ybOffs[it];
+		  pfyOffs[it+veclen/2] = yfOffs[it+veclen/2];
+		}
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
@@ -1430,8 +1455,17 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
+#ifdef QPHIX_USE_CEAN
 		pfyOffs[0:veclen/2] = ybOffs[0:veclen/2];
 		pfyOffs[veclen/2:veclen/2] = yfOffs[veclen/2:veclen/2];
+
+#else
+		for(int it=0; it < veclen/2; it++) {
+		  pfyOffs[it] = ybOffs[it];
+		  pfyOffs[it+veclen/2] = yfOffs[it+veclen/2];
+		}
+#endif
+
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
