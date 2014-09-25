@@ -1,1 +1,8 @@
 9/11/2014 (Balint Joo): Initial public release
+9/25/2014 (Diptorup Deb, Balint Joo): 
+	 *)  Added scalar code from qphix-codegen (FIXME: errant prefetches currently ignored via macro)
+         *)  Added fixes to compile with GCC toolchain, compiles on BG/Q with BGClang (clang 3.6.0(trunk)) at ALCF:
+             --enable-cean configur option: Enable Cilk Array Notation (enable for use with ICC and GCC-4.9, default: disabled )
+             --enable-mm-malloc :  Enable _mm_malloc for allocating aligned memory (default enabled) 
+             - clang doesn't like restrict keyword: Make this better with -Drestrict=__restrict__ in CXXFLAGS
+         
