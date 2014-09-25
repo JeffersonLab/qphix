@@ -7,8 +7,15 @@
 #include "qphix/qphix_config.h"
 #include "qphix/tsc.h"
 
+
+#ifndef QPHIX_USE_MM_MALLOC
+#include <cstdlib>
+#else 
+
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
 #include <immintrin.h>
+#endif
+
 #endif
 
 using namespace std;
@@ -29,7 +36,6 @@ using namespace std;
 #define IM     (1)
 
 // Use _mm_malloc on non MIC for now.
-#undef  USE_MM_MALLOC
 
 
 namespace QPhiX { 
@@ -129,7 +135,7 @@ inline
 void* BUFFER_MALLOC(size_t size, int alignment) 
 {
 
-#ifdef USE_MM_MALLOC
+#ifdef QPHIX_USE_MM_MALLOC
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -140,7 +146,7 @@ void* BUFFER_MALLOC(size_t size, int alignment)
 inline
 void BUFFER_FREE(void *addr,size_t length)
 {
-#ifdef USE_MM_MALLOC
+#ifdef QPHIX_USE_MM_MALLOC
   _mm_free(addr);
 #else
   free(addr);
@@ -150,7 +156,7 @@ void BUFFER_FREE(void *addr,size_t length)
 inline 
 void* ALIGNED_MALLOC(size_t size, unsigned int alignment) 
 {
-#ifdef USE_MM_MALLOC
+#ifdef QPHIX_USE_MM_MALLOC
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -161,7 +167,7 @@ void* ALIGNED_MALLOC(size_t size, unsigned int alignment)
 inline void
 ALIGNED_FREE(void *addr)
 {
-#ifdef USE_MM_MALLOC
+#ifdef QPHIX_USE_MM_MALLOC
   _mm_free(addr);
 #else
   free(addr);

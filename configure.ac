@@ -43,6 +43,13 @@ AC_ARG_ENABLE(cean,
       [ USE_CEAN="no" ]
 )
 
+AC_ARG_ENABLE(mm_malloc,
+	AC_HELP_STRING([--enable-mm-malloc],
+	  [ Use _mm_malloc to allocate aligned memory. Otherwise use posix memalign. (default: enabled) ]),
+	  [ USE_MM_MALLOC=${enableval} ],
+	  [ USE_MM_MALLOC="yes" ]
+)
+
 AC_ARG_ENABLE(clover,
    AC_HELP_STRING([--enable-clover],
      [ Enable building of clover term. default is no ]),
@@ -315,6 +322,16 @@ yes)
 	AC_DEFINE_UNQUOTED(QPHIX_USE_CEAN,[1], [CEAN is on])
 	;;
 *)
+	;;
+esac
+
+case ${USE_MM_MALLOC} in
+yes) 
+	AC_MSG_NOTICE([Enabling _mm_malloc use])
+	AC_DEFINE_UNQUOTED(QPHIX_USE_MM_MALLOC,[1], [MM_MALLOC is on])
+	;;
+*)
+	AC_MSG_NOTICE([Not using _mm_malloc. Using posix memalign])
 	;;
 esac
 

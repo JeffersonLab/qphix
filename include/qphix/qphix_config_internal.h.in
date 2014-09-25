@@ -45,5 +45,8 @@
 /* CEAN is on */
 #undef QPHIX_USE_CEAN
 
+/* MM_MALLOC is on */
+#undef QPHIX_USE_MM_MALLOC
+
 /* Version number of package */
 #undef VERSION
