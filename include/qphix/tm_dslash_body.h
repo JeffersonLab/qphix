@@ -6,7 +6,7 @@
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 #include <immintrin.h>
-
+#include <omp.h>
 
 namespace QPhiX
 {
@@ -397,7 +397,9 @@ namespace QPhiX
     int smtid_z = smtid / Sy;
     int smtid_y = smtid - Sy * smtid_z;
     
-    unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    //unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+    unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
+
     int nvecs = s->nVecs();
     
     const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -422,8 +424,12 @@ namespace QPhiX
     int gprefdist=0;
     int soprefdist=0;
     
-    
-    __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+     int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+     __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
+
     int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
     int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
     int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -582,9 +588,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
-		pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
-		pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
-
+//using Cilk array notations:
+#ifdef QPHIX_USE_CEAN
+                pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
+                pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
+#else
+                for(int it=0; it < (veclen+1)/2; it++) {
+                  pfyOffs[it] = ybOffs[it];
+                  pfyOffs[it+(veclen+1)/2] = yfOffs[it+(veclen+1)/2];
+                }
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
@@ -664,7 +677,8 @@ namespace QPhiX
       int smtid_z = smtid / Sy;
       int smtid_y = smtid - Sy * smtid_z;
      
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      //unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -689,8 +703,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -848,9 +866,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
-		pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
-		pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
+#ifdef QPHIX_USE_CEAN
+                pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
+                pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
 
+#else
+                for(int it=0; it < (veclen+1)/2; it++) {
+                  pfyOffs[it] = ybOffs[it];
+                  pfyOffs[it+(veclen+1)/2] = yfOffs[it+(veclen+1)/2];
+                }
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
@@ -952,7 +977,8 @@ namespace QPhiX
       int smtid_y = smtid - Sy * smtid_z;
      
 
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      //unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -977,8 +1003,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -1130,9 +1160,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
-		pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
-		pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
+#ifdef QPHIX_USE_CEAN
+                pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
+                pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
 
+#else
+                for(int it=0; it < (veclen+1)/2; it++) {
+                  pfyOffs[it] = ybOffs[it];
+                  pfyOffs[it+(veclen+1)/2] = yfOffs[it+(veclen+1)/2];
+                }
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {
@@ -1224,7 +1261,8 @@ namespace QPhiX
       int smtid_z = smtid / Sy;
       int smtid_y = smtid - Sy * smtid_z;
      
-      unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      //unsigned int accumulate[8] = { -1, -1, -1, -1, -1, -1, -1, -1 };
+      unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
       const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
@@ -1249,8 +1287,12 @@ namespace QPhiX
       int gprefdist=0;
       int soprefdist=0;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+#else
+      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+#endif
 
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]) ;
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
       int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
       int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
@@ -1406,9 +1448,16 @@ namespace QPhiX
 		accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
-		pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
-		pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
+#ifdef QPHIX_USE_CEAN
+                pfyOffs[0:(veclen+1)/2] = ybOffs[0:(veclen+1)/2];
+                pfyOffs[(veclen+1)/2:veclen/2] = yfOffs[(veclen+1)/2:veclen/2];
 
+#else
+                for(int it=0; it < (veclen+1)/2; it++) {
+                  pfyOffs[it] = ybOffs[it];
+                  pfyOffs[it+(veclen+1)/2] = yfOffs[it+(veclen+1)/2];
+                }
+#endif
 
 		if( soalen == veclen ) { 
 		  if(! comms->localY() ) {

@@ -195,9 +195,10 @@ namespace QPhiX {
       
       // Zero it all (including) (especially) the pad regions.
       // FIXME: this is not NUMA friendly necessarily
-      
+#if defined (__INTEL_COMPILER)      
 #pragma simd 
 #pragma vector nontemporal(ret_val_ft)
+#endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
 	ret_val_ft[i] =rep<T,double>(0.0);
@@ -239,8 +240,10 @@ namespace QPhiX {
       
       // Zero it all (including) (especially) the pad regions.
       // FIXME: this is not NUMA friendly necessarily
+#if defined (__INTEL_COMPILER)
 #pragma simd
 #pragma vector nontemporal(ret_val_ft)
+#endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
 	ret_val_ft[i] = rep<T,double>(0.0);
@@ -274,8 +277,10 @@ namespace QPhiX {
 
       // Zero it all (including) (especially) the pad regions.
       // FIXME: this is not NUMA friendly necessarily
+#if defined (__INTEL_COMPILER)
 #pragma simd
 #pragma vector nontemporal(ret_val_ft)
+#endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
 	ret_val_ft[i] = rep<T,double>(0.0);

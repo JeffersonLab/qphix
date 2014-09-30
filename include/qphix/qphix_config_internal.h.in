@@ -39,8 +39,17 @@
 /* Scalar Arch */
 #undef QPHIX_SCALAR
 
+/* Generate Scalar Specializations */
+#undef QPHIX_SCALAR_SOURCE
+
 /* SOALEN is 16 */
 #undef QPHIX_SOALEN
+
+/* CEAN is on */
+#undef QPHIX_USE_CEAN
+
+/* MM_MALLOC is on */
+#undef QPHIX_USE_MM_MALLOC
 
 /* Version number of package */
 #undef VERSION

@@ -1,6 +1,7 @@
 #ifndef QPHIX_REAL_FUNCTORS_H
 #define QPHIX_REAL_FUNCTORS_H
 
+#include "qphix/qphix_config.h"
 #include "qphix/blas_utils.h"
 #include "qphix/print_utils.h"
 
@@ -66,13 +67,23 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       FT* resbase = &res[block][0][0][0][0];
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
+#endif
 
        // Now we are hopefully both in L1 and in the right layout so
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
+#ifndef QPHIX_USE_CEAN
+            for(int i=0; i < S; i++) {
+              res_spinor[col][spin][reim][i] = rep<AT,double>((double)0);
+            }
+#else
+	   res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
+#endif
 	  }
 	}
       }
@@ -103,8 +114,13 @@ namespace QPhiX
       FT* ybase = &y[block][0][0][0][0];
       
       // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
 
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -113,7 +129,13 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    y_spinor[col][spin][reim][:] = a*y_spinor[col][spin][reim][:] + x_spinor[col][spin][reim][:];
+#ifndef QPHIX_USE_CEAN
+            for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*y_spinor[col][spin][reim][i] + x_spinor[col][spin][reim][i];
+            }
+#else
+            y_spinor[col][spin][reim][:] = a*y_spinor[col][spin][reim][:] + x_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
@@ -142,7 +164,12 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       const FT* xbase=&x[block][0][0][0][0];
       
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+#endif
+
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       
       for(int col=0; col < 3; col++) { 
@@ -185,10 +212,15 @@ namespace QPhiX
       FT* resbase=&res[block][0][0][0][0];
       
       // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
-      
+#endif      
       
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -197,7 +229,12 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    res_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#ifndef QPHIX_USE_CEAN 
+            for(int i = 0; i < S; i++)
+              res_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
+#else
+            res_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#endif
 	    for(int s=0; s < S; s++) {
 	      reduction[s] += (double)res_spinor[col][spin][reim][s]*(double)res_spinor[col][spin][reim][s];
 	    }
@@ -231,9 +268,14 @@ namespace QPhiX
       int nvec_in_spinor = (3*4*2*S)/V;
       const FT* xbase=&x[block][0][0][0][0];
       FT* ybase=&y[block][0][0][0][0];
-      
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
@@ -241,15 +283,16 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
-	    
+#ifndef QPHIX_USE_CEAN
+            for(int i = 0; i < S; i++)
+              y_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
+#else
+            y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
-      
       BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
-      
-      
     }
    
  private: 
@@ -281,10 +324,17 @@ namespace QPhiX
       FT* xbase=&x[block][0][0][0][0];
       const FT* pbase=&p[block][0][0][0][0];
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor __attribute__ ((aligned(64))); 
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)mmp_spinor, mmpbase, nvec_in_spinor);
@@ -295,13 +345,22 @@ namespace QPhiX
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    r_spinor[col][spin][reim][:] = r_spinor[col][spin][reim][:] -  a * mmp_spinor[col][spin][reim][:];
-
+#ifndef QPHIX_USE_CEAN
+            for(int i = 0; i < S; i++)
+              r_spinor[col][spin][reim][i] = r_spinor[col][spin][reim][i] -  a * mmp_spinor[col][spin][reim][i];
+#else
+            r_spinor[col][spin][reim][:] = r_spinor[col][spin][reim][:] -  a * mmp_spinor[col][spin][reim][:];
+#endif
 	    for(int s =0 ; s < S; s++) { 
 	      reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
 	    }
 
-	    x_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] + a * p_spinor[col][spin][reim][:]; 
+#ifndef QPHIX_USE_CEAN
+            for(int i = 0; i < S; i++)
+              x_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] + a * p_spinor[col][spin][reim][i];
+#else
+            x_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] + a * p_spinor[col][spin][reim][:];
+#endif
 	  }
 	}
       }
@@ -344,10 +403,17 @@ private:
       const FT* delta_rbase=&delta_r[block][0][0][0][0];
       int nvec_in_spinor = (3*4*2*S)/V;
 
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor __attribute__ ((aligned(64)));
+#else
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor;
       __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor;
+#endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
@@ -358,9 +424,15 @@ private:
       for(int col=0; col < 3; col++) { 
 	for(int spin=0; spin < 4; spin ++) { 
 	  for(int reim=0; reim < 2; reim++) { 
-	    x_spinor[col][spin][reim][:] += delta_x_spinor[col][spin][reim][:];
-	    r_spinor[col][spin][reim][:] -= delta_r_spinor[col][spin][reim][:];
-
+#ifndef QPHIX_USE_CEAN
+            for(int i = 0; i < S; i++) {
+              x_spinor[col][spin][reim][i] += delta_x_spinor[col][spin][reim][i];
+              r_spinor[col][spin][reim][i] -= delta_r_spinor[col][spin][reim][i];
+            }
+#else
+            x_spinor[col][spin][reim][:] += delta_x_spinor[col][spin][reim][:];
+            r_spinor[col][spin][reim][:] -= delta_r_spinor[col][spin][reim][:];
+#endif
 	    for(int s =0 ; s < S; s++) { 
 	      reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
 	    }

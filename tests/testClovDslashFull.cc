@@ -52,13 +52,12 @@ using namespace QPhiX;
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 
-#else
-
-#warning QPHIX_SCALAR_SOURCE
+#elif defined(QPHIX_SCALAR_SOURCE)
 #define VECLEN_DP 1
 #define VECLEN_SP 1
-
+#define QPHIX_SOALEN 1
 #endif
+
 template<typename T>
 struct tolerance { 
   static const Double small; // Always fail
@@ -816,16 +815,28 @@ testClovDslashFull::run(void)
   typedef LatticeColorMatrixD UD;
   typedef LatticeDiracFermionD PhiD;
 
+#if defined(QPHIX_SCALAR_SOURCE)
+  if( precision == FLOAT_PREC ) { 
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
-      runTest<float,VECLEN_SP,8,true,UF, PhiF>();
+      runTest<float,1,1,true,UF, PhiF>();
     }
     else { 
-      runTest<float,VECLEN_SP,8,false,UF, PhiF>();
+      runTest<float,1,1,false,UF, PhiF>();
     }
+  }
+  if( precision == DOUBLE_PREC ) { 
+    QDPIO::cout << "DOUBLE PRECISION TESTING " << endl;
+    if( compress12 ) { 
+      runTest<double,1,1,true,UF, PhiF>();
+    }
+    else { 
+      runTest<double,1,1,false,UF, PhiF>();
+    }
+  }
+#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
 
-#if 1
-  if( precision == FLOAT_PREC ) { 
+   if( precision == FLOAT_PREC ) { 
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -850,9 +861,7 @@ testClovDslashFull::run(void)
     }
 #endif
   }
-#endif
 
-#if 1
   if( precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
@@ -882,9 +891,7 @@ testClovDslashFull::run(void)
 #endif
 
   }
-#endif
 
-#if 1
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING" << endl;
     

@@ -37,6 +37,7 @@ namespace QPhiX {
 			  double aniso_coeff_s,
 			  double aniso_coeff_t): D(new ClovDslash<FT, veclen,soalen,compress12>(geom_,t_boundary, aniso_coeff_s, aniso_coeff_t))
     {
+      Geometry<FT,veclen, soalen, compress12>& geom = D->getGeometry();
       tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
     }
     

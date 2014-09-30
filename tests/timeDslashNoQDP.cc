@@ -30,6 +30,10 @@ using namespace QPhiX;
 #define VECLEN_DP 4
 #endif
 
+#if defined(QPHIX_SCALAR_SOURCE) 
+#define VECLEN_SP 1
+#define VECLEN_DP 1
+#endif
 
 #ifdef QMP_COMMS
 #include <qmp.h>
@@ -491,7 +495,9 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       unsigned long mv_apps=0;
       
       FT *psi_0 = (FT *)psi_s[0];
+#if defined(__INTEL_COMPILER)
 #pragma simd
+#endif
 #pragma omp parallel for
       for(int i=0; i < len; i++) { 
 	c_s0[i] = rep<FT,double>(0);
@@ -552,7 +558,9 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       unsigned long mv_apps;
       
       FT *psi_0 = (FT *)psi_s[0];
+#if defined(__INTEL_COMPILER)
 #pragma simd
+#endif
 #pragma omp parallel for
       for(int i=0; i < len; i++) { 
 	c_s0[i] = rep<FT,double>(0);
@@ -635,7 +643,7 @@ timeDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
 
-#if 0
+#if 1
 #if defined(QPHIX_MIC_SOURCE)
   if ( precision == HALF_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
