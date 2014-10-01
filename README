@@ -109,7 +109,7 @@ E.g:
 
 	configure --prefix=<install_location> \
 	          --with-qdp=<QDP++ installation>
-                  --enable-prox=AVX \
+                  --enable-proc=AVX \
                   --enable-soalen=8 \
                   --enable-clover \
 	   	  --enable-openmp \
@@ -124,7 +124,7 @@ E.g:
 
 	 configure --prefix=<install_location> \
                   --with-qdp=<QDP++ installation>
-                  --enable-prox=MIC \
+                  --enable-proc=MIC \
                   --enable-soalen=8 \
                   --enable-clover \ 
                   --enable-openmp \
