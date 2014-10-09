@@ -392,15 +392,15 @@ testTWMDslashFull::testTWMDslash(const U& u, int t_bc)
 	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
 		for(int s =0 ; s < Ns; s++) { 
 		  for(int c=0; c < Nc; c++) {
-                      int smu = (s < 2) ? -Mu : +Mu;
+                      double smu = (s < 2) ? -Mu : +Mu;
            
 		      REAL twr = MuInv*(chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
 		      REAL twi = MuInv*(chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
-                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = std::complex<REAL>(twr, twi);
+                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
 
 		    }
 		  }
-		}
+		
 	      } // x 
 	    } // y 
 	} // z 
@@ -591,15 +591,15 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
 		for(int s =0 ; s < Ns; s++) { 
 		  for(int c=0; c < Nc; c++) {
-                      int smu = (s < 2) ? -Mu : +Mu;
+                      double smu = (s < 2) ? -Mu : +Mu;
            
 		      REAL twr = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
 		      REAL twi = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
-                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = std::complex<REAL>(twr, twi);
+                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
 
 		    }
 		  }
-		}
+		
 	      } // x 
 	    } // y 
 	} // z 
