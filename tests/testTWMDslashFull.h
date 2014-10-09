@@ -100,8 +100,8 @@ public:
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testTWMDslashAChiMBDPsi(const U& u, int t_bc);
 
-  //template<typename T, int V, int S, bool compress, typename U, typename Phi>
-    //void testM(const U& u, int t_bc);
+  template<typename T, int V, int S, bool compress, typename U, typename Phi>
+    void testTWMM(const U& u, int t_bc);
 
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testTWMCG(const U& u, int t_bc);

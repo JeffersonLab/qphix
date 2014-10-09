@@ -36,6 +36,20 @@ AC_ARG_ENABLE(soalen,
      [SOALEN=8]
 )
 
+AC_ARG_ENABLE(cean,
+    AC_HELP_STRING([--enable-cean],
+      [ Enable Cilk Array Notation extentions ]),
+      [ USE_CEAN=${enableval}],
+      [ USE_CEAN="no" ]
+)
+
+AC_ARG_ENABLE(mm_malloc,
+        AC_HELP_STRING([--enable-mm-malloc],
+          [ Use _mm_malloc to allocate aligned memory. Otherwise use posix memalign. (default: enabled) ]),
+          [ USE_MM_MALLOC=${enableval} ],
+          [ USE_MM_MALLOC="yes" ]
+)
+
 
 AC_ARG_ENABLE(clover,
    AC_HELP_STRING([--enable-clover],
@@ -304,6 +318,25 @@ case ${SOALEN} in
 *)
 	AC_MSG_ERROR([Unsupported SOALEN])
 	;;
+esac
+
+case ${USE_CEAN} in
+yes)
+        AC_MSG_NOTICE([Enabling Cilk Notation Use])
+        AC_DEFINE_UNQUOTED(QPHIX_USE_CEAN,[1], [CEAN is on])
+        ;;
+*)
+        ;;
+esac
+
+case ${USE_MM_MALLOC} in
+yes)
+        AC_MSG_NOTICE([Enabling _mm_malloc use])
+        AC_DEFINE_UNQUOTED(QPHIX_USE_MM_MALLOC,[1], [MM_MALLOC is on])
+        ;;
+*)
+        AC_MSG_NOTICE([Not using _mm_malloc. Using posix memalign])
+        ;;
 esac
 
 AM_CONDITIONAL(QPHIX_SCALAR, [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )

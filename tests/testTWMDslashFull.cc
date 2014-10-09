@@ -262,9 +262,6 @@ testTWMDslashFull::run(void)
   }
 #endif // If 0
 
-  }
-#endif
-
 }
 
 
@@ -384,13 +381,37 @@ testTWMDslashFull::testTWMDslash(const U& u, int t_bc)
       // Apply QDP Dslash -- ??
       chi2 = zero;
       dslash(chi2,u_test,psi, isign, target_cb);//plain wilson dslash + twisted mass
+
+      //apply twist:
+      for(int t=0; t < Nt; t++){ 
+	for(int z=0; z < Nz; z++) { 
+	   for(int y=0; y < Ny; y++){ 
+	      for(int x=0; x < Nxh; x++){ 
+		
+		// These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) { 
+		  for(int c=0; c < Nc; c++) {
+                      int smu = (s < 2) ? -Mu : +Mu;
+           
+		      REAL twr = MuInv*(chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
+		      REAL twi = MuInv*(chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
+                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = std::complex<REAL>(twr, twi);
+
+		    }
+		  }
+		}
+	      } // x 
+	    } // y 
+	} // z 
+      } // t
  
       //add here tm term:
-      {
+      //{
         //Phi res;
         //res[rb[source_cb]]=zero;
         //res[rb[target_cb]]= alpha*psi - beta*chi2;
-      }      
+      //}      
  
       // Check the difference per number in chi vector
       Phi diff = chi2 -chi;
@@ -560,8 +581,29 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
       chi2 = zero;
       dslash(chi2,u_test,psi, isign, target_cb);//+tm term add here...
 
-      {//add the twisted mass term here
-      }
+      //add the twisted mass term here
+      for(int t=0; t < Nt; t++){ 
+	for(int z=0; z < Nz; z++) { 
+	   for(int y=0; y < Ny; y++){ 
+	      for(int x=0; x < Nxh; x++){ 
+		
+		// These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) { 
+		  for(int c=0; c < Nc; c++) {
+                      int smu = (s < 2) ? -Mu : +Mu;
+           
+		      REAL twr = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
+		      REAL twi = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
+                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = std::complex<REAL>(twr, twi);
+
+		    }
+		  }
+		}
+	      } // x 
+	    } // y 
+	} // z 
+      } // t
 
       Phi res;
       res[rb[source_cb]]=zero;
@@ -673,7 +715,7 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
   u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3]-1),
   			Real(t_boundary), Real(1));
 
-  EvenOddWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
+  EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
 
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
@@ -812,7 +854,7 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
   double Mu_     = ((double)0.1);
   bool mu_plus   = true;
 
-  EvenOddWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
+  EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
   Real betaFactor=Real(0.25)/massFactor;
