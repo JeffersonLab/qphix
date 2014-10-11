@@ -366,6 +366,14 @@ SCALAR|scalar)
 	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
 	AC_MSG_NOTICE([Configuring Scalar Specializations ])
 ;;        
+QPX|qpx)
+	AC_DEFINE([QPHIX_QPX_SOURCE],[1], [ Generate QPX Specializations ])
+	AC_MSG_NOTICE([Configuring QPX Specializations ])
+	if [ $SOALEN -ne 4 ];
+	then
+	  AC_MSG_ERROR([Cannot have SOALEN not equal to 4 for QPX]);
+	fi
+;;
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
 	;;

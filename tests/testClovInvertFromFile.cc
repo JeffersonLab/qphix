@@ -58,6 +58,11 @@ using namespace QPhiX;
 #warning SCALAR_SOURCE
 #define VECLEN_DP 1
 #define VECLEN_SP 1
+
+#elif defined(QPHIX_QPX_SOURCE)
+#define VECLEN_DP 4
+#define VECLEN_SP 4
+
 #endif
 
 template<typename T>

@@ -56,6 +56,12 @@ using namespace QPhiX;
 #warning SCALAR_SOURCE
 #define VECLEN_SP 1
 #define VECLEN_DP 1
+
+#elif defined(QPHIX_QPX_SOURCE)
+#warning QPX_SOURCE
+#define VECLEN_SP 4
+#define VECLEN_DP 4
+
 #endif
 
   // What we consider to be small enough...

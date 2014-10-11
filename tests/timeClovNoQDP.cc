@@ -36,6 +36,11 @@ using namespace QPhiX;
 #define VECLEN_DP 1
 #endif
 
+#if defined(QPHIX_QPX_SOURCE) 
+#define VECLEN_SP 4
+#define VECLEN_DP 4
+#endif
+
 
 #ifdef QMP_COMMS
 #include <qmp.h>
