@@ -1,8 +1,6 @@
 #ifndef __QPHIX_QPX_UTILS_H__
 #define __QPHIX_QPX_UTILS_H__
 
-#ifdef QPX
-
 inline vector4double _v4d_int2mask(unsigned int msk) {
 
     vector4double ret = vec_gpci(00123);
@@ -48,5 +46,4 @@ inline vector4double _v4d_int2mask(unsigned int msk) {
 	return ret;
 }
 
-#endif
 #endif

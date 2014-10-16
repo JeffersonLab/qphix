@@ -298,6 +298,14 @@ testDslashFull::run(void)
 	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+
+#elif defined (QPHIX_QPX_SOURCE) 
+	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
+	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 #endif
       }
 

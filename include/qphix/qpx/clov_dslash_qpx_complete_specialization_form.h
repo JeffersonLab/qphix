@@ -480,6 +480,3 @@ face_clov_finish_dir_minus<FPTYPE,VEC,SOA,COMPRESS12>(
 
 #endif // QPHIX_QMP_COMMS
 
-
-
-

@@ -1,7 +1,6 @@
-#ifndef QPHIX_DSLASH_AVX_COMPLETE_SPECIALIZATIONS_H
-#define QPHIX_DSLASH_AVX_COMPLETE_SPECIALIZATIONS_H
+#ifndef QPHIX_DSLASH_QPX_COMPLETE_SPECIALIZATIONS_H
+#define QPHIX_DSLASH_QPX_COMPLETE_SPECIALIZATIONS_H
 
-#include "immintrin.h"
 #include "qphix/geometry.h"
 #include "qphix/qpx/qpx_utils.h"
 
@@ -13,6 +12,8 @@
 // No SOALEN, COMPRESS12, COMPRESS_SUFFIX -> generic template
 #include "qphix/qpx/dslash_qpx_complete_specialization_form.h"
 
+// No single precision for now
+#if 0
 /* SINGLE PRECISION */
 #define FPTYPE float
 #define VEC 8
@@ -50,7 +51,7 @@
 #undef VEC
 #undef FPTYPE
 /* --- END OF SINGLE PRECISION */
-
+#endif
 
 /* DOUBLE PRECISION */
 #define FPTYPE double
@@ -60,10 +61,12 @@
 #define COMPRESS12 false
 #define COMPRESS_SUFFIX _18
 
+// No SOA 2 for now
+#if 0
 #define SOA 2
 #include "qphix/qpx/dslash_qpx_complete_specialization_form.h"
 #undef SOA
-
+#endif
 #define SOA 4
 #include "qphix/qpx/dslash_qpx_complete_specialization_form.h"
 #undef SOA
@@ -76,9 +79,12 @@
 #define COMPRESS12 true
 #define COMPRESS_SUFFIX _12
 
+// No SOA 2 for now
+#if 0
 #define SOA 2
 #include "qphix/qpx/dslash_qpx_complete_specialization_form.h"
 #undef SOA
+#endif
 
 #define SOA 4
 #include "qphix/qpx/dslash_qpx_complete_specialization_form.h"
