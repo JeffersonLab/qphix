@@ -139,7 +139,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
   for(int t = 0; t < lT; t++) {
     for(int z = 0; z < lZ; z++) {
-      for(int y = 0; y < Ny; y++) {
+      for(int y = 0; y < lY; y++) {
 	for(int s = 0; s < nvecs; s++) {
 	  for(int mu = 0; mu < 8; mu++) {
 	    for(int c = 0; c < (compress ? 2 : 3) ; c++) {
@@ -181,7 +181,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < lT; t++) {
       for(int z = 0; z < lZ; z++) {
-	for(int y = 0; y < Ny; y++) {
+	for(int y = 0; y < lY; y++) {
 	  for(int s = 0; s < nvecs; s++) {
 	    
 	    int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
@@ -337,7 +337,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)   
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -368,7 +368,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -507,7 +507,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -570,7 +570,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
