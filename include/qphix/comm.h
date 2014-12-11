@@ -1,7 +1,7 @@
 #ifndef QPHIX_COMM_H
 #define QPHIX_COMM_H
 
-#ifndef QPHIX_DO_COMMS
+#ifdef QPHIX_DO_COMMS
 #ifdef QPHIX_QMP_COMMS
 #undef SEEK_SET
 #undef SEEK_CUR
