@@ -1518,7 +1518,7 @@ namespace QPhiX
 	}
 	
 	TSC_tick t_start,t_end;
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1537,7 +1537,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 	// DO BODY DON"T ACCUMULATE BOUNDARY
 #pragma omp parallel 
@@ -1546,7 +1546,7 @@ namespace QPhiX
 	  DyzPlus(tid, psi_in, res_out, u, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	  if( ! comms->localDir(d) ) { 
 	    comms->finishSendDir(2*d+1);
@@ -1562,7 +1562,7 @@ namespace QPhiX
 	    }
 	  }
 	}
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
 	
       }  
   template<typename FT, int veclen,int soalen, bool compress12>
@@ -1584,7 +1584,7 @@ namespace QPhiX
 	}
 
 	TSC_tick t_start,t_end;
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1603,7 +1603,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1612,7 +1612,7 @@ namespace QPhiX
 	  DyzMinus(tid, psi_in, res_out, u, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	  if( ! comms->localDir(d) ) { 
 	    comms->finishSendDir(2*d+1);
@@ -1630,7 +1630,7 @@ namespace QPhiX
 	  } // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
       }  // function
 
 
@@ -1657,7 +1657,7 @@ namespace QPhiX
 	  beta_t_f *= t_boundary;
 	}
 
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1676,7 +1676,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1685,7 +1685,7 @@ namespace QPhiX
 	  DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	  if( ! comms->localDir(d) ) { 
 	    comms->finishSendDir(2*d+1);
@@ -1702,7 +1702,7 @@ namespace QPhiX
 	    }
 	  } // end if
 	} // end for
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
 
       }
 
@@ -1727,7 +1727,7 @@ namespace QPhiX
 	  beta_t_f *= t_boundary;
 	}
 
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1746,7 +1746,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1755,7 +1755,7 @@ namespace QPhiX
 	  DyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	  if( ! comms->localDir(d) ) { 
 	    comms->finishSendDir(2*d+1);
@@ -1773,7 +1773,7 @@ namespace QPhiX
 	  } // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
 
       }
 

@@ -35,11 +35,6 @@ using namespace QPhiX;
 #define VECLEN_DP 1
 #endif
 
-#ifdef QMP_COMMS
-#include <qmp.h>
-#endif
-
-
 template<typename T>
 struct rsdTarget { 
   static const double value;
@@ -412,10 +407,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	
 	double end = omp_get_wtime();
 	double time = end - start;
-#ifdef QMP_COMMS
-	QMP_sum_double(&time);
-	time /= (double)QMP_get_number_of_nodes();
-#endif
+	CommsUtils::sumDouble(&time);
+	time /= (double)CommsUtils::numNodes();
 
 	masterPrintf("\t timing %d of 3\n", repeat);
 	masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -453,10 +446,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double end = omp_get_wtime();
       double time = end - start;
       
-#ifdef QMP_COMMS
-      QMP_sum_double(&time);
-      time /= (double)QMP_get_number_of_nodes();
-#endif
+      CommsUtils::sumDouble(&time);
+      time /= (double)CommsUtils::numNodes();
       
       masterPrintf("\t timing %d of 3\n", repeat);
       masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -465,9 +456,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
       double perf = Gflops/time;
       masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-#ifdef QMP_COMMS
-      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)QMP_get_number_of_nodes());
-#endif
+      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
 
     }
     
