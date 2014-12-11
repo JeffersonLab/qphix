@@ -149,6 +149,7 @@ namespace QPhiX
 
 
 #ifdef QPHIX_DO_COMMS
+#wardning defining face packers
      // PACK FACE FOR SENDING
     void packFaceDir(int tid,
 		     const FourSpinorBlock *psi,
