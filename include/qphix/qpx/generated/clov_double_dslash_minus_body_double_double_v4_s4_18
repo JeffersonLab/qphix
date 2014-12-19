@@ -166,49 +166,415 @@ dout_S3_C2_IM = vec_splats(0.0);
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
+if((accumulate[0] & 0xF) == 0xF) { 
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S0_C0_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S0_C0_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S0_C1_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S0_C1_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+u_00_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][0]));
+
+u_00_im = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][1]));
+
+u_01_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][1][0]));
+
+u_01_im = vec_ld(0, const_cast<double *>((*gBase)[0][0][1][1]));
+
+u_02_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][2][0]));
+
+u_02_im = vec_ld(0, const_cast<double *>((*gBase)[0][0][2][1]));
+
+u_10_re = vec_ld(0, const_cast<double *>((*gBase)[0][1][0][0]));
+
+u_10_im = vec_ld(0, const_cast<double *>((*gBase)[0][1][0][1]));
+
+u_11_re = vec_ld(0, const_cast<double *>((*gBase)[0][1][1][0]));
+
+u_11_im = vec_ld(0, const_cast<double *>((*gBase)[0][1][1][1]));
+
+u_12_re = vec_ld(0, const_cast<double *>((*gBase)[0][1][2][0]));
+
+u_12_im = vec_ld(0, const_cast<double *>((*gBase)[0][1][2][1]));
+
+u_20_re = vec_ld(0, const_cast<double *>((*gBase)[0][2][0][0]));
+
+u_20_im = vec_ld(0, const_cast<double *>((*gBase)[0][2][0][1]));
+
+u_21_re = vec_ld(0, const_cast<double *>((*gBase)[0][2][1][0]));
+
+u_21_im = vec_ld(0, const_cast<double *>((*gBase)[0][2][1][1]));
+
+u_22_re = vec_ld(0, const_cast<double *>((*gBase)[0][2][2][0]));
+
+u_22_im = vec_ld(0, const_cast<double *>((*gBase)[0][2][2][1]));
+
+ub_S0_C0_RE = vec_mul(u_00_re, b_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(u_00_im ,b_S0_C0_IM ,ub_S0_C0_RE);
+ub_S0_C0_IM = vec_mul(u_00_re, b_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(vec_neg(u_00_im) ,b_S0_C0_RE ,ub_S0_C0_IM );
+ub_S0_C0_RE = vec_madd(u_01_re ,b_S0_C1_RE ,ub_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(u_01_im ,b_S0_C1_IM ,ub_S0_C0_RE);
+ub_S0_C0_IM = vec_madd(u_01_re ,b_S0_C1_IM ,ub_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(vec_neg(u_01_im) ,b_S0_C1_RE ,ub_S0_C0_IM );
+ub_S0_C0_RE = vec_madd(u_02_re ,b_S0_C2_RE ,ub_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(u_02_im ,b_S0_C2_IM ,ub_S0_C0_RE);
+ub_S0_C0_IM = vec_madd(u_02_re ,b_S0_C2_IM ,ub_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(vec_neg(u_02_im) ,b_S0_C2_RE ,ub_S0_C0_IM );
+ub_S0_C1_RE = vec_mul(u_10_re, b_S0_C0_RE);
+ub_S0_C1_RE = vec_madd(u_10_im ,b_S0_C0_IM ,ub_S0_C1_RE);
+ub_S0_C1_IM = vec_mul(u_10_re, b_S0_C0_IM);
+ub_S0_C1_IM = vec_madd(vec_neg(u_10_im) ,b_S0_C0_RE ,ub_S0_C1_IM );
+ub_S0_C1_RE = vec_madd(u_11_re ,b_S0_C1_RE ,ub_S0_C1_RE);
+ub_S0_C1_RE = vec_madd(u_11_im ,b_S0_C1_IM ,ub_S0_C1_RE);
+ub_S0_C1_IM = vec_madd(u_11_re ,b_S0_C1_IM ,ub_S0_C1_IM);
+ub_S0_C1_IM = vec_madd(vec_neg(u_11_im) ,b_S0_C1_RE ,ub_S0_C1_IM );
+ub_S0_C1_RE = vec_madd(u_12_re ,b_S0_C2_RE ,ub_S0_C1_RE);
+ub_S0_C1_RE = vec_madd(u_12_im ,b_S0_C2_IM ,ub_S0_C1_RE);
+ub_S0_C1_IM = vec_madd(u_12_re ,b_S0_C2_IM ,ub_S0_C1_IM);
+ub_S0_C1_IM = vec_madd(vec_neg(u_12_im) ,b_S0_C2_RE ,ub_S0_C1_IM );
+ub_S0_C2_RE = vec_mul(u_20_re, b_S0_C0_RE);
+ub_S0_C2_RE = vec_madd(u_20_im ,b_S0_C0_IM ,ub_S0_C2_RE);
+ub_S0_C2_IM = vec_mul(u_20_re, b_S0_C0_IM);
+ub_S0_C2_IM = vec_madd(vec_neg(u_20_im) ,b_S0_C0_RE ,ub_S0_C2_IM );
+ub_S0_C2_RE = vec_madd(u_21_re ,b_S0_C1_RE ,ub_S0_C2_RE);
+ub_S0_C2_RE = vec_madd(u_21_im ,b_S0_C1_IM ,ub_S0_C2_RE);
+ub_S0_C2_IM = vec_madd(u_21_re ,b_S0_C1_IM ,ub_S0_C2_IM);
+ub_S0_C2_IM = vec_madd(vec_neg(u_21_im) ,b_S0_C1_RE ,ub_S0_C2_IM );
+ub_S0_C2_RE = vec_madd(u_22_re ,b_S0_C2_RE ,ub_S0_C2_RE);
+ub_S0_C2_RE = vec_madd(u_22_im ,b_S0_C2_IM ,ub_S0_C2_RE);
+ub_S0_C2_IM = vec_madd(u_22_re ,b_S0_C2_IM ,ub_S0_C2_IM);
+ub_S0_C2_IM = vec_madd(vec_neg(u_22_im) ,b_S0_C2_RE ,ub_S0_C2_IM );
+dout_S0_C0_RE = vec_madd(beta_vec ,ub_S0_C0_RE ,dout_S0_C0_RE);
+dout_S0_C0_IM = vec_madd(beta_vec ,ub_S0_C0_IM ,dout_S0_C0_IM);
+dout_S0_C1_RE = vec_madd(beta_vec ,ub_S0_C1_RE ,dout_S0_C1_RE);
+dout_S0_C1_IM = vec_madd(beta_vec ,ub_S0_C1_IM ,dout_S0_C1_IM);
+dout_S0_C2_RE = vec_madd(beta_vec ,ub_S0_C2_RE ,dout_S0_C2_RE);
+dout_S0_C2_IM = vec_madd(beta_vec ,ub_S0_C2_IM ,dout_S0_C2_IM);
+dout_S3_C0_RE = vec_madd(vec_neg(beta_vec) ,ub_S0_C0_IM ,dout_S3_C0_RE );
+dout_S3_C0_IM = vec_madd(beta_vec ,ub_S0_C0_RE ,dout_S3_C0_IM);
+dout_S3_C1_RE = vec_madd(vec_neg(beta_vec) ,ub_S0_C1_IM ,dout_S3_C1_RE );
+dout_S3_C1_IM = vec_madd(beta_vec ,ub_S0_C1_RE ,dout_S3_C1_IM);
+dout_S3_C2_RE = vec_madd(vec_neg(beta_vec) ,ub_S0_C2_IM ,dout_S3_C2_RE );
+dout_S3_C2_IM = vec_madd(beta_vec ,ub_S0_C2_RE ,dout_S3_C2_IM);
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S1_C0_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S1_C0_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S1_C1_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S1_C1_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
+
+b_S1_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
+b_S1_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+ub_S1_C0_RE = vec_mul(u_00_re, b_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(u_00_im ,b_S1_C0_IM ,ub_S1_C0_RE);
+ub_S1_C0_IM = vec_mul(u_00_re, b_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(vec_neg(u_00_im) ,b_S1_C0_RE ,ub_S1_C0_IM );
+ub_S1_C0_RE = vec_madd(u_01_re ,b_S1_C1_RE ,ub_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(u_01_im ,b_S1_C1_IM ,ub_S1_C0_RE);
+ub_S1_C0_IM = vec_madd(u_01_re ,b_S1_C1_IM ,ub_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(vec_neg(u_01_im) ,b_S1_C1_RE ,ub_S1_C0_IM );
+ub_S1_C0_RE = vec_madd(u_02_re ,b_S1_C2_RE ,ub_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(u_02_im ,b_S1_C2_IM ,ub_S1_C0_RE);
+ub_S1_C0_IM = vec_madd(u_02_re ,b_S1_C2_IM ,ub_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(vec_neg(u_02_im) ,b_S1_C2_RE ,ub_S1_C0_IM );
+ub_S1_C1_RE = vec_mul(u_10_re, b_S1_C0_RE);
+ub_S1_C1_RE = vec_madd(u_10_im ,b_S1_C0_IM ,ub_S1_C1_RE);
+ub_S1_C1_IM = vec_mul(u_10_re, b_S1_C0_IM);
+ub_S1_C1_IM = vec_madd(vec_neg(u_10_im) ,b_S1_C0_RE ,ub_S1_C1_IM );
+ub_S1_C1_RE = vec_madd(u_11_re ,b_S1_C1_RE ,ub_S1_C1_RE);
+ub_S1_C1_RE = vec_madd(u_11_im ,b_S1_C1_IM ,ub_S1_C1_RE);
+ub_S1_C1_IM = vec_madd(u_11_re ,b_S1_C1_IM ,ub_S1_C1_IM);
+ub_S1_C1_IM = vec_madd(vec_neg(u_11_im) ,b_S1_C1_RE ,ub_S1_C1_IM );
+ub_S1_C1_RE = vec_madd(u_12_re ,b_S1_C2_RE ,ub_S1_C1_RE);
+ub_S1_C1_RE = vec_madd(u_12_im ,b_S1_C2_IM ,ub_S1_C1_RE);
+ub_S1_C1_IM = vec_madd(u_12_re ,b_S1_C2_IM ,ub_S1_C1_IM);
+ub_S1_C1_IM = vec_madd(vec_neg(u_12_im) ,b_S1_C2_RE ,ub_S1_C1_IM );
+ub_S1_C2_RE = vec_mul(u_20_re, b_S1_C0_RE);
+ub_S1_C2_RE = vec_madd(u_20_im ,b_S1_C0_IM ,ub_S1_C2_RE);
+ub_S1_C2_IM = vec_mul(u_20_re, b_S1_C0_IM);
+ub_S1_C2_IM = vec_madd(vec_neg(u_20_im) ,b_S1_C0_RE ,ub_S1_C2_IM );
+ub_S1_C2_RE = vec_madd(u_21_re ,b_S1_C1_RE ,ub_S1_C2_RE);
+ub_S1_C2_RE = vec_madd(u_21_im ,b_S1_C1_IM ,ub_S1_C2_RE);
+ub_S1_C2_IM = vec_madd(u_21_re ,b_S1_C1_IM ,ub_S1_C2_IM);
+ub_S1_C2_IM = vec_madd(vec_neg(u_21_im) ,b_S1_C1_RE ,ub_S1_C2_IM );
+ub_S1_C2_RE = vec_madd(u_22_re ,b_S1_C2_RE ,ub_S1_C2_RE);
+ub_S1_C2_RE = vec_madd(u_22_im ,b_S1_C2_IM ,ub_S1_C2_RE);
+ub_S1_C2_IM = vec_madd(u_22_re ,b_S1_C2_IM ,ub_S1_C2_IM);
+ub_S1_C2_IM = vec_madd(vec_neg(u_22_im) ,b_S1_C2_RE ,ub_S1_C2_IM );
+dout_S1_C0_RE = vec_madd(beta_vec ,ub_S1_C0_RE ,dout_S1_C0_RE);
+dout_S1_C0_IM = vec_madd(beta_vec ,ub_S1_C0_IM ,dout_S1_C0_IM);
+dout_S1_C1_RE = vec_madd(beta_vec ,ub_S1_C1_RE ,dout_S1_C1_RE);
+dout_S1_C1_IM = vec_madd(beta_vec ,ub_S1_C1_IM ,dout_S1_C1_IM);
+dout_S1_C2_RE = vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S1_C2_RE);
+dout_S1_C2_IM = vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S1_C2_IM);
+dout_S2_C0_RE = vec_madd(vec_neg(beta_vec) ,ub_S1_C0_IM ,dout_S2_C0_RE );
+dout_S2_C0_IM = vec_madd(beta_vec ,ub_S1_C0_RE ,dout_S2_C0_IM);
+dout_S2_C1_RE = vec_madd(vec_neg(beta_vec) ,ub_S1_C1_IM ,dout_S2_C1_RE );
+dout_S2_C1_IM = vec_madd(beta_vec ,ub_S1_C1_RE ,dout_S2_C1_IM);
+dout_S2_C2_RE = vec_madd(vec_neg(beta_vec) ,ub_S1_C2_IM ,dout_S2_C2_RE );
+dout_S2_C2_IM = vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S2_C2_IM);
+} else {
 vector4double accMask;
 
 accMask = _v4d_int2mask(accumulate[0]);
 
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][0][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][0][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][0][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][0][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][3][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][3][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][3][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][3][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S0_C0_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = vec_sub(psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][0][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][0][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][0][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][0][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][3][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][3][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][3][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][3][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S0_C1_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = vec_sub(psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][0][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][0][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][0][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][0][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][3][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][3][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][3][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][3][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
@@ -297,44 +663,92 @@ dout_S3_C1_IM = vec_perm(dout_S3_C1_IM, vec_madd(beta_vec ,ub_S0_C1_RE ,dout_S3_
 dout_S3_C2_RE = vec_perm(dout_S3_C2_RE, vec_madd(vec_neg(beta_vec) ,ub_S0_C2_IM ,dout_S3_C2_RE ) ,accMask);
 dout_S3_C2_IM = vec_perm(dout_S3_C2_IM, vec_madd(beta_vec ,ub_S0_C2_RE ,dout_S3_C2_IM ),accMask);
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][1][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][1][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][1][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][1][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][2][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][2][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[0][2][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[0][2][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S1_C0_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = vec_sub(psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][1][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][1][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][1][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][1][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][2][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][2][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[1][2][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[1][2][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S1_C1_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = vec_sub(psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][1][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][1][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xbOffs[1])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][1][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][1][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xbOffs[1])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][2][0] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][2][0] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xbOffs[1])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, (const_cast<double *>(((*xyBase)[2][2][1] + xbOffs[1])))-1), vec_splats(*((*xyBase)[2][2][1] + xbOffs[0])),  _v4d_int2mask(1));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[1])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xbOffs[1])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00456));
 
 b_S1_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
@@ -387,53 +801,420 @@ dout_S2_C1_IM = vec_perm(dout_S2_C1_IM, vec_madd(beta_vec ,ub_S1_C1_RE ,dout_S2_
 dout_S2_C2_RE = vec_perm(dout_S2_C2_RE, vec_madd(vec_neg(beta_vec) ,ub_S1_C2_IM ,dout_S2_C2_RE ) ,accMask);
 dout_S2_C2_IM = vec_perm(dout_S2_C2_IM, vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S2_C2_IM ),accMask);
 }
+}
  if ( accumulate[1] ) { 
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
+if((accumulate[1] & 0xF) == 0xF) { 
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S0_C0_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S0_C0_IM = vec_add( psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S0_C1_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S0_C1_IM = vec_add( psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
+u_00_re = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][0]));
+
+u_00_im = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][1]));
+
+u_01_re = vec_ld(0, const_cast<double *>((*gBase)[1][0][1][0]));
+
+u_01_im = vec_ld(0, const_cast<double *>((*gBase)[1][0][1][1]));
+
+u_02_re = vec_ld(0, const_cast<double *>((*gBase)[1][0][2][0]));
+
+u_02_im = vec_ld(0, const_cast<double *>((*gBase)[1][0][2][1]));
+
+u_10_re = vec_ld(0, const_cast<double *>((*gBase)[1][1][0][0]));
+
+u_10_im = vec_ld(0, const_cast<double *>((*gBase)[1][1][0][1]));
+
+u_11_re = vec_ld(0, const_cast<double *>((*gBase)[1][1][1][0]));
+
+u_11_im = vec_ld(0, const_cast<double *>((*gBase)[1][1][1][1]));
+
+u_12_re = vec_ld(0, const_cast<double *>((*gBase)[1][1][2][0]));
+
+u_12_im = vec_ld(0, const_cast<double *>((*gBase)[1][1][2][1]));
+
+u_20_re = vec_ld(0, const_cast<double *>((*gBase)[1][2][0][0]));
+
+u_20_im = vec_ld(0, const_cast<double *>((*gBase)[1][2][0][1]));
+
+u_21_re = vec_ld(0, const_cast<double *>((*gBase)[1][2][1][0]));
+
+u_21_im = vec_ld(0, const_cast<double *>((*gBase)[1][2][1][1]));
+
+u_22_re = vec_ld(0, const_cast<double *>((*gBase)[1][2][2][0]));
+
+u_22_im = vec_ld(0, const_cast<double *>((*gBase)[1][2][2][1]));
+
+ub_S0_C0_RE = vec_mul(u_00_re, b_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(vec_neg(u_00_im) ,b_S0_C0_IM ,ub_S0_C0_RE );
+ub_S0_C0_IM = vec_mul(u_00_re, b_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(u_00_im ,b_S0_C0_RE ,ub_S0_C0_IM);
+ub_S0_C0_RE = vec_madd(u_10_re ,b_S0_C1_RE ,ub_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(vec_neg(u_10_im) ,b_S0_C1_IM ,ub_S0_C0_RE );
+ub_S0_C0_IM = vec_madd(u_10_re ,b_S0_C1_IM ,ub_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(u_10_im ,b_S0_C1_RE ,ub_S0_C0_IM);
+ub_S0_C0_RE = vec_madd(u_20_re ,b_S0_C2_RE ,ub_S0_C0_RE);
+ub_S0_C0_RE = vec_madd(vec_neg(u_20_im) ,b_S0_C2_IM ,ub_S0_C0_RE );
+ub_S0_C0_IM = vec_madd(u_20_re ,b_S0_C2_IM ,ub_S0_C0_IM);
+ub_S0_C0_IM = vec_madd(u_20_im ,b_S0_C2_RE ,ub_S0_C0_IM);
+ub_S0_C1_RE = vec_mul(u_01_re, b_S0_C0_RE);
+ub_S0_C1_RE = vec_madd(vec_neg(u_01_im) ,b_S0_C0_IM ,ub_S0_C1_RE );
+ub_S0_C1_IM = vec_mul(u_01_re, b_S0_C0_IM);
+ub_S0_C1_IM = vec_madd(u_01_im ,b_S0_C0_RE ,ub_S0_C1_IM);
+ub_S0_C1_RE = vec_madd(u_11_re ,b_S0_C1_RE ,ub_S0_C1_RE);
+ub_S0_C1_RE = vec_madd(vec_neg(u_11_im) ,b_S0_C1_IM ,ub_S0_C1_RE );
+ub_S0_C1_IM = vec_madd(u_11_re ,b_S0_C1_IM ,ub_S0_C1_IM);
+ub_S0_C1_IM = vec_madd(u_11_im ,b_S0_C1_RE ,ub_S0_C1_IM);
+ub_S0_C1_RE = vec_madd(u_21_re ,b_S0_C2_RE ,ub_S0_C1_RE);
+ub_S0_C1_RE = vec_madd(vec_neg(u_21_im) ,b_S0_C2_IM ,ub_S0_C1_RE );
+ub_S0_C1_IM = vec_madd(u_21_re ,b_S0_C2_IM ,ub_S0_C1_IM);
+ub_S0_C1_IM = vec_madd(u_21_im ,b_S0_C2_RE ,ub_S0_C1_IM);
+ub_S0_C2_RE = vec_mul(u_02_re, b_S0_C0_RE);
+ub_S0_C2_RE = vec_madd(vec_neg(u_02_im) ,b_S0_C0_IM ,ub_S0_C2_RE );
+ub_S0_C2_IM = vec_mul(u_02_re, b_S0_C0_IM);
+ub_S0_C2_IM = vec_madd(u_02_im ,b_S0_C0_RE ,ub_S0_C2_IM);
+ub_S0_C2_RE = vec_madd(u_12_re ,b_S0_C1_RE ,ub_S0_C2_RE);
+ub_S0_C2_RE = vec_madd(vec_neg(u_12_im) ,b_S0_C1_IM ,ub_S0_C2_RE );
+ub_S0_C2_IM = vec_madd(u_12_re ,b_S0_C1_IM ,ub_S0_C2_IM);
+ub_S0_C2_IM = vec_madd(u_12_im ,b_S0_C1_RE ,ub_S0_C2_IM);
+ub_S0_C2_RE = vec_madd(u_22_re ,b_S0_C2_RE ,ub_S0_C2_RE);
+ub_S0_C2_RE = vec_madd(vec_neg(u_22_im) ,b_S0_C2_IM ,ub_S0_C2_RE );
+ub_S0_C2_IM = vec_madd(u_22_re ,b_S0_C2_IM ,ub_S0_C2_IM);
+ub_S0_C2_IM = vec_madd(u_22_im ,b_S0_C2_RE ,ub_S0_C2_IM);
+dout_S0_C0_RE = vec_madd(beta_vec ,ub_S0_C0_RE ,dout_S0_C0_RE);
+dout_S0_C0_IM = vec_madd(beta_vec ,ub_S0_C0_IM ,dout_S0_C0_IM);
+dout_S0_C1_RE = vec_madd(beta_vec ,ub_S0_C1_RE ,dout_S0_C1_RE);
+dout_S0_C1_IM = vec_madd(beta_vec ,ub_S0_C1_IM ,dout_S0_C1_IM);
+dout_S0_C2_RE = vec_madd(beta_vec ,ub_S0_C2_RE ,dout_S0_C2_RE);
+dout_S0_C2_IM = vec_madd(beta_vec ,ub_S0_C2_IM ,dout_S0_C2_IM);
+dout_S3_C0_RE = vec_madd(beta_vec ,ub_S0_C0_IM ,dout_S3_C0_RE);
+dout_S3_C0_IM = vec_madd(vec_neg(beta_vec) ,ub_S0_C0_RE ,dout_S3_C0_IM );
+dout_S3_C1_RE = vec_madd(beta_vec ,ub_S0_C1_IM ,dout_S3_C1_RE);
+dout_S3_C1_IM = vec_madd(vec_neg(beta_vec) ,ub_S0_C1_RE ,dout_S3_C1_IM );
+dout_S3_C2_RE = vec_madd(beta_vec ,ub_S0_C2_IM ,dout_S3_C2_RE);
+dout_S3_C2_IM = vec_madd(vec_neg(beta_vec) ,ub_S0_C2_RE ,dout_S3_C2_IM );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S1_C0_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S1_C0_IM = vec_add( psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S1_C1_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S1_C1_IM = vec_add( psi_S0_IM , psi_S1_RE );
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
+
+b_S1_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
+b_S1_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
+ub_S1_C0_RE = vec_mul(u_00_re, b_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(vec_neg(u_00_im) ,b_S1_C0_IM ,ub_S1_C0_RE );
+ub_S1_C0_IM = vec_mul(u_00_re, b_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(u_00_im ,b_S1_C0_RE ,ub_S1_C0_IM);
+ub_S1_C0_RE = vec_madd(u_10_re ,b_S1_C1_RE ,ub_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(vec_neg(u_10_im) ,b_S1_C1_IM ,ub_S1_C0_RE );
+ub_S1_C0_IM = vec_madd(u_10_re ,b_S1_C1_IM ,ub_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(u_10_im ,b_S1_C1_RE ,ub_S1_C0_IM);
+ub_S1_C0_RE = vec_madd(u_20_re ,b_S1_C2_RE ,ub_S1_C0_RE);
+ub_S1_C0_RE = vec_madd(vec_neg(u_20_im) ,b_S1_C2_IM ,ub_S1_C0_RE );
+ub_S1_C0_IM = vec_madd(u_20_re ,b_S1_C2_IM ,ub_S1_C0_IM);
+ub_S1_C0_IM = vec_madd(u_20_im ,b_S1_C2_RE ,ub_S1_C0_IM);
+ub_S1_C1_RE = vec_mul(u_01_re, b_S1_C0_RE);
+ub_S1_C1_RE = vec_madd(vec_neg(u_01_im) ,b_S1_C0_IM ,ub_S1_C1_RE );
+ub_S1_C1_IM = vec_mul(u_01_re, b_S1_C0_IM);
+ub_S1_C1_IM = vec_madd(u_01_im ,b_S1_C0_RE ,ub_S1_C1_IM);
+ub_S1_C1_RE = vec_madd(u_11_re ,b_S1_C1_RE ,ub_S1_C1_RE);
+ub_S1_C1_RE = vec_madd(vec_neg(u_11_im) ,b_S1_C1_IM ,ub_S1_C1_RE );
+ub_S1_C1_IM = vec_madd(u_11_re ,b_S1_C1_IM ,ub_S1_C1_IM);
+ub_S1_C1_IM = vec_madd(u_11_im ,b_S1_C1_RE ,ub_S1_C1_IM);
+ub_S1_C1_RE = vec_madd(u_21_re ,b_S1_C2_RE ,ub_S1_C1_RE);
+ub_S1_C1_RE = vec_madd(vec_neg(u_21_im) ,b_S1_C2_IM ,ub_S1_C1_RE );
+ub_S1_C1_IM = vec_madd(u_21_re ,b_S1_C2_IM ,ub_S1_C1_IM);
+ub_S1_C1_IM = vec_madd(u_21_im ,b_S1_C2_RE ,ub_S1_C1_IM);
+ub_S1_C2_RE = vec_mul(u_02_re, b_S1_C0_RE);
+ub_S1_C2_RE = vec_madd(vec_neg(u_02_im) ,b_S1_C0_IM ,ub_S1_C2_RE );
+ub_S1_C2_IM = vec_mul(u_02_re, b_S1_C0_IM);
+ub_S1_C2_IM = vec_madd(u_02_im ,b_S1_C0_RE ,ub_S1_C2_IM);
+ub_S1_C2_RE = vec_madd(u_12_re ,b_S1_C1_RE ,ub_S1_C2_RE);
+ub_S1_C2_RE = vec_madd(vec_neg(u_12_im) ,b_S1_C1_IM ,ub_S1_C2_RE );
+ub_S1_C2_IM = vec_madd(u_12_re ,b_S1_C1_IM ,ub_S1_C2_IM);
+ub_S1_C2_IM = vec_madd(u_12_im ,b_S1_C1_RE ,ub_S1_C2_IM);
+ub_S1_C2_RE = vec_madd(u_22_re ,b_S1_C2_RE ,ub_S1_C2_RE);
+ub_S1_C2_RE = vec_madd(vec_neg(u_22_im) ,b_S1_C2_IM ,ub_S1_C2_RE );
+ub_S1_C2_IM = vec_madd(u_22_re ,b_S1_C2_IM ,ub_S1_C2_IM);
+ub_S1_C2_IM = vec_madd(u_22_im ,b_S1_C2_RE ,ub_S1_C2_IM);
+dout_S1_C0_RE = vec_madd(beta_vec ,ub_S1_C0_RE ,dout_S1_C0_RE);
+dout_S1_C0_IM = vec_madd(beta_vec ,ub_S1_C0_IM ,dout_S1_C0_IM);
+dout_S1_C1_RE = vec_madd(beta_vec ,ub_S1_C1_RE ,dout_S1_C1_RE);
+dout_S1_C1_IM = vec_madd(beta_vec ,ub_S1_C1_IM ,dout_S1_C1_IM);
+dout_S1_C2_RE = vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S1_C2_RE);
+dout_S1_C2_IM = vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S1_C2_IM);
+dout_S2_C0_RE = vec_madd(beta_vec ,ub_S1_C0_IM ,dout_S2_C0_RE);
+dout_S2_C0_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C0_RE ,dout_S2_C0_IM );
+dout_S2_C1_RE = vec_madd(beta_vec ,ub_S1_C1_IM ,dout_S2_C1_RE);
+dout_S2_C1_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C1_RE ,dout_S2_C1_IM );
+dout_S2_C2_RE = vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S2_C2_RE);
+dout_S2_C2_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C2_RE ,dout_S2_C2_IM );
+} else {
 vector4double accMask;
 
 accMask = _v4d_int2mask(accumulate[1]);
 
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0]))), vec_splats(*((*xyBase)[0][0][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[0]))), vec_splats(*((*xyBase)[0][0][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[0]))), vec_splats(*((*xyBase)[0][3][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[0]))), vec_splats(*((*xyBase)[0][3][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S0_C0_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = vec_add( psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[0]))), vec_splats(*((*xyBase)[1][0][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[0]))), vec_splats(*((*xyBase)[1][0][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[0]))), vec_splats(*((*xyBase)[1][3][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[0]))), vec_splats(*((*xyBase)[1][3][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S0_C1_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = vec_add( psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[0]))), vec_splats(*((*xyBase)[2][0][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[0]))), vec_splats(*((*xyBase)[2][0][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][0][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[0]))), vec_splats(*((*xyBase)[2][3][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[0]))), vec_splats(*((*xyBase)[2][3][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][3][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
@@ -522,44 +1303,92 @@ dout_S3_C1_IM = vec_perm(dout_S3_C1_IM, vec_madd(vec_neg(beta_vec) ,ub_S0_C1_RE 
 dout_S3_C2_RE = vec_perm(dout_S3_C2_RE, vec_madd(beta_vec ,ub_S0_C2_IM ,dout_S3_C2_RE ),accMask);
 dout_S3_C2_IM = vec_perm(dout_S3_C2_IM, vec_madd(vec_neg(beta_vec) ,ub_S0_C2_RE ,dout_S3_C2_IM ) ,accMask);
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[0]))), vec_splats(*((*xyBase)[0][1][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[0]))), vec_splats(*((*xyBase)[0][1][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[0]))), vec_splats(*((*xyBase)[0][2][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[0]))), vec_splats(*((*xyBase)[0][2][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[0][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S1_C0_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = vec_add( psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[0]))), vec_splats(*((*xyBase)[1][1][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[0]))), vec_splats(*((*xyBase)[1][1][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[0]))), vec_splats(*((*xyBase)[1][2][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[0]))), vec_splats(*((*xyBase)[1][2][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[1][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S1_C1_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = vec_add( psi_S0_IM , psi_S1_RE );
 
-psi_S0_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[0]))), vec_splats(*((*xyBase)[2][1][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][0] + xfOffs[3])));
+psi_S0_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S0_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[0]))), vec_splats(*((*xyBase)[2][1][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][1][1] + xfOffs[3])));
+psi_S0_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_RE =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[0]))), vec_splats(*((*xyBase)[2][2][0] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][0] + xfOffs[3])));
+psi_S1_RE = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 
-psi_S1_IM =  vec_perm(vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[0]))), vec_splats(*((*xyBase)[2][2][1] + xfOffs[3])), _v4d_int2mask(8));
+pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[0])));
+pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[3])));
+v1    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[0])));
+v2    =  vec_ld(0, const_cast<double *> (((*xyBase)[2][2][1] + xfOffs[3])));
+psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(00124));
 
 b_S1_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
@@ -612,10 +1441,15 @@ dout_S2_C1_IM = vec_perm(dout_S2_C1_IM, vec_madd(vec_neg(beta_vec) ,ub_S1_C1_RE 
 dout_S2_C2_RE = vec_perm(dout_S2_C2_RE, vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S2_C2_RE ),accMask);
 dout_S2_C2_IM = vec_perm(dout_S2_C2_IM, vec_madd(vec_neg(beta_vec) ,ub_S1_C2_RE ,dout_S2_C2_IM ) ,accMask);
 }
+}
  if ( accumulate[2] ) { 
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*xyBase)[0][0][0] + ybOffs[0])));
 
@@ -837,6 +1671,10 @@ dout_S2_C2_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C2_IM ,dout_S2_C2_IM );
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*xyBase)[0][0][0] + yfOffs[0])));
 
@@ -1058,6 +1896,10 @@ dout_S2_C2_IM = vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S2_C2_IM);
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*zbBase)[0][0][0] + offs[0])));
 
@@ -1279,6 +2121,10 @@ dout_S3_C2_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C2_RE ,dout_S3_C2_IM );
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_s));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*zfBase)[0][0][0] + offs[0])));
 
@@ -1500,6 +2346,10 @@ dout_S3_C2_IM = vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S3_C2_IM);
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_t_b));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*tbBase)[0][0][0] + offs[0])));
 
@@ -1721,6 +2571,10 @@ dout_S3_C2_IM = vec_madd(vec_neg(beta_vec) ,ub_S1_C2_IM ,dout_S3_C2_IM );
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&coeff_t_f));
 
+vector4double pctl1 = vec_splats(0.0);
+vector4double pctl2 = vec_splats(0.0);
+vector4double v1 = vec_splats(0.0);
+vector4double v2 = vec_splats(0.0);
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*tfBase)[0][0][0] + offs[0])));
 
