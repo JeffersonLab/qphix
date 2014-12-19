@@ -33,6 +33,9 @@
 /* QMP Comms */
 #undef QPHIX_QMP_COMMS
 
+/* Generate QPX Specializations */
+#undef QPHIX_QPX_SOURCE
+
 /* Scalar Arch */
 #undef QPHIX_SCALAR
 
