@@ -92,9 +92,7 @@ inline
  }
  norm2res = _mm512_reduce_add_pd(accum);
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   n2res = norm2res;
 }
 
@@ -200,9 +198,7 @@ void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restri
  }
  norm2res = _mm512_reduce_add_pd(accum);
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+ CommsUtils::sumDouble(&norm2res):
   cp = norm2res;
 }
 
@@ -286,11 +282,7 @@ double norm2Spinor<float,16>(float* restrict res, int n, int n_cores, int n_simt
     accum = _mm512_add_pd( accum, tmp);
   }
   norm2res = _mm512_reduce_add_pd(accum);
-  
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
-  
+  CommsUtils::sumDouble(&norm2res);
   return norm2res;
 }
 

@@ -9,11 +9,6 @@
 
 #include "qphix/linearOp.h"
 #include "qphix/print_utils.h"
-
-#ifdef QPHIX_QMP_COMMS
-#include "qmp.h"
-#endif
-
 #include "qphix/blas_new_c.h"
 #include "qphix/tsc.h"
 #include "qphix/abs_solver.h"

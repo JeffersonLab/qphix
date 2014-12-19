@@ -188,9 +188,5 @@ ALIGNED_FREE(void *addr)
 #define BARRIER_TSLICES 16
 #define N_PROBES 8
 
-#ifdef QPHIX_QMP_COMMS
-#warning "Enabling QPHIX_QMP_COMMS"
-#endif
-
 
 #endif

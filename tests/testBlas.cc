@@ -468,9 +468,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       }
     }
    
-#ifdef QMP_COMMS
-    QMP_sum_double(&norm);
-#endif
+    CommsUtils::sumDouble(&norm);
 
     copy(z1, x2, N_blocks);
     copy(t1, y2, N_blocks);
@@ -626,9 +624,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 	}
       }
     }
-#ifdef QMP_COMMS
-    QMP_sum_double(&norm);
-#endif
+    CommsUtils::sumDouble(&norm);
 
     copy(w1,x2, N_blocks);
     copy(w2,z2, N_blocks);
@@ -822,9 +818,8 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     for(int i=0; i < len; i++) { 
       norm += ( (double)y1f[i] * (double)y1f[i] );
     }
-#ifdef QMP_COMMS
-    QMP_sum_double(&norm);
-#endif
+    CommsUtils::sumDouble(&norm);
+
 
     // Unoptimized version
     copy(y1,y2,N_blocks);

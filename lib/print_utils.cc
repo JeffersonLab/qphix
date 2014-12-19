@@ -1,5 +1,9 @@
 #include "qphix/print_utils.h"
 #include <map>
+#ifdef QPHIX_QMP_COMMS
+#include <qmp.h>
+#endif
+
 namespace QPhiX { 
 
   std::map<unsigned long, unsigned long>  buffer_alloc_map;
@@ -14,6 +18,7 @@ namespace QPhiX {
 #ifdef QPHIX_QMP_COMMS
     if( QMP_is_primary_node() ) { 
 #endif
+
       va_list args;
       va_start(args,format);
       vprintf(format, args);

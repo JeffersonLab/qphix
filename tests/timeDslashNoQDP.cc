@@ -44,7 +44,6 @@ using namespace QPhiX;
 #include <qmp.h>
 #endif
 
-
 template<typename T>
 struct rsdTarget { 
   static const double value;
@@ -144,7 +143,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
   for(int t = 0; t < lT; t++) {
     for(int z = 0; z < lZ; z++) {
-      for(int y = 0; y < Ny; y++) {
+      for(int y = 0; y < lY; y++) {
 	for(int s = 0; s < nvecs; s++) {
 	  for(int mu = 0; mu < 8; mu++) {
 	    for(int c = 0; c < (compress ? 2 : 3) ; c++) {
@@ -186,7 +185,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < lT; t++) {
       for(int z = 0; z < lZ; z++) {
-	for(int y = 0; y < Ny; y++) {
+	for(int y = 0; y < lY; y++) {
 	  for(int s = 0; s < nvecs; s++) {
 	    
 	    int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
@@ -342,7 +341,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)   
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -373,7 +372,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -417,10 +416,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	
 	double end = omp_get_wtime();
 	double time = end - start;
-#ifdef QMP_COMMS
-	QMP_sum_double(&time);
-	time /= (double)QMP_get_number_of_nodes();
-#endif
+	CommsUtils::sumDouble(&time);
+	time /= (double)CommsUtils::numNodes();
 
 	masterPrintf("\t timing %d of 3\n", repeat);
 	masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -458,10 +455,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double end = omp_get_wtime();
       double time = end - start;
       
-#ifdef QMP_COMMS
-      QMP_sum_double(&time);
-      time /= (double)QMP_get_number_of_nodes();
-#endif
+      CommsUtils::sumDouble(&time);
+      time /= (double)CommsUtils::numNodes();
       
       masterPrintf("\t timing %d of 3\n", repeat);
       masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -470,9 +465,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
       double perf = Gflops/time;
       masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-#ifdef QMP_COMMS
-      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)QMP_get_number_of_nodes());
-#endif
+      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
 
     }
     
@@ -512,7 +505,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -575,7 +568,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
