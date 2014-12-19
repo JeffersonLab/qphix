@@ -163,7 +163,8 @@ int main(int argc, char **argv)
     tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 1), "testDslashFull_S1\n" );
 
 #elif defined(QPHIX_QPX_SOURCE)
-    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_S4\n" );
+#warning Test QPHIX_QPX_SOURCE
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_QPX_S4\n" );
 #else
     tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_S4\n" );
     

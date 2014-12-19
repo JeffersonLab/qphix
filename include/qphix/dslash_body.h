@@ -5,7 +5,7 @@
 #include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
-#include <immintrin.h>
+//#include <immintrin.h>
 #include <omp.h>
 
 namespace QPhiX
@@ -196,25 +196,31 @@ namespace QPhiX
 	ybmask_y0 = -1;
 	yfmask_yn = -1;
       }
-      
+
       for(int y = 0; y < nyg; y++) {
 	// Various indexing things
 	int ind = y*soalen;
 	int X = nvecs * y * spinor_line_in_floats;
 	int y1 = y & 1;
 	int y2 = 1 - y1;
+	masterPrintf(">>>>>>>>>>>>>Y1 : %d Y2 : %d<<<<<<<<<<<<<<<<\n", y1, y2);
+
 	for(int x = 0; x < soalen; x++) {
 	  xbOffs_x0_xodd[y1][ind] = X + x - 1;
 	  xbOffs_xodd[y1][ind] = X + x - 1;
+	  masterPrintf("xbOffs_x0_xodd[%d][%d] : %d\n", y1, ind, xbOffs_x0_xodd[y1][ind]);
+
 	  if(x == 0) {
 	    if( comms->localX() ) {
 	      xbOffs_x0_xodd[y1][ind] -= (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
+	  masterPrintf("xbOffs_x0_xodd[%d][%d] : %d\n", y1, ind, xbOffs_x0_xodd[y1][ind]);
 	    }
 	    else {
 	      xbOffs_x0_xodd[y1][ind] += soalen; // This lane is disabled, just set it within same cache line
 	      if(tid == 0) xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
 	    }
 	    xbOffs_xodd[y1][ind]    -= (spinor_line_in_floats - soalen);
+	    masterPrintf("xbOffs_xodd[%d][%d] : %d\n", y1, ind, xbOffs_xodd[y1][ind]);
 	    
 	  }
 	  xfOffs_xodd[y1][ind] = X + x;
@@ -386,6 +392,7 @@ namespace QPhiX
     
     // Get Core ID and SIMT ID
     int cid = tid/n_threads_per_core;
+    masterPrintf("CID : %d \n", cid);
     int smtid = tid - n_threads_per_core*cid;
     
     // Compute smt ID Y and Z indices
@@ -446,12 +453,17 @@ namespace QPhiX
     
     
     int num_phases = s->getNumPhases();
-    
+  
+    masterPrintf("Num Phases : %d \n", num_phases);
+  
     for(int ph=0; ph < num_phases; ph++) { 
+      
       const CorePhase& phase = s->getCorePhase(ph);
       const BlockPhase& binfo = block_info[tid*num_phases + ph];
       
       int nActiveCores = phase.Cyz * phase.Ct;
+
+      masterPrintf("nActiveCores %d\n", nActiveCores);
       if ( cid >= nActiveCores ) continue;
       
       int ph_next = ph;
@@ -601,6 +613,17 @@ namespace QPhiX
 		FT aniso_coeff_s_T = rep<FT,double>(aniso_coeff_S);
 		FT forw_t_coeff_T = rep<FT,double>(forw_t_coeff);
 		FT back_t_coeff_T = rep<FT,double>(back_t_coeff);
+#if 0
+    masterPrintf(">>>>>>>>>>>>>>>>>>>> Final Accumulate <<<<<<<<<<<<<<<<<\n");
+    masterPrintf("Accumulate[%d] == %X\n", 0, accumulate[0]);
+    masterPrintf("Accumulate[%d] == %X\n", 1, accumulate[1]);
+    masterPrintf("Accumulate[%d] == %X\n", 2, accumulate[2]);
+    masterPrintf("Accumulate[%d] == %X\n", 3, accumulate[3]);
+    masterPrintf("Accumulate[%d] == %X\n", 4, accumulate[4]);
+    masterPrintf("Accumulate[%d] == %X\n", 5, accumulate[5]);
+    masterPrintf("Accumulate[%d] == %X\n", 6, accumulate[6]);
+    masterPrintf("Accumulate[%d] == %X\n", 7, accumulate[7]);
+#endif
 
 		dslash_plus_vec<FT,veclen,soalen,compress12>(
 						  xyBase+X,

@@ -146,9 +146,9 @@ testDslashFull::run(void)
     reunit(u[mu]);
   }
 
+  QDPIO::cout << "Done inititalizing QDP++ gauge field..."  << endl;
 
-
-#if 1 // Save build time
+#if 0 // Save build time
   if( precision == FLOAT_PREC ) {
     
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -213,7 +213,7 @@ testDslashFull::run(void)
 
 #endif // If 0
 
-#if 1
+#if 0
   if (precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
@@ -300,12 +300,13 @@ testDslashFull::run(void)
 	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 
 #elif defined (QPHIX_QPX_SOURCE) 
+#warning Test QPHIX_QPX_SOURCE
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
 	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	//testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	//testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	//testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	//testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 #endif
       }
 
