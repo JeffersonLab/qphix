@@ -1,6 +1,16 @@
 #ifndef __QPHIX_QPX_UTILS_H__
 #define __QPHIX_QPX_UTILS_H__
 
+void printV4D(std::string msg, vector4double& toPrint)
+{
+  masterPrintf("%s=(%lf, %lf, %lf, %lf)\n", msg.c_str(), 
+	vec_extract(toPrint,0), 
+	vec_extract(toPrint,1),
+	vec_extract(toPrint,2),
+	vec_extract(toPrint,3));
+}
+
+
 inline vector4double _v4d_int2mask(unsigned int msk) {
 
     vector4double ret = vec_gpci(00123);
