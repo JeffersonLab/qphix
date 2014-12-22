@@ -839,9 +839,13 @@ testClovDslashFull::run(void)
       runTest<double,1,1,false,UF, PhiF>();
     }
   }
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#else
+
+
+
 
    if( precision == FLOAT_PREC ) { 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -865,7 +869,10 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,16,false,UF, PhiF>();
     }
 #endif
+#endif  // QPHIX_AVX_SOURCE|| QPHIX_MIC_SOURCE
+
   }
+
 
   if( precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
@@ -927,6 +934,7 @@ testClovDslashFull::run(void)
     }
 #endif
   }
-#endif
 
+
+#endif // SCALAR SOURCE
 }
