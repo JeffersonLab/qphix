@@ -213,7 +213,6 @@ namespace QPhiX
       totalBufSize = 0;
       for(int d = 0; d < 4; d++) {
 	if ( !localDir(d) ) {
-	  cout << "Dir " << d << " is nonlocal " << endl;
 	  for(int dim=0; dim < 4; dim++) { 
 	    fw_neigh_coords[dim]=bw_neigh_coords[dim]=qmp_coords[dim];
 	  }
