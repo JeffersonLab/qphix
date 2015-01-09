@@ -15,7 +15,7 @@ using namespace std;
 using namespace QPhiX;
 
 #ifndef QPHIX_SOALEN
-#define QPHIX_SOALEN 4
+#define QPHIX_SOALEN 8
 #endif
 
 #if defined(QPHIX_MIC_SOURCE)

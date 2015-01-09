@@ -92,6 +92,18 @@ namespace QPhiX
 	  masterPrintf(" Dir %d is nonlocal \n", d);
 	}
       }
+
+      numNonLocalDir_ = 0;
+      // Count the number of non local dirs
+      // and keep a compact map
+      for(int d=0; d < 4; d++) { 
+	if ( ! localDir(d) ) { 
+	  nonLocalDir_[ numNonLocalDir_ ] = d;
+	  numNonLocalDir_++;
+	}
+      }
+
+      
       initBuffers();
 
     }
@@ -149,9 +161,15 @@ namespace QPhiX
 	}
       }
     }
+    inline int numNonLocalDir() { return numNonLocalDir_; }
+    inline int nonLocalDir(int d)  { return nonLocalDir_[d]; }
+
   private:
     bool localDir_[4];
     int NFaceDir[4];
+    int numNonLocalDir_;
+    int nonLocalDir_[4];
+
   };
   
   namespace CommsUtils {
@@ -280,6 +298,17 @@ namespace QPhiX
       
       amIPtMin_ = (logical_coordinates[3] == 0);
       amIPtMax_ = (logical_coordinates[3] == (logical_dimensions[3]-1) );
+
+      numNonLocalDir_ = 0;
+      // Count the number of non local dirs
+      // and keep a compact map
+      for(int d=0; d < 4; d++) { 
+	if ( ! localDir(d) ) { 
+	  nonLocalDir_[ numNonLocalDir_ ] = d;
+	  numNonLocalDir_++;
+	}
+      }
+    
       
     }
 
@@ -434,12 +463,16 @@ namespace QPhiX
     QMP_msghandle_t mh_recvFromDir[8];
 #endif // else MPI COMMS_CALLS
 
+    int numNonLocalDir() { return numNonLocalDir_; }
+    int nonLocalDir(int d)  { return nonLocalDir_[d]; }
+
   private:
     int NFaceDir[4];
     bool localDir_[4];
     bool amIPtMin_;
     bool amIPtMax_;
-
+    int numNonLocalDir_;
+    int nonLocalDir_[4];
 
 
   };
