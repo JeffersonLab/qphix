@@ -35,8 +35,10 @@ namespace QPhiX {
 	unsigned int mask_xodd[2] = {0, 0};
 	if(dir == 0) {
 		pktsize = ngy_pack / 2;
-		if(ngy == 1) 
+		if(ngy == 1) {
+			// Swapping masks for BGQ
 			mask = (fb == 0 ? 1 : (1 << (soalen-1)));
+		}
 		else {
 			for(int i = 0; i < veclen; i+=2*soalen)	mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
 			mask_xodd[1] = mask_xodd[0] << soalen;
@@ -56,9 +58,9 @@ namespace QPhiX {
 	// printf("pkts = %d, pktsize=%d, mask=%X\n", npkts, pktsize, mask);
 	//MYASSERT(npkts == bufSize[dir]/pktsize/12);
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-        int offs[veclen] __attribute__ ((aligned(64)));
+        int offs[veclen] __attribute__ ((aligned(128)));
 #else
-        __declspec(align(64)) int offs[veclen];
+        __declspec(align(128)) int offs[veclen];
 #endif
 
 	int ind = 0;
@@ -146,8 +148,9 @@ namespace QPhiX {
 
 		//printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf, outbuf-res);
 		// OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
-		if(isPlus)
+		if(isPlus) {
 			face_proj_dir_plus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
+                }
 		else
 			face_proj_dir_minus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
 	}
@@ -192,8 +195,10 @@ namespace QPhiX {
 
 	if(dir == 0) {
 		pktsize = ngy_pack / 2;
-		if(ngy == 1) 
+		if(ngy == 1)  {
+			// Swapping mask for bgq
 			mask = (fb == 0 ? 1 : (1 << (soalen-1)));
+		}
 		else {
 			for(int i = 0; i < veclen; i+=2*soalen)	mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
 			mask_xodd[1] = mask_xodd[0] << soalen;
@@ -211,11 +216,11 @@ namespace QPhiX {
 	}
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-        int offs[veclen] __attribute__ ((aligned(64)));
-        int gOffs[veclen] __attribute__ ((aligned(64)));
+        int offs[veclen] __attribute__ ((aligned(128)));
+        int gOffs[veclen] __attribute__ ((aligned(128)));
 #else
-        __declspec(align(64)) int offs[veclen];
-        __declspec(align(64)) int gOffs[veclen];
+        __declspec(align(128)) int offs[veclen];
+        __declspec(align(128)) int gOffs[veclen];
 #endif
 	int ind = 0;
 	for(int y=0; y < ngy; y++) { 
@@ -306,8 +311,9 @@ namespace QPhiX {
 		// OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
 		FT beta_T = rep<FT,double>(beta);
 	  	
-	  if(isPlus)
+	  if(isPlus) {
 		face_finish_dir_plus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mask, dir*2+fb );
+          }
 	  else
 	    face_finish_dir_minus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mask, dir*2+fb );
     }

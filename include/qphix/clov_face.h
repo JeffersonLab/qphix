@@ -57,9 +57,9 @@ namespace QPhiX {
 	// printf("pkts = %d, pktsize=%d, mask=%X\n", npkts, pktsize, mask);
 	//MYASSERT(npkts == bufSize[dir]/pktsize/12);
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-        int offs[veclen] __attribute__ ((aligned(64)));
+        int offs[veclen] __attribute__ ((aligned(128)));
 #else
-        __declspec(align(64)) int offs[veclen];
+        __declspec(align(128)) int offs[veclen];
 #endif
 
 	int ind = 0;
@@ -213,11 +213,11 @@ namespace QPhiX {
 	}
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-        int offs[veclen] __attribute__ ((aligned(64)));
-        int gOffs[veclen] __attribute__ ((aligned(64)));
+        int offs[veclen] __attribute__ ((aligned(128)));
+        int gOffs[veclen] __attribute__ ((aligned(128)));
 #else
-        __declspec(align(64)) int offs[veclen];
-        __declspec(align(64)) int gOffs[veclen];
+        __declspec(align(128)) int offs[veclen];
+        __declspec(align(128)) int gOffs[veclen];
 #endif
 
 	int ind = 0;
@@ -379,11 +379,11 @@ namespace QPhiX {
 	}
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-        int offs[veclen] __attribute__ ((aligned(64)));
-        int gOffs[veclen] __attribute__ ((aligned(64)));
+        int offs[veclen] __attribute__ ((aligned(128)));
+        int gOffs[veclen] __attribute__ ((aligned(128)));
 #else
-        __declspec(align(64)) int offs[veclen];
-        __declspec(align(64)) int gOffs[veclen];
+        __declspec(align(128)) int offs[veclen];
+        __declspec(align(128)) int gOffs[veclen];
 #endif
 
 	int ind = 0;
