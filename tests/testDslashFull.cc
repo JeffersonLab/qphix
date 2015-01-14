@@ -1,3 +1,6 @@
+#include <iostream>
+using namespace std;
+
 #include "unittest.h"
 #include "testDslashFull.h"
 #undef SEEK_SET
