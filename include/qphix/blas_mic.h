@@ -198,7 +198,7 @@ void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restri
  }
  norm2res = _mm512_reduce_add_pd(accum);
 
- CommsUtils::sumDouble(&norm2res):
+ CommsUtils::sumDouble(&norm2res);
   cp = norm2res;
 }
 
