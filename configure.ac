@@ -376,6 +376,8 @@ fi
 case ${proc} in
 AVX|avx) 
 	AC_DEFINE([QPHIX_AVX_SOURCE],[1], [ Generate AVX Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
 	if test $SOALEN -gt 8;
 	then 
@@ -384,14 +386,18 @@ AVX|avx)
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
 SCALAR|scalar)
 	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 	AC_MSG_NOTICE([Configuring Scalar Specializations ])
 ;;        
 QPX|qpx)
 	AC_DEFINE([QPHIX_QPX_SOURCE],[1], [ Generate QPX Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [128], [ L2 Cache alignment ] )
 	AC_MSG_NOTICE([Configuring QPX Specializations ])
 	if [ $SOALEN -ne 4 ];
 	then

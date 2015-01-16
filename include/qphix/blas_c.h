@@ -101,9 +101,9 @@ void aypx(FT a, FT* restrict x, FT* restrict y, int n)
 
 // Actually this is a MIC-ism (8 doubles=1 cacheline)
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
- static double norm_array[240][8] __attribute__ ((aligned(128)));
+ static double norm_array[240][8] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
- __declspec(align(128)) static double norm_array[240][8];
+ __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double norm_array[240][8];
 #endif
 
 template<typename FT, int veclen>
@@ -112,9 +112,9 @@ inline
 {
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(128))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(128)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
 #pragma omp parallel shared(norm_array) 
@@ -176,9 +176,9 @@ double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(128))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(128)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
  #pragma omp parallel shared(norm_array)
@@ -236,9 +236,9 @@ void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp
   // 240 is max num threads...  -- fix this later 
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(128))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(128)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
 #pragma omp parallel shared(norm_array)

@@ -55,9 +55,9 @@ namespace QPhiX {
 	}
     
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-    int* tmpspc __attribute__ ((aligned(128)))  =&(tmpspc_all[veclen*16*tid]);
+    int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-    __declspec(align(128)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif    
     int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
     int *offs=&atmp[0];
@@ -203,9 +203,9 @@ namespace QPhiX {
       }
       
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif    
       int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
       int *offs = &atmp[0];
@@ -362,9 +362,9 @@ namespace QPhiX {
       
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
 
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif    
       int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
       int *offs = &atmp[0];

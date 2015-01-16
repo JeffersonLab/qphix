@@ -16,7 +16,6 @@ namespace QPhiX {
     int Ct;
     int Cyz;
     int startBlock;
-    //    char cache_pad[ 64-3*sizeof(int) ]; // Pad to cacheline
   }; 
 
   typedef unsigned short half;
