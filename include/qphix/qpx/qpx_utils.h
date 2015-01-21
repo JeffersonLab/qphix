@@ -1,6 +1,10 @@
 #ifndef __QPHIX_QPX_UTILS_H__
 #define __QPHIX_QPX_UTILS_H__
 
+#if !defined(__xlc__) && !defined(__xlC__)
+#include <qpxintrin.h>
+#endif
+
 inline vector4double _v4d_int2mask(unsigned int msk) {
 
     vector4double ret = vec_gpci(00123);

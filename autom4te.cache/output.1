@@ -719,6 +719,7 @@ enable_cean
 enable_mm_malloc
 enable_clover
 with_qmp
+enable_fake_comms
 with_qmt
 enable_openmp
 with_qdp
@@ -1378,6 +1379,8 @@ Optional Features:
   --enable-mm-malloc      Use _mm_malloc to allocate aligned memory. Otherwise
                           use posix memalign. (default: enabled)
   --enable-clover         Enable building of clover term. default is no
+  --enable-fake-comms     Allocate comms buffers and point send buffers to
+                          recv. Face processing but no actual comms
   --enable-openmp         Enable building of OpenMP dispatcher. Pass flags
                           necessary for OpenMP on CFLAGS
   --enable-proc=proc      Build code specializations for proc.
@@ -4234,6 +4237,15 @@ if test "${with_qmp+set}" = set; then
 fi
 
 
+@%:@ Check whether --enable-fake-comms was given.
+if test "${enable_fake_comms+set}" = set; then
+  enableval=$enable_fake_comms;  USE_FAKE_COMMS=${enableval} 
+else
+   USE_FAKE_COMMS="no" 
+
+fi
+
+
 
 
 @%:@ Check whether --with-qmt was given.
@@ -5166,6 +5178,24 @@ cat >>confdefs.h <<_ACEOF
 @%:@define QPHIX_SCALAR 1
 _ACEOF
 
+	if test "X${USE_FAKE_COMMS}X" = "XyesX"; 
+	then
+	   { $as_echo "$as_me:$LINENO:  Going to use Fake comms " >&5
+$as_echo "$as_me:  Going to use Fake comms " >&6;}	
+	   
+cat >>confdefs.h <<_ACEOF
+@%:@define QPHIX_DO_COMMS 1
+_ACEOF
+
+   	   
+cat >>confdefs.h <<_ACEOF
+@%:@define QPHIX_FAKE_COMMS 1
+_ACEOF
+
+	else
+	   { $as_echo "$as_me:$LINENO:  This version does no comms" >&5
+$as_echo "$as_me:  This version does no comms" >&6;}
+        fi
 	;;
 parscalar)
 	
@@ -5173,11 +5203,25 @@ cat >>confdefs.h <<_ACEOF
 @%:@define QPHIX_PARSCALAR 1
 _ACEOF
 
-	
+	if test "X${USE_FAKE_COMMS}X" = "XyesX"; 
+	then	
+      	   { { $as_echo "$as_me:$LINENO: error: Cannot use parscalar arch with fake comms" >&5
+$as_echo "$as_me: error: Cannot use parscalar arch with fake comms" >&2;}
+   { (exit 1); exit 1; }; }
+	else
+	   { $as_echo "$as_me:$LINENO:  Regular QMP COMMS " >&5
+$as_echo "$as_me:  Regular QMP COMMS " >&6;}
+    	   
+cat >>confdefs.h <<_ACEOF
+@%:@define QPHIX_DO_COMMS 1
+_ACEOF
+
+	   
 cat >>confdefs.h <<_ACEOF
 @%:@define QPHIX_QMP_COMMS 1
 _ACEOF
 
+	fi					   
 	;;
 *)
 	{ { $as_echo "$as_me:$LINENO: error: Unsupported parallel arch" >&5
@@ -5308,9 +5352,15 @@ cat >>confdefs.h <<\_ACEOF
 @%:@define QPHIX_AVX_SOURCE 1
 _ACEOF
 
+	
+cat >>confdefs.h <<\_ACEOF
+@%:@define QPHIX_LLC_CACHE_ALIGN 64
+_ACEOF
+
+
 	{ $as_echo "$as_me:$LINENO: Configuring AVX Specializations " >&5
 $as_echo "$as_me: Configuring AVX Specializations " >&6;}
-	if  $SOALEN -gt 8 ;
+	if test $SOALEN -gt 8;
 	then 
 	  { { $as_echo "$as_me:$LINENO: error: Cannot have SOALEN more than 8 for AVX" >&5
 $as_echo "$as_me: error: Cannot have SOALEN more than 8 for AVX" >&2;}
@@ -5323,6 +5373,12 @@ cat >>confdefs.h <<\_ACEOF
 @%:@define QPHIX_MIC_SOURCE 1
 _ACEOF
 
+	
+cat >>confdefs.h <<\_ACEOF
+@%:@define QPHIX_LLC_CACHE_ALIGN 64
+_ACEOF
+
+
 	{ $as_echo "$as_me:$LINENO: Configuring MIC Specializations " >&5
 $as_echo "$as_me: Configuring MIC Specializations " >&6;}
 ;;
@@ -5330,6 +5386,11 @@ SCALAR|scalar)
 	
 cat >>confdefs.h <<\_ACEOF
 @%:@define QPHIX_SCALAR_SOURCE 1
+_ACEOF
+
+	
+cat >>confdefs.h <<\_ACEOF
+@%:@define QPHIX_LLC_CACHE_ALIGN 64
 _ACEOF
 
 	{ $as_echo "$as_me:$LINENO: Configuring Scalar Specializations " >&5
@@ -5341,9 +5402,14 @@ cat >>confdefs.h <<\_ACEOF
 @%:@define QPHIX_QPX_SOURCE 1
 _ACEOF
 
+	
+cat >>confdefs.h <<\_ACEOF
+@%:@define QPHIX_LLC_CACHE_ALIGN 128
+_ACEOF
+
 	{ $as_echo "$as_me:$LINENO: Configuring QPX Specializations " >&5
 $as_echo "$as_me: Configuring QPX Specializations " >&6;}
-	if  $SOALEN -ne 4 ;
+	if test $SOALEN -ne 4;
 	then
 	  { { $as_echo "$as_me:$LINENO: error: Cannot have SOALEN not equal to 4 for QPX" >&5
 $as_echo "$as_me: error: Cannot have SOALEN not equal to 4 for QPX" >&2;}
