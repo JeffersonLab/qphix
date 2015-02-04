@@ -5,6 +5,8 @@
 
 using namespace std;
 #include "qphix/qphix_config.h"
+#include "qphix/print_utils.h"
+#include "qphix/threadbind.h"
 
 #ifdef QPHIX_QMP_COMMS
 #include "qmp.h"
@@ -29,11 +31,12 @@ int MinCt_user = 1;
 bool compress12=false;
 int qmp_geometry[4]={1,1,1,1};
 Prec prec_user = FLOAT_PREC;
+bool thread_bind = false;
 
 
 void printHelp() 
 { 
-       cout << "t_dslash -x Lx -y Ly -z Lz -t Lt -i iters -by BY -bz BZ -c NCores -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt -compress12 -geom Px Py Pz Pt -prec Prec" << endl;
+       cout << "t_dslash -x Lx -y Ly -z Lz -t Lt -i iters -by BY -bz BZ -c NCores -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt -compress12 -geom Px Py Pz Pt -prec Prec -bind" << endl;
        cout << "   Lx is the lattice size in X" << endl;
        cout << "   Ly is the lattice size in Y" << endl;
        cout << "   Lz is the lattice size in Z" << endl;
@@ -179,18 +182,20 @@ int main(int argc, char **argv)
     QMP_error("Failed to declare QMP Logical Topology\n");
     abort();
   }
- 
-  if ( QMP_is_primary_node() ) { 
-    printf("Declared QMP Topology: %d %d %d %d\n", 
-	   qmp_geometry[0], qmp_geometry[1], qmp_geometry[2], qmp_geometry[3]);
-  }
+ #endif
 
-  if (QMP_is_primary_node()) {
-    printf("Launching TestCase\n");
+  QPhiX::masterPrintf("Declared QMP Topology: %d %d %d %d\n", 
+		qmp_geometry[0], qmp_geometry[1], qmp_geometry[2], qmp_geometry[3]);
+
+
+#ifdef QPHIX_QPX_SOURCE
+  if( thread_bind ) { 
+    QPhiX::setThreadAffinity(NCores_user, Sy_user*Sz_user);
   }
-#else
-  printf("Launching TestCase\n");
+  QPhiX::reportAffinity();
 #endif
+
+  QPhiX::masterPrintf("Launching TestCase\n");
 
   // Launch the test case. 
   timeDslashNoQDP test(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user,  iters, compress12, prec_user);

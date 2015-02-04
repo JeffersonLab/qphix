@@ -111,6 +111,30 @@ vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
 if((accumulate[0] & 0xF) == 0xF) { 
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + xbOffs[0])) );
+
 
 pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
 pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
@@ -201,6 +225,18 @@ psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][1]));
@@ -440,6 +476,30 @@ vector4double accMask;
 
 accMask = _v4d_int2mask(accumulate[0]);
 
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + xbOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + xbOffs[0])) );
+
 
 pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[0])));
 pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xbOffs[1])));
@@ -530,6 +590,18 @@ psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][1]));
@@ -775,6 +847,30 @@ vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
 if((accumulate[1] & 0xF) == 0xF) { 
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + xfOffs[0])) );
+
 
 pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
 pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
@@ -865,6 +961,18 @@ psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][1]));
@@ -1104,6 +1212,30 @@ vector4double accMask;
 
 accMask = _v4d_int2mask(accumulate[1]);
 
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + xfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + xfOffs[0])) );
+
 
 pctl1 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[0])));
 pctl2 = vec_lvsl(0, const_cast<double *> (((*xyBase)[0][0][0] + xfOffs[3])));
@@ -1194,6 +1326,18 @@ psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[1][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[1][0][0][1]));
@@ -1438,6 +1582,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + ybOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + ybOffs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*xyBase)[0][0][0] + ybOffs[0])));
 
@@ -1480,6 +1648,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*xyBase)[2][3][1] + ybOffs[0])));
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_RE );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_IM );
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[2][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[2][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[2][0][0][1]));
@@ -1675,6 +1855,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + yfOffs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + yfOffs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*xyBase)[0][0][0] + yfOffs[0])));
 
@@ -1717,6 +1921,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*xyBase)[2][3][1] + yfOffs[0])));
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_RE );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_IM );
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[3][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[3][0][0][1]));
@@ -1912,6 +2128,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*zbBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*zbBase)[0][0][0]+88) + offs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*zbBase)[0][0][0] + offs[0])));
 
@@ -1954,6 +2194,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*zbBase)[2][2][1] + offs[0])));
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[4][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[4][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[4][0][0][1]));
@@ -2149,6 +2401,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*zfBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*zfBase)[0][0][0]+88) + offs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*zfBase)[0][0][0] + offs[0])));
 
@@ -2191,6 +2467,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*zfBase)[2][2][1] + offs[0])));
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[5][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[5][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[5][0][0][1]));
@@ -2386,6 +2674,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*tbBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*tbBase)[0][0][0]+88) + offs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*tbBase)[0][0][0] + offs[0])));
 
@@ -2428,6 +2740,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*tbBase)[2][2][1] + offs[0])));
 
 b_S0_C2_RE = vec_sub(psi_S0_RE , psi_S1_RE );
 b_S0_C2_IM = vec_sub(psi_S0_IM , psi_S1_IM );
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[6][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[6][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[6][0][0][1]));
@@ -2623,6 +2947,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*tfBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*tfBase)[0][0][0]+88) + offs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*tfBase)[0][0][0] + offs[0])));
 
@@ -2665,6 +3013,18 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*tfBase)[2][2][1] + offs[0])));
 
 b_S0_C2_RE = vec_add( psi_S0_RE , psi_S1_RE );
 b_S0_C2_IM = vec_add( psi_S0_IM , psi_S1_IM );
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[7][0][0][0]+40)) );
+
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[7][0][0][0]));
 
 u_00_im = vec_ld(0, const_cast<double *>((*gBase)[7][0][0][1]));

@@ -10,6 +10,7 @@
 #include <omp.h>
 #include <iostream>
 #include <cstdio>
+
 using namespace QDP;
 using namespace std;
 
@@ -45,7 +46,6 @@ void printHelp()
        cout << "   Pxyz is the extra pad in the XYZ plane" << endl;
        cout << "   MinCt is the MinCt in the blocking scheme" << endl;
        cout << "   Prec for precision " << endl;
-
 }
 
 void processArgs(int argc, char *argv[]) {
@@ -123,8 +123,7 @@ void processArgs(int argc, char *argv[]) {
 	    prec_user = DOUBLE_PREC;
 	  }
 	  i+=2 ;
-    }
-
+	}
         else {
            i++;
         }

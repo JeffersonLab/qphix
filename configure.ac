@@ -371,7 +371,7 @@ else
         AC_MSG_NOTICE([Not Building Clover Term])
 fi
 
-
+build_qpx="no"
 
 case ${proc} in
 AVX|avx) 
@@ -403,6 +403,7 @@ QPX|qpx)
 	then
 	  AC_MSG_ERROR([Cannot have SOALEN not equal to 4 for QPX]);
 	fi
+	build_qpx="yes"
 ;;
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
@@ -410,6 +411,7 @@ QPX|qpx)
 esac
 
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)

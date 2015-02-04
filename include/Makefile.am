@@ -24,7 +24,8 @@ nobase_include_HEADERS += \
 	qphix/complex_functors.h \
 	qphix/site_loops.h \
 	qphix/blas_new_c.h \
-	qphix/print_utils.h
+	qphix/print_utils.h \
+	qphix/threadbind.h
 
 
 #

@@ -85,7 +85,33 @@ accMask = _v4d_int2mask(mask);
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&beta));
 
+ __dcbt( (void *)(((inbuf)+0)) );
 
+ __dcbt( (void *)(((inbuf)+8)) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+88) + offs[0])) );
 
 
 out_S0_C0_RE = vec_ld(0, const_cast<double *>(((*oBase)[0][0][0] + offs[0])));
@@ -182,6 +208,18 @@ b_S1_C1_IM = vec_perm(b_S1_C1_IM, vec_splats(*(((inbuf)+9)+0)), _v4d_int2mask(1)
 b_S1_C2_RE = vec_perm(b_S1_C2_RE, vec_splats(*(((inbuf)+10)+0)), _v4d_int2mask(1));
 
 b_S1_C2_IM = vec_perm(b_S1_C2_IM, vec_splats(*(((inbuf)+11)+0)), _v4d_int2mask(1));
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[0][0][0][0]+40)) );
 
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[0][0][0][0]));
 

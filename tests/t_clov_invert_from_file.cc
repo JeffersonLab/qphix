@@ -4,6 +4,7 @@
 
 #include "qdp.h"
 #include "unittest.h"
+#include "qphix/print_utils.h"
 
 #include "testClovInvertFromFile.h"
 #include <omp.h>
@@ -28,6 +29,7 @@ int MinCt_user = 1;
 bool compress12=false;
 Prec prec_user = FLOAT_PREC;
 
+
 void printHelp() 
 { 
        cout << "t_dslash -x Lx -y Ly -z Lz -t Lt -i iters -by BY -bz BZ -c NCores  -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt -compress12 -prec Prec" << endl;
@@ -44,7 +46,6 @@ void printHelp()
        cout << "   Pxyz is the extra pad in the XYZ plane" << endl;
        cout << "   MinCt is the MinCt in the blocking scheme" << endl;
        cout << "   Prec for precision " << endl;
-
 }
 
 void processArgs(int argc, char *argv[]) {
@@ -123,7 +124,6 @@ void processArgs(int argc, char *argv[]) {
 	  }
 	  i+=2 ;
 	}
-
         else {
            i++;
         }

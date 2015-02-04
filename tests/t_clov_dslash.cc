@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cstdio>
 #include <omp.h>
+
 using namespace QDP;
 using namespace std;
 
@@ -31,7 +32,7 @@ Prec prec_user = FLOAT_PREC;
 
 void printHelp() 
 { 
-       cout << "t_dslash -x Lx -y Ly -z Lz -t Lt -i iters -by BY -bz BZ -c NCores  -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt -compress12 -prec Prec" << endl;
+       cout << "t_dslash -x Lx -y Ly -z Lz -t Lt -i iters -by BY -bz BZ -c NCores  -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt -compress12 -prec Prec " << endl;
        cout << "   Lx is the lattice size in X" << endl;
        cout << "   Ly is the lattice size in Y" << endl;
        cout << "   Lz is the lattice size in Z" << endl;
@@ -123,8 +124,7 @@ void processArgs(int argc, char *argv[]) {
 	    prec_user = DOUBLE_PREC;
 	  }
 	  i+=2 ;
-	}
-
+	}	
         else {
            i++;
         }
@@ -146,6 +146,7 @@ int main(int argc, char **argv)
 
   omp_set_num_threads(NCores_user*Sy_user*Sz_user);
   TestRunner  tests(&argc, &argv, nrow_in);
+
   const multi1d<int>& localLattSize = Layout::subgridLattSize();
 
   if( By_user < 0 ) { 

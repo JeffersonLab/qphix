@@ -165,7 +165,33 @@ dout_S3_C1_RE = vec_splats(0.0);
 dout_S3_C1_IM = vec_splats(0.0); 
 dout_S3_C2_RE = vec_splats(0.0); 
 dout_S3_C2_IM = vec_splats(0.0); 
+ __dcbt( (void *)(((inbuf)+0)) );
 
+ __dcbt( (void *)(((inbuf)+8)) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*oBase)[0][0][0]+88) + offs[0])) );
 
 
 out_S0_C0_RE = vec_ld(0, const_cast<double *>(((*oBase)[0][0][0] + offs[0])));
@@ -262,6 +288,18 @@ b_S1_C1_IM = vec_ld(0, const_cast<double *>(((inbuf)+36)));
 b_S1_C2_RE = vec_ld(0, const_cast<double *>(((inbuf)+40)));
 
 b_S1_C2_IM = vec_ld(0, const_cast<double *>(((inbuf)+44)));
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+0)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+8)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+16)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+24)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+32)) );
+
+ __dcbt( (void *)(((*gBase)[3][0][0][0]+40)) );
 
 u_00_re = vec_ld(0, const_cast<double *>((*gBase)[3][0][0][0]));
 
@@ -407,6 +445,42 @@ dout_S2_C1_RE = vec_madd(beta_vec ,ub_S1_C1_RE ,dout_S2_C1_RE);
 dout_S2_C1_IM = vec_madd(beta_vec ,ub_S1_C1_IM ,dout_S2_C1_IM);
 dout_S2_C2_RE = vec_madd(beta_vec ,ub_S1_C2_RE ,dout_S2_C2_RE);
 dout_S2_C2_IM = vec_madd(beta_vec ,ub_S1_C2_IM ,dout_S2_C2_IM);
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +0)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +8)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +16)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +24)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +32)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +40)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +48)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +56)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +64)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +72)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +80)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +88)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +96)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +104)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +112)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +120)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +128)) );
+
+ __dcbt( (void *)(((*clBase).diag1[ 0 ] +136)) );
+
 cl_diag_0 = vec_ld(0, const_cast<double *>((*clBase).diag1[ 0 ] ));
 
 cl_diag_1 = vec_ld(0, const_cast<double *>((*clBase).diag1[ 1 ] ));
@@ -611,6 +685,42 @@ out_S1_C2_RE = vec_madd(cl_offdiag_14_RE ,dout_S1_C1_RE ,out_S1_C2_RE);
 out_S1_C2_RE = vec_nmsub(cl_offdiag_14_IM , dout_S1_C1_IM , out_S1_C2_RE );
 out_S1_C2_IM = vec_madd(cl_offdiag_14_RE ,dout_S1_C1_IM ,out_S1_C2_IM);
 out_S1_C2_IM = vec_madd(cl_offdiag_14_IM ,dout_S1_C1_RE ,out_S1_C2_IM);
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +0)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +8)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +16)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +24)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +32)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +40)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +48)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +56)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +64)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +72)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +80)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +88)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +96)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +104)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +112)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +120)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +128)) );
+
+ __dcbt( (void *)(((*clBase).diag2[ 0 ] +136)) );
+
 cl_diag_0 = vec_ld(0, const_cast<double *>((*clBase).diag2[ 0 ] ));
 
 cl_diag_1 = vec_ld(0, const_cast<double *>((*clBase).diag2[ 1 ] ));

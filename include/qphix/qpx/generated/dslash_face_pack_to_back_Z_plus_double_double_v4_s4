@@ -28,6 +28,30 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
+ __dcbt( (void *)((((*xyBase)[0][0][0]+0) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+8) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+16) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+24) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+32) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+40) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+48) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+56) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+64) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+72) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+80) + offs[0])) );
+
+ __dcbt( (void *)((((*xyBase)[0][0][0]+88) + offs[0])) );
+
 
 psi_S0_RE = vec_ld(0, const_cast<double *>(((*xyBase)[0][0][0] + offs[0])));
 

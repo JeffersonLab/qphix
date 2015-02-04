@@ -604,6 +604,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIB@&t@OBJS
+QPHIX_BUILD_QPX_FALSE
+QPHIX_BUILD_QPX_TRUE
 QPHIX_BUILD_CLOVER_FALSE
 QPHIX_BUILD_CLOVER_TRUE
 QPHIX_BUILD_QDP_PACKERS_FALSE
@@ -5343,7 +5345,7 @@ else
 $as_echo "$as_me: Not Building Clover Term" >&6;}
 fi
 
-
+build_qpx="no"
 
 case ${proc} in
 AVX|avx) 
@@ -5415,6 +5417,7 @@ $as_echo "$as_me: Configuring QPX Specializations " >&6;}
 $as_echo "$as_me: error: Cannot have SOALEN not equal to 4 for QPX" >&2;}
    { (exit 1); exit 1; }; };
 	fi
+	build_qpx="yes"
 ;;
 *)
 	{ $as_echo "$as_me:$LINENO: Not generating any code specializations" >&5
@@ -5428,6 +5431,14 @@ esac
 else
   QPHIX_BUILD_CLOVER_TRUE='#'
   QPHIX_BUILD_CLOVER_FALSE=
+fi
+
+ if  test "x${build_qpx}x" = "xyesx"; then
+  QPHIX_BUILD_QPX_TRUE=
+  QPHIX_BUILD_QPX_FALSE='#'
+else
+  QPHIX_BUILD_QPX_TRUE='#'
+  QPHIX_BUILD_QPX_FALSE=
 fi
 
 
@@ -5590,6 +5601,13 @@ if test -z "${QPHIX_BUILD_CLOVER_TRUE}" && test -z "${QPHIX_BUILD_CLOVER_FALSE}"
   { { $as_echo "$as_me:$LINENO: error: conditional \"QPHIX_BUILD_CLOVER\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"QPHIX_BUILD_CLOVER\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${QPHIX_BUILD_QPX_TRUE}" && test -z "${QPHIX_BUILD_QPX_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"QPHIX_BUILD_QPX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"QPHIX_BUILD_QPX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
