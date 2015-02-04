@@ -4,12 +4,16 @@ AM_CXXFLAGS=$(INCFLAGS) @QPHIX_AUX_CFLAGS@
 AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@
 LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@
 
-check_PROGRAMS = t_dslash
-check_PROGRAMS += time_dslash_noqdp
+check_PROGRAMS = time_dslash_noqdp
+if QPHIX_BUILD_WITH_QDP
+check_PROGRAMS += t_dslash
+endif
 
 if QPHIX_BUILD_CLOVER
-check_PROGRAMS +=  t_clov_dslash t_clov_invert_from_file
 check_PROGRAMS += time_clov_noqdp
+if QPHIX_BUILD_WITH_QDP
+check_PROGRAMS +=  t_clov_dslash t_clov_invert_from_file
+endif
 endif
 
 # check_PROGRAMS += test_blas
@@ -30,7 +34,7 @@ t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 
 t_dslash_DEPENDENCIES = build_lib
 
-time_dslash_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
+time_dslash_noqdp_SOURCES= \
 	time_dslash_noqdp.cc \
 	timeDslashNoQDP.h \
 	timeDslashNoQDP.cc
@@ -54,7 +58,7 @@ t_clov_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
 	clover_term_qdp_w.h \
 	clover_fermact_params_w.h
 
-time_clov_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
+time_clov_noqdp_SOURCES= \
 	time_clov_noqdp.cc \
 	timeClovNoQDP.h \
 	timeClovNoQDP.cc

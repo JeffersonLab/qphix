@@ -32,7 +32,7 @@ nobase_include_HEADERS += \
 # not used currently: blas.h blas_c.h blas_mic.h
 #
 
-if QPHIX_BUILD_QDP_PACKERS
+if QPHIX_BUILD_WITH_QDP
 nobase_include_HEADERS += qphix/qdp_packer.h
 endif
 
