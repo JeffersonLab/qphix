@@ -577,9 +577,9 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	}
       }
       
-      
+      int isign=1;
       start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
       end = omp_get_wtime();
       
 
@@ -595,7 +595,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
 #if 1
   {
-    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
+    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
     solver2.tune();
     
     for(int solver =0; solver < 5; solver++) { 
@@ -638,9 +638,10 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	  }
 	}
       }
-      
+      int isign=1;
+
       start = omp_get_wtime();
-      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, verbose);
+      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
       end = omp_get_wtime();
       
       

@@ -19,13 +19,14 @@ namespace QPhiX
     
 
 
-  void operator()(Spinor *x, 
+    void operator()(Spinor *x, 
 		    const Spinor *rhs, 
 		    const double RsdTarget,
 		    int& n_iters, 
 		    double& rsd_sq_final, 
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
+		    int isign,
 		    bool verbose)
     {
       int iter=0;
@@ -94,7 +95,7 @@ namespace QPhiX
 
 	
 	solver_inner(dx_inner, r_inner, delta_use, n_iters_inner,
-		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, verbose);
+		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, isign, verbose);
 	
 	mv_apps_inner_total += mv_apps_inner;
 	site_flops_inner_total += site_flops_inner;
@@ -154,9 +155,8 @@ namespace QPhiX
     InvRichardsonMultiPrec( EvenOddLinearOperator<FT,V,S,Compress>& m_outer_,
 			    AbstractSolver<FTInner,VInner,SInner,CompressInner>& solver_inner_,
 			    const double delta_,
-			    const int isign_, 
 			    const int max_iters_ )
-	:  m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_), isign(isign_), max_iters(max_iters_), geom(m_outer_.getGeometry()), geom_inner(solver_inner_.getGeometry())
+	:  m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_), max_iters(max_iters_), geom(m_outer_.getGeometry()), geom_inner(solver_inner_.getGeometry())
     {
       r = (Spinor *)geom.allocCBFourSpinor();
       tmp = (Spinor *)geom.allocCBFourSpinor();
@@ -200,7 +200,6 @@ namespace QPhiX
     EvenOddLinearOperator<FT,V,S,Compress>& m_outer;
     AbstractSolver<FTInner,VInner,SInner,CompressInner>& solver_inner;
     const double delta;
-    const int isign;
     const int max_iters;
       
     // Internal Spinors

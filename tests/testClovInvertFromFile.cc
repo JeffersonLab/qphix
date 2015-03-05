@@ -354,16 +354,18 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 						      t_boundary,
 						      aniso_fac_s,
 						      aniso_fac_t);
-  
-  InvBiCGStab<FT,V,S,compress> solver(M, max_iters,1);
+  int isign=1;
+
+  InvBiCGStab<FT,V,S,compress> solver(M, max_iters);
   solver.tune();
 
-  InvBiCGStab<FT2,V2,SOA2,compress> solver_inner(M_inner,max_iters,1);
+  InvBiCGStab<FT2,V2,SOA2,compress> solver_inner(M_inner,max_iters);
   solver_inner.tune();
 
   // Delta = 0.05 for half prec
-  InvRichardsonMultiPrec<FT,V,S,compress,FT2,V2,SOA2,compress> mixed_solver(M,solver_inner, 0.1,1,5000);
-  
+  InvRichardsonMultiPrec<FT,V,S,compress,FT2,V2,SOA2,compress> mixed_solver(M,solver_inner, 0.1,5000);
+
+
   for(int run=0; run < 5; run++) { 
     
     
@@ -381,9 +383,9 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
     
     double start = omp_get_wtime();
-    solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+    solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
     double end = omp_get_wtime();
-    qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
     
     // Multiply back 
     // chi2 = M chi
@@ -420,11 +422,11 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
     
     double start = omp_get_wtime();
-    mixed_solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+    mixed_solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
     double end = omp_get_wtime();
     
     
-    qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
     
     // Multiply back 
     // chi2 = M chi

@@ -896,7 +896,7 @@ testDslashFull::testCG(const U& u, int t_bc)
   {
     chi = zero;
     //    qdp_pack_spinor<T,V,S,compress, Phi >(chi, chi_even, chi_odd, geom);
-    qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+    qdp_pack_cb_spinor<>(chi, chi_even, geom,0);
     
     double rsd_target=rsdTarget<T>::value;
     int max_iters=200;
@@ -910,25 +910,25 @@ testDslashFull::testCG(const U& u, int t_bc)
     double r2;
     norm2Spinor<T,V,S,compress>(r2,psi_even,geom,1);
     masterPrintf("psi has norm2 = %16.8e\n", r2);
-
+    int isign=1;
     double start = omp_get_wtime();
-    solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, verbose);
+    solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
     double end = omp_get_wtime();
     
     
     
     //    qdp_unpack_spinor<T, V, S, compress,Phi >(chi_s[0], chi_s[1], chi, geom);
-    qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+    qdp_unpack_cb_spinor<>(chi_s[0], chi, geom, 0);
     
     // Multiply back 
     // chi2 = M chi
-    dslash(chi2,u_test,chi, 1, 1);
-    dslash(ltmp,u_test,chi2, 1, 0);
+    dslash(chi2,u_test,chi, isign, 1);
+    dslash(ltmp,u_test,chi2, isign, 0);
     chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
     
     // chi3 = M^\dagger chi2
-    dslash(chi3,u_test,chi2, (-1), 1);
-    dslash(ltmp,u_test,chi3, (-1), 0);
+    dslash(chi3,u_test,chi2, (-isign), 1);
+    dslash(ltmp,u_test,chi3, (-isign), 0);
     chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
     
     Phi diff = chi3 - psi;
@@ -1036,20 +1036,19 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
     unsigned long site_flops;
     unsigned long mv_apps;
     
+    InvBiCGStab<T,V,S,compress> solver(M, max_iters);
+    solver.tune();
 
     for(int isign=1; isign >= -1; isign -=2) {
-      InvBiCGStab<T,V,S,compress> solver(M, max_iters,isign);
-      solver.tune();
-      
       chi=zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      qdp_pack_cb_spinor<>(chi, chi_even, geom,0);
       masterPrintf("Entering solver\n");
       
       double start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
       double end = omp_get_wtime();
       
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom,0);
       
       // Multiply back 
       // chi2 = M chi
@@ -1175,24 +1174,25 @@ testDslashFull::testRichardson(const U& u, int t_bc)
     double rsd_final;
     unsigned long site_flops;
     unsigned long mv_apps;
-    
 
+    InvBiCGStab<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters,isign);    
+    InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,isign,max_iters);
+    
     for(int isign=1; isign >= -1; isign -=2) {
       // BiCGStab Inner SOlver
-      InvBiCGStab<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters,isign);
-      InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,isign,max_iters);
+
     
       chi = zero;
       //      qdp_pack_spinor<T,V,S, compress,Phi >(chi, chi_even, chi_odd, geom);
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom_outer);
+      qdp_pack_cb_spinor<>(chi, chi_even, geom_outer,0);
       masterPrintf("Entering solver\n");
       
       double start = omp_get_wtime();
-      outer_solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      outer_solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign, verbose);
       double end = omp_get_wtime();
       
       //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0], chi_s[1], chi, geom);
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom_outer);
+      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom_outer,0);
       
       // Multiply back 
       // chi2 = M chi

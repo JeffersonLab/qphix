@@ -16,6 +16,7 @@ namespace QPhiX {
 			    double& rsd_sq_final,
 			    unsigned long& site_flops,
 			    unsigned long& mv_apps,
+			    int isign,
 			    bool verboseP) = 0;
 
     virtual void tune() = 0;

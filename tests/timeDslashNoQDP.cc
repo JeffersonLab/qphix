@@ -531,7 +531,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
       
       start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
       end = omp_get_wtime();
     
       
@@ -547,7 +547,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1
   {
     masterPrintf("Creating BiCGStab Solver\n");
-    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
+    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
     masterPrintf("Tuning BiCGStab Solver\n");
     solver2.tune();
     
@@ -596,7 +596,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
     
       start = omp_get_wtime();
-      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
       end = omp_get_wtime();
       
       
