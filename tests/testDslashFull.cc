@@ -1175,8 +1175,8 @@ testDslashFull::testRichardson(const U& u, int t_bc)
     unsigned long site_flops;
     unsigned long mv_apps;
 
-    InvBiCGStab<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters,isign);    
-    InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,isign,max_iters);
+    InvBiCGStab<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters);    
+    InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,max_iters);
     
     for(int isign=1; isign >= -1; isign -=2) {
       // BiCGStab Inner SOlver
