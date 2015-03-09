@@ -2,10 +2,7 @@
 #define QPHIX_BLAS_MIC_NEW_H
 
 #include <qphix/geometry.h>
-#ifdef QPHIX_QMP_COMMS
-#include <qmp.h>
-#endif
-
+#include <qphix/comm.h>
 #include <omp.h>
 
 namespace QPhiX { 

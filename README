@@ -87,23 +87,34 @@ d) Configuring the package.
 
    --prefix=<install_dir>  Install into directory <install_dir>
    --enable-clover         Enable Clover term related codes (default true)
-   --enable-proc=PROC      Select kernels for processor PROC. Allowed values are AVX,MIC for now	
+   --enable-proc=PROC      Select kernels for processor PROC. Allowed values are SCALAR,AVX,MIC for now	
    --with-qmp<qmp_dir>     QMP Library is in <qmp_dir>
    --with-qdp=<qdpxx_dir>  QDP++ library is in <qdpxx_dir>
    --enable-soalen=SOA     Set the SOA-length to SOA (SOA=4,8,16 as appropriate) 
+   --enable-cean           Enable C++ Extended Array Notation (Cilk++ notation) in some places (default: disabled)
+   --enable-mm-malloc      Use mm_malloc for allocating aligned arrays 
+                           if disabled posix_memalign will be used. 
+			   Currently Xeon Phi will use a mixture of mmap and _mm_malloc irrespective of this value (default: enabled)
+
     
     In addition, Compiler flags can be passed via variables
     CXXFLAGS, CFLAGS and teh compiler can be selected via vriables  CXX and CC	
+
+    When compiling for Xeon Phi in native mode or cross compiling in general it is useful
+    to switch autoconf into cross compile mode. This can be achieved by giving a different value
+    for --host and --build e.g. for Xeon Phi: --host=x86_64-linux-gnu --build=none-none-none
 E.g: 
 
        For AVX: 
 
 	configure --prefix=<install_location> \
 	          --with-qdp=<QDP++ installation>
-                  --enable-prox=AVX \
+                  --enable-proc=AVX \
                   --enable-soalen=8 \
                   --enable-clover \
-	   	  --enable-openmp \ 
+	   	  --enable-openmp \
+		  --enable-cean \
+                  --enable-mm-malloc \
                   CXXFLAGS="-openmp -g -O2 -finline-functions -fno-alias -std=c++11 -xAVX -vec-report -restrict" \
 	          CFLAGS="-openmp -g  -O2 -fno-alias -std=c99 -xAVX -vec-report -restrict" \
                   CXX="mpiicpc" \
@@ -113,14 +124,21 @@ E.g:
 
 	 configure --prefix=<install_location> \
                   --with-qdp=<QDP++ installation>
-                  --enable-prox=MIC \
+                  --enable-proc=MIC \
                   --enable-soalen=8 \
                   --enable-clover \ 
                   --enable-openmp \
+		  --enable-cean \
+		  --enable-mm-malloc \
                   CXXFLAGS="-openmp -mmic -vec-report -restrict -mGLOB_default_function_attrs=\"use_gather_scatter_hint=off\" -g -O2 -finline-functions -fno-alias -std=c++0x" \
                   CFLAGS="-mmic -vec-report -restrict -mGLOB_default_function_attrs=\"use_gather_scatter_hint=off\" -openmp -g  -O2 -fno-alias -std=c9l9
                   CXX="mpiicpc" \
-                  CC="mpiicc"
+                  CC="mpiicc" \
+		  --host=x86_64-linux-gnu --build=none-none-none
+
+In addition it has been found that GCC and Clang don't like the restrict keyword in C++ source, but allow defining the __restrict__ extension
+So you may need to add -Drestrict=__restrict__ to CXXFLAGS
+
 
 e) Building And Installing
 ---------------------------

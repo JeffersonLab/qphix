@@ -37,9 +37,7 @@ void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2
       norm2res += tmpd*tmpd;
   }
   
- #ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   n2res = norm2res;
 }
 
@@ -56,9 +54,7 @@ double norm2Spinor(FT* restrict res, int n)
     norm2res += tmpd*tmpd;
   }
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   return norm2res;
 }
 
@@ -81,9 +77,7 @@ void rmammpNorm2rxpap(FT* restrict r, FT ar, FT* restrict  mmp, double& cp, FT* 
   }
   
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&cp_internal);
-#endif
+  CommsUtils::sumDouble(&cp_internal);
   cp= cp_internal;
 }
 
@@ -171,9 +165,7 @@ inline
    norm2res += norm_array[i][0];
  }
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   n2res = norm2res;
 }
  
@@ -232,9 +224,7 @@ double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_
     norm2res += norm_array[i][0];
   }
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   return norm2res;
 }
 
@@ -295,9 +285,7 @@ void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp
     norm2res += norm_array[i][0];
   }
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   cp = norm2res;
 }
 

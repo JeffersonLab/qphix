@@ -37,10 +37,6 @@ using namespace QPhiX;
 #endif
 
 
-#ifdef QMP_COMMS
-#include <qmp.h>
-#endif
-
 
 template<typename T>
 struct rsdTarget { 
@@ -141,7 +137,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
   for(int t = 0; t < lT; t++) {
     for(int z = 0; z < lZ; z++) {
-      for(int y = 0; y < Ny; y++) {
+      for(int y = 0; y < lY; y++) {
 	for(int s = 0; s < nvecs; s++) {
 	  for(int mu = 0; mu < 8; mu++) {
 	    for(int c = 0; c < (compress ? 2 : 3) ; c++) {
@@ -183,7 +179,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < lT; t++) {
       for(int z = 0; z < lZ; z++) {
-	for(int y = 0; y < Ny; y++) {
+	for(int y = 0; y < lY; y++) {
 	  for(int s = 0; s < nvecs; s++) {
 	    
 	    int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
@@ -338,7 +334,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
     for(int t=0; t < lT; t++) {
       for(int z=0; z < lZ; z++) {
-	for(int y=0; y < Ny; y++) {
+	for(int y=0; y < lY; y++) {
 	  for(int s=0; s < nvecs; s++) { 
 	    for(int spin=0; spin < 4; spin++) { 
 	      for(int col=0; col < 3; col++)  {
@@ -372,7 +368,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
     for(int t=0; t < lT; t++) {
       for(int z=0; z < lZ; z++) {
-	for(int y=0; y < Ny; y++) {
+	for(int y=0; y < lY; y++) {
 	  for(int s=0; s < nvecs; s++) { 
 	    for(int spin=0; spin < 4; spin++) { 
 	      for(int col=0; col < 3; col++)  {
@@ -407,7 +403,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < lT; t++) {
       for(int z = 0; z < lZ; z++) {
-	for(int y = 0; y < Ny; y++) {
+	for(int y = 0; y < lY; y++) {
 	  for(int s = 0; s < nvecs; s++) {
 	    for(int x = 0; x < S; x++) {
 	      
@@ -443,15 +439,18 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     
 #if 1      
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
-  for(int isign=1; isign >= -1; isign -=2) {
-    for(int cb=0; cb < 2; cb++) { 
+    //  for(int isign=1; isign >= -1; isign -=2) {
+    //   for(int cb=0; cb < 2; cb++) { 
+    int isign=1; int cb=0;
+
       int source_cb = 1 - cb;
       int target_cb = cb;
 
       masterPrintf("Timing on cb=%d isign=%d\n", cb, isign);
       masterPrintf("=============================\n");
       
-      for(int repeat=0; repeat < 3; repeat++) { 
+      //      for(int repeat=0; repeat < 3; repeat++) { 
+      {
 	double start = omp_get_wtime();
 	
 	for(int i=0; i < iters; i++) {
@@ -466,29 +465,26 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	
 	double end = omp_get_wtime();
 	double time = end - start;
-#ifdef QMP_COMMS
-	QMP_sum_double(&time);
-	time /= (double)QMP_get_number_of_nodes();
-#endif
+	CommsUtils::sumDouble(&time);
+	time /= (double)CommsUtils::numNodes();
+
 	
-	masterPrintf("\t timing %d of 3\n", repeat);
+	// masterPrintf("\t timing %d of 3\n", repeat);
 	masterPrintf("\t %d iterations in %e seconds\n", iters, time);
 	masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
 	double Gflops = 1824.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
 	double perf = Gflops/time;
 	masterPrintf("\t Performance: %g GFLOPS total\n", perf);
+	masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
 
-#ifdef QMP_COMMS
-	masterPrintf("\t              %g GFLOPS / node\n", perf/(double)QMP_get_number_of_nodes());
+      }// end scope 
+	//      } //repeats
+	//} // isign
+	//} //cb
 #endif
 
-      }
-    }
-  }
-#endif
 
-
-#if 1  
+#if 0
   masterPrintf("Creating EvenOdd Clover Op\n");
   
   EvenOddCloverOperator<FT,V,S,compress> M(u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
@@ -511,10 +507,8 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double end = omp_get_wtime();
       double time = end - start;
       
-#ifdef QMP_COMMS
-      QMP_sum_double(&time);
-      time /= (double)QMP_get_number_of_nodes();
-#endif
+      CommsUtils::sumDouble(&time);
+      time /= (double)CommsUtils::numNodes();
 
       masterPrintf("\t timing %d of 3\n", repeat);
       masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -523,14 +517,12 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
       double perf = Gflops/time;
       masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-#ifdef QMP_COMMS
-      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)QMP_get_number_of_nodes());
-#endif
+      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
     }
   }
 #endif
 
-#if 1
+#if 0
   
   double rsd_target=rsdTarget<FT>::value;
   int max_iters=250;
@@ -553,7 +545,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -598,7 +590,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   }
 #endif  
 
-#if 1
+#if 0
   {
     InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
     solver2.tune();
@@ -612,7 +604,7 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -717,8 +709,9 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     masterPrintf("HALF precision is not supported for this architecture. Currently only available for MIC\n");
 #endif
   }
+#endif
 
-
+#if 1
   if( precision == DOUBLE_PREC ) { 
     if ( QPHIX_SOALEN > VECLEN_DP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);

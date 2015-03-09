@@ -110,7 +110,7 @@ int main(int argc, char **argv)
   // Max no of threads = NCores * Sy * Sz
   omp_set_num_threads(NCores_user*Sy_user*Sz_user);
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
 
   // Initialize QMP
   if( QMP_is_initialized() == QMP_FALSE ) { 
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
   masterPrintf("Test Case Done\n");
 
-#ifdef QMP_COMMS
+#ifdef QPHIX_QMP_COMMS
   QMP_finalize_msg_passing();
 #endif
 }

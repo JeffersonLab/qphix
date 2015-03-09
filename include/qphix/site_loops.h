@@ -2,9 +2,7 @@
 #define QPHIX_SITE_LOOPS_H
 
 #include <qphix/geometry.h>
-#ifdef QPHIX_QMP_COMMS
-#include <qmp.h>
-#endif
+#include <qphix/comm.h>
 
 #include <omp.h>
 #include "qphix/print_utils.h"
@@ -156,10 +154,7 @@ namespace QPhiX
 	reduction += new_norm_array[btid][s];
       }
     }
-    // DO A GLOBAL SUM HER
-#ifdef QPHIX_QMP_COMMS
-    QMP_sum_double(&reduction);
-#endif
+    CommsUtils::sumDouble(&reduction);
   }
 
 
@@ -246,9 +241,8 @@ namespace QPhiX
     }
         // DO A GLOBAL SUM HERE
 
-#ifdef QPHIX_QMP_COMMS
-    QMP_sum_double_array(reduction,2);
-#endif
+    CommsUtils::sumDoubleArray(reduction,2);
+
 
   }
 

@@ -74,6 +74,15 @@ AC_ARG_WITH(qmp,
   [QMP_HOME="${with_qmp}"]
 )
 
+AC_ARG_ENABLE(fake-comms,
+	AC_HELP_STRING(
+	[--enable-fake-comms],
+	[Allocate comms buffers and point send buffers to recv. Face processing but no actual comms]
+	),
+	[ USE_FAKE_COMMS=${enableval} ],
+	[ USE_FAKE_COMMS="no" ]
+)
+
 
 dnl Use Jie Chens threads library
 AC_ARG_WITH(qmt,
@@ -292,10 +301,25 @@ dnl ************************************************************************
 case ${PARALLEL_ARCH} in
 scalar)
 	AC_DEFINE_UNQUOTED(QPHIX_SCALAR, [1], [Scalar Arch])
+	if test "X${USE_FAKE_COMMS}X" = "XyesX"; 
+	then
+	   AC_MSG_NOTICE([ Going to use Fake comms ])	
+	   AC_DEFINE_UNQUOTED(QPHIX_DO_COMMS,[1], [Do the actual comms])
+   	   AC_DEFINE_UNQUOTED(QPHIX_FAKE_COMMS, [1], [Fake Comms])
+	else
+	   AC_MSG_NOTICE([ This version does no comms])
+        fi
 	;;
 parscalar)
 	AC_DEFINE_UNQUOTED(QPHIX_PARSCALAR, [1], [Parscalar Arch])
-	AC_DEFINE_UNQUOTED(QPHIX_QMP_COMMS,[1], [QMP Comms])
+	if test "X${USE_FAKE_COMMS}X" = "XyesX"; 
+	then	
+      	   AC_MSG_ERROR([Cannot use parscalar arch with fake comms])
+	else
+	   AC_MSG_NOTICE([ Regular QMP COMMS ])
+    	   AC_DEFINE_UNQUOTED(QPHIX_DO_COMMS,[1], [Do the actual comms])
+	   AC_DEFINE_UNQUOTED(QPHIX_QMP_COMMS,[1], [QMP Comms])
+	fi					   
 	;;
 *)
 	AC_MSG_ERROR([Unsupported parallel arch])
@@ -303,6 +327,10 @@ parscalar)
 esac
 
 case ${SOALEN} in
+1)
+	AC_MSG_NOTICE([Building for SOALEN=1])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[1], [SOALEN is 1])
+	;;
 4)
 	AC_MSG_NOTICE([Building for SOALEN=4])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
@@ -363,7 +391,7 @@ case ${proc} in
 AVX|avx) 
 	AC_DEFINE([QPHIX_AVX_SOURCE],[1], [ Generate AVX Specializations ])
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
-	if [ $SOALEN -gt 8 ];
+	if test $SOALEN -gt 8;
 	then 
 	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
 	fi		       	    
@@ -372,6 +400,10 @@ MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
+SCALAR|scalar)
+	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
+	AC_MSG_NOTICE([Configuring Scalar Specializations ])
+;;        
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
 	;;

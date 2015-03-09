@@ -27,6 +27,12 @@
 /* Build Twisted Mass Term */
 #undef QPHIX_BUILD_TWISTED_MASS
 
+/* Do the actual comms */
+#undef QPHIX_DO_COMMS
+
+/* Fake Comms */
+#undef QPHIX_FAKE_COMMS
+
 /* Generate MIC Specializations */
 #undef QPHIX_MIC_SOURCE
 
