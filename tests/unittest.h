@@ -6,7 +6,8 @@
 #include <vector>
 
 #include <qphix/qphix_config.h>
-using namespace QDP; 
+using namespace QDP;
+using namespace std;
 
 namespace Assertions { 
   template<typename T>
