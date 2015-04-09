@@ -29,6 +29,7 @@ namespace QPhiX {
     typedef typename Geometry<FT,V,S,compress12>::FourSpinorBlock Spinor;
     virtual void operator()(Spinor* x[],
 			    const Spinor *rhs,
+			    const int n_shift,
 			    const double shifts[],
 			    const double RsdTarget[], 
 			    int& niters, 

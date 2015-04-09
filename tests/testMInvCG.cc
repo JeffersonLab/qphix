@@ -59,7 +59,7 @@ using namespace QPhiX;
 
   // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
-bool verbose = true;
+bool verbose = false;
 
 template<typename F> 
 struct tolerance { 
@@ -172,7 +172,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3]-1),
   			Real(t_boundary), Real(1));
 
-  double Mass=0.1;
+  double Mass=0.01;
   EvenOddWilsonOperator<T,V,S,compress> M(Mass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
@@ -196,11 +196,13 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
 
   int isign=1;
   double start = omp_get_wtime();
-  solver.allocateSpace();
-  solver(psi_d, chi_d, shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
-  solver.freeSpace();
+  
+  solver(psi_d, chi_d, n_shift,shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
+
   
   double end = omp_get_wtime();
+
+  QDPIO::cout << "Solver Completed. Iters = " << niters << " Wallclock = " << end -start << " sec." << endl;
 
   // check solutions
   Phi psi,psi2,psi3;
