@@ -6,7 +6,7 @@ LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@
 
 check_PROGRAMS = time_dslash_noqdp
 if QPHIX_BUILD_WITH_QDP
-check_PROGRAMS += t_dslash
+check_PROGRAMS += t_dslash t_minvcg
 endif
 
 if QPHIX_BUILD_CLOVER
@@ -32,12 +32,21 @@ t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testDslashFull.cc \
 	t_dslash.cc
 
-t_dslash_DEPENDENCIES = build_lib
+
 
 time_dslash_noqdp_SOURCES= \
 	time_dslash_noqdp.cc \
 	timeDslashNoQDP.h \
 	timeDslashNoQDP.cc
+
+t_minvcg_SOURCES = $(FRAMEWORK_SRCS) \
+	testMInvCG.h \
+	testMInvCG.cc \
+	t_minvcg.cc
+
+t_dslash_DEPENDENCIES = build_lib
+time_dslash_noqdp_DEPENDENCIES=build_lib
+t_minvcg_DEPENDENCIES=build_lib
 
 if QPHIX_BUILD_CLOVER
 t_clov_dslash_SOURCES = $(FRAMEWORK_SRCS) \

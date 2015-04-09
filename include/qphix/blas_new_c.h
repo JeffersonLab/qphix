@@ -44,6 +44,18 @@ namespace QPhiX {
     ZeroFunctor<FT,V,S,compress> f(res);
     siteLoopNoReduction<FT,V,S,compress,ZeroFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
   }
+
+  template<typename FT, int V, int S, bool compress>
+  void axy(const double alpha, 
+	  const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+	  typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	  const Geometry<FT,V,S,compress>& geom, 
+	  int n_blas_simt) 
+  {
+    
+    AXYFunctor<FT,V,S,compress> f(alpha, x,y);
+    siteLoopNoReduction<FT,V,S,compress, AXYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  }
   
   template<typename FT, int V, int S, bool compress>
   void aypx(const double alpha, 
