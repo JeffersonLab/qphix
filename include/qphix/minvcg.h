@@ -41,13 +41,13 @@ namespace  QPhiX
     }
     
 
-    void operator()(Spinor *x[], 
+    void operator()(Spinor **x, 
 		    const Spinor *rhs, 
 		    const int n_shift,
-		    const double shifts[],
-		    const double RsdTarget[],
+		    const double* shifts,
+		    const double* RsdTarget,
 		    int& n_iters, 
-		    double rsd_sq_final[], 
+		    double* rsd_sq_final, 
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
@@ -190,6 +190,9 @@ namespace  QPhiX
 	    }
 
 	    convsP[s] = ( css < rsd_sq[s] ) ;
+	    if( convsP[s] ) { 
+	      rsd_sq_final[s] = css;
+	    }
 	  }
 	  convP &= convsP[s];
 	}

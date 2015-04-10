@@ -351,8 +351,8 @@ yes)
 	;;
 esac
 
-AM_CONDITIONAL(QPHIX_SCALAR, [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
-AM_CONDITIONAL(QPHIX_PARSCALAR, [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
+AM_CONDITIONAL([QPHIX_SCALAR], [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
+AM_CONDITIONAL([QPHIX_PARSCALAR], [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
 AM_CONDITIONAL([QPHIX_BUILD_WITH_QDP], [ test "X${QDPXX_GIVEN}X" == "XyesX" ])
 
 if test "x${build_clover}x" == "xyesx";

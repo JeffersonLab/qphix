@@ -16,6 +16,7 @@ nobase_include_HEADERS += \
 	qphix/invcg.h \
 	qphix/invbicgstab.h \
 	qphix/inv_richardson_multiprec.h \
+	qphix/minvcg.h \
 	qphix/linearOp.h \
 	qphix/memmap.h \
 	qphix/tsc.h \
