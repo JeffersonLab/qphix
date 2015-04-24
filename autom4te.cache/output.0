@@ -608,8 +608,8 @@ QPHIX_BUILD_QPX_FALSE
 QPHIX_BUILD_QPX_TRUE
 QPHIX_BUILD_CLOVER_FALSE
 QPHIX_BUILD_CLOVER_TRUE
-QPHIX_BUILD_QDP_PACKERS_FALSE
-QPHIX_BUILD_QDP_PACKERS_TRUE
+QPHIX_BUILD_WITH_QDP_FALSE
+QPHIX_BUILD_WITH_QDP_TRUE
 QPHIX_PARSCALAR_FALSE
 QPHIX_PARSCALAR_TRUE
 QPHIX_SCALAR_FALSE
@@ -5160,16 +5160,6 @@ $as_echo "$as_me: error:  Unknown value for --enable-parallel-arch " >&2;}
 	esac
 fi
 
-case ${PARALLEL_ARCH} in
-  scalar|parscalar)
-	;;
-  *)
-	{ { $as_echo "$as_me:$LINENO: error: Unknown Parallel Architecture: ${PARALLEL_ARCH}  " >&5
-$as_echo "$as_me: error: Unknown Parallel Architecture: ${PARALLEL_ARCH}  " >&2;}
-   { (exit 1); exit 1; }; } 
-	;; 
-esac
-
 
 
 
@@ -5323,13 +5313,13 @@ else
 fi
 
  if  test "X${QDPXX_GIVEN}X" == "XyesX" ; then
-  QPHIX_BUILD_QDP_PACKERS_TRUE=
-  QPHIX_BUILD_QDP_PACKERS_FALSE='#'
+  QPHIX_BUILD_WITH_QDP_TRUE=
+  QPHIX_BUILD_WITH_QDP_FALSE='#'
 else
-  QPHIX_BUILD_QDP_PACKERS_TRUE='#'
-  QPHIX_BUILD_QDP_PACKERS_FALSE=
+  QPHIX_BUILD_WITH_QDP_TRUE='#'
+  QPHIX_BUILD_WITH_QDP_FALSE=
 fi
-				 
+
 
 if test "x${build_clover}x" == "xyesx";
 then
@@ -5590,10 +5580,10 @@ $as_echo "$as_me: error: conditional \"QPHIX_PARSCALAR\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${QPHIX_BUILD_QDP_PACKERS_TRUE}" && test -z "${QPHIX_BUILD_QDP_PACKERS_FALSE}"; then
-  { { $as_echo "$as_me:$LINENO: error: conditional \"QPHIX_BUILD_QDP_PACKERS\" was never defined.
+if test -z "${QPHIX_BUILD_WITH_QDP_TRUE}" && test -z "${QPHIX_BUILD_WITH_QDP_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"QPHIX_BUILD_WITH_QDP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-$as_echo "$as_me: error: conditional \"QPHIX_BUILD_QDP_PACKERS\" was never defined.
+$as_echo "$as_me: error: conditional \"QPHIX_BUILD_WITH_QDP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
