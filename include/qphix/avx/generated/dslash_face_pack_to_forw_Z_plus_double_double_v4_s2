@@ -23,21 +23,7 @@ __m256d tmp_3_im = _mm256_setzero_pd();
 __m256d tmp_4_re = _mm256_setzero_pd();
 __m256d tmp_4_im = _mm256_setzero_pd();
 __m256d zero = _mm256_setzero_pd();
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+0) ), _MM_HINT_T1);
-
 zero = _mm256_setzero_pd(); 
- _mm_prefetch((const char *)( ((outbuf)+0) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+8) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+16) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+24) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+32) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+40) ), _MM_HINT_T0);
-
 psi_S0_RE = _mm256_setzero_pd();
 psi_S0_RE =  _mm256_insertf128_pd(psi_S0_RE, _mm_load_pd(((*xyBase)[0][0][0] + offs[0])), 0);
 
@@ -54,8 +40,6 @@ psi_S1_RE =  _mm256_insertf128_pd(psi_S1_RE, _mm_load_pd(((*xyBase)[0][2][0] + o
 psi_S1_RE =  _mm256_insertf128_pd(psi_S1_RE, _mm_load_pd(((*xyBase)[0][2][0] + offs[2])), 1);
 
 psi_S1_IM = _mm256_setzero_pd();
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+8) ), _MM_HINT_T1);
-
 psi_S1_IM =  _mm256_insertf128_pd(psi_S1_IM, _mm_load_pd(((*xyBase)[0][2][1] + offs[0])), 0);
 
 psi_S1_IM =  _mm256_insertf128_pd(psi_S1_IM, _mm_load_pd(((*xyBase)[0][2][1] + offs[2])), 1);
@@ -83,8 +67,6 @@ psi_S1_IM =  _mm256_insertf128_pd(psi_S1_IM, _mm_load_pd(((*xyBase)[1][2][1] + o
 psi_S1_IM =  _mm256_insertf128_pd(psi_S1_IM, _mm_load_pd(((*xyBase)[1][2][1] + offs[2])), 1);
 
 b_S0_C1_RE = _mm256_sub_pd( psi_S0_RE , psi_S1_IM );
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+16) ), _MM_HINT_T1);
-
 b_S0_C1_IM = _mm256_add_pd( psi_S0_IM , psi_S1_RE );
 psi_S0_RE = _mm256_setzero_pd();
 psi_S0_RE =  _mm256_insertf128_pd(psi_S0_RE, _mm_load_pd(((*xyBase)[2][0][0] + offs[0])), 0);
@@ -110,8 +92,6 @@ b_S0_C2_RE = _mm256_sub_pd( psi_S0_RE , psi_S1_IM );
 b_S0_C2_IM = _mm256_add_pd( psi_S0_IM , psi_S1_RE );
 psi_S0_RE = _mm256_setzero_pd();
 psi_S0_RE =  _mm256_insertf128_pd(psi_S0_RE, _mm_load_pd(((*xyBase)[0][1][0] + offs[0])), 0);
-
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+24) ), _MM_HINT_T1);
 
 psi_S0_RE =  _mm256_insertf128_pd(psi_S0_RE, _mm_load_pd(((*xyBase)[0][1][0] + offs[2])), 1);
 
@@ -140,8 +120,6 @@ psi_S0_RE =  _mm256_insertf128_pd(psi_S0_RE, _mm_load_pd(((*xyBase)[1][1][0] + o
 psi_S0_IM = _mm256_setzero_pd();
 psi_S0_IM =  _mm256_insertf128_pd(psi_S0_IM, _mm_load_pd(((*xyBase)[1][1][1] + offs[0])), 0);
 
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+32) ), _MM_HINT_T1);
-
 psi_S0_IM =  _mm256_insertf128_pd(psi_S0_IM, _mm_load_pd(((*xyBase)[1][1][1] + offs[2])), 1);
 
 psi_S1_RE = _mm256_setzero_pd();
@@ -169,8 +147,6 @@ psi_S0_IM =  _mm256_insertf128_pd(psi_S0_IM, _mm_load_pd(((*xyBase)[2][1][1] + o
 psi_S1_RE = _mm256_setzero_pd();
 psi_S1_RE =  _mm256_insertf128_pd(psi_S1_RE, _mm_load_pd(((*xyBase)[2][3][0] + offs[0])), 0);
 
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+40) ), _MM_HINT_T1);
-
 psi_S1_RE =  _mm256_insertf128_pd(psi_S1_RE, _mm_load_pd(((*xyBase)[2][3][0] + offs[2])), 1);
 
 psi_S1_IM = _mm256_setzero_pd();
@@ -180,27 +156,27 @@ psi_S1_IM =  _mm256_insertf128_pd(psi_S1_IM, _mm_load_pd(((*xyBase)[2][3][1] + o
 
 b_S1_C2_RE = _mm256_add_pd( psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = _mm256_sub_pd( psi_S0_IM , psi_S1_RE );
-_mm256_store_pd(((outbuf)+0), b_S0_C0_RE);
+_mm256_stream_pd(((outbuf)+0), b_S0_C0_RE);
 
-_mm256_store_pd(((outbuf)+4), b_S0_C0_IM);
+_mm256_stream_pd(((outbuf)+4), b_S0_C0_IM);
 
-_mm256_store_pd(((outbuf)+8), b_S0_C1_RE);
+_mm256_stream_pd(((outbuf)+8), b_S0_C1_RE);
 
-_mm256_store_pd(((outbuf)+12), b_S0_C1_IM);
+_mm256_stream_pd(((outbuf)+12), b_S0_C1_IM);
 
-_mm256_store_pd(((outbuf)+16), b_S0_C2_RE);
+_mm256_stream_pd(((outbuf)+16), b_S0_C2_RE);
 
-_mm256_store_pd(((outbuf)+20), b_S0_C2_IM);
+_mm256_stream_pd(((outbuf)+20), b_S0_C2_IM);
 
-_mm256_store_pd(((outbuf)+24), b_S1_C0_RE);
+_mm256_stream_pd(((outbuf)+24), b_S1_C0_RE);
 
-_mm256_store_pd(((outbuf)+28), b_S1_C0_IM);
+_mm256_stream_pd(((outbuf)+28), b_S1_C0_IM);
 
-_mm256_store_pd(((outbuf)+32), b_S1_C1_RE);
+_mm256_stream_pd(((outbuf)+32), b_S1_C1_RE);
 
-_mm256_store_pd(((outbuf)+36), b_S1_C1_IM);
+_mm256_stream_pd(((outbuf)+36), b_S1_C1_IM);
 
-_mm256_store_pd(((outbuf)+40), b_S1_C2_RE);
+_mm256_stream_pd(((outbuf)+40), b_S1_C2_RE);
 
-_mm256_store_pd(((outbuf)+44), b_S1_C2_IM);
+_mm256_stream_pd(((outbuf)+44), b_S1_C2_IM);
 

@@ -906,7 +906,8 @@ testClovDslashFull::run(void)
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING" << endl;
     
-#if defined(QPHIX_AVX_SOURCE)
+    //#if defined(QPHIX_AVX_SOURCE)
+#if 0
     // Only AVX can do DP 2
     if( compress12 ) { 
       runTest<double,VECLEN_DP,2,true,UD, PhiD>();
