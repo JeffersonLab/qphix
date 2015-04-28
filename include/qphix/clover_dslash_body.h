@@ -1537,57 +1537,95 @@ namespace QPhiX
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
 
 	TSC_tick t_start,t_end;
-#ifdef QPHIX_DO_COMMS	
-	// Pre-initiate all receives
 
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d)  ) {
-	  comms->startRecvFromDir(2*d+0);   
-	  comms->startRecvFromDir(2*d+1);
-
-#pragma omp parallel 
-	  {
-	    int tid = omp_get_thread_num();
-
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 1);
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 1);
- 	  }
-	  comms->startSendDir(2*d+1);
-	  comms->startSendDir(2*d+0);
-	}
-	}
-#endif   // QPHIX_DO_COMMS
-
-	// DO BODY DON"T ACCUMULATE BOUNDARY
-#pragma omp parallel 
+#pragma omp parallel
 	{
 	  int tid = omp_get_thread_num();
-	  // This will deal with anisotropy and boundaries internally
-	  DyzPlus(tid, psi_in, res_out, u, invclov, cb);
-	}
+	  int nthread = omp_get_num_threads();
+	  int nthreadby2 = nthread/2;
+	  int nteam1=nthreadby2;
+	  int nteam2=nthread-nthreadby2;
+
+#ifdef QPHIX_DO_COMMS	
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startRecvFromDir(2*d+0);   
+		comms->startRecvFromDir(2*d+1);
+	      }
+	    }
+	  }  // End omp master
+
+	  // Pack all the faces. Everyone does this
+	  for(int d = 3; d >= 0; d--) {
+	    if( ! comms->localDir(d)  ) {
+	      if( tid < nteam1 ) {
+		packFaceDir2(tid, tid, nteam1, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 1);
+	      }
+	      else {
+		packFaceDir2(tid,tid-nteam1,nteam2, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 1);
+	      }
+	    }
+	  }
+
+	  // Call a barrier to make sure everyone finished their packing
+#pragma omp barrier
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startSendDir(2*d+1);
+		comms->startSendDir(2*d+0);
+	      }
+	    }
+	  }
+#endif  // QPHIX_DO_COMMS
+
+	  // Do Body Compute
+	  {
+	    DyzPlus(tid, psi_in, res_out, u, invclov, cb);
+	  }
+	  
 
 #ifdef  QPHIX_DO_COMMS
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d) ) { 
-	  comms->finishSendDir(2*d+1);
-	  comms->finishRecvFromDir(2*d+0);
-	  comms->finishSendDir(2*d+0);
-	  comms->finishRecvFromDir(2*d+1);
 
-#pragma omp parallel 
+	  // Finish comms and process faces. 
+	  // Current strategy is to do this direction by direction
+	  // There may be better ways e.g.
+	  //
+	  // Test if the comms is complete, if so then deal with the faces
+	  // NB: Also it would be good to see if we could split the threads so 
+	  // the forward and backward face could be done together...
+
+	  // Yet another way would be to wait for all the comms to finish 
+	  // Ie a 'waitall' 
 	  {
-	    int tid=omp_get_thread_num();
-
-	    completeFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, invclov, (d==3?beta_t_b:beta_s), cb, d, 0, 1);
-
-
-	    completeFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, invclov, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
-	  }
-	} // end if
-	} // end for
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d) ) { 
+#pragma omp master
+		{
+		  comms->finishSendDir(2*d+1);
+		  comms->finishRecvFromDir(2*d+0);
+		  comms->finishSendDir(2*d+0);
+		  comms->finishRecvFromDir(2*d+1);
+		}
+#pragma omp barrier
+		if (tid < nteam1 ) { 
+		  completeFaceDir2(tid,tid, nteam1,comms->recvFromDir[2*d+0], res_out, u, invclov, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
+		}
+		else { 
+		  completeFaceDir2(tid,tid-nteam1,nteam2,comms->recvFromDir[2*d+1], res_out, u, invclov, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+		}
+		
+	      } // if
+	    } // for
+	  }//scope
 
 #endif	// QPHIX_DO_COMMS
-      }
+	} // parallel region
+      } // function
+
   
   template<typename FT, int veclen,int soalen, bool compress12>
   void ClovDslash<FT,veclen,soalen,compress12>::DPsiMinus(const SU3MatrixBlock *u, 
@@ -1606,54 +1644,93 @@ namespace QPhiX
 
 	// Antiperiodic BCs on forw links
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
-#ifdef QPHIX_DO_COMMS	
-	// Pre-initiate all receives
 
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d)  ) {
-	  comms->startRecvFromDir(2*d+0);   
-	  comms->startRecvFromDir(2*d+1);
-
-#pragma omp parallel 
-	  {
-	    int tid = omp_get_thread_num();
-
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 0);
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 0);
- 	  }
-	  comms->startSendDir(2*d+1);
-	  comms->startSendDir(2*d+0);
-	}
-	}
-#endif   // QPHIX_DO_COMMS
-
-
-#pragma omp parallel 
+#pragma omp parallel
 	{
 	  int tid = omp_get_thread_num();
-	  DyzMinus(tid, psi_in, res_out, u, invclov, cb);
-	}
+	  int nthread = omp_get_num_threads();
+	  int nthreadby2 = nthread/2;
+	  int nteam1=nthreadby2;
+	  int nteam2=nthread-nthreadby2;
 
+#ifdef QPHIX_DO_COMMS	
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startRecvFromDir(2*d+0);   
+		comms->startRecvFromDir(2*d+1);
+	      }
+	    }
+	  }  // End omp master
+
+	  // Pack all the faces. Everyone does this
+	  for(int d = 3; d >= 0; d--) {
+	    if( ! comms->localDir(d)  ) {
+	      if( tid < nteam1 ) {
+		packFaceDir2(tid, tid, nteam1, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 0);
+	      }
+	      else {
+		packFaceDir2(tid,tid-nteam1,nteam2, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 0);
+	      }
+	    }
+	  }
+
+	  // Call a barrier to make sure everyone finished their packing
+#pragma omp barrier
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startSendDir(2*d+1);
+		comms->startSendDir(2*d+0);
+	      }
+	    }
+	  }
+#endif  // QPHIX_DO_COMMS
+
+	  // Do Body Compute
+	  {
+	    DyzMinus(tid, psi_in, res_out, u, invclov, cb);
+	  }
+	  
 
 #ifdef  QPHIX_DO_COMMS
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d) ) { 
-	  comms->finishSendDir(2*d+1);
-	  comms->finishRecvFromDir(2*d+0);
-	  comms->finishSendDir(2*d+0);
-	  comms->finishRecvFromDir(2*d+1);
 
-#pragma omp parallel 
+	  // Finish comms and process faces. 
+	  // Current strategy is to do this direction by direction
+	  // There may be better ways e.g.
+	  //
+	  // Test if the comms is complete, if so then deal with the faces
+	  // NB: Also it would be good to see if we could split the threads so 
+	  // the forward and backward face could be done together...
+
+	  // Yet another way would be to wait for all the comms to finish 
+	  // Ie a 'waitall' 
 	  {
-	    int tid=omp_get_thread_num();
-
-	    completeFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, invclov, (d==3?beta_t_b:beta_s), cb, d, 0, 0);
-	    completeFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, invclov, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
-	  }
-	} // end if
-	} // end for
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d) ) { 
+#pragma omp master
+		{
+		  comms->finishSendDir(2*d+1);
+		  comms->finishRecvFromDir(2*d+0);
+		  comms->finishSendDir(2*d+0);
+		  comms->finishRecvFromDir(2*d+1);
+		}
+#pragma omp barrier
+		if (tid < nteam1 ) { 
+		  completeFaceDir2(tid,tid, nteam1,comms->recvFromDir[2*d+0], res_out, u, invclov, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
+		}
+		else { 
+		  completeFaceDir2(tid,tid-nteam1,nteam2,comms->recvFromDir[2*d+1], res_out, u, invclov, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+		}
+		
+	      } // if
+	    } // for
+	  }//scope
 
 #endif	// QPHIX_DO_COMMS
+	} // parallel region
 
       }  // function
 
@@ -1673,57 +1750,97 @@ namespace QPhiX
        double beta_t_b = beta * aniso_coeff_T;
        if( amIPtMin ) { beta_t_b *= t_boundary; }
        if( amIPtMax ) { beta_t_f *= t_boundary; }
-       
+
+#pragma omp parallel
+	{
+	  int tid = omp_get_thread_num();
+	  int nthread = omp_get_num_threads();
+	  int nthreadby2 = nthread/2;
+	  int nteam1=nthreadby2;
+	  int nteam2=nthread-nthreadby2;
 
 #ifdef QPHIX_DO_COMMS	
-	// Pre-initiate all receives
-
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d)  ) {
-	  comms->startRecvFromDir(2*d+0);   
-	  comms->startRecvFromDir(2*d+1);
-
-#pragma omp parallel 
+#pragma omp master
 	  {
-	    int tid = omp_get_thread_num();
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startRecvFromDir(2*d+0);   
+		comms->startRecvFromDir(2*d+1);
+	      }
+	    }
+	  }  // End omp master
 
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 1);
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 1);
- 	  }
-	  comms->startSendDir(2*d+1);
-	  comms->startSendDir(2*d+0);
-	}
-	}
-#endif   // QPHIX_DO_COMMS
+	  // Pack all the faces. Everyone does this
+	  for(int d = 3; d >= 0; d--) {
+	    if( ! comms->localDir(d)  ) {
+	      if( tid < nteam1 ) {
+		packFaceDir2(tid, tid, nteam1, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 1);
+	      }
+	      else {
+		packFaceDir2(tid,tid-nteam1,nteam2, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 1);
+	      }
+	    }
+	  }
 
+	  // Call a barrier to make sure everyone finished their packing
+#pragma omp barrier
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startSendDir(2*d+1);
+		comms->startSendDir(2*d+0);
+	      }
+	    }
+	  }
+#endif  // QPHIX_DO_COMMS
 
-#pragma omp parallel 
-	{
-	  int tid = omp_get_thread_num();	      
-	  DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
-	}
+	  // Do Body Compute
+	  {
+	    DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
+	  }
+	  
 
 #ifdef  QPHIX_DO_COMMS
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d) ) { 
-	  comms->finishSendDir(2*d+1);
-	  comms->finishRecvFromDir(2*d+0);
-	  comms->finishSendDir(2*d+0);
-	  comms->finishRecvFromDir(2*d+1);
 
-#pragma omp parallel 
+	  // Finish comms and process faces. 
+	  // Current strategy is to do this direction by direction
+	  // There may be better ways e.g.
+	  //
+	  // Test if the comms is complete, if so then deal with the faces
+	  // NB: Also it would be good to see if we could split the threads so 
+	  // the forward and backward face could be done together...
+
+	  // Yet another way would be to wait for all the comms to finish 
+	  // Ie a 'waitall' 
 	  {
-	    int tid=omp_get_thread_num();
-
-	    completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 1);
-	    completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
-	  }
-	} // end if
-	} // end for
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d) ) { 
+#pragma omp master
+		{
+		  comms->finishSendDir(2*d+1);
+		  comms->finishRecvFromDir(2*d+0);
+		  comms->finishSendDir(2*d+0);
+		  comms->finishRecvFromDir(2*d+1);
+		}
+#pragma omp barrier
+		if (tid < nteam1 ) { 
+		  completeFaceDirAChiMBDPsi2(tid,tid, nteam1,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 1);
+		}
+		else { 
+		  completeFaceDirAChiMBDPsi2(tid,tid-nteam1, nteam2,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+		}
+		
+	      } // if
+	    } // for
+	  }//scope
 
 #endif	// QPHIX_DO_COMMS
-      }
+	} // parallel region
 
+       
+      }
+  
   template<typename FT, int veclen, int soalen, bool compress12>
   void ClovDslash<FT,veclen,soalen,compress12>::DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u, 
 									const CloverBlock* clov, 
@@ -1740,54 +1857,94 @@ namespace QPhiX
 	if( amIPtMin ) { beta_t_b *= t_boundary; }
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
 
-#ifdef QPHIX_DO_COMMS	
-	// Pre-initiate all receives
-
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d)  ) {
-	  comms->startRecvFromDir(2*d+0);   
-	  comms->startRecvFromDir(2*d+1);
-
-#pragma omp parallel 
-	  {
-	    int tid = omp_get_thread_num();
-
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 0);
-	    packFaceDir(tid, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 0);
- 	  }
-	  comms->startSendDir(2*d+1);
-	  comms->startSendDir(2*d+0);
-	}
-	}
-#endif   // QPHIX_DO_COMMS
-
-
-#pragma omp parallel 
+#pragma omp parallel
 	{
-	  int tid = omp_get_thread_num();	      
-	  DyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
-	}
+	  int tid = omp_get_thread_num();
+	  int nthread = omp_get_num_threads();
+	  int nthreadby2 = nthread/2;
+	  int nteam1=nthreadby2;
+	  int nteam2=nthread-nthreadby2;
 
+#ifdef QPHIX_DO_COMMS	
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startRecvFromDir(2*d+0);   
+		comms->startRecvFromDir(2*d+1);
+	      }
+	    }
+	  }  // End omp master
+
+	  // Pack all the faces. Everyone does this
+	  for(int d = 3; d >= 0; d--) {
+	    if( ! comms->localDir(d)  ) {
+	      if( tid < nteam1 ) {
+		packFaceDir2(tid, tid, nteam1, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 0);
+	      }
+	      else {
+		packFaceDir2(tid,tid-nteam1,nteam2, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 0);
+	      }
+	    }
+	  }
+
+	  // Call a barrier to make sure everyone finished their packing
+#pragma omp barrier
+#pragma omp master
+	  {
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d)  ) {
+		comms->startSendDir(2*d+1);
+		comms->startSendDir(2*d+0);
+	      }
+	    }
+	  }
+#endif  // QPHIX_DO_COMMS
+
+	  // Do Body Compute
+	  {
+	    DyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
+	  }
+	  
 
 #ifdef  QPHIX_DO_COMMS
-	for(int d = 3; d >= 0; d--) {
-	if( ! comms->localDir(d) ) { 
-	  comms->finishSendDir(2*d+1);
-	  comms->finishRecvFromDir(2*d+0);
-	  comms->finishSendDir(2*d+0);
-	  comms->finishRecvFromDir(2*d+1);
 
-#pragma omp parallel 
+	  // Finish comms and process faces. 
+	  // Current strategy is to do this direction by direction
+	  // There may be better ways e.g.
+	  //
+	  // Test if the comms is complete, if so then deal with the faces
+	  // NB: Also it would be good to see if we could split the threads so 
+	  // the forward and backward face could be done together...
+
+	  // Yet another way would be to wait for all the comms to finish 
+	  // Ie a 'waitall' 
 	  {
-	    int tid=omp_get_thread_num();
+	    for(int d = 3; d >= 0; d--) {
+	      if( ! comms->localDir(d) ) { 
+#pragma omp master
+		{
+		  comms->finishSendDir(2*d+1);
+		  comms->finishRecvFromDir(2*d+0);
+		  comms->finishSendDir(2*d+0);
+		  comms->finishRecvFromDir(2*d+1);
+		}
+#pragma omp barrier
 
-	    completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 0);
-	    completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
-	  }
-	} // end if
-	} // end for
+		if (tid < nteam1 ) { 
+		  completeFaceDirAChiMBDPsi2(tid,tid, nteam1,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 0);
+		}
+		else { 
+		  completeFaceDirAChiMBDPsi2(tid,tid-nteam1, nteam2,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+		}
+		
+	      } // if
+	    } // for
+	  }//scope
 
 #endif	// QPHIX_DO_COMMS
+	} // parallel region
+
 
       }
      

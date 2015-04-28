@@ -156,6 +156,13 @@ namespace QPhiX {
 			   const FourSpinorBlock *psi,
 			   FT *res,
 			   int cb, int dir, int fb, int isPlus);
+
+    void packFaceDir2(int gtid,
+		      int tid,
+		      int teamsize,
+		      const FourSpinorBlock *psi,
+		      FT *res,
+		      int cb, int dir, int fb, int isPlus);
     
     //  RECEIVE AND COMPLETE FACE 
     void completeFaceDir(int tid,
@@ -165,6 +172,17 @@ namespace QPhiX {
 			 const CloverBlock* invclov,
 			 double beta,
 			 int cb, int dir, int fb, int isPlus);
+
+
+    void completeFaceDir2(int gtid,
+			  int tid,
+			  int teamsize,
+			  const FT* psi,
+			  FourSpinorBlock* res,
+			  const SU3MatrixBlock* u,
+			  const CloverBlock* invclov,
+			  double beta,
+			  int cb, int dir, int fb, int isPlus);
     
     //  RECEIVE AND COMPLETE FACE 
     void completeFaceDirAChiMBDPsi(int tid,
@@ -173,6 +191,15 @@ namespace QPhiX {
 				   const SU3MatrixBlock* u,
 				   const double beta ,
 				   int cb, int dir, int fb, int isPlus);
+
+    void completeFaceDirAChiMBDPsi2(int gtid,
+				    int tid,
+				    int teamsize,
+				    const FT* psi,
+				    FourSpinorBlock* res,
+				    const SU3MatrixBlock* u,
+				    const double beta ,
+				    int cb, int dir, int fb, int isPlus);
 #endif
 
 
