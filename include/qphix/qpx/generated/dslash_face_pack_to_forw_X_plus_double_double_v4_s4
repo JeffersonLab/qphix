@@ -32,10 +32,6 @@ vector4double pctl1 = vec_splats(0.0);
 vector4double pctl2 = vec_splats(0.0);
 vector4double v1 = vec_splats(0.0);
 vector4double v2 = vec_splats(0.0);
- __dcbt( (void *)(((outbuf)+0)) );
-
- __dcbt( (void *)(((outbuf)+8)) );
-
  __dcbt( (void *)((((*xyBase)[0][0][0]+0) + offs[0])) );
 
  __dcbt( (void *)((((*xyBase)[0][0][0]+8) + offs[0])) );

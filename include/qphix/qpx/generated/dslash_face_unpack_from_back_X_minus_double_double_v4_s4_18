@@ -85,10 +85,6 @@ accMask = _v4d_int2mask(mask);
 vector4double beta_vec = vec_splats(0.0);
 beta_vec = vec_splats(*(&beta));
 
- __dcbt( (void *)(((inbuf)+0)) );
-
- __dcbt( (void *)(((inbuf)+8)) );
-
  __dcbt( (void *)((((*oBase)[0][0][0]+0) + offs[0])) );
 
  __dcbt( (void *)((((*oBase)[0][0][0]+8) + offs[0])) );

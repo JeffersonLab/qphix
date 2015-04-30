@@ -165,10 +165,6 @@ dout_S3_C1_RE = vec_splats(0.0);
 dout_S3_C1_IM = vec_splats(0.0); 
 dout_S3_C2_RE = vec_splats(0.0); 
 dout_S3_C2_IM = vec_splats(0.0); 
- __dcbt( (void *)(((inbuf)+0)) );
-
- __dcbt( (void *)(((inbuf)+8)) );
-
  __dcbt( (void *)((((*oBase)[0][0][0]+0) + offs[0])) );
 
  __dcbt( (void *)((((*oBase)[0][0][0]+8) + offs[0])) );
