@@ -236,27 +236,27 @@ psi_S1_IM = vec_perm(vec_perm(v1, v2, pctl1), vec_perm(v2, v1, pctl2), vec_gpci(
 
 b_S1_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
-vec_sts(vec_promote(vec_extract(b_S0_C0_RE,3), 0), 0, (((outbuf)+0)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C0_RE,3), 0), 0, const_cast<double *>((((outbuf)+0)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S0_C0_IM,3), 0), 0, (((outbuf)+1)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C0_IM,3), 0), 0, const_cast<double *>((((outbuf)+1)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S0_C1_RE,3), 0), 0, (((outbuf)+2)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C1_RE,3), 0), 0, const_cast<double *>((((outbuf)+2)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S0_C1_IM,3), 0), 0, (((outbuf)+3)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C1_IM,3), 0), 0, const_cast<double *>((((outbuf)+3)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S0_C2_RE,3), 0), 0, (((outbuf)+4)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C2_RE,3), 0), 0, const_cast<double *>((((outbuf)+4)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S0_C2_IM,3), 0), 0, (((outbuf)+5)+0));
+vec_sts(vec_promote(vec_extract(b_S0_C2_IM,3), 0), 0, const_cast<double *>((((outbuf)+5)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C0_RE,3), 0), 0, (((outbuf)+6)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C0_RE,3), 0), 0, const_cast<double *>((((outbuf)+6)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C0_IM,3), 0), 0, (((outbuf)+7)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C0_IM,3), 0), 0, const_cast<double *>((((outbuf)+7)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C1_RE,3), 0), 0, (((outbuf)+8)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C1_RE,3), 0), 0, const_cast<double *>((((outbuf)+8)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C1_IM,3), 0), 0, (((outbuf)+9)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C1_IM,3), 0), 0, const_cast<double *>((((outbuf)+9)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C2_RE,3), 0), 0, (((outbuf)+10)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C2_RE,3), 0), 0, const_cast<double *>((((outbuf)+10)+0)));
 
-vec_sts(vec_promote(vec_extract(b_S1_C2_IM,3), 0), 0, (((outbuf)+11)+0));
+vec_sts(vec_promote(vec_extract(b_S1_C2_IM,3), 0), 0, const_cast<double *>((((outbuf)+11)+0)));
 

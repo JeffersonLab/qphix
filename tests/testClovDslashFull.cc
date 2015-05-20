@@ -58,6 +58,7 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 1
 
 #elif defined(QPHIX_QPX_SOURCE)
+#define VECLEN_SP 4
 #define VECLEN_DP 4
 #define QPHIX_SOALEN 4
 
@@ -844,7 +845,7 @@ testClovDslashFull::run(void)
 
 
    if( precision == FLOAT_PREC ) { 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -853,12 +854,14 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,4,false,UF, PhiF>();
     }
 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
     if( compress12 ) { 
       runTest<float,VECLEN_SP,8,true,UF, PhiF>();
     }
     else { 
       runTest<float,VECLEN_SP,8,false,UF, PhiF>();
     }
+#endif
 
 #if defined(QPHIX_MIC_SOURCE)
     if( compress12 ) { 
@@ -868,7 +871,6 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,16,false,UF, PhiF>();
     }
 #endif
-#endif  // QPHIX_AVX_SOURCE|| QPHIX_MIC_SOURCE
 
   }
 

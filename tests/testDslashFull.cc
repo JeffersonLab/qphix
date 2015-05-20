@@ -151,7 +151,7 @@ testDslashFull::run(void)
 
 
 
-#if 0 // Save build time
+#if 1 // Save build time
   if( precision == FLOAT_PREC ) {
     
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -173,7 +173,7 @@ testDslashFull::run(void)
       }
 
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_QPX_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);

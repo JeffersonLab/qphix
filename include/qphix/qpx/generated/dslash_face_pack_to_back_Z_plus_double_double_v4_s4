@@ -136,27 +136,27 @@ psi_S1_IM = vec_ld(0, const_cast<double *>(((*xyBase)[2][3][1] + offs[0])));
 
 b_S1_C2_RE = vec_sub(psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = vec_add( psi_S0_IM , psi_S1_RE );
-vec_sta(b_S0_C0_RE, 0, ((outbuf)+0));
+vec_sta(b_S0_C0_RE, 0, const_cast<double *>(((outbuf)+0)));
 
-vec_sta(b_S0_C0_IM, 0, ((outbuf)+4));
+vec_sta(b_S0_C0_IM, 0, const_cast<double *>(((outbuf)+4)));
 
-vec_sta(b_S0_C1_RE, 0, ((outbuf)+8));
+vec_sta(b_S0_C1_RE, 0, const_cast<double *>(((outbuf)+8)));
 
-vec_sta(b_S0_C1_IM, 0, ((outbuf)+12));
+vec_sta(b_S0_C1_IM, 0, const_cast<double *>(((outbuf)+12)));
 
-vec_sta(b_S0_C2_RE, 0, ((outbuf)+16));
+vec_sta(b_S0_C2_RE, 0, const_cast<double *>(((outbuf)+16)));
 
-vec_sta(b_S0_C2_IM, 0, ((outbuf)+20));
+vec_sta(b_S0_C2_IM, 0, const_cast<double *>(((outbuf)+20)));
 
-vec_sta(b_S1_C0_RE, 0, ((outbuf)+24));
+vec_sta(b_S1_C0_RE, 0, const_cast<double *>(((outbuf)+24)));
 
-vec_sta(b_S1_C0_IM, 0, ((outbuf)+28));
+vec_sta(b_S1_C0_IM, 0, const_cast<double *>(((outbuf)+28)));
 
-vec_sta(b_S1_C1_RE, 0, ((outbuf)+32));
+vec_sta(b_S1_C1_RE, 0, const_cast<double *>(((outbuf)+32)));
 
-vec_sta(b_S1_C1_IM, 0, ((outbuf)+36));
+vec_sta(b_S1_C1_IM, 0, const_cast<double *>(((outbuf)+36)));
 
-vec_sta(b_S1_C2_RE, 0, ((outbuf)+40));
+vec_sta(b_S1_C2_RE, 0, const_cast<double *>(((outbuf)+40)));
 
-vec_sta(b_S1_C2_IM, 0, ((outbuf)+44));
+vec_sta(b_S1_C2_IM, 0, const_cast<double *>(((outbuf)+44)));
 

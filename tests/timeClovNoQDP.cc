@@ -677,7 +677,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 {
 
 
-#if defined (QPHIX_MIC_SOURCE) || defined (QPHIX_AVX_SOURCE) || defined (QPHIX_SCLAR_SOURCE)
   if ( precision == FLOAT_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_SP ) { 
       masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);
@@ -693,8 +692,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
   
-#endif
-
 
   if( precision == HALF_PREC ) { 
 

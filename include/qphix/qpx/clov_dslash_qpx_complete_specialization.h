@@ -12,20 +12,16 @@
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
 
 // No single precision for now
-#if 0
+#if 1
 /* --------  SINGLE PRECISION  ----------- */
 #define FPTYPE float
-#define VEC 8
+#define VEC 4
 
 /* Uncompressed */
 #define COMPRESS12 false
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
-#undef SOA
-
-#define SOA 8
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
 #undef SOA
 
@@ -41,9 +37,6 @@
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
 #undef SOA
 
-#define SOA 8
-#include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
-#undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
 
@@ -61,12 +54,6 @@
 #define COMPRESS_SUFFIX _18
 
 // No SOA 2 for now
-#if 0
-#define SOA 2
-#include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
-#undef SOA
-#endif
-
 #define SOA 4
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
 #undef SOA
@@ -79,12 +66,6 @@
 #define COMPRESS12 true
 #define COMPRESS_SUFFIX _12
 
-// No SOA 2 for now
-#if 0
-#define SOA 2
-#include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
-#undef SOA
-#endif
 
 #define SOA 4
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization_form.h"
