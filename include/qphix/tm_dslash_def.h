@@ -39,7 +39,7 @@ namespace QPhiX
 			         const FourSpinorBlock* psi, 
 			         const FourSpinorBlock* chi,
 			         const SU3MatrixBlock* u,
-                                 double mu,
+//                                 double mu,
 			         double alpha, 
 			         double beta,
 			         int isign,
@@ -116,7 +116,7 @@ namespace QPhiX
 			       const SU3MatrixBlock* u, 
 			       double alpha, 
 			       double beta,
-			       double mu, 
+//			       double mu,
 			       int cb);
 
 
@@ -127,7 +127,7 @@ namespace QPhiX
 				const SU3MatrixBlock* u, 
 				double alpha, 
 				double  beta,
-                                double mu,
+//                                double mu,
 				int cb);
 
 
@@ -145,7 +145,7 @@ namespace QPhiX
 				const FourSpinorBlock *chi, 
 				FourSpinorBlock *res_out, 
 				double alpha, double beta,
-                                double mu, 
+//                                double mu,
 				int cb);
 
 
@@ -154,7 +154,7 @@ namespace QPhiX
 				 const FourSpinorBlock *chi, 
 				 FourSpinorBlock *re_out, 
 				 double alpha, double beta, 
-                                 double mu,
+//                                 double mu,
 				 int cb);
 
 

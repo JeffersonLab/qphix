@@ -145,7 +145,7 @@ testTWMDslashFull::run(void)
 
 
 
-#if 0 // Save build time
+#if 1 // Save build time
   if( precision == FLOAT_PREC ) {
     
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -158,16 +158,16 @@ testTWMDslashFull::run(void)
       if( soalen == 4 ) { 
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 //	testTWMDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 //	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+//	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
       }
 
       if( soalen == 8 ) {
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 //	testTWMDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 //	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-	testTWMCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+//	testTWMCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
       }
 
       if ( soalen == 16 ) { 
@@ -175,7 +175,7 @@ testTWMDslashFull::run(void)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
 //	testTWMDslashWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 //	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-	testTWMCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+//	testTWMCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 #else 
 	masterPrintf("SOALEN=16 not available");
 	return;
@@ -264,7 +264,7 @@ testTWMDslashFull::run(void)
   }
 #endif // If 0
 
-#if 1
+#if 0
 
     multi1d<LatticeColorMatrixD3> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -619,16 +619,16 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
       //      qdp_pack_spinor< T,V,S,compress,Phi >(chi, chi_even, chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-      double alpha = (double)(4.01); // Nd + M, M=0.01
+      double alpha = Mu;//(double)(4.01); // Nd + M, M=0.01
       double beta = (double)(0.5);   // Operator is (Nd+M) - (1/2)Dslash
       
 
       // Apply Optimized Dslash
-      TMD.tmdslashAChiMinusBDPsi(chi_s[target_cb],	
+      TMD.tmdslashAChiMinusBDPsi(chi_s[target_cb],
 			       psi_s[source_cb],
 			       psi_s[target_cb],
 			       u_packed[target_cb],
-                               Mu,
+//                               Mu,
 			       alpha, 
 			       beta,
 			       isign, 
@@ -644,30 +644,30 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 
       int Nxh = Nx / 2;
 
-      //add the twisted mass term here
-      for(int t=0; t < Nt; t++){ 
-	for(int z=0; z < Nz; z++) { 
-	   for(int y=0; y < Ny; y++){ 
-	      for(int x=0; x < Nxh; x++){ 
-		
-		// These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) { 
-		  for(int c=0; c < Nc; c++) {
-                      //double smu = (s < 2) ? -Mu : +Mu;
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-
-		      REAL twr = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
-		      REAL twi = (chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
-                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
-
-		    }
-		  }
-		
-	      } // x 
-	    } // y 
-	} // z 
-      } // t
+//      //add the twisted mass term here
+//      for(int t=0; t < Nt; t++){
+//	for(int z=0; z < Nz; z++) {
+//	   for(int y=0; y < Ny; y++){
+//	      for(int x=0; x < Nxh; x++){
+//
+//		// These are unpadded QDP++ indices...
+//	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+//		for(int s =0 ; s < Ns; s++) {
+//		  for(int c=0; c < Nc; c++) {
+//                      //double smu = (s < 2) ? -Mu : +Mu;
+//                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+//
+//		      REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
+//		      REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
+//                      psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
+//
+//		    }
+//		  }
+//
+//	      } // x
+//	    } // y
+//	} // z
+//      } // t
 
       Phi res;
       res[rb[source_cb]]=zero;
