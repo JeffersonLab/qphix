@@ -644,34 +644,34 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 
       int Nxh = Nx / 2;
 
-//      //add the twisted mass term here
-//      for(int t=0; t < Nt; t++){
-//	for(int z=0; z < Nz; z++) {
-//	   for(int y=0; y < Ny; y++){
-//	      for(int x=0; x < Nxh; x++){
-//
-//		// These are unpadded QDP++ indices...
-//	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-//		for(int s =0 ; s < Ns; s++) {
-//		  for(int c=0; c < Nc; c++) {
-//                      //double smu = (s < 2) ? -Mu : +Mu;
-//                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-//
-//		      REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
-//		      REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
-//                      psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
-//
-//		    }
-//		  }
-//
-//	      } // x
-//	    } // y
-//	} // z
-//      } // t
+      //add the twisted mass term here
+      for(int t=0; t < Nt; t++){
+	for(int z=0; z < Nz; z++) {
+	   for(int y=0; y < Ny; y++){
+	      for(int x=0; x < Nxh; x++){
+
+		// These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) {
+		  for(int c=0; c < Nc; c++) {
+                      //double smu = (s < 2) ? -Mu : +Mu;
+                      double smu = (s < 2) ? -1.0*isign*alpha : +1.0*isign*alpha;
+
+		      REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
+		      REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
+                      psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
+
+		    }
+		  }
+
+	      } // x
+	    } // y
+	} // z
+      } // t
 
       Phi res;
       res[rb[source_cb]]=zero;
-      res[rb[target_cb]]= alpha*psi - beta*chi2;
+      res[rb[target_cb]]= psi - beta*chi2;
 
       // Check the difference per number in chi vector
       Phi diff = res-chi;
