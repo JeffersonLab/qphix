@@ -158,7 +158,7 @@ testTWMDslashFull::run(void)
       if( soalen == 4 ) { 
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 //	testTWMDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+//	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 //	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
       }
@@ -264,6 +264,7 @@ testTWMDslashFull::run(void)
   }
 #endif // If 0
 
+// mixed prec.
 #if 0
 
     multi1d<LatticeColorMatrixD3> u_in(4);
@@ -624,7 +625,7 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
       //      qdp_pack_spinor< T,V,S,compress,Phi >(chi, chi_even, chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-      double alpha = Mu;//(double)(4.01); // Nd + M, M=0.01
+//      double alpha = Mu;//(double)(4.01); // Nd + M, M=0.01
       double beta = (double)(0.5);   // Operator is (Nd+M) - (1/2)Dslash
       
 
@@ -634,7 +635,7 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 			       psi_s[target_cb],
 			       u_packed[target_cb],
 //                               Mu,
-			       alpha, 
+			       Mu, //this was alpha
 			       beta,
 			       isign, 
 			       target_cb);
@@ -660,7 +661,7 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 		for(int s =0 ; s < Ns; s++) {
 		  for(int c=0; c < Nc; c++) {
                       //double smu = (s < 2) ? -Mu : +Mu;
-                      double smu = (s < 2) ? -1.0*isign*alpha : +1.0*isign*alpha;
+                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
 
 		      REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
 		      REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
@@ -733,7 +734,8 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
   double Mu_     = ((double)0.1);
   bool mu_plus = true;
 
-  //double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
+  double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
+  double MuInv = 1.0 / (1.0+Mu*Mu);
 
   Phi psi,chi,chi2;
   QDPIO::cout << "Filling source spinor with gaussian noise" << endl;
@@ -767,9 +769,9 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
   Spinor *psi_s[2] = { psi_even, psi_odd };
   Spinor *chi_s[2] = { chi_even, chi_odd };
 
-  QDPIO::cout << " Packing fermions..." ;	
-  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
+//  QDPIO::cout << " Packing fermions..." ;
+//  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
+//  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     
   QDPIO::cout << "done" << endl; 
 
@@ -796,6 +798,10 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
   Real betaFactor=Real(0.25)/massFactor;
    // Apply optimized
   for(int isign=1; isign >= -1; isign -=2) {
+
+	  QDPIO::cout << " Packing fermions..." ;
+       //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
+      qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     
       chi=zero;
       //      qdp_pack_spinor< T,V,S, compress, Phi >(chi, chi_even, chi_odd, geom);
@@ -810,8 +816,63 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
       // Apply QDP Dslash + TM term
       chi2 = zero;
       dslash(chi2,u_test,psi, isign, 1);
+
+      int Nxh=Nx/2;
+
+      //apply twist:
+      for(int t=0; t < Nt; t++){
+	for(int z=0; z < Nz; z++) {
+	   for(int y=0; y < Ny; y++){
+	      for(int x=0; x < Nxh; x++){
+	        // These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) {
+		  for(int c=0; c < Nc; c++) {
+                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+
+		      REAL twr = chi2.elem(rb[1].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag();
+		      REAL twi = chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).real();
+
+                      //chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
+                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).real() = MuInv*twr;
+                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
+		    }
+		  }
+	      } // x
+	    } // y
+	} // z
+      } // t
+
       dslash(ltmp,u_test,chi2, isign, 0);
-      chi2[rb[0]] = massFactor*psi - betaFactor*ltmp;
+//      dslash(chi2,u_test,psi, isign, target_cb);//+tm term add here...
+
+
+      //add the twisted mass term here
+      for(int t=0; t < Nt; t++){
+	for(int z=0; z < Nz; z++) {
+	   for(int y=0; y < Ny; y++){
+	      for(int x=0; x < Nxh; x++){
+
+		// These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) {
+		  for(int c=0; c < Nc; c++) {
+                      //double smu = (s < 2) ? -Mu : +Mu;
+                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+
+		      REAL twr = (psi.elem(rb[0].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).imag());
+		      REAL twi = (psi.elem(rb[0].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).real());
+                      psi.elem(rb[0].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
+
+		    }
+		  }
+
+	      } // x
+	    } // y
+	} // z
+      } // t
+
+      chi2[rb[0]] = /*massFactor**/ psi - betaFactor*ltmp;
 
       // Check the difference per number in chi vector
       Phi diff = zero;
@@ -913,6 +974,10 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
     
   QDPIO::cout << "done" << endl; 
 
+  double r2;
+  norm2Spinor<T,V,S,compress>(r2,psi_even,geom,1);
+  masterPrintf("psi has norm2 = %16.8e\n", r2);
+
   QDPIO::cout << "T BCs = " << t_boundary << endl;
 
   QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
@@ -951,7 +1016,6 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
 
     InvCG<T,V,S,compress> solver(M, max_iters);
     solver.tune();
-    double r2;
     norm2Spinor<T,V,S,compress>(r2,psi_even,geom,1);
     masterPrintf("psi has norm2 = %16.8e\n", r2);
 
