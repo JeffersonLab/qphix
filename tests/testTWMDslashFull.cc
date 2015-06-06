@@ -159,7 +159,7 @@ testTWMDslashFull::run(void)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 //	testTWMDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-//	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 //	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
       }
 
@@ -588,9 +588,9 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
   Spinor *psi_s[2] = { psi_even, psi_odd };
   Spinor *chi_s[2] = { chi_even, chi_odd };
   
-  QDPIO::cout << " Packing fermions..." ;	
-  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
+//  QDPIO::cout << " Packing fermions..." ;
+//  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
+//  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     
   QDPIO::cout << "done" << endl; 
 
@@ -612,10 +612,15 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
   			Real(t_boundary), Real(1));
 
   for(int isign=1; isign >= -1; isign -=2) {
-    for(int cb=0; cb < 2; cb++) { 
+    for(int cb=0; cb < 2; cb++) {
       int source_cb = 1 - cb;
       int target_cb = cb;
       chi=zero;
+
+        QDPIO::cout << " Packing fermions..." ;
+        //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
+        qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
+
       //      qdp_pack_spinor< T,V,S,compress,Phi >(chi, chi_even, chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
@@ -817,15 +822,19 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
 	
       QDPIO::cout << "\t isign = " << isign << "  diff_norm = " << diff_norm << endl;      
      // Assert things are OK...
+      int num_of_records = 0;
       if ( toBool( diff_norm >= tolerance<T>::small ) ) {
 	for(int i=0; i < rb[0].siteTable().size(); i++){ 
 	  for(int s =0 ; s < Ns; s++) { 
 	    for(int c=0; c < Nc; c++) { 
+                if(num_of_records < 16){
+                      num_of_records += 1;
 	      Double re=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).real());
 	      Double im=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).imag());
 	      if( toBool ( fabs(re) > tolerance<T>::small) || toBool( fabs(im) > tolerance<T>::small ) ) { 
 		QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[0].start()+i).elem(s).elem(c) << endl;
 	      }
+                }
 
 	    }
 	  }
