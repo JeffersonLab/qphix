@@ -207,7 +207,7 @@ testDslashFull::run(void)
 
 #endif // If 0
 
-#if 1
+#if 0
   if (precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
@@ -249,7 +249,7 @@ testDslashFull::run(void)
   }
 #endif // If 0
 
-#if 1
+#if 0
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);

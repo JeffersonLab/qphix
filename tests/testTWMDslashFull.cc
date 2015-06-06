@@ -145,7 +145,7 @@ testTWMDslashFull::run(void)
 
 
 
-#if 1 // Save build time
+#if 0 // Save build time
   if( precision == FLOAT_PREC ) {
     
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -265,7 +265,7 @@ testTWMDslashFull::run(void)
 #endif // If 0
 
 // mixed prec.
-#if 0
+#if 1
 
     multi1d<LatticeColorMatrixD3> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -844,8 +844,6 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
       } // t
 
       dslash(ltmp,u_test,chi2, isign, 0);
-//      dslash(chi2,u_test,psi, isign, target_cb);//+tm term add here...
-
 
       //add the twisted mass term here
       for(int t=0; t < Nt; t++){
@@ -1082,7 +1080,7 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
   double aniso_fac_t = (double)(1);
   double t_boundary = (double)(t_bc);
 
-  Phi psi, chi, chi2;
+  Phi psi, tw_psi, chi, chi2;
   gaussian(psi);
 
   Geometry<T1,VEC1,SOA1,compress> geom_outer(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
@@ -1145,9 +1143,12 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
   double Mu_     = ((double)0.1);
   bool mu_plus   = true;
 
+  double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
+  double MuInv = 1.0 / (1.0+Mu*Mu);
+
 //  EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
 
-  EvenOddTMWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, Mu_, u_packed, &geom_outer, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
+  EvenOddTMWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, Mu_, u_packed,       &geom_outer, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
   EvenOddTMWilsonOperator<T2,VEC2,SOA2,compress> M_inner(Mass, Mu_, u_packed_inner, &geom_inner, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
 
 
@@ -1157,8 +1158,8 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
 
   {
     float rsd_target=rsdTarget<T1>::value;
-    int max_iters_inner=100;
-    int max_iters_outer=2;
+    int max_iters_inner=200;
+    int max_iters_outer=200;
     int niters;
     double rsd_final;
     unsigned long site_flops;
@@ -1185,8 +1186,61 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
       // Multiply back
       // chi2 = M chi
       dslash(chi2,u_test,chi, isign, 1);
+
+      int Nxh=Nx/2;
+
+      //apply twist:
+      for(int t=0; t < Nt; t++){
+	for(int z=0; z < Nz; z++) {
+	   for(int y=0; y < Ny; y++){
+	      for(int x=0; x < Nxh; x++){
+	        // These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) {
+		  for(int c=0; c < Nc; c++) {
+                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+
+		      REAL twr = chi2.elem(rb[1].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag();
+		      REAL twi = chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).real();
+
+                      //chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
+                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).real() = MuInv*twr;
+                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
+		    }
+		  }
+	      } // x
+	    } // y
+	} // z
+      } // t
+
       dslash(ltmp,u_test,chi2, isign, 0);
-      chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
+
+      //add the twisted mass term here
+      tw_psi=zero;
+      for(int t=0; t < Nt; t++){
+	for(int z=0; z < Nz; z++) {
+	   for(int y=0; y < Ny; y++){
+	      for(int x=0; x < Nxh; x++){
+
+		// These are unpadded QDP++ indices...
+	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
+		for(int s =0 ; s < Ns; s++) {
+		  for(int c=0; c < Nc; c++) {
+                      //double smu = (s < 2) ? -Mu : +Mu;
+                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+
+		      REAL twr = (psi.elem(rb[0].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).imag());
+		      REAL twi = (psi.elem(rb[0].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).real());
+                      tw_psi.elem(rb[0].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
+
+		    }
+		  }
+
+	      } // x
+	    } // y
+	} // z
+      } // t
+      chi2[rb[0]] = /*massFactor**/ tw_psi - betaFactor*ltmp;
 
       unsigned long num_cb_sites=Layout::vol()/2;
       unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
