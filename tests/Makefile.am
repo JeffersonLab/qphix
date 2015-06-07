@@ -13,7 +13,8 @@ check_PROGRAMS += time_clov_noqdp
 endif
 
 if QPHIX_BUILD_TWISTED_MASS
-check_PROGRAMS +=  t_twm_dslash t_twm_invert_from_file
+check_PROGRAMS +=  t_twm_dslash 
+# t_twm_invert_from_file
 check_PROGRAMS += time_twm_noqdp
 endif
 
@@ -85,15 +86,14 @@ t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 #	twm_term_qdp_w.h \
 #	twm_fermact_params_w.h
 
-#currently not available
-#time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
-#	time_twm_noqdp.cc \
-#	timeTWMNoQDP.h \
-#	timeTWMNoQDP.cc
+time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
+	time_twm_noqdp.cc \
+	timeTWMNoQDP.h \
+	timeTWMNoQDP.cc
 
 t_twm_dslash_DEPENDENCIES = build_lib
 #t_twm_invert_from_file_DEPENDENCIES = build_lib
-#time_twm_noqdp_DEPENDENCIES = build_lib
+time_twm_noqdp_DEPENDENCIES = build_lib
 
 endif
 
