@@ -10,6 +10,9 @@
 #elif defined(QPHIX_SCALAR_SOURCE)
 #include "qphix/scalar/clov_dslash_scalar_complete_specialization.h"
 
+#elif defined(QPHIX_QPX_SOURCE)
+#include "qphix/qpx/clov_dslash_qpx_complete_specialization.h"
+
 #endif
 
 #endif

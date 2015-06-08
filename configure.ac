@@ -284,14 +284,6 @@ else
 	esac
 fi
 
-case ${PARALLEL_ARCH} in
-  scalar|parscalar)
-	;;
-  *)
-	AC_MSG_ERROR([Unknown Parallel Architecture: ${PARALLEL_ARCH} ] ) 
-	;; 
-esac
-
 
 dnl ************************************************************************
 dnl **** Compile Defines to select right stuff. Always SSE now             *
@@ -367,9 +359,9 @@ yes)
         ;;
 esac
 
-AM_CONDITIONAL(QPHIX_SCALAR, [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
-AM_CONDITIONAL(QPHIX_PARSCALAR, [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
-AM_CONDITIONAL(QPHIX_BUILD_QDP_PACKERS, [ test "X${QDPXX_GIVEN}X" == "XyesX" ])				 
+AM_CONDITIONAL([QPHIX_SCALAR], [ test "X${PARALLEL_ARCH}X" == "XscalarX" ] )
+AM_CONDITIONAL([QPHIX_PARSCALAR], [ test "X${PARALLEL_ARCH}X" == "XparscalarX" ] )
+AM_CONDITIONAL([QPHIX_BUILD_WITH_QDP], [ test "X${QDPXX_GIVEN}X" == "XyesX" ])
 
 if test "x${build_clover}x" == "xyesx";
 then
@@ -381,15 +373,19 @@ fi
 
 if test "x${build_twisted}x" == "xyesx";
 then
-        AC_MSG_NOTICE([Enabling Clover Term])
+        AC_MSG_NOTICE([Enabling Twisted Mass Term])
         AC_DEFINE([QPHIX_BUILD_TWISTED_MASS],[1], [ Build Twisted Mass Term ])
 else
         AC_MSG_NOTICE([Not Building Twisted Mass Term])
 fi
 
+build_qpx="no"
+
 case ${proc} in
 AVX|avx) 
 	AC_DEFINE([QPHIX_AVX_SOURCE],[1], [ Generate AVX Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
 	if test $SOALEN -gt 8;
 	then 
@@ -398,18 +394,32 @@ AVX|avx)
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
 SCALAR|scalar)
 	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 	AC_MSG_NOTICE([Configuring Scalar Specializations ])
 ;;        
+QPX|qpx)
+	AC_DEFINE([QPHIX_QPX_SOURCE],[1], [ Generate QPX Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [128], [ L2 Cache alignment ] )
+	AC_MSG_NOTICE([Configuring QPX Specializations ])
+	if test $SOALEN -ne 4;
+	then
+	  AC_MSG_ERROR([Cannot have SOALEN not equal to 4 for QPX]);
+	fi
+	build_qpx="yes"
+;;
 *)
 	AC_MSG_NOTICE([Not generating any code specializations])
 	;;
 esac
 
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 
 AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS, [ test "x${build_twisted}x" = "xyesx" ])
 

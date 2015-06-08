@@ -44,6 +44,18 @@ namespace QPhiX {
     ZeroFunctor<FT,V,S,compress> f(res);
     siteLoopNoReduction<FT,V,S,compress,ZeroFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
   }
+
+  template<typename FT, int V, int S, bool compress>
+  void axy(const double alpha, 
+	  const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+	  typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	  const Geometry<FT,V,S,compress>& geom, 
+	  int n_blas_simt) 
+  {
+    
+    AXYFunctor<FT,V,S,compress> f(alpha, x,y);
+    siteLoopNoReduction<FT,V,S,compress, AXYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  }
   
   template<typename FT, int V, int S, bool compress>
   void aypx(const double alpha, 
@@ -53,8 +65,34 @@ namespace QPhiX {
 	    int n_blas_simt) 
   {
     
+    AYPXFunctor<FT,V,S,compress> f(alpha, x,y );
+    siteLoopNoReduction<FT,V,S,compress, AYPXFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  }
+
+  template<typename FT, int V, int S, bool compress>
+  void axpy(const double alpha, 
+	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+	    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	    const Geometry<FT,V,S,compress>& geom, 
+	    int n_blas_simt) 
+  {
+    
     AXPYFunctor<FT,V,S,compress> f(alpha, x,y );
     siteLoopNoReduction<FT,V,S,compress, AXPYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  }
+  
+
+ template<typename FT, int V, int S, bool compress>
+  void axpby(const double alpha, 
+	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+	     const double beta, 
+	     typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	     const Geometry<FT,V,S,compress>& geom, 
+	     int n_blas_simt) 
+  {
+    
+    AXPBYFunctor<FT,V,S,compress> f(alpha, x, beta, y );
+    siteLoopNoReduction<FT,V,S,compress, AXPBYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
   }
   
 
@@ -67,6 +105,19 @@ namespace QPhiX {
     Norm2Functor<FT,V,S,compress> f(x);
     siteLoop1Reduction<FT,V,S,compress, Norm2Functor<FT,V,S,compress> >(f,n2,geom,n_blas_simt);
   }
+
+
+  template<typename FT, int V, int S, bool compress>
+    void axpyNorm2(const double alpha,
+		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+		   typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+		   double& norm2y,
+		   const Geometry<FT,V,S,compress>& geom, 
+		   int n_blas_simt) 
+  {
+    AXPYNorm2Functor<FT,V,S,compress> f(alpha,x,y);
+    siteLoop1Reduction<FT,V,S,compress, AXPYNorm2Functor<FT,V,S,compress> >(f,norm2y,geom,n_blas_simt);
+  } // End of Function. 
 
 
 

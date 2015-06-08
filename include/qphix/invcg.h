@@ -63,6 +63,7 @@ namespace  QPhiX
 		    double& rsd_sq_final, 
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
+		    int isign,
 		    bool verboseP) 
     {
 #ifdef QPHIX_TIMING_CG
@@ -150,14 +151,14 @@ namespace  QPhiX
 #ifdef TIMING_CG
       CLOCK_NOW(lstart);
 #endif
-      M(mp,x,1);
+      M(mp,x,isign);
 
 #ifdef CGDEBUG
       norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mp,geom,norm2Threads);
       masterPrintf("M p = %lf \n", tmp_d);
 #endif
 
-      M(mmp,mp,-1);
+      M(mmp,mp,-isign);
 
 #ifdef CGDEBUG
       norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mmp,geom,norm2Threads);
@@ -228,8 +229,8 @@ namespace  QPhiX
 #ifdef TIMING_CG 
 	CLOCK_NOW(lstart);
 #endif
-	M(mp,p, +1);
-	M(mmp,mp,-1);
+	M(mp,p, isign);
+	M(mmp,mp,-isign);
 
 #ifdef TIMING_CG
 	CLOCK_NOW(lend);
@@ -284,8 +285,8 @@ namespace  QPhiX
 
 #ifdef TIMING_CG
 	  CLOCK_NOW(lstart);
-	  M(mp,x,+1);
-	  M(mmp,mp,-1);
+	  M(mp,x,isign);
+	  M(mmp,mp,-isign);
 	  CLOCK_NOW(lend);
 	  ltime += (lend -lstart);
 	  mv_apps += 2;

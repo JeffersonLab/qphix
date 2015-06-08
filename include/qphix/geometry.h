@@ -16,7 +16,6 @@ namespace QPhiX {
     int Ct;
     int Cyz;
     int startBlock;
-    //    char cache_pad[ 64-3*sizeof(int) ]; // Pad to cacheline
   }; 
 
   typedef unsigned short half;
@@ -160,7 +159,7 @@ namespace QPhiX {
     FourSpinorBlock* allocCBFourSpinor()
     {
             
-      FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 64);
+      FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 128);
       if ( ret_val == (FourSpinorBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate FourSpinorBlock\n");
 	abort();
@@ -202,7 +201,7 @@ namespace QPhiX {
    */
     SU3MatrixBlock* allocCBGauge()
     {
-      SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 64);
+      SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 128);
       if ( ret_val == (SU3MatrixBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate SU3MatrixBlock\n");
 	abort();
@@ -239,7 +238,7 @@ namespace QPhiX {
 
     CloverBlock* allocCBClov()
     {
-      CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 64);
+      CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 128);
       if ( ret_val == (CloverBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate CloverBlock\n");
 	abort();

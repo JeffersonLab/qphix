@@ -5,7 +5,6 @@
 #include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
-#include <immintrin.h>
 #include <omp.h>
 
 namespace QPhiX
@@ -108,7 +107,7 @@ namespace QPhiX
     // Set up block info array. These are thread local
     // Indices run as (phases fastest and threads slowest)
     int num_blockinfo = num_phases*s->getNumCores()*n_threads_per_core;
-    block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo*sizeof(BlockPhase),64);
+    block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo*sizeof(BlockPhase),QPHIX_LLC_CACHE_ALIGN);
     if( block_info == 0x0 ) { 
       fprintf(stderr, "Could not allocate Block Info array\n");
       abort();
@@ -148,7 +147,7 @@ namespace QPhiX
     // Alloc tmpspc. It is thread local so we need one for
     // every thread
     size_t tmpspc_size = num_cores*n_threads_per_core*veclen*16*sizeof(int);
-    tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, 64);
+    tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, QPHIX_LLC_CACHE_ALIGN);
     if( tmpspc_all == 0x0 ) { 
       printf("Failed to allocate xy offset tmpspc\n");
       abort();
@@ -418,9 +417,9 @@ namespace QPhiX
     int soprefdist=0;
     
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-    int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+    int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-    __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif    
 
     int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -694,9 +693,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -993,9 +992,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1276,9 +1275,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;

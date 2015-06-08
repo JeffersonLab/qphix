@@ -12,11 +12,11 @@ namespace QPhiX
 { 
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  static double new_norm_array[240][MAXV] __attribute__ ((aligned(64)));
-  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(64)));
+  static double new_norm_array[240][MAXV] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(64)) static double new_norm_array[240][MAXV];
-  __declspec(align(64)) static double new_iprod_array[240][2][MAXV];
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_norm_array[240][MAXV];
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_iprod_array[240][2][MAXV];
 #endif
 
   template<typename FT, int V, int S, bool compress,

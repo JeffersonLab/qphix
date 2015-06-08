@@ -10,6 +10,7 @@
 #include <omp.h>
 #include <iostream>
 #include <cstdio>
+
 using namespace QDP;
 using namespace std;
 
@@ -45,7 +46,6 @@ void printHelp()
        cout << "   Pxyz is the extra pad in the XYZ plane" << endl;
        cout << "   MinCt is the MinCt in the blocking scheme" << endl;
        cout << "   Prec for precision " << endl;
-
 }
 
 void processArgs(int argc, char *argv[]) {
@@ -123,8 +123,7 @@ void processArgs(int argc, char *argv[]) {
 	    prec_user = DOUBLE_PREC;
 	  }
 	  i+=2 ;
-    }
-
+	}
         else {
            i++;
         }
@@ -160,12 +159,15 @@ int main(int argc, char **argv)
 
   for(int i=0; i < iters; i++) { 
 #if defined(QPHIX_SCALAR_SOURCE)
-    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 1), "testDslashFull_S1" );
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 1), "testDslashFull_S1\n" );
+
+#elif defined(QPHIX_QPX_SOURCE)
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_S4\n" );
 #else
-    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_S4" );
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 4), "testDslashFull_S4\n" );
     
-    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 8), "testDslashFull_S8" ); 
-    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 16), "testDslashFull_S16" );
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 8), "testDslashFull_S8\n" ); 
+    tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 16), "testDslashFull_S16\n" );
 #endif
   }
 

@@ -10,9 +10,9 @@ inline
   void xmyNorm2Spinor<float,16>(float* restrict res, float* restrict x, float* restrict y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
 {
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res=0 __attribute__ ((aligned(64)));
+  double norm2res=0 __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(64)) double norm2res=0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res=0;
 #endif
   const int veclen = 16;
 #pragma omp parallel shared(norm_array) 
@@ -102,9 +102,9 @@ void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restri
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res=0 __attribute__ ((aligned(64)));
+  double norm2res=0 __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(64)) double norm2res=0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res=0;
 #endif
 
   const int veclen = 16;
@@ -209,9 +209,9 @@ double norm2Spinor<float,16>(float* restrict res, int n, int n_cores, int n_simt
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res=0 __attribute__ ((aligned(64)));
+  double norm2res=0 __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(64)) double norm2res=0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res=0;
 #endif
 
   const int veclen = 16;

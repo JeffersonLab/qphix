@@ -56,6 +56,11 @@ using namespace QPhiX;
 #define VECLEN_DP 1
 #define VECLEN_SP 1
 #define QPHIX_SOALEN 1
+
+#elif defined(QPHIX_QPX_SOURCE)
+#define VECLEN_DP 4
+#define QPHIX_SOALEN 4
+
 #endif
 
 template<typename T>
@@ -283,7 +288,6 @@ testClovDslashFull::runTest(void)
   QDPIO::cout << "Testing Dslash \n" << endl;
 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
-  int isign=1;
 
   for(int isign=1; isign >= -1; isign -=2) {
     for(int cb=0; cb < 2; cb++) { 
@@ -690,7 +694,7 @@ testClovDslashFull::runTest(void)
 #if 1
   {
     chi = zero;
-    qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+    qdp_pack_cb_spinor<>(chi, chi_s[1], geom,1);
 
     double rsd_target=rsdTarget<FT>::value;
     int max_iters=500;
@@ -703,12 +707,12 @@ testClovDslashFull::runTest(void)
     solver.tune();
 
     double start = omp_get_wtime();
-    solver(chi_s[1], psi_s[1],rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+    solver(chi_s[1], psi_s[1],rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
     double end = omp_get_wtime();
     
     
     
-    qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
     
     // Multiply back 
     // chi2 = M chi
@@ -757,16 +761,16 @@ testClovDslashFull::runTest(void)
     unsigned long site_flops;
     unsigned long mv_apps;
     
-    InvBiCGStab<FT,V,S,compress> solver(M, max_iters,1);
+    InvBiCGStab<FT,V,S,compress> solver(M, max_iters);
     solver.tune();
-
+    const int isign=1;
     double start = omp_get_wtime();
-    solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+    solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
     double end = omp_get_wtime();
     
     
     
-    qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
     
     // Multiply back 
     // chi2 = M chi
@@ -834,9 +838,13 @@ testClovDslashFull::run(void)
       runTest<double,1,1,false,UF, PhiF>();
     }
   }
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#else
+
+
+
 
    if( precision == FLOAT_PREC ) { 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -860,7 +868,10 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,16,false,UF, PhiF>();
     }
 #endif
+#endif  // QPHIX_AVX_SOURCE|| QPHIX_MIC_SOURCE
+
   }
+
 
   if( precision == HALF_PREC ) { 
 #if defined(QPHIX_MIC_SOURCE)
@@ -922,6 +933,7 @@ testClovDslashFull::run(void)
     }
 #endif
   }
-#endif
 
+
+#endif // SCALAR SOURCE
 }

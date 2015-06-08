@@ -36,6 +36,9 @@
 /* Fake Comms */
 #undef QPHIX_FAKE_COMMS
 
+/* L2 Cache alignment */
+#undef QPHIX_LLC_CACHE_ALIGN
+
 /* Generate MIC Specializations */
 #undef QPHIX_MIC_SOURCE
 
@@ -44,6 +47,9 @@
 
 /* QMP Comms */
 #undef QPHIX_QMP_COMMS
+
+/* Generate QPX Specializations */
+#undef QPHIX_QPX_SOURCE
 
 /* Scalar Arch */
 #undef QPHIX_SCALAR
