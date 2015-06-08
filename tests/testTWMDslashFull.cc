@@ -145,7 +145,7 @@ testTWMDslashFull::run(void)
 
 
 
-#if 0 // Save build time
+#if 1 // Save build time
   if( precision == FLOAT_PREC ) {
     
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -157,25 +157,27 @@ testTWMDslashFull::run(void)
 
       if( soalen == 4 ) { 
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
-//	testTWMDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+	testTWMDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-//	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
       }
 
       if( soalen == 8 ) {
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
-//	testTWMDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-//	testTWMCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+	testTWMDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+	testTWMMWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+	testTWMCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
       }
 
       if ( soalen == 16 ) { 
 #if defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
-//	testTWMDslashWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-//	testTWMCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+	testTWMDslashWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+	testTWMMWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+	testTWMCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 #else 
 	masterPrintf("SOALEN=16 not available");
 	return;
@@ -265,7 +267,7 @@ testTWMDslashFull::run(void)
 #endif // If 0
 
 // mixed prec.
-#if 1
+#if 0
 
     multi1d<LatticeColorMatrixD3> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -1017,8 +1019,9 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
     norm2Spinor<T,V,S,compress>(r2,psi_even,geom,1);
     masterPrintf("psi has norm2 = %16.8e\n", r2);
 
+    int isign=1;
     double start = omp_get_wtime();
-    solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, verbose);
+    solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
     double end = omp_get_wtime();
     
     
@@ -1165,19 +1168,19 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
     unsigned long site_flops;
     unsigned long mv_apps;
 
+	// CG Inner SOlver
+	InvCG<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters_inner);
+	InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,max_iters_outer);
+
 
     for(int isign=1; isign >= -1; isign -=2) {
-      // CG Inner SOlver
-      InvCG<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters_inner);
-      InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,isign,max_iters_outer);
-
       chi = zero;
       //      qdp_pack_spinor<T,V,S, compress,Phi >(chi, chi_even, chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom_outer);
       masterPrintf("Entering solver\n");
 
       double start = omp_get_wtime();
-      outer_solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      outer_solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign, verbose);
       double end = omp_get_wtime();
 
       //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0], chi_s[1], chi, geom);

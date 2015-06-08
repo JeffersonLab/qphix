@@ -532,7 +532,7 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
       
       start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
       end = omp_get_wtime();
     
       
