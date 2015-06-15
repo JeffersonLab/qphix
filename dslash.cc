@@ -401,7 +401,7 @@ void generate_code(void)
                 ivector.resize(0);
 
                 // Generate instructions
-                dslash_plain_body(ivector,compress12,clover,isPlus);
+                dslash_plain_body(ivector,compress12,clover,false,isPlus);
                 mergeIvectorWithL2Prefetches(ivector, l2prefs);
                 dumpIVector(ivector,filename.str());
 
@@ -417,7 +417,7 @@ void generate_code(void)
                 ivector.resize(0);
 
                 // Generate instructions
-                dslash_achimbdpsi_body(ivector,compress12,clover,isPlus);
+                dslash_achimbdpsi_body(ivector,compress12,clover,false,isPlus);
                 mergeIvectorWithL2Prefetches(ivector, l2prefs);
                 dumpIVector(ivector,filename.str());
 
