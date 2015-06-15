@@ -347,18 +347,18 @@ namespace QPhiX
 								 const SU3MatrixBlock* u, /* Gauge field suitably packed */
 								 double alpha, 
 								 double beta, 
-                                                                 double mu, 
+//                                                                 double mu,
 								 int isign,
 								 int cb) 
   {
     
     // Call the service functions
     if (isign == 1) {  
-      TMDPsiPlusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,mu,cb);
+      TMDPsiPlusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,/*mu,*/cb);
     }
     
     if( isign == -1) {
-      TMDPsiMinusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,mu,cb);
+      TMDPsiMinusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,/*mu,*/cb);
     }    
   }
   
@@ -947,7 +947,7 @@ namespace QPhiX
 								    const SU3MatrixBlock* u, 
 								    double alpha, 
 								    double beta,
-                                                                    double mu, 
+//                                                                    double mu,
 								    int cb)
     {
       
@@ -1210,7 +1210,7 @@ namespace QPhiX
 									beta_s_T,
 									beta_t_f_T,
 									beta_t_b_T,
-                                                                        mu,
+//                                                                        mu,
 									accumulate);
 		
 	      }
@@ -1232,7 +1232,7 @@ namespace QPhiX
 								     const SU3MatrixBlock* u, 
 								     double alpha, 
 								     double beta,
-                                                                     double mu, 
+//                                                                     double mu,
 								     int cb)
     {
       
@@ -1498,7 +1498,7 @@ namespace QPhiX
 									 beta_s_T,
 									 beta_t_f_T,
 									 beta_t_b_T,
-                                                                         mu,
+//                                                                         mu,
 									 accumulate);
 		
 	      }
@@ -1653,7 +1653,7 @@ namespace QPhiX
 								      const FourSpinorBlock *psi_in, 
 								      const FourSpinorBlock* chi_in, 
 								      FourSpinorBlock *res_out, 
-								      double alpha, double beta, double mu, int cb)
+								      double alpha, double beta, /*double mu,*/ int cb)
       {
 
 	double beta_s = beta*aniso_coeff_S;
@@ -1695,7 +1695,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();	      
-	  TMDyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, mu, cb);
+	  TMDyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, /*mu,*/ cb);
 	}
 
 #ifdef  QPHIX_QMP_COMMS
@@ -1724,7 +1724,7 @@ namespace QPhiX
 								      const FourSpinorBlock *psi_in, 
 								      const FourSpinorBlock* chi_in, 
 								      FourSpinorBlock *res_out, 
-								      double alpha, double beta, double mu, int cb)
+								      double alpha, double beta, /*double mu,*/ int cb)
       {
 	double beta_s = beta*aniso_coeff_S;
 	double beta_t_f = beta*aniso_coeff_T;
@@ -1765,7 +1765,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();	      
-	  TMDyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, mu, cb);
+	  TMDyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, /*mu,*/ cb);
 	}
 
 #ifdef  QPHIX_QMP_COMMS

@@ -37,9 +37,7 @@ void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2
       norm2res += tmpd*tmpd;
   }
   
- #ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   n2res = norm2res;
 }
 
@@ -56,9 +54,7 @@ double norm2Spinor(FT* restrict res, int n)
     norm2res += tmpd*tmpd;
   }
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   return norm2res;
 }
 
@@ -81,9 +77,7 @@ void rmammpNorm2rxpap(FT* restrict r, FT ar, FT* restrict  mmp, double& cp, FT* 
   }
   
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&cp_internal);
-#endif
+  CommsUtils::sumDouble(&cp_internal);
   cp= cp_internal;
 }
 
@@ -107,9 +101,9 @@ void aypx(FT a, FT* restrict x, FT* restrict y, int n)
 
 // Actually this is a MIC-ism (8 doubles=1 cacheline)
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
- static double norm_array[240][8] __attribute__ ((aligned(64)));
+ static double norm_array[240][8] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
- __declspec(align(64)) static double norm_array[240][8];
+ __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double norm_array[240][8];
 #endif
 
 template<typename FT, int veclen>
@@ -118,9 +112,9 @@ inline
 {
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(64))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(64)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
 #pragma omp parallel shared(norm_array) 
@@ -171,9 +165,7 @@ inline
    norm2res += norm_array[i][0];
  }
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   n2res = norm2res;
 }
  
@@ -184,9 +176,9 @@ double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(64))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(64)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
  #pragma omp parallel shared(norm_array)
@@ -232,9 +224,7 @@ double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_
     norm2res += norm_array[i][0];
   }
   
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   return norm2res;
 }
 
@@ -246,9 +236,9 @@ void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp
   // 240 is max num threads...  -- fix this later 
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  double norm2res __attribute__ ((aligned(64))) = 0;
+  double norm2res __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))) = 0;
 #else
-  __declspec(align(64)) double norm2res = 0;
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double norm2res = 0;
 #endif
 
 #pragma omp parallel shared(norm_array)
@@ -295,9 +285,7 @@ void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp
     norm2res += norm_array[i][0];
   }
 
-#ifdef QPHIX_QMP_COMMS
-  QMP_sum_double(&norm2res);
-#endif
+  CommsUtils::sumDouble(&norm2res);
   cp = norm2res;
 }
 

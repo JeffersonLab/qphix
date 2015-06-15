@@ -94,6 +94,19 @@ public:
   }
 #endif
   
+  template<typename T1, int VEC1, int SOA1, typename T2, int VEC2, int SOA2, typename U, typename Phi>
+  void testTWMRichardsonWrapper(const U& u)
+  {
+    for(int t_bc=-1; t_bc <= +1; t_bc+=2) {
+      if( compress12  ) {
+	testTWMRichardson<T1,VEC1,SOA1,true,T2,VEC2,SOA2,U,Phi>(u,t_bc);
+      }
+      else {
+	testTWMRichardson<T1,VEC1,SOA1,false,T2,VEC2,SOA2,U,Phi>(u,t_bc);
+      }
+    }
+  }
+
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testTWMDslash(const U& u, int t_bc);
 
@@ -110,8 +123,8 @@ public:
     //void testBiCGStab(const U& u, int t_bc);
 
 
-  //template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, int SOA2, typename U, typename Phi>
-    //void testRichardson(const U& u, int t_bc);
+  template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, int SOA2, typename U, typename Phi>
+    void testTWMRichardson(const U& u, int t_bc);
 };
 
 #endif

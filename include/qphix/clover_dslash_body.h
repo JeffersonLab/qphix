@@ -114,7 +114,7 @@ namespace QPhiX
     // Set up block info array. These are thread local
     // Indices run as (phases fastest and threads slowest)
     int num_blockinfo = num_phases*s->getNumCores()*n_threads_per_core;
-    block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo*sizeof(BlockPhase),64);
+    block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo*sizeof(BlockPhase),QPHIX_LLC_CACHE_ALIGN);
     if( block_info == 0x0 ) { 
       fprintf(stderr, "Could not allocate Block Info array\n");
       abort();
@@ -154,7 +154,7 @@ namespace QPhiX
     // Alloc tmpspc. It is thread local so we need one for
     // every thread
     size_t tmpspc_size = num_cores*n_threads_per_core*veclen*16*sizeof(int);
-    tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, 64);
+    tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, QPHIX_LLC_CACHE_ALIGN);
     if( tmpspc_all == 0x0 ) { 
       masterPrintf("Failed to allocate xy offset tmpspc\n");
       abort();
@@ -431,9 +431,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -711,9 +711,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1003,9 +1003,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1292,9 +1292,9 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(64)))  =&(tmpspc_all[veclen*16*tid]);
+      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
 #else
-      __declspec(align(64)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1537,7 +1537,7 @@ namespace QPhiX
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
 
 	TSC_tick t_start,t_end;
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1556,7 +1556,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 	// DO BODY DON"T ACCUMULATE BOUNDARY
 #pragma omp parallel 
@@ -1566,7 +1566,7 @@ namespace QPhiX
 	  DyzPlus(tid, psi_in, res_out, u, invclov, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	if( ! comms->localDir(d) ) { 
 	  comms->finishSendDir(2*d+1);
@@ -1586,7 +1586,7 @@ namespace QPhiX
 	} // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
       }
   
   template<typename FT, int veclen,int soalen, bool compress12>
@@ -1606,7 +1606,7 @@ namespace QPhiX
 
 	// Antiperiodic BCs on forw links
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1625,7 +1625,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1635,7 +1635,7 @@ namespace QPhiX
 	}
 
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	if( ! comms->localDir(d) ) { 
 	  comms->finishSendDir(2*d+1);
@@ -1653,7 +1653,7 @@ namespace QPhiX
 	} // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
 
       }  // function
 
@@ -1675,7 +1675,7 @@ namespace QPhiX
        if( amIPtMax ) { beta_t_f *= t_boundary; }
        
 
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1694,7 +1694,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1703,7 +1703,7 @@ namespace QPhiX
 	  DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
 	}
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	if( ! comms->localDir(d) ) { 
 	  comms->finishSendDir(2*d+1);
@@ -1721,7 +1721,7 @@ namespace QPhiX
 	} // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
       }
 
   template<typename FT, int veclen, int soalen, bool compress12>
@@ -1740,7 +1740,7 @@ namespace QPhiX
 	if( amIPtMin ) { beta_t_b *= t_boundary; }
 	if( amIPtMax ) { beta_t_f *= t_boundary; }
 
-#ifdef QPHIX_QMP_COMMS	
+#ifdef QPHIX_DO_COMMS	
 	// Pre-initiate all receives
 
 	for(int d = 3; d >= 0; d--) {
@@ -1759,7 +1759,7 @@ namespace QPhiX
 	  comms->startSendDir(2*d+0);
 	}
 	}
-#endif   // QPHIX_QMP_COMMS
+#endif   // QPHIX_DO_COMMS
 
 
 #pragma omp parallel 
@@ -1769,7 +1769,7 @@ namespace QPhiX
 	}
 
 
-#ifdef  QPHIX_QMP_COMMS
+#ifdef  QPHIX_DO_COMMS
 	for(int d = 3; d >= 0; d--) {
 	if( ! comms->localDir(d) ) { 
 	  comms->finishSendDir(2*d+1);
@@ -1787,7 +1787,7 @@ namespace QPhiX
 	} // end if
 	} // end for
 
-#endif	// QPHIX_QMP_COMMS
+#endif	// QPHIX_DO_COMMS
 
       }
      

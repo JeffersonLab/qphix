@@ -1,11 +1,23 @@
 #ifndef QPHIX_COMM_H
 #define QPHIX_COMM_H
 
+#ifdef QPHIX_DO_COMMS
+#ifdef QPHIX_QMP_COMMS
+#undef SEEK_SET
+#undef SEEK_CUR
+#undef SEEK_END
+
+#include <qmp.h>
+#include <mpi.h>
+#endif
+#endif
+
 namespace QPhiX
 {
 
 
-#ifndef QPHIX_QMP_COMMS
+#ifndef QPHIX_DO_COMMS
+#warning using scalar comms
   /*! Scalar version of the class. Everything is local.
     comms related functions commented out */
   template<typename T, int V, int S, const bool compressP>
@@ -24,7 +36,152 @@ namespace QPhiX
     inline bool amIPtMin() const { return true; }
     inline bool amIPtMax() const { return true; }
   };
-#else 
+
+  namespace CommsUtils {
+    void sumDouble(double* d) {}
+    void sumDoubleArray(double *d, int n){}
+    int numNodes() { return (int)1; }
+  }
+#else
+
+
+#ifdef  QPHIX_FAKE_COMMS
+#warning using fake comms
+#include <cstdlib>
+#include <cstdio>
+#include <iostream> 
+
+  /*! Fake comms. 
+   * the idea here is to allocate recv buffers in all the 
+   */
+  template<typename T, int V, int S, const bool compressP>
+  class Comms {
+  public:
+    Comms(Geometry<T,V,S,compressP>* geom)  
+    {
+      masterPrintf("Initing fake comms\n");
+      NFaceDir[0] = (geom->Ny() * geom->Nz() * geom->Nt())/2;
+      NFaceDir[1] = (geom->Nx() * geom->Nz() * geom->Nt())/2;
+      NFaceDir[2] = (geom->Nx() * geom->Ny() * geom->Nt())/2;
+      NFaceDir[3] = (geom->Nx() * geom->Ny() * geom->Nz())/2;
+
+      // Get locality from env var QPHIX_FAKE_COMM_MASK="string"
+      // String is going to be a mask: Xcomm Ycomm Zcomm Tcomm
+      // This way the CLI is not changed (?)
+      char *localityEnv;
+      localityEnv=::std::getenv("QPHIX_FAKE_COMM_MASK");
+      if( localityEnv == NULL ) {
+	masterPrintf("No QPHIX_FAKE_COMM_MASK found. Assuming All Local\n");
+	for(int d=0; d < 4; d++){ localDir_[d] = true; }
+      }
+      else {
+	masterPrintf("Found QPHIX_FAKE_COMM_MASK = %s\n", localityEnv);
+	int nonlocalP[4];
+	::std::sscanf(localityEnv,"%d %d %d %d", &nonlocalP[0],
+	       &nonlocalP[1],&nonlocalP[2], &nonlocalP[3]);
+	for(int d=0; d < 4; d++) { 
+	  localDir_[d] = ( nonlocalP[d] == 0 );
+	}
+      }
+      masterPrintf("Locality Info: \n");
+      for(int d=0; d < 4; d++) { 
+	if( localDir(d) ) { 
+	  masterPrintf(" Dir %d is local \n", d );
+	}
+	else {
+	  masterPrintf(" Dir %d is nonlocal \n", d);
+	}
+      }
+
+      numNonLocalDir_ = 0;
+      // Count the number of non local dirs
+      // and keep a compact map
+      for(int d=0; d < 4; d++) { 
+	if ( ! localDir(d) ) { 
+	  nonLocalDir_[ numNonLocalDir_ ] = d;
+	  numNonLocalDir_++;
+	}
+      }
+
+      
+      initBuffers();
+
+    }
+
+
+    ~Comms() {
+      finiBuffers();
+    }
+
+    inline   bool localX() const { return localDir_[0]; }
+    inline   bool localY() const { return localDir_[1]; }
+    inline   bool localZ() const { return localDir_[2]; }
+    inline   bool localT() const { return localDir_[3]; }
+    inline   bool localDir(int d) const { return localDir_[d]; }
+
+    /* Am I the processor with smallest (t=0) in time */
+    inline bool amIPtMin() const { return true; }
+    inline bool amIPtMax() const { return true; }
+
+    // Nothing needs to be done to finish receives
+    inline void startSendDir(int d) {}
+    inline void finishSendDir(int d) {}
+    inline void startRecvFromDir(int d) {}
+    inline void finishRecvFromDir(int d) {}
+
+    inline void progressComms() {}
+
+    inline T* getSendToDirBuf(int dir) { return sendToDir[dir]; }
+    inline T* getRecvFromDirBuf(int dir) { return recvFromDir[dir]; }
+
+    T* sendToDir[8];
+    T* recvFromDir[8];
+
+
+    void initBuffers() {
+      masterPrintf("Initing face buffers\n");
+      for(int d=0; d < 4; d++) {
+	if ( !localDir(d) ) { 
+	  int faceInBytes = NFaceDir[d]*12*sizeof(T);
+	  recvFromDir[2*d + 0] = (T*)ALIGNED_MALLOC(faceInBytes, 4096);
+	  recvFromDir[2*d + 1] = (T*)ALIGNED_MALLOC(faceInBytes, 4096);
+	  sendToDir[2*d + 0] = recvFromDir[2*d + 1];
+	  sendToDir[2*d + 1] = recvFromDir[2*d + 0];
+	}
+      }
+    }
+
+    void finiBuffers() {
+      for(int d=0; d < 4; d++) { 
+	if( !localDir(d) ) { 
+	  ALIGNED_FREE(recvFromDir[2*d + 0]);
+	  ALIGNED_FREE(recvFromDir[2*d + 1]);
+	  sendToDir[2*d+1] = 0x0;
+	  sendToDir[2*d+1] = 0x0;
+	}
+      }
+    }
+    inline int numNonLocalDir() { return numNonLocalDir_; }
+    inline int nonLocalDir(int d)  { return nonLocalDir_[d]; }
+
+  private:
+    bool localDir_[4];
+    int NFaceDir[4];
+    int numNonLocalDir_;
+    int nonLocalDir_[4];
+
+  };
+  
+  namespace CommsUtils {
+    void sumDouble(double* d) {}
+    void sumDoubleArray(double *d, int n){}
+    int numNodes() { return (int)1; }
+  };
+#endif  // QPHIX FAKE COMMS 
+
+
+#ifdef  QPHIX_QMP_COMMS
+#warning Doing QMP Comms
 
 #define QPHIX_MPI_COMMS_CALLS  
 #ifdef QPHIX_MPI_COMMS_CALLS
@@ -74,7 +231,6 @@ namespace QPhiX
       totalBufSize = 0;
       for(int d = 0; d < 4; d++) {
 	if ( !localDir(d) ) {
-	  cout << "Dir " << d << " is nonlocal " << endl;
 	  for(int dim=0; dim < 4; dim++) { 
 	    fw_neigh_coords[dim]=bw_neigh_coords[dim]=qmp_coords[dim];
 	  }
@@ -141,6 +297,17 @@ namespace QPhiX
       
       amIPtMin_ = (logical_coordinates[3] == 0);
       amIPtMax_ = (logical_coordinates[3] == (logical_dimensions[3]-1) );
+
+      numNonLocalDir_ = 0;
+      // Count the number of non local dirs
+      // and keep a compact map
+      for(int d=0; d < 4; d++) { 
+	if ( ! localDir(d) ) { 
+	  nonLocalDir_[ numNonLocalDir_ ] = d;
+	  numNonLocalDir_++;
+	}
+      }
+    
       
     }
 
@@ -295,18 +462,29 @@ namespace QPhiX
     QMP_msghandle_t mh_recvFromDir[8];
 #endif // else MPI COMMS_CALLS
 
+    int numNonLocalDir() { return numNonLocalDir_; }
+    int nonLocalDir(int d)  { return nonLocalDir_[d]; }
+
   private:
     int NFaceDir[4];
     bool localDir_[4];
     bool amIPtMin_;
     bool amIPtMax_;
-
+    int numNonLocalDir_;
+    int nonLocalDir_[4];
 
 
   };
 
+  namespace CommsUtils {
+    void sumDouble(double* d) { QMP_sum_double(d); };
+    void sumDoubleArray(double *d, int n) { QMP_sum_double_array(d,n); }
+    int numNodes() { return QMP_get_number_of_nodes(); }
+  };
+
 #endif // QPHIX_QMP_COMMS 
 
+#endif // ifndef QPHIX_DO_COMMS
 }; // Namespace 
 
 

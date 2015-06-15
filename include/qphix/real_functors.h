@@ -68,9 +68,9 @@ namespace QPhiX
       FT* resbase = &res[block][0][0][0][0];
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
 #endif
 
        // Now we are hopefully both in L1 and in the right layout so
@@ -97,14 +97,14 @@ namespace QPhiX
   };
   
   template<typename FT, int V, int S, bool compress>
-  class AXPYFunctor {
+  class AYPXFunctor {
   public:
     typedef typename ArithType<FT>::Type AT;
 
-    AXPYFunctor(double a_, 
+    AYPXFunctor(double a_, 
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
-    ~AXPYFunctor() {}
+    ~AYPXFunctor() {}
     
     inline void 
     func(int block)
@@ -115,11 +115,11 @@ namespace QPhiX
       
       // Temporary storage to stream into and out of
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
 #endif
 
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
@@ -149,6 +149,169 @@ namespace QPhiX
     typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
   };
 
+  template<typename FT, int V, int S, bool compress>
+  class AXPYFunctor {
+  public:
+    typedef typename ArithType<FT>::Type AT;
+
+    AXPYFunctor(double a_, 
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
+    ~AXPYFunctor() {}
+    
+    inline void 
+    func(int block)
+    {
+      int nvec_in_spinor = (3*4*2*S)/V;
+      const FT* xbase=&x[block][0][0][0][0];
+      FT* ybase = &y[block][0][0][0][0];
+      
+      // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
+
+      BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
+      BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
+      
+      // Now we are hopefully both in L1 and in the right layout so
+#ifndef QPHIX_USE_CEAN
+      for(int col=0; col < 3; col++) { 
+	for(int spin=0; spin < 4; spin ++) { 
+	  for(int reim=0; reim < 2; reim++) { 
+            for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + y_spinor[col][spin][reim][i];
+            }
+	  }
+	}
+      }
+#else
+      y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:] + y_spinor[:][:][:][:];
+#endif
+      
+      BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+    }
+    
+  private: 
+    AT a;
+    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
+    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+  };
+
+  template<typename FT, int V, int S, bool compress>
+  class AXPBYFunctor {
+  public:
+    typedef typename ArithType<FT>::Type AT;
+
+    AXPBYFunctor(double a_, 
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
+		 double b_,
+		 typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)),b(rep<AT,double>(b_)), x(x_), y(y_) {}
+    ~AXPBYFunctor() {}
+    
+    inline void 
+    func(int block)
+    {
+      int nvec_in_spinor = (3*4*2*S)/V;
+      const FT* xbase=&x[block][0][0][0][0];
+      FT* ybase = &y[block][0][0][0][0];
+      
+      // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
+
+      BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
+      BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
+      
+      // Now we are hopefully both in L1 and in the right layout so
+#ifndef QPHIX_USE_CEAN
+      for(int col=0; col < 3; col++) { 
+	for(int spin=0; spin < 4; spin ++) { 
+	  for(int reim=0; reim < 2; reim++) { 
+            for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + b*y_spinor[col][spin][reim][i];
+            }
+	  }
+	}
+      }
+#else
+      y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:] + b*y_spinor[:][:][:][:];
+#endif
+      
+      BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+    }
+    
+  private: 
+    AT a;
+    AT b;
+    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
+    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+  };
+
+  template<typename FT, int V, int S, bool compress>
+  class AXYFunctor {
+  public:
+    typedef typename ArithType<FT>::Type AT;
+
+    AXYFunctor(double a_, 
+	      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
+	      typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
+    ~AXYFunctor() {}
+    
+    inline void 
+    func(int block)
+    {
+      int nvec_in_spinor = (3*4*2*S)/V;
+      const FT* xbase=&x[block][0][0][0][0];
+      FT* ybase=&y[block][0][0][0][0];
+
+      // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
+
+      BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
+      
+      // Now we are hopefully both in L1 and in the right layout so
+#ifndef QPHIX_USE_CEAN
+      for(int col=0; col < 3; col++) { 
+	for(int spin=0; spin < 4; spin ++) { 
+	  for(int reim=0; reim < 2; reim++) { 
+	    for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i];
+	    }
+	  }
+	}
+      }
+
+#else
+      // CEAN notation
+      y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:];
+#endif
+      
+      BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+    }
+    
+  private: 
+    AT a;
+    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
+    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+
+  };
+
 
   template<typename FT, int V, int S, bool compress>
   class Norm2Functor {
@@ -165,9 +328,9 @@ namespace QPhiX
       const FT* xbase=&x[block][0][0][0][0];
       
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
 #endif
 
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
@@ -213,13 +376,13 @@ namespace QPhiX
       
       // Temporary storage to stream into and out of
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock res_spinor;
 #endif      
       
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
@@ -250,7 +413,56 @@ namespace QPhiX
     const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
   };
   
-  
+  template<typename FT, int V, int S, bool compress>
+  class AXPYNorm2Functor {
+  public:
+    typedef typename ArithType<FT>::Type AT;
+
+    AXPYNorm2Functor(double a_, 
+		     const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
+		     typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
+    ~AXPYNorm2Functor() {}
+    
+    inline void 
+      func(int block, double *reduction)
+    {
+      int nvec_in_spinor = (3*4*2*S)/V;
+      const FT* xbase=&x[block][0][0][0][0];
+      FT* ybase = &y[block][0][0][0][0];
+      
+      // Temporary storage to stream into and out of
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+#endif
+
+      BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
+      BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
+      
+      // Now we are hopefully both in L1 and in the right layout so
+      for(int col=0; col < 3; col++) { 
+	for(int spin=0; spin < 4; spin ++) { 
+	  for(int reim=0; reim < 2; reim++) { 
+            for(int i=0; i < S; i++) {
+              y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + y_spinor[col][spin][reim][i];
+	      reduction[i] += rep<double,AT>(y_spinor[col][spin][reim][i])*rep<double,AT>(y_spinor[col][spin][reim][i]);
+            }
+	  }
+	}
+      }
+      
+      BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+    }
+    
+  private: 
+    AT a;
+    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
+    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+  };
+
   template<typename FT, int V, int S, bool compress>
   class XMYFunctor {
   public:
@@ -270,11 +482,11 @@ namespace QPhiX
       FT* ybase=&y[block][0][0][0][0];
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock y_spinor;
 #endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
@@ -325,15 +537,15 @@ namespace QPhiX
       const FT* pbase=&p[block][0][0][0][0];
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor __attribute__ ((aligned(64))); 
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN))); 
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock mmp_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
 #endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
@@ -404,15 +616,15 @@ private:
       int nvec_in_spinor = (3*4*2*S)/V;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor __attribute__ ((aligned(64)));
-      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor __attribute__ ((aligned(64)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+      typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor;
-      __declspec(align(64)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock r_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_x_spinor;
+      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock delta_r_spinor;
 #endif
  
       BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);

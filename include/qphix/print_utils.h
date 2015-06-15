@@ -6,11 +6,6 @@
 #include "qphix/qphix_config.h"
 
 using namespace std;
-#ifdef QPHIX_QMP_COMMS
-#include <qmp.h>
-#endif
-
-
 namespace  QPhiX 
 {
   void masterPrintf(const char * format, ... );

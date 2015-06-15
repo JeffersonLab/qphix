@@ -139,6 +139,59 @@ namespace QPhiX {
   
 #endif  // IFDEF BUILD CLOVER
 
+
+  template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+  void qdp_pack_cb_spinor(const QDPSpinor& psi_in, 
+			  typename Geometry<FT,veclen,soalen, compress>::FourSpinorBlock* psi,
+			  Geometry<FT,veclen,soalen,compress>& s,
+			  int cb) 
+  { 
+    // Get the subgrid latt size.
+    int Nt = s.Nt();
+    int Nz = s.Nz();
+    int Ny = s.Ny();
+    int Nxh = s.Nxh();
+    int nvecs = s.nVecs();
+    int Pxy = s.getPxy();
+    int Pxyz = s.getPxyz();
+
+#pragma omp parallel for collapse(4)
+      for(int t=0; t < Nt; t++) {
+	for(int z=0; z < Nz; z++) {
+	  for(int y=0; y < Ny; y++) {
+	    for(int s=0; s < nvecs; s++) { 
+	      for(int col=0; col < 3; col++)  {
+		for(int spin=0; spin < 4; spin++) { 
+		  for(int x=0; x < soalen; x++) { 
+
+		    int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+		    int x_coord = s*soalen + x;
+		    
+		    int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
+		    psi[ind][col][spin][0][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real();
+		    psi[ind][col][spin][1][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag();
+		  
+		  }
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      
+  }
+
+  template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+  void qdp_pack_spinor(const QDPSpinor& psi_in, 
+		       typename Geometry<FT,veclen,soalen, compress>::FourSpinorBlock* psi_even, 
+		       typename Geometry<FT,veclen,soalen, compress>::FourSpinorBlock* psi_odd,
+		       Geometry<FT,veclen,soalen,compress>& s) 
+  {
+    qdp_pack_cb_spinor(psi_in,psi_even,s,0);
+    qdp_pack_cb_spinor(psi_in,psi_odd,s,1);
+  }
+
+#if 0
   template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
   void qdp_pack_spinor(const QDPSpinor& psi_in, 
 		       typename Geometry<FT,veclen,soalen, compress>::FourSpinorBlock* psi_even, 
@@ -167,21 +220,11 @@ namespace QPhiX {
 		    int x_coord = s*soalen + x;
 		    
 		    int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
-#if 1
 		    psi_even[ind][col][spin][0][x] = psi_in.elem(rb[0].start()+qdp_ind).elem(spin).elem(col).real();
 		    psi_even[ind][col][spin][1][x] = psi_in.elem(rb[0].start()+qdp_ind).elem(spin).elem(col).imag();
 		    
 		    psi_odd[ind][col][spin][0][x] = psi_in.elem(rb[1].start()+qdp_ind).elem(spin).elem(col).real();
 		    psi_odd[ind][col][spin][1][x] = psi_in.elem(rb[1].start()+qdp_ind).elem(spin).elem(col).imag();
-#else
-		    // Testing
-		    psi_even[ind][col][spin][0][x] = (float)(2*(col+3*spin));
-		    psi_even[ind][col][spin][1][x] = (float)(1+2*(col+3*spin));
-		    
-		    psi_odd[ind][col][spin][0][x] = (float)(2*col + 3*spin);
-		    psi_odd[ind][col][spin][1][x] = (float)(2*col + 3*spin+1);
-		  
-#endif
 		  
 		  }
 		}
@@ -192,13 +235,68 @@ namespace QPhiX {
       }
       
   }
+#endif
   
+
+  template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+    void qdp_unpack_cb_spinor(typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock* chi_packed, 
+			      QDPSpinor& chi,
+			      Geometry<FT,veclen,soalen,compress>& s,
+			      int cb) 
+  { 
+    int Nt = s.Nt();
+    int Nz = s.Nz();
+    int Ny = s.Ny();
+    int Nxh = s.Nxh();
+    int nvecs = s.nVecs();
+    int Pxy = s.getPxy();
+    int Pxyz = s.getPxyz();
+
+
+#pragma omp parallel for collapse(4)    
+    for(int t=0; t < Nt; t++) {
+      for(int z=0; z < Nz; z++) {
+	for(int y=0; y < Ny; y++) {
+	  for(int s=0; s < nvecs; s++) { 
+	    for(int spin=0; spin < 4; spin++) { 
+	      for(int col=0; col < 3; col++)  {
+		for(int x=0; x < soalen; x++) { 
+
+		  int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+		  int x_coord = s*soalen + x;
+		  
+		  int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
+		  
+		  chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real() =  chi_packed[ind][col][spin][0][x];
+		  chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag() =  chi_packed[ind][col][spin][1][x];
+
+		}
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+
   template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
     void qdp_unpack_spinor(typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock* chi_even, 
 			   typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock* chi_odd,
-			 QDPSpinor& chi,
+			   QDPSpinor& chi,
+			   Geometry<FT,veclen,soalen,compress>& s) 
+  {
+    qdp_unpack_cb_spinor(chi_even,chi,s,0);
+    qdp_unpack_cb_spinor(chi_odd,chi,s,1);
+  }
+
+#if 0
+  template<typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+    void qdp_unpack_spinor(typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock* chi_even, 
+			   typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock* chi_odd,
+			   QDPSpinor& chi,
 			   Geometry<FT,veclen,soalen,compress>& s) 
   { 
+
     int Nt = s.Nt();
     int Nz = s.Nz();
     int Ny = s.Ny();
@@ -236,6 +334,7 @@ namespace QPhiX {
       }
     }
   }
+#endif
 
 #if defined(QPHIX_MIC_SOURCE)
 

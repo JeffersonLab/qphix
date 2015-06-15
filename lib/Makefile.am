@@ -7,3 +7,9 @@ lib_LIBRARIES = libqphix_solver.a
 
 libqphix_solver_a_SOURCES = \
 	print_utils.cc
+
+if QPHIX_BUILD_QPX
+libqphix_solver_a_SOURCES += bgq_threadbind.cc
+else
+libqphix_solver_a_SOURCES += generic_threadbind.cc
+endif

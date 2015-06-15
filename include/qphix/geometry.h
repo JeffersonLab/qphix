@@ -4,24 +4,6 @@
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
 
-#ifdef QPHIX_QMP_COMMS
-#warning Enabling QMP in Dslash
-#undef SEEK_SET
-#undef SEEK_END
-#undef SEEK_CUR
-#include "mpi.h"
-#include "qmp.h"
-
-// If this is defined, QMP will be used for geometry information, but explicit
-// MPI Isends and Irecvs will be used here with tag 12
-//
-
-
-// If this is defined send/recv start/wait in the T-direction will print source, destination and length info.
-// #define QMP_DIAGNOSTICS
-#endif // QPHIX_QMP_COMMS
-
-
 #include <cstdlib>
 #include <iostream>
 
@@ -34,7 +16,6 @@ namespace QPhiX {
     int Ct;
     int Cyz;
     int startBlock;
-    //    char cache_pad[ 64-3*sizeof(int) ]; // Pad to cacheline
   }; 
 
   typedef unsigned short half;
@@ -136,8 +117,6 @@ namespace QPhiX {
       gauge_bytes = ((Pxyz*Nt_*S)/V)*sizeof(SU3MatrixBlock);
       clover_bytes = ((Pxyz*Nt_*S)/V)*sizeof(CloverBlock);
 
-      // Later one will work this out from QMP. While we are testing the buffers, I can set by hand.
-      
       // This works out the phase breakdown
       int ly = Ny_ / By;
       int lz = Nz_ / Bz;
@@ -180,7 +159,7 @@ namespace QPhiX {
     FourSpinorBlock* allocCBFourSpinor()
     {
             
-      FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 64);
+      FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 128);
       if ( ret_val == (FourSpinorBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate FourSpinorBlock\n");
 	abort();
@@ -222,7 +201,7 @@ namespace QPhiX {
    */
     SU3MatrixBlock* allocCBGauge()
     {
-      SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 64);
+      SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 128);
       if ( ret_val == (SU3MatrixBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate SU3MatrixBlock\n");
 	abort();
@@ -259,7 +238,7 @@ namespace QPhiX {
 
     CloverBlock* allocCBClov()
     {
-      CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 64);
+      CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 128);
       if ( ret_val == (CloverBlock *)0x0 ) { 
 	masterPrintf("Failed to allocate CloverBlock\n");
 	abort();

@@ -46,3 +46,6 @@ Makefile.in
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+######################
+*autom4te.cache*

@@ -151,7 +151,7 @@ namespace QPhiX {
 				 int cb);
 
     // DISABLE COMMS FOR NOW
-#ifdef QPHIX_QMP_COMMS
+#ifdef QPHIX_DO_COMMS
     void packFaceDir(int tid,
 			   const FourSpinorBlock *psi,
 			   FT *res,
@@ -182,7 +182,7 @@ namespace QPhiX {
 
 } // Namespace
 #include "qphix/clover_dslash_body.h"
-#ifdef QPHIX_QMP_COMMS
+#ifdef QPHIX_DO_COMMS
 // Disable comms for nokw
 #include "qphix/clov_face.h"
 #endif

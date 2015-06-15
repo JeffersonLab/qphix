@@ -9,10 +9,6 @@
 
 
 #include "qphix/linearOp.h"
-#ifdef QPHIX_QMP_COMMS
-#include "qmp.h"
-#endif
-
 #include "qphix/blas_new_c.h"
 #include "qphix/print_utils.h"
 #include "qphix/tsc.h"
@@ -27,8 +23,7 @@ namespace QPhiX
   public:
     typedef typename Geometry<FT,V,S,compress12>::FourSpinorBlock Spinor;
     InvBiCGStab(EvenOddLinearOperator<FT,V,S,compress12>& M_,
-		int MaxIters_,
-		int isign_) : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_), isign(isign_)
+		int MaxIters_) : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_)
     {
       r=geom.allocCBFourSpinor();
       r0=geom.allocCBFourSpinor();
@@ -63,6 +58,7 @@ namespace QPhiX
 		    double& rsd_sq_final, 
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
+		    int isign,
 		    bool verbose)
     {
       site_flops = 0;
@@ -249,7 +245,7 @@ namespace QPhiX
     EvenOddLinearOperator<FT, V,S,compress12>& M;
     Geometry<FT,V,S,compress12>& geom;
     int MaxIters;
-    const int isign;
+
     inline
     void complex_div(double res[2], double l[2], double r[2])
     {

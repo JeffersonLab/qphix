@@ -47,7 +47,7 @@ namespace QPhiX
     void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) {
     
       D->tmdslash(tmp, in, u[1], Mu, MuInv, isign, 1);
-      D->tmdslashAChiMinusBDPsi(res, tmp, in, u[0], Mu, mass_factor_alpha, mass_factor_beta, isign, 0);
+      D->tmdslashAChiMinusBDPsi(res, tmp, in, u[0], /*Mu,*/ Mu /* this was mass_factor_alpha*/, mass_factor_beta, isign, 0);
     }
 
     Geometry<FT,veclen, soalen, compress12>& getGeometry() { return D->getGeometry(); }

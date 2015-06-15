@@ -2,9 +2,7 @@
 #define QPHIX_SITE_LOOPS_H
 
 #include <qphix/geometry.h>
-#ifdef QPHIX_QMP_COMMS
-#include <qmp.h>
-#endif
+#include <qphix/comm.h>
 
 #include <omp.h>
 #include "qphix/print_utils.h"
@@ -14,11 +12,11 @@ namespace QPhiX
 { 
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  static double new_norm_array[240][MAXV] __attribute__ ((aligned(64)));
-  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(64)));
+  static double new_norm_array[240][MAXV] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(64)) static double new_norm_array[240][MAXV];
-  __declspec(align(64)) static double new_iprod_array[240][2][MAXV];
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_norm_array[240][MAXV];
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_iprod_array[240][2][MAXV];
 #endif
 
   template<typename FT, int V, int S, bool compress,
@@ -156,10 +154,7 @@ namespace QPhiX
 	reduction += new_norm_array[btid][s];
       }
     }
-    // DO A GLOBAL SUM HER
-#ifdef QPHIX_QMP_COMMS
-    QMP_sum_double(&reduction);
-#endif
+    CommsUtils::sumDouble(&reduction);
   }
 
 
@@ -246,9 +241,8 @@ namespace QPhiX
     }
         // DO A GLOBAL SUM HERE
 
-#ifdef QPHIX_QMP_COMMS
-    QMP_sum_double_array(reduction,2);
-#endif
+    CommsUtils::sumDoubleArray(reduction,2);
+
 
   }
 

@@ -15,7 +15,7 @@ using namespace std;
 using namespace QPhiX;
 
 #ifndef QPHIX_SOALEN
-#define QPHIX_SOALEN 4
+#define QPHIX_SOALEN 8
 #endif
 
 #if defined(QPHIX_MIC_SOURCE)
@@ -35,10 +35,14 @@ using namespace QPhiX;
 #define VECLEN_DP 1
 #endif
 
+#if defined(QPHIX_QPX_SOURCE) 
+#define VECLEN_SP 4
+#define VECLEN_DP 4
+#endif
+
 #ifdef QMP_COMMS
 #include <qmp.h>
 #endif
-
 
 template<typename T>
 struct rsdTarget { 
@@ -139,7 +143,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
   for(int t = 0; t < lT; t++) {
     for(int z = 0; z < lZ; z++) {
-      for(int y = 0; y < Ny; y++) {
+      for(int y = 0; y < lY; y++) {
 	for(int s = 0; s < nvecs; s++) {
 	  for(int mu = 0; mu < 8; mu++) {
 	    for(int c = 0; c < (compress ? 2 : 3) ; c++) {
@@ -181,7 +185,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < lT; t++) {
       for(int z = 0; z < lZ; z++) {
-	for(int y = 0; y < Ny; y++) {
+	for(int y = 0; y < lY; y++) {
 	  for(int s = 0; s < nvecs; s++) {
 	    
 	    int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
@@ -337,7 +341,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)   
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -368,7 +372,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
   for(int t=0; t < lT; t++) {
     for(int z=0; z < lZ; z++) {
-      for(int y=0; y < Ny; y++) {
+      for(int y=0; y < lY; y++) {
 	for(int s=0; s < nvecs; s++) { 
 	  for(int spin=0; spin < 4; spin++) { 
 	    for(int col=0; col < 3; col++)  {
@@ -412,10 +416,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	
 	double end = omp_get_wtime();
 	double time = end - start;
-#ifdef QMP_COMMS
-	QMP_sum_double(&time);
-	time /= (double)QMP_get_number_of_nodes();
-#endif
+	CommsUtils::sumDouble(&time);
+	time /= (double)CommsUtils::numNodes();
 
 	masterPrintf("\t timing %d of 3\n", repeat);
 	masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -453,10 +455,8 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double end = omp_get_wtime();
       double time = end - start;
       
-#ifdef QMP_COMMS
-      QMP_sum_double(&time);
-      time /= (double)QMP_get_number_of_nodes();
-#endif
+      CommsUtils::sumDouble(&time);
+      time /= (double)CommsUtils::numNodes();
       
       masterPrintf("\t timing %d of 3\n", repeat);
       masterPrintf("\t %d iterations in %e seconds\n", iters, time);
@@ -465,9 +465,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
       double perf = Gflops/time;
       masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-#ifdef QMP_COMMS
-      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)QMP_get_number_of_nodes());
-#endif
+      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
 
     }
     
@@ -507,7 +505,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -533,7 +531,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
       
       start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
       end = omp_get_wtime();
     
       
@@ -549,7 +547,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1
   {
     masterPrintf("Creating BiCGStab Solver\n");
-    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
+    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
     masterPrintf("Tuning BiCGStab Solver\n");
     solver2.tune();
     
@@ -570,7 +568,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #pragma omp parallel for collapse(4)    
       for(int t=0; t < lT; t++) {
 	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < Ny; y++) {
+	  for(int y=0; y < lY; y++) {
 	    for(int s=0; s < nvecs; s++) { 
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int col=0; col < 3; col++)  {
@@ -598,7 +596,7 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
     
       start = omp_get_wtime();
-      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
       end = omp_get_wtime();
       
       

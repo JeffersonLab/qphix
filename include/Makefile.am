@@ -16,6 +16,7 @@ nobase_include_HEADERS += \
 	qphix/invcg.h \
 	qphix/invbicgstab.h \
 	qphix/inv_richardson_multiprec.h \
+	qphix/minvcg.h \
 	qphix/linearOp.h \
 	qphix/memmap.h \
 	qphix/tsc.h \
@@ -24,14 +25,15 @@ nobase_include_HEADERS += \
 	qphix/complex_functors.h \
 	qphix/site_loops.h \
 	qphix/blas_new_c.h \
-	qphix/print_utils.h
+	qphix/print_utils.h \
+	qphix/threadbind.h
 
 
 #
 # not used currently: blas.h blas_c.h blas_mic.h
 #
 
-if QPHIX_BUILD_QDP_PACKERS
+if QPHIX_BUILD_WITH_QDP
 nobase_include_HEADERS += qphix/qdp_packer.h
 endif
 
@@ -852,6 +854,67 @@ qphix/scalar/generated/dslash_plus_body_float_float_v1_s1_12 \
 qphix/scalar/generated/dslash_plus_body_float_float_v1_s1_18
 
 
+nobase_include_HEADERS += \
+qphix/qpx/dslash_qpx_complete_specialization_form.h \
+qphix/qpx/dslash_qpx_complete_specialization.h \
+qphix/qpx/qpx_utils.h \
+qphix/qpx/generated/dslash_achimbdpsi_minus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_achimbdpsi_minus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_achimbdpsi_plus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_achimbdpsi_plus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_pack_to_back_T_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_T_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_X_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_X_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_Y_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_Y_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_Z_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_back_Z_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_T_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_T_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_X_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_X_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_Y_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_Y_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_Z_minus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_pack_to_forw_Z_plus_double_double_v4_s4 \
+qphix/qpx/generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_minus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_minus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/dslash_plus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/dslash_plus_body_double_double_v4_s4_18
+
 if QPHIX_BUILD_CLOVER
 nobase_include_HEADERS += \
 	qphix/mic/clov_dslash_mic_complete_specialization.h \
@@ -1424,6 +1487,51 @@ qphix/scalar/generated/clov_float_dslash_minus_body_float_float_v1_s1_12 \
 qphix/scalar/generated/clov_float_dslash_minus_body_float_float_v1_s1_18 \
 qphix/scalar/generated/clov_float_dslash_plus_body_float_float_v1_s1_12 \
 qphix/scalar/generated/clov_float_dslash_plus_body_float_float_v1_s1_18
+
+
+nobase_include_HEADERS += \
+qphix/qpx/clov_dslash_qpx_complete_specialization_form.h \
+qphix/qpx/clov_dslash_qpx_complete_specialization.h \
+qphix/qpx/generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_minus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_minus_body_double_double_v4_s4_18 \
+qphix/qpx/generated/clov_double_dslash_plus_body_double_double_v4_s4_12 \
+qphix/qpx/generated/clov_double_dslash_plus_body_double_double_v4_s4_18
 
 endif
 

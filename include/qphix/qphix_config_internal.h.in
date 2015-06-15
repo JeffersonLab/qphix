@@ -15,6 +15,9 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
@@ -27,6 +30,15 @@
 /* Build Twisted Mass Term */
 #undef QPHIX_BUILD_TWISTED_MASS
 
+/* Do the actual comms */
+#undef QPHIX_DO_COMMS
+
+/* Fake Comms */
+#undef QPHIX_FAKE_COMMS
+
+/* L2 Cache alignment */
+#undef QPHIX_LLC_CACHE_ALIGN
+
 /* Generate MIC Specializations */
 #undef QPHIX_MIC_SOURCE
 
@@ -35,6 +47,9 @@
 
 /* QMP Comms */
 #undef QPHIX_QMP_COMMS
+
+/* Generate QPX Specializations */
+#undef QPHIX_QPX_SOURCE
 
 /* Scalar Arch */
 #undef QPHIX_SCALAR
