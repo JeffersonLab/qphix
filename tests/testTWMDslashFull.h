@@ -122,9 +122,11 @@ public:
   //template<typename T, int V, int S, bool compress, typename U, typename Phi>
     //void testBiCGStab(const U& u, int t_bc);
 
-
   template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, int SOA2, typename U, typename Phi>
     void testTWMRichardson(const U& u, int t_bc);
+
+  template<typename QDPSpinor>
+    void applyTwist(QDPSpinor& psi, double Mu, int isign, int target_cb );
 };
 
 #endif
