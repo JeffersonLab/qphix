@@ -62,6 +62,13 @@ namespace QPhiX {
       D->dslash(tmp, in, u[0], invclov,  isign, 0);
       D->dslashAChiMinusBDPsi(res, tmp, in, u[1], clov, beta, isign, 1);
     }
+
+    void applyT(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) {
+      double beta=(double)0.25;
+      
+      D->dslashT(tmp, in, u[0], invclov,  isign, 0);
+      D->dslashAChiMinusBDPsiT(res, tmp, in, u[1], clov, beta, isign, 1);
+    }
     
     
     Geometry<FT,veclen, soalen, compress12>& getGeometry() { return D->getGeometry(); }

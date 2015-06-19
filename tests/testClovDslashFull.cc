@@ -298,14 +298,16 @@ testClovDslashFull::runTest(void)
       clov_chi = zero;
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-
+#pragma omp parallel 
+      {
       // Apply Optimized Dslash
-      D32.dslash(chi_s[target_cb],	
-		 psi_s[source_cb],
-		 u_packed[target_cb],
-		 invclov_packed[target_cb],
-		 isign, 
-		 target_cb);
+      D32.dslashT(chi_s[target_cb],	
+		  psi_s[source_cb],
+		  u_packed[target_cb],
+		  invclov_packed[target_cb],
+		  isign, 
+		  target_cb);
+      }
 
       qdp_unpack_spinor<>(chi_even,chi_odd, clov_chi, geom);
 
@@ -384,8 +386,10 @@ testClovDslashFull::runTest(void)
 
       double beta = (double)(0.25); // Always 0.25
 
+#pragma omp parallel
+      {
       // Apply Optimized Dslash
-      D32.dslashAChiMinusBDPsi(chi_s[target_cb],	
+      D32.dslashAChiMinusBDPsiT(chi_s[target_cb],	
 			       psi_s[source_cb],
 			       psi_s[target_cb],
 			       u_packed[target_cb],
@@ -393,7 +397,7 @@ testClovDslashFull::runTest(void)
 			       beta,
 			       isign, 
 			       target_cb);
-      
+      }
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
 
 
@@ -495,15 +499,16 @@ testClovDslashFull::runTest(void)
       clov_chi = zero;
       qdp_pack_spinor<>(chi, chi_even, chi_odd, D32_ap.getGeometry());
 
-
-      // Apply Optimized Dslash
-      D32_ap.dslash(chi_s[target_cb],	
-		    psi_s[source_cb],
-		    u_packed[target_cb],
-		    invclov_packed[target_cb],
-		    isign,
-		    target_cb);
-
+#pragma omp parallel
+      {
+	// Apply Optimized Dslash
+	D32_ap.dslashT(chi_s[target_cb],	
+		       psi_s[source_cb],
+		       u_packed[target_cb],
+		       invclov_packed[target_cb],
+		       isign,
+		       target_cb);
+      }
       qdp_unpack_spinor<>(chi_even,chi_odd, clov_chi, geom);
 
       // Account for Clover term from QDP++
@@ -580,16 +585,18 @@ testClovDslashFull::runTest(void)
 
       double beta = (double)(0.25); // Always 0.25
 
-      // Apply Optimized Dslash
-      D32_ap.dslashAChiMinusBDPsi(chi_s[target_cb],	
-				  psi_s[source_cb],
-				  psi_s[target_cb],
-				  u_packed[target_cb],
-				  clov_packed[target_cb],
-				  beta,
-				  isign, 
-				  target_cb);
-      
+#pragma omp parallel 
+      {
+	// Apply Optimized Dslash
+	D32_ap.dslashAChiMinusBDPsiT(chi_s[target_cb],	
+				     psi_s[source_cb],
+				     psi_s[target_cb],
+				     u_packed[target_cb],
+				     clov_packed[target_cb],
+				     beta,
+				     isign, 
+				     target_cb);
+      }
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, D32_ap.getGeometry());
 
 
@@ -643,10 +650,11 @@ testClovDslashFull::runTest(void)
       chi=zero;
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-      M( chi_s[1],
-	 psi_s[1],
-	 isign);
-
+#pragma omp parallel 
+      {
+	M.applyT( chi_s[1], psi_s[1], isign);
+      }
+      
       qdp_unpack_spinor<> (chi_s[0], chi_s[1], chi, geom);
 
 

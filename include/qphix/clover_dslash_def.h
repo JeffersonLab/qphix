@@ -47,6 +47,23 @@ namespace QPhiX {
 			       int isign,
 			       int cb);
 
+    void dslashT(FourSpinorBlock* res, 
+		const FourSpinorBlock* psi, 
+		const SU3MatrixBlock* u,
+		const CloverBlock* invclov,
+		int isign,
+		int cb);
+    
+
+    void dslashAChiMinusBDPsiT(FourSpinorBlock* res, 
+			       const FourSpinorBlock* psi, 
+			       const FourSpinorBlock* chi,
+			       const SU3MatrixBlock* u,
+			       const CloverBlock* clov,
+			       const double beta, 
+			       int isign,
+			       int cb);
+
 
     void free(void *p);
     Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
