@@ -127,6 +127,9 @@ public:
 
   template<typename QDPSpinor>
     void applyTwist(QDPSpinor& psi, double Mu, int isign, int target_cb );
+
+  template<typename QDPSpinor>
+    void applyInvTwist(QDPSpinor& psi, double Mu, double MuInv, int isign, int target_cb );
 };
 
 #endif

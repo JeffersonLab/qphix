@@ -427,52 +427,14 @@ testTWMDslashFull::testTWMDslash(const U& u, int t_bc)
     
       // Apply QDP Dslash -- ??
       chi2 = zero;
-      dslash(chi2,u_test,psi, isign, target_cb);//plain wilson dslash + twisted mass
 
-      //norm of chi2 before twist application:
-      //
-      Double chi2_norm = sqrt( norm2( chi2, rb[target_cb] ) ) / ( Real(4*3*2*Layout::vol()) / Real(2));
-      QDPIO::cout << "Norm chi2 before twist"  << chi2_norm << endl;
-
-      int Nxh=Nx/2;
-
-      //apply twist:
-      for(int t=0; t < Nt; t++){ 
-	for(int z=0; z < Nz; z++) { 
-	   for(int y=0; y < Ny; y++){ 
-	      for(int x=0; x < Nxh; x++){ 
-	        // These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) { 
-		  for(int c=0; c < Nc; c++) {
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-           
-		      REAL twr = chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag();
-		      REAL twi = chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real();
-
-                      //chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
-                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).real() = MuInv*twr;
-                      chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
-		    }
-		  }
-	      } // x 
-	    } // y 
-	} // z 
-      } // t
-      //norm of chi2 before twist application:
-      //
-      chi2_norm = sqrt( norm2( chi2, rb[target_cb] ) ) / ( Real(4*3*2*Layout::vol()) / Real(2));
-      QDPIO::cout << "Norm chi2 after twist"  << chi2_norm << endl;
-
-      //add here tm term:
-      //{
-        //Phi res;
-        //res[rb[source_cb]]=zero;
-        //res[rb[target_cb]]= alpha*psi - beta*chi2;
-      //}      
+      //plain wilson dslash + twisted mass
+      dslash(chi2,u_test,psi, isign, target_cb);
+      applyInvTwist<>(chi2, Mu, MuInv, isign, target_cb);
  
+
       // Check the difference per number in chi vector
-      QDPIO::cout << "TM Mu " << Mu << "\a TM Mu Inv " << MuInv << endl;
+//      QDPIO::cout << "TM Mu " << Mu << "\a TM Mu Inv " << MuInv << endl;
 
       Phi diff = chi2 -chi;
 
@@ -652,33 +614,6 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
       //+tm term add here...
       applyTwist<>(psi, Mu, isign, target_cb);
 
-//      int Nxh = Nx / 2;
-//
-//      //add the twisted mass term here
-//      for(int t=0; t < Nt; t++){
-//	for(int z=0; z < Nz; z++) {
-//	   for(int y=0; y < Ny; y++){
-//	      for(int x=0; x < Nxh; x++){
-//
-//		// These are unpadded QDP++ indices...
-//	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-//		for(int s =0 ; s < Ns; s++) {
-//		  for(int c=0; c < Nc; c++) {
-//                      //double smu = (s < 2) ? -Mu : +Mu;
-//                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-//
-//		      REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
-//		      REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
-//                      psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
-//
-//		    }
-//		  }
-//
-//	      } // x
-//	    } // y
-//	} // z
-//      } // t
-
       Phi res;
       res[rb[source_cb]]=zero;
       res[rb[target_cb]]= psi - beta*chi2;
@@ -820,60 +755,13 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
       // Apply QDP Dslash + TM term
       chi2 = zero;
       dslash(chi2,u_test,psi, isign, 1);
+      applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
 
-      int Nxh=Nx/2;
-
-      //apply twist:
-      for(int t=0; t < Nt; t++){
-	for(int z=0; z < Nz; z++) {
-	   for(int y=0; y < Ny; y++){
-	      for(int x=0; x < Nxh; x++){
-	        // These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) {
-		  for(int c=0; c < Nc; c++) {
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-
-		      REAL twr = chi2.elem(rb[1].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag();
-		      REAL twi = chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).real();
-
-                      //chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
-                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).real() = MuInv*twr;
-                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
-		    }
-		  }
-	      } // x
-	    } // y
-	} // z
-      } // t
 
       // apply achimdpsi incl.twist
       dslash(ltmp,u_test,chi2, isign, 0);
+      applyTwist<>(psi, Mu, isign, 0);
 
-      //add the twisted mass term here
-      for(int t=0; t < Nt; t++){
-	for(int z=0; z < Nz; z++) {
-	   for(int y=0; y < Ny; y++){
-	      for(int x=0; x < Nxh; x++){
-
-		// These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) {
-		  for(int c=0; c < Nc; c++) {
-                      //double smu = (s < 2) ? -Mu : +Mu;
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-
-		      REAL twr = (psi.elem(rb[0].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).imag());
-		      REAL twi = (psi.elem(rb[0].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).real());
-                      psi.elem(rb[0].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
-
-		    }
-		  }
-
-	      } // x
-	    } // y
-	} // z
-      } // t
 
       chi2[rb[0]] = /*massFactor**/ psi - betaFactor*ltmp;
 
@@ -1298,6 +1186,42 @@ testTWMDslashFull::applyTwist(QDPSpinor& psi, double Mu, int isign, int target_c
 							REAL twr = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag());
 							REAL twi = (psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real());
 							psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
+
+						}
+					}
+
+				} // x
+			} // y
+		} // z
+	} // t
+}
+
+
+template<typename QDPSpinor>
+void
+testTWMDslashFull::applyInvTwist(QDPSpinor& psi, double Mu, double MuInv, int isign, int target_cb )
+{
+	int Nxh = Nx / 2;
+
+	//add the twisted mass term here
+	for(int t=0; t < Nt; t++){
+		for(int z=0; z < Nz; z++) {
+			for(int y=0; y < Ny; y++){
+				for(int x=0; x < Nxh; x++){
+
+					// These are unpadded QDP++ indices...
+					int ind = x + Nxh*(y + Ny*(z + Nz*t));
+					for(int s =0 ; s < Ns; s++) {
+						for(int c=0; c < Nc; c++) {
+							//double smu = (s < 2) ? -Mu : +Mu;
+							double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
+
+							REAL twr = psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real()-smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag();
+							REAL twi = psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag()+smu*psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real();
+
+							//psi.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
+							psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).real() = MuInv*twr;
+							psi.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
 
 						}
 					}
