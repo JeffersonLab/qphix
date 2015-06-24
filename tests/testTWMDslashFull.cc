@@ -888,6 +888,9 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
   double Mu_     = ((double)0.1);
   bool mu_plus   = true;
 
+  double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
+  double MuInv = 1.0 / (1.0+Mu*Mu);
+
   EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
   Phi ltmp=zero;
   Real massFactor=Real(4) + Real(Mass);
@@ -923,13 +926,20 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
     // Multiply back (+ TM term!)
     // chi2 = M chi
     dslash(chi2,u_test,chi, 1, 1);
+    applyInvTwist<>(chi2, Mu, MuInv, 1, 1);
     dslash(ltmp,u_test,chi2, 1, 0);
-    chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
+    applyTwist<>(chi, Mu, 1, 0);
     
+    chi2[rb[0]] = /*massFactor**/chi - betaFactor*ltmp;
+
     // chi3 = M^\dagger chi2
     dslash(chi3,u_test,chi2, (-1), 1);
+    applyInvTwist<>(chi3, Mu, MuInv, (-1), 1);
     dslash(ltmp,u_test,chi3, (-1), 0);
-    chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
+    applyTwist<>(chi2, Mu, (-1), 0);
+
+    chi3[rb[0]] = /*massFactor**/chi2 - betaFactor*ltmp;
+
     
     Phi diff = chi3 - psi;
     Double true_norm = sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
