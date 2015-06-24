@@ -3,7 +3,7 @@ TO Do:
 - Add other solvers specially multi-shift
 - Solve N-systems at once (ongoing PhD project at Old Dominion University Computer Science Department: ODU-JLab collaboration)
 - Clean code for non ICC compilers (work ongoing by Diptorup Deb, Renaissance Computing Institute, University of North Carolina, Chapel Hill
-- Add other processor targets: SSE, AVX2, AVX512 - codegen supports these already but need to be added
+- Add other processor targets: SSE, AVX2(done!), AVX512 - codegen supports these already but need to be added
 - Add other fermions: e.g. Twisted Mass, HiSQ, Domain Wall?
 - Bullet proof a little (A LOT!!!)
 - Better tuning (implement 1/2/3/4 threads per core instead of just all 4)

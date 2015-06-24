@@ -7,6 +7,9 @@
 #elif defined(QPHIX_AVX_SOURCE)
 #include "qphix/avx/clov_dslash_avx_complete_specialization.h"
 
+#elif defined(QPHIX_AVX2_SOURCE)
+#include "qphix/avx2/clov_dslash_avx2_complete_specialization.h"
+
 #elif defined(QPHIX_SCALAR_SOURCE)
 #include "qphix/scalar/clov_dslash_scalar_complete_specialization.h"
 

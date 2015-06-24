@@ -40,7 +40,7 @@ using namespace QPhiX;
 #define VECLEN_DP 8
 #include <immintrin.h>
 
-#elif defined(QPHIX_AVX_SOURCE) 
+#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 
 #define VECLEN_SP 8
 #define VECLEN_DP 4
@@ -315,7 +315,7 @@ MInvCGTester::run(void)
 
 #if 0
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testMInvCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 #endif
@@ -325,7 +325,7 @@ MInvCGTester::run(void)
       if( soalen == 8 ) {
 	QDPIO::cout << "In the SOALEN =8 branch" << endl;
 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 	testMInvCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 #endif
@@ -397,7 +397,7 @@ MInvCGTester::run(void)
 
 
       if( soalen == 2) {
-#if defined (QPHIX_AVX_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
 	testMInvCGWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 #endif

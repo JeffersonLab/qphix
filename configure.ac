@@ -122,7 +122,7 @@ AC_ARG_WITH(qdp,
 AC_ARG_ENABLE(proc,
    AC_HELP_STRING(
 	[--enable-proc=proc],
-	[ Build code specializations for proc. proc=NONE,SSE,AVX,MIC ]
+	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,MIC ]
    ),
    [ proc="${enable_proc}" ],
    [ proc="NONE"]
@@ -374,6 +374,16 @@ AVX|avx)
 	if test $SOALEN -gt 8;
 	then 
 	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
+	fi		       	    
+;;
+AVX2|avx2) 
+	AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
+	AC_MSG_NOTICE([Configuring AVX2 Specializations ])
+	if test $SOALEN -gt 8;
+	then 
+	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX2]);
 	fi		       	    
 ;;
 MIC|mic)
