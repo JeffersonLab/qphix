@@ -21,7 +21,7 @@ using namespace QDP;
 // works better
 #include "qphix/twisted_mass.h"
 #include "qphix/invcg.h"
-//#include "qphix/invbicgstab.h"
+#include "qphix/invbicgstab.h"
 #include "qphix/inv_richardson_multiprec.h"
 #if 0
 #include "./invbicgstab_test.h"
@@ -161,6 +161,7 @@ testTWMDslashFull::run(void)
 	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testTWMMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testTWMCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+//	testTWMBiCGStabWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
       }
 
       if( soalen == 8 ) {
@@ -169,6 +170,7 @@ testTWMDslashFull::run(void)
 	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testTWMMWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testTWMCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+//	testTWMBiCGStabWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
       }
 
       if ( soalen == 16 ) { 
@@ -178,6 +180,7 @@ testTWMDslashFull::run(void)
 	testTWMDslashAChiMBDPsiWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 	testTWMMWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 	testTWMCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
+//	testTWMBiCGStabWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 #else 
 	masterPrintf("SOALEN=16 not available");
 	return;
@@ -227,7 +230,7 @@ testTWMDslashFull::run(void)
   }
 #endif // If 0
 
-#if 0
+#if 1
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);
@@ -239,8 +242,9 @@ testTWMDslashFull::run(void)
       if( soalen == 2) {
 #if defined (QPHIX_AVX_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
-//	testTWMDslashWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
+	testTWMDslashWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
+	testTWMMWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 	testTWMCGWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 	
 #endif
@@ -248,16 +252,18 @@ testTWMDslashFull::run(void)
 
       if( soalen == 4 ) { 
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
-//	testTWMDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testTWMDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testTWMMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testTWMCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
       }
 
       if( soalen == 8 ) { 
 #if defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
-//	testTWMDslashWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-//	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
+	testTWMDslashWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
+	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
+	testTWMMWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
 	testTWMCGWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
 #endif
       }
@@ -418,7 +424,7 @@ testTWMDslashFull::testTWMDslash(const U& u, int t_bc)
       TMD.tmdslash(chi_s[target_cb],	
 		 psi_s[source_cb],
 		 u_packed[target_cb], 
-                 Mu, MuInv,
+		 Mu, MuInv,
 		 isign, 
 		 target_cb);
 
@@ -757,11 +763,9 @@ testTWMDslashFull::testTWMM(const U& u, int t_bc)
       dslash(chi2,u_test,psi, isign, 1);
       applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
 
-
       // apply achimdpsi incl.twist
       dslash(ltmp,u_test,chi2, isign, 0);
       applyTwist<>(psi, Mu, isign, 0);
-
 
       chi2[rb[0]] = /*massFactor**/ psi - betaFactor*ltmp;
 
@@ -966,6 +970,150 @@ testTWMDslashFull::testTWMCG(const U& u, int t_bc)
 }
 
 
+template<typename T, int V, int S, bool compress, typename U, typename Phi>
+void
+testTWMDslashFull::testTWMBiCGStab(const U& u, int t_bc)
+{
+  RNG::setrn(rng_seed);
+  typedef typename Geometry<T,V,S,compress>::SU3MatrixBlock   Gauge;
+  typedef typename Geometry<T,V,S,compress>::FourSpinorBlock  Spinor;
+
+  QDPIO::cout << "In testBiCGStab" << endl;
+
+  //  double aniso_fac_s = (double)(0.35);
+  //double aniso_fac_t = (double)(1.4);
+  double aniso_fac_s = (double)(1);
+  double aniso_fac_t = (double)(1);
+
+  double t_boundary = (double)(t_bc);
+
+  Phi psi, tw_psi, chi, chi2;
+  gaussian(psi);
+
+  Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+
+  // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
+
+  Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
+  Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
+
+
+  // Over allocate, so that an unsigned load doesnt cause segfault accesing either end...
+  Spinor* psi_even=(Spinor*)geom.allocCBFourSpinor();
+  Spinor* psi_odd=(Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_even=(Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_odd=(Spinor*)geom.allocCBFourSpinor();
+
+
+  QDPIO::cout << "Fields allocated" << endl;
+
+  // Pack the gauge field
+  QDPIO::cout << "Packing gauge field..." ;
+  //  qdp_pack_gauge< T,V,S,compress, U >(u, packed_gauge_cb0,packed_gauge_cb1, geom);
+  qdp_pack_gauge<>(u, packed_gauge_cb0,packed_gauge_cb1, geom);
+
+  QDPIO::cout << "done" << endl;
+  Gauge* u_packed[2];
+  u_packed[0] = packed_gauge_cb0;
+  u_packed[1] = packed_gauge_cb1;
+
+  Spinor *psi_s[2] = { psi_even, psi_odd };
+  Spinor *chi_s[2] = { chi_even, chi_odd };
+
+  QDPIO::cout << " Packing fermions..." ;
+  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
+  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
+
+  QDPIO::cout << "done" << endl;
+  QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
+  U u_test(Nd);
+  for(int mu=0; mu < Nd; mu++) {
+    Real factor = Real(aniso_fac_s);
+    if( mu == Nd -1) {
+      factor = Real(aniso_fac_t);
+    }
+    u_test[mu] = factor*u[mu];
+  }
+  u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3]-1),
+  			Real(t_boundary), Real(1));
+
+  double Mass    = 0.01;
+  double Mu_     = ((double)0.1);
+  bool mu_plus   = true;
+
+  double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
+  double MuInv = 1.0 / (1.0+Mu*Mu);
+
+  EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
+  Phi ltmp=zero;
+  Real massFactor=Real(4) + Real(Mass);
+  Real betaFactor=Real(0.25)/massFactor;
+
+  {
+    float rsd_target=rsdTarget<T>::value;
+    int max_iters=100;
+    int niters;
+    double rsd_final;
+    unsigned long site_flops;
+    unsigned long mv_apps;
+
+    InvBiCGStab<T,V,S,compress> solver(M, max_iters);
+    solver.tune();
+
+    for(int isign=1; isign >= -1; isign -=2) {
+      chi=zero;
+      qdp_pack_cb_spinor<>(chi, chi_even, geom,0);
+      masterPrintf("Entering solver\n");
+
+      double start = omp_get_wtime();
+      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
+      double end = omp_get_wtime();
+
+      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom,0);
+
+      // Multiply back
+      // chi2 = M chi
+      dslash(chi2,u_test,chi, isign, 1);
+      applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
+      // apply achimdpsi incl.twist
+      dslash(ltmp,u_test,chi2, isign, 0);
+      tw_psi = psi;
+      applyTwist<>(tw_psi, Mu, isign, 0);
+
+      chi2[rb[0]] = /*massFactor**/ tw_psi - betaFactor*ltmp;
+
+
+//      // Apply QDP Dslash + TM term
+//      chi2 = zero;
+//      dslash(chi2,u_test,psi, isign, 1);
+//      applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
+//      // apply achimdpsi incl.twist
+//      dslash(ltmp,u_test,chi2, isign, 0);
+//      applyTwist<>(psi, Mu, isign, 0);
+//      chi2[rb[0]] = /*massFactor**/ psi - betaFactor*ltmp;
+
+
+      Phi diff = chi2 - psi;
+      Double true_norm =  sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
+      QDPIO::cout << "BiCGStab Solve isign=" << isign << " True norm is: " << true_norm << endl;
+      assertion( toBool( true_norm < (rsd_target + tolerance<T>::small) ) );
+      int Nxh = Nx/2;
+      unsigned long num_cb_sites=Layout::vol()/2;
+      unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
+      masterPrintf("BICGSTAB Solve isign=%d, iters=%d MV apps=%lu Site flops=%lu\n",isign, niters, mv_apps, site_flops);
+      masterPrintf("BICGSTAB Solve isign=%d, time=%e (sec) GFLOPS=%e\n", isign, (end-start), 1.0e-9*(double)(total_flops)/(end -start));
+    }
+
+  }
+
+  geom.free(packed_gauge_cb0);
+  geom.free(packed_gauge_cb1);
+  geom.free(psi_even);
+  geom.free(psi_odd);
+  geom.free(chi_even);
+  geom.free(chi_odd);
+
+}
 
 template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, int SOA2, typename U, typename Phi>
 void
@@ -984,7 +1132,7 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
   double aniso_fac_t = (double)(1);
   double t_boundary = (double)(t_bc);
 
-  Phi psi, tw_psi, chi, chi2;
+  Phi psi, chi, chi2;
   gaussian(psi);
 
   Geometry<T1,VEC1,SOA1,compress> geom_outer(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
@@ -1045,14 +1193,12 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
 
   double Mass    = 0.01;
   double Mu_     = ((double)0.1);
-  bool mu_plus   = true;
+  bool mu_plus = true;
 
   double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
   double MuInv = 1.0 / (1.0+Mu*Mu);
 
-//  EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
-
-  EvenOddTMWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, Mu_, u_packed,       &geom_outer, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
+  EvenOddTMWilsonOperator<T1,VEC1,SOA1,compress> M_outer(Mass, Mu_, u_packed, &geom_outer, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
   EvenOddTMWilsonOperator<T2,VEC2,SOA2,compress> M_inner(Mass, Mu_, u_packed_inner, &geom_inner, t_boundary, aniso_fac_s, aniso_fac_t, mu_plus);
 
 
@@ -1062,22 +1208,22 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
 
   {
     float rsd_target=rsdTarget<T1>::value;
-    int max_iters_inner=200;
-    int max_iters_outer=200;
+    int max_iters=200;
     int niters;
     double rsd_final;
     unsigned long site_flops;
     unsigned long mv_apps;
 
-	// CG Inner SOlver
-	InvCG<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters_inner);
-	InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,max_iters_outer);
-
+    InvBiCGStab<T2,VEC2,SOA2,compress> inner_solver(M_inner, max_iters);
+    InvRichardsonMultiPrec<T1,VEC1,SOA1,compress,T2,VEC2,SOA2,compress> outer_solver(M_outer,inner_solver,0.01,max_iters);
 
     for(int isign=1; isign >= -1; isign -=2) {
+      // BiCGStab Inner SOlver
+
+
       chi = zero;
       //      qdp_pack_spinor<T,V,S, compress,Phi >(chi, chi_even, chi_odd, geom);
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom_outer);
+      qdp_pack_cb_spinor<>(chi, chi_even, geom_outer,0);
       masterPrintf("Entering solver\n");
 
       double start = omp_get_wtime();
@@ -1085,77 +1231,24 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
       double end = omp_get_wtime();
 
       //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0], chi_s[1], chi, geom);
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom_outer);
+      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom_outer,0);
 
       // Multiply back
       // chi2 = M chi
       dslash(chi2,u_test,chi, isign, 1);
-
-      int Nxh=Nx/2;
-
-      //apply twist:
-      for(int t=0; t < Nt; t++){
-	for(int z=0; z < Nz; z++) {
-	   for(int y=0; y < Ny; y++){
-	      for(int x=0; x < Nxh; x++){
-	        // These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) {
-		  for(int c=0; c < Nc; c++) {
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-
-		      REAL twr = chi2.elem(rb[1].start()+ind).elem(s).elem(c).real()-smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag();
-		      REAL twi = chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag()+smu*chi2.elem(rb[1].start()+ind).elem(s).elem(c).real();
-
-                      //chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c) = MuInv*QDP::RComplex<REAL>(twr, twi);
-                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).real() = MuInv*twr;
-                      chi2.elem(rb[1].start()+ind).elem(s).elem(c).imag() = MuInv*twi;
-		    }
-		  }
-	      } // x
-	    } // y
-	} // z
-      } // t
-
       dslash(ltmp,u_test,chi2, isign, 0);
-
-      //add the twisted mass term here
-      tw_psi=zero;
-      for(int t=0; t < Nt; t++){
-	for(int z=0; z < Nz; z++) {
-	   for(int y=0; y < Ny; y++){
-	      for(int x=0; x < Nxh; x++){
-
-		// These are unpadded QDP++ indices...
-	        int ind = x + Nxh*(y + Ny*(z + Nz*t));
-		for(int s =0 ; s < Ns; s++) {
-		  for(int c=0; c < Nc; c++) {
-                      //double smu = (s < 2) ? -Mu : +Mu;
-                      double smu = (s < 2) ? -1.0*isign*Mu : +1.0*isign*Mu;
-
-		      REAL twr = (psi.elem(rb[0].start()+ind).elem(s).elem(c).real()+smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).imag());
-		      REAL twi = (psi.elem(rb[0].start()+ind).elem(s).elem(c).imag()-smu*psi.elem(rb[0].start()+ind).elem(s).elem(c).real());
-                      tw_psi.elem(rb[0].start()+ind).elem(s).elem(c) = QDP::RComplex<REAL>(twr, twi);
-
-		    }
-		  }
-
-	      } // x
-	    } // y
-	} // z
-      } // t
-      chi2[rb[0]] = /*massFactor**/ tw_psi - betaFactor*ltmp;
-
-      unsigned long num_cb_sites=Layout::vol()/2;
-      unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
-
-      masterPrintf("RICHARDSON Solve isign=%d time=%e (sec) GFLOPS=%e\n", isign, (end - start), 1.0e-9*(double)(total_flops)/(end -start));
+      chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
 
 
       Phi diff = chi2 - psi;
       Double true_norm =  sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
       QDPIO::cout << "RICHARDSON Solve isign=" << isign << " True norm is: " << true_norm << endl;
       assertion( toBool( true_norm < (rsd_target + tolerance<T1>::small) ) );
+      unsigned long num_cb_sites=Layout::vol()/2;
+      unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
+
+      masterPrintf("RICHARDSON Solve isign=%d time=%e (sec) GFLOPS=%e\n", isign, (end - start), 1.0e-9*(double)(total_flops)/(end -start));
+
     }
 
   }
@@ -1172,6 +1265,7 @@ testTWMDslashFull::testTWMRichardson(const U& u, int t_bc)
   geom_outer.free(chi_odd);
 
 }
+
 
 
 template<typename QDPSpinor>

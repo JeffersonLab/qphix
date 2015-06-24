@@ -78,17 +78,17 @@ public:
     }
   }
 
-#if 0
+#if 1
   template<typename T, int V, int S, typename U, typename Phi>
-  void testBiCGStabWrapper(const U& u)
+  void testTWMBiCGStabWrapper(const U& u)
   {
     //for(int t_bc=-1; t_bc <= +1; t_bc+=2) {
     int t_bc=-1;
       if( compress12  ) { 
-	testBiCGStab<T,V,S,true,U,Phi>(u,t_bc);
+	testTWMBiCGStab<T,V,S,true,U,Phi>(u,t_bc);
       }
       else {
-	testBiCGStab<T,V,S,false,U,Phi>(u,t_bc);
+	testTWMBiCGStab<T,V,S,false,U,Phi>(u,t_bc);
       }
       //}
   }
@@ -119,8 +119,8 @@ public:
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testTWMCG(const U& u, int t_bc);
 
-  //template<typename T, int V, int S, bool compress, typename U, typename Phi>
-    //void testBiCGStab(const U& u, int t_bc);
+  template<typename T, int V, int S, bool compress, typename U, typename Phi>
+    void testTWMBiCGStab(const U& u, int t_bc);
 
   template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, int SOA2, typename U, typename Phi>
     void testTWMRichardson(const U& u, int t_bc);
