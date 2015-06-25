@@ -96,16 +96,16 @@ namespace QPhiX
 		 const FourSpinorBlock* psi, 
 		 FourSpinorBlock* res,
 		 const SU3MatrixBlock* u, 
-                 double mu,
-                 double mu_inv,
+		 double mu,
+		 double mu_inv,
 		 int cb);
 
     void TMDyzMinus(int tid,
 		  const FourSpinorBlock* psi, 
 		  FourSpinorBlock* res,
 		  const SU3MatrixBlock* u,
-                  double mu,
-                  double mu_inv,
+		  double mu,
+		  double mu_inv,
  		  int cb);
 
 
@@ -159,7 +159,7 @@ namespace QPhiX
 
 
 
-//Evil: In fact, the same as standard wilson.
+//packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS
      // PACK FACE FOR SENDING
     void packTMFaceDir(int tid,
@@ -172,8 +172,18 @@ namespace QPhiX
 			 const FT* psi,
 			 FourSpinorBlock* res,
 			 const SU3MatrixBlock* u,
-			 const double beta, 
+			 const double beta,
+			 double mu,
+			 double mu_inv,
 			 int cb, int dir, int fb, int isPlus);
+
+    //  RECEIVE AND COMPLETE FACE
+    void completeFaceDirAChiMBDPsi(int tid,
+				   const FT* psi,
+				   FourSpinorBlock* res,
+				   const SU3MatrixBlock* u,
+				   const double beta ,
+				   int cb, int dir, int fb, int isPlus);
 #endif
 
 

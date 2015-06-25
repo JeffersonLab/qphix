@@ -11,6 +11,7 @@
 namespace QPhiX
 {
 
+#include "qphix/dslash_generated.h"
 #include "qphix/tm_dslash_generated.h"
 
   /*! \brief initialization function
@@ -1570,8 +1571,8 @@ namespace QPhiX
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), mu, mu_inv, cb, d, 0, 1);
+	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), mu, mu_inv, cb, d, 1, 1);
 	    }
 	  }
 	}
@@ -1637,8 +1638,8 @@ namespace QPhiX
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), mu, mu_inv, cb, d, 0, 0);
+	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), mu, mu_inv, cb, d, 1, 0);
 	    }
 	  } // end if
 	} // end for
@@ -1710,8 +1711,8 @@ namespace QPhiX
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 1);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);	
+	      completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 1);
+	      completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);
 	    }
 	  } // end if
 	} // end for
@@ -1780,8 +1781,8 @@ namespace QPhiX
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s),cb, d, 0, 0);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);	
+	      completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 0);
+	      completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);
 	    }
 	  } // end if
 	} // end for

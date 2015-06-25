@@ -12,7 +12,7 @@
  */
 template<typename FT, int veclen, int soalen, bool compress12> 
 inline void
-tmdslash_plus_vec(    
+tmdslash_plus_vec(
 		const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *xyBase,
 		const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *zbBase,
 		const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *zfBase,
@@ -39,8 +39,8 @@ tmdslash_plus_vec(
 		const FT coeff_s,
 		const FT coeff_t_f,
 		const FT coeff_t_b,
-                const FT mu,
-                const FT muinv  
+		const FT mu,
+		const FT muinv
 )
 {
   // BASE CASE TEMPLATE. Do nothing for now. Define this in dslash_generated_c.h later
@@ -93,8 +93,8 @@ tmdslash_plus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 		const FPTYPE coeff_s,
 		const FPTYPE coeff_t_f,
 		const FPTYPE coeff_t_b,
-                const FPTYPE mu,
-                const FPTYPE muinv
+		const FPTYPE mu,
+		const FPTYPE muinv
 )
 {
 #include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_plus_body_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
@@ -144,8 +144,8 @@ tmdslash_minus_vec(
 		const FT coeff_s,
 		const FT coeff_t_f,
 		const FT coeff_t_b,
-                const FT mu,
-                const FT muinv 
+		const FT mu,
+		const FT muinv
 )
 {
   // BASE CASE TEMPLATE. Do nothing for now. Define this in dslash_generated_c.h later
@@ -188,8 +188,8 @@ tmdslash_minus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 		const FPTYPE coeff_s,
 		const FPTYPE coeff_t_f,
 		const FPTYPE coeff_t_b,
-                const FPTYPE mu,
-                const FPTYPE muinv
+		const FPTYPE mu,
+		const FPTYPE muinv
 )
 {
 #include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_minus_body_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
@@ -239,7 +239,7 @@ tmdslash_achimbdpsi_plus_vec(
 		 const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *pfBase4,
 		 const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *pfBaseChi,
 		 const FT alpha,
-                 const FT mu, 
+//		 const FT mu,
 		 const FT coeff_s,
 		 const FT coeff_t_f,
 		 const FT coeff_t_b,
@@ -285,7 +285,7 @@ tmdslash_achimbdpsi_plus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 		 const Geometry<FPTYPE,VEC,SOA,COMPRESS12>::FourSpinorBlock *pfBase4,
 		 const Geometry<FPTYPE,VEC,SOA,COMPRESS12>::FourSpinorBlock *pfBaseChi,
 		 const FPTYPE alpha, 
-                 const FPTYPE mu,
+//		 const FPTYPE mu,
 		 const FPTYPE coeff_s,
 		 const FPTYPE coeff_t_f,
 		 const FPTYPE coeff_t_b,
@@ -336,7 +336,7 @@ tmdslash_achimbdpsi_minus_vec(
 		 const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *pfBase4,
 		 const typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock *pfBaseChi,
 		 const FT alpha, 
-                 const FT mu,
+//		 const FT mu,
 		 const FT coeff_s,
 		 const FT coeff_t_f,
 		 const FT coeff_t_b,
@@ -382,7 +382,7 @@ tmdslash_achimbdpsi_minus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
 		 const Geometry<FPTYPE,VEC,SOA,COMPRESS12>::FourSpinorBlock *pfBase4,
 		 const Geometry<FPTYPE,VEC,SOA,COMPRESS12>::FourSpinorBlock *pfBaseChi,
 		 const FPTYPE alpha,
-                 const FPTYPE mu, 
+//		 const FPTYPE mu,
 		 const FPTYPE coeff_s,
 		 const FPTYPE coeff_t_f,
 		 const FPTYPE coeff_t_b,
@@ -528,6 +528,8 @@ inline void
 		       const int gprefdist,
 		       const int soprefdist,
 		       const FT beta,
+		       const FT mu,
+		       const FT muinv,
 		       unsigned int mask,
 		       int dir) 
 {
@@ -548,32 +550,34 @@ tmface_finish_dir_plus<FPTYPE,VEC,SOA,COMPRESS12>(
 		       const int gprefdist,
 		       const int soprefdist,
 		       const FPTYPE beta,
+		       const FPTYPE mu,
+		       const FPTYPE muinv,
 		       unsigned int mask,
 		       int dir) 
 {
   if(dir == 0) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_X_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_X_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 1) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_X_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_X_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 2) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_Y_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_Y_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 3) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_Y_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_Y_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 4) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_Z_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_Z_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 5) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_Z_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_Z_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 6) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_T_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_T_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 7) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_T_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_T_plus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else {
     printf("Invalid dir for unpack boundary\n");
@@ -597,6 +601,8 @@ inline void
 		       const int gprefdist,
 		       const int soprefdist,
 		       const FT beta,
+		       const FT mu,
+		       const FT muinv,
 		       unsigned int mask,
 		       int dir) 
 {
@@ -617,32 +623,34 @@ tmface_finish_dir_minus<FPTYPE,VEC,SOA,COMPRESS12>(
 						 const int gprefdist,
 						 const int soprefdist,
 						 const FPTYPE beta,
+						 const FPTYPE mu,
+						 const FPTYPE muinv,
 						 unsigned int mask,
 						 int dir) 
 {
   if(dir == 0) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_X_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_X_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 1) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_X_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_X_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 2) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_Y_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_Y_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 3) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_Y_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_Y_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 4) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_Z_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_Z_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 5) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_Z_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_Z_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 6) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_back_T_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_back_T_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else if(dir == 7) {
-#include INCLUDE_FILE_VAR(qphix/mic/generated/dslash_face_unpack_from_forw_T_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
+#include INCLUDE_FILE_VAR(qphix/mic/generated/tmf_dslash_face_unpack_from_forw_T_minus_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
   }
   else {
     printf("Invalid dir for unpack boundary\n");
