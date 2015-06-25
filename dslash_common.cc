@@ -742,8 +742,9 @@ void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string
     }
 }
 
-void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool isPlus)
+void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
 {
+  bool acc = face;
 
   declareFVecFromFVec(ivector, mu_vec);
   loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);//SpinorType -> data_types.h (use load instruction)
@@ -756,37 +757,51 @@ void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool isPlus)
     for(int spin = 0; spin < 2; spin++)
     {
       FVec *sp = in_spinor[spin][col];
+      FVec *tmout = out_spinor[spin][col];
 
       if(isPlus){
-        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
-        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
       }
       else{
-        fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
-        fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
       }
 
       /*multiply by mu_inv_vec:*/
-      mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, "");
-      mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, "");
+      if( acc ) {
+        fmaddFVec( ivector, tmout[RE], mu_inv_vec, tmp_1_re, tmout[RE], _mask);
+        fmaddFVec( ivector, tmout[IM], mu_inv_vec, tmp_1_im, tmout[IM], _mask);
+      }
+      else {
+        mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, _mask);
+      }
     }
 
     for(int spin = 2; spin < 4; spin++)
     {
       FVec *sp = in_spinor[spin][col];
+      FVec *tmout = out_spinor[spin][col];
 
       if(isPlus){
-      	fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
-      	fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+      	fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
+      	fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
       }
       else{
-        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], "");
-        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], "");
+        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
       }
 
       /*multiply by mu_inv_vec:*/
-      mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, "");
-      mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, "");
+      if( acc ) {
+        fmaddFVec( ivector, tmout[RE], mu_inv_vec, tmp_1_re, tmout[RE], _mask);
+        fmaddFVec( ivector, tmout[IM], mu_inv_vec, tmp_1_im, tmout[IM], _mask);
+      }
+      else {
+        mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, _mask);
+      }
     }
   }
 
@@ -966,7 +981,7 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool t
     dslash_body(ivector, compress12, p_ops, rec_ops_bw, rec_ops_fw, *outspinor);
 
     if(clover) clover_term(ivector, *outspinor, false);
-    else if(twisted_mass) twisted_term(ivector, *outspinor, isPlus);
+    else if(twisted_mass) twisted_term(ivector, *outspinor, false, isPlus);
 
     // Store
     StreamFullSpinor(ivector, out_spinor, outBase, outOffs);
@@ -1033,7 +1048,7 @@ void pack_face_to_dir_dim_vec(InstVector& ivector, bool isPlus, int dir, int dim
     pack_face_vec(ivector, b_spinor, p_ops, 2*dim+dir);
 }
 
-void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover)
+void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover, bool twisted_mass)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -1044,6 +1059,9 @@ void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool
     if(clover) {
         declare_douts(ivector);
         declare_clover(ivector);
+    }
+    else if(twisted_mass) {
+        declare_douts(ivector);
     }
 
     bool isBack = (dir == 0 ? true : false);
@@ -1056,5 +1074,5 @@ void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool
         rec_ops = (isPlus == isBack ? rec_plus_mbeta_ops : rec_minus_mbeta_ops);
     }
 
-    recons_add_face_vec(ivector, compress12, isBack, rec_ops, dir, dim, clover);
+    recons_add_face_vec(ivector, compress12, isBack, rec_ops, dir, dim, clover, twisted_mass, isPlus);
 }

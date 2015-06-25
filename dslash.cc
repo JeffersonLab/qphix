@@ -90,7 +90,7 @@ void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress1
     PrefetchL2HalfSpinorDir(ivector, "inbuf", "hsprefdist", dir, false, 0 /* None*/);
     PrefetchL2FullGaugeDirIn(ivector, "gBase", "gOffs", dir, "gprefdist", compress12);
 
-    if(clover)	{
+    if(clover)    {
         PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
     }
 
@@ -107,7 +107,7 @@ void generateL2Prefetches(InstVector& ivector, bool compress12, bool chi, bool c
     PrefetchL2FullSpinorDirIn(ivector, "pfBase3", "offs", "siprefdist3");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase4", "offs", "siprefdist4");
 
-    if(clover)	{
+    if(clover)    {
         PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
     }
 
@@ -286,7 +286,7 @@ void pack_face_vec(InstVector& ivector, FVec spinor[2][3][2], proj_ops proj[], i
 // need inbuf pointer to half spinor
 // need gBase and goffs to point to gauge
 // need obase and offs to point to spinor to scatter.
-void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover)
+void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover, bool twisted_mass, bool isPlus)
 {
 
     std::string in("inbuf");
@@ -311,7 +311,7 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     FVec (*outspinor)[4][3][2];
 
-    if(clover) {
+    if(clover||twisted_mass) {
         outspinor = &dout_spinor;
         zeroResult(ivector, (*outspinor)[0][0]);
     }
@@ -333,6 +333,9 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     if(clover) {
         clover_term(ivector, *outspinor, true);
+    }
+    else if(twisted_mass) {
+        twisted_term(ivector, *outspinor, true, isPlus);
     }
 
     // scatter it out
@@ -427,7 +430,7 @@ void generate_code(void)
                         filename << "./"<<ARCH_NAME<<"/" << clov_prefix << "dslash_face_unpack_from_"<<dirname[dir]<<"_"<<dimchar[dim]<<"_" << plusminus <<"_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<<num_components;
                         cout << "GENERATING face unpack file " << filename.str() << endl;
                         ivector.resize(0);
-                        recons_add_face_from_dir_dim_vec(ivector, compress12,isPlus, dir, dim, clover);
+                        recons_add_face_from_dir_dim_vec(ivector, compress12,isPlus, dir, dim, clover, false);
                         l2prefs.resize(0);
                         generateFaceUnpackL2Prefetches(l2prefs, 2*dim+dir, compress12, clover);
                         mergeIvectorWithL2Prefetches(ivector, l2prefs);
@@ -438,45 +441,59 @@ void generate_code(void)
         }
 
         {//twisted mass code:
-	    bool clover = false;
-	    string tmf_prefix = "tmf_";
-			
-	    for(int num_components=12; num_components <=18; num_components+=6) { 
-				compress12 = ( num_components==12 );
+        bool clover = false;
+        bool twisted_mass = true;
+        string tmf_prefix = "tmf_";
 
-				std::ostringstream filename;
-				filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
-				l2prefs.resize(0);
-				generateL2Prefetches(l2prefs,compress12, false, clover);
-				//dumpIVector(l2prefs, "prefetches.out");
+        for(int num_components=12; num_components <=18; num_components+=6) {
+            compress12 = ( num_components==12 );
 
-				// Dslash Plus
-				cout << "GENERATING tmf_dslash_"<<plusminus<<"_vec body" << endl;
-				// Flush instruction list
-				ivector.resize(0);
+            std::ostringstream filename;
+            filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
+            l2prefs.resize(0);
+            generateL2Prefetches(l2prefs,compress12, false, clover);
+            //dumpIVector(l2prefs, "prefetches.out");
 
-				// Generate instructions
-				dslash_plain_body(ivector,compress12,clover, true, isPlus);
-				mergeIvectorWithL2Prefetches(ivector, l2prefs);
-				dumpIVector(ivector,filename.str());
+            // Dslash Plus
+            cout << "GENERATING tmf_dslash_"<<plusminus<<"_vec body" << endl;
+            // Flush instruction list
+            ivector.resize(0);
 
-                                filename.str("");filename.clear();
-                                filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_achimbdpsi_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
+            // Generate instructions
+            dslash_plain_body(ivector,compress12,clover, twisted_mass, isPlus);
+            mergeIvectorWithL2Prefetches(ivector, l2prefs);
+            dumpIVector(ivector,filename.str());
 
-                                l2prefs.resize(0);
-                                generateL2Prefetches(l2prefs,compress12, true, clover);
+            filename.str("");filename.clear();
+            filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_achimbdpsi_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
 
-                                cout << "GENERATING tmf_dslash_achimbdpsi_"<<plusminus<<"_vec body" << endl;
-                                // Flush instruction list
-                                ivector.resize(0);
+            l2prefs.resize(0);
+            generateL2Prefetches(l2prefs,compress12, true, clover);
 
-                                // Generate instructions
-                                dslash_achimbdpsi_body(ivector,compress12,clover,true,isPlus);
-                                mergeIvectorWithL2Prefetches(ivector, l2prefs);
-                                dumpIVector(ivector,filename.str());
+            cout << "GENERATING tmf_dslash_achimbdpsi_"<<plusminus<<"_vec body" << endl;
+            // Flush instruction list
+            ivector.resize(0);
 
-	   }
-	}//end of tmf code
+            // Generate instructions
+            dslash_achimbdpsi_body(ivector,compress12,clover,twisted_mass,isPlus);
+            mergeIvectorWithL2Prefetches(ivector, l2prefs);
+            dumpIVector(ivector,filename.str());
+
+            for(int dir = 0; dir < 2; dir++) {
+                for(int dim = 0; dim < 4; dim++) {
+                    std::ostringstream filename;
+                    filename << "./"<<ARCH_NAME<<"/" << tmf_prefix << "dslash_face_unpack_from_"<<dirname[dir]<<"_"<<dimchar[dim]<<"_" << plusminus <<"_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<<num_components;
+                    cout << "GENERATING face unpack file " << filename.str() << endl;
+                    ivector.resize(0);
+                    recons_add_face_from_dir_dim_vec(ivector, compress12,isPlus, dir, dim, clover, twisted_mass);
+                    l2prefs.resize(0);
+                    generateFaceUnpackL2Prefetches(l2prefs, 2*dim+dir, compress12, clover);
+                    mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                    dumpIVector(ivector,filename.str());
+                }
+            }
+       }
+    }//end of tmf code
 
         for(int dir = 0; dir < 2; dir++) {
             for(int dim = 0; dim < 4; dim++) {
