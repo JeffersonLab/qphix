@@ -43,6 +43,7 @@ using namespace QPhiX;
 #elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 
 #define VECLEN_SP 8
+#define VECLEN_HP 8
 #define VECLEN_DP 4
 
 #elif defined(QPHIX_SCALAR_SOURCE)
