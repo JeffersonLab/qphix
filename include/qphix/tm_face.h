@@ -149,9 +149,9 @@ namespace QPhiX {
 		//printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf, outbuf-res);
 		// OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
 		if(isPlus)
-			tmface_proj_dir_plus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
+			face_proj_dir_plus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
 		else
-			tmface_proj_dir_minus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
+			face_proj_dir_minus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
 	}
   }
 
