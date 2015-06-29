@@ -48,4 +48,5 @@ ehthumbs.db
 Thumbs.db
 
 ######################
-*autom4te.cache*
+autom4te.cache*
+aclocal.m4
