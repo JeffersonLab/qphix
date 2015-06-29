@@ -418,6 +418,12 @@ AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(include/Makefile)
+AC_CONFIG_FILES(include/qphix/Makefile)
+AC_CONFIG_FILES(include/qphix/avx/Makefile)
+AC_CONFIG_FILES(include/qphix/avx2/Makefile)
+AC_CONFIG_FILES(include/qphix/mic/Makefile)
+AC_CONFIG_FILES(include/qphix/scalar/Makefile)
+AC_CONFIG_FILES(include/qphix/qpx/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_OUTPUT

@@ -1,0 +1,398 @@
+avx_includedir=$(includedir)/qphix/avx
+
+nobase_avx_include_HEADERS = \
+	 ./avx_utils.h \
+	 ./dslash_avx_complete_specialization.h \
+	 ./dslash_avx_complete_specialization_form.h \
+ ./generated/dslash_achimbdpsi_minus_body_double_double_v4_s2_12 \
+ ./generated/dslash_achimbdpsi_minus_body_double_double_v4_s2_18 \
+ ./generated/dslash_achimbdpsi_minus_body_double_double_v4_s4_12 \
+ ./generated/dslash_achimbdpsi_minus_body_double_double_v4_s4_18 \
+ ./generated/dslash_achimbdpsi_minus_body_float_float_v8_s4_12 \
+ ./generated/dslash_achimbdpsi_minus_body_float_float_v8_s4_18 \
+ ./generated/dslash_achimbdpsi_minus_body_float_float_v8_s8_12 \
+ ./generated/dslash_achimbdpsi_minus_body_float_float_v8_s8_18 \
+ ./generated/dslash_achimbdpsi_plus_body_double_double_v4_s2_12 \
+ ./generated/dslash_achimbdpsi_plus_body_double_double_v4_s2_18 \
+ ./generated/dslash_achimbdpsi_plus_body_double_double_v4_s4_12 \
+ ./generated/dslash_achimbdpsi_plus_body_double_double_v4_s4_18 \
+ ./generated/dslash_achimbdpsi_plus_body_float_float_v8_s4_12 \
+ ./generated/dslash_achimbdpsi_plus_body_float_float_v8_s4_18 \
+ ./generated/dslash_achimbdpsi_plus_body_float_float_v8_s8_12 \
+ ./generated/dslash_achimbdpsi_plus_body_float_float_v8_s8_18 \
+ ./generated/dslash_face_pack_to_back_T_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_T_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_T_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_T_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_T_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_T_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_T_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_T_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_X_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_X_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_X_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_X_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_X_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_X_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_X_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_X_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_Y_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_Y_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_Y_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_Y_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_Y_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_Y_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_Y_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_Y_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_Z_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_Z_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_Z_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_Z_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_back_Z_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_back_Z_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_back_Z_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_back_Z_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_T_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_T_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_T_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_T_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_T_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_T_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_T_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_T_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_X_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_X_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_X_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_X_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_X_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_X_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_X_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_X_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_Y_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_Y_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_Y_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_Y_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_Y_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_Y_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_Y_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_Y_plus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_Z_minus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_Z_minus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_Z_minus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_Z_minus_float_float_v8_s8 \
+ ./generated/dslash_face_pack_to_forw_Z_plus_double_double_v4_s2 \
+ ./generated/dslash_face_pack_to_forw_Z_plus_double_double_v4_s4 \
+ ./generated/dslash_face_pack_to_forw_Z_plus_float_float_v8_s4 \
+ ./generated/dslash_face_pack_to_forw_Z_plus_float_float_v8_s8 \
+ ./generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_T_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_T_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_T_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_T_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_T_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_T_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_T_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_T_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_T_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_T_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_X_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_X_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_X_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_X_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_X_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_X_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_X_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_X_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_X_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_X_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_Y_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_Y_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_Z_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_back_Z_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_T_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_T_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_X_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_X_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_Y_plus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_minus_float_float_v8_s8_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s2_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s2_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_float_float_v8_s4_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_float_float_v8_s4_18 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_float_float_v8_s8_12 \
+ ./generated/dslash_face_unpack_from_forw_Z_plus_float_float_v8_s8_18 \
+ ./generated/dslash_minus_body_double_double_v4_s2_12 \
+ ./generated/dslash_minus_body_double_double_v4_s2_18 \
+ ./generated/dslash_minus_body_double_double_v4_s4_12 \
+ ./generated/dslash_minus_body_double_double_v4_s4_18 \
+ ./generated/dslash_minus_body_float_float_v8_s4_12 \
+ ./generated/dslash_minus_body_float_float_v8_s4_18 \
+ ./generated/dslash_minus_body_float_float_v8_s8_12 \
+ ./generated/dslash_minus_body_float_float_v8_s8_18 \
+ ./generated/dslash_plus_body_double_double_v4_s2_12 \
+ ./generated/dslash_plus_body_double_double_v4_s2_18 \
+ ./generated/dslash_plus_body_double_double_v4_s4_12 \
+ ./generated/dslash_plus_body_double_double_v4_s4_18 \
+ ./generated/dslash_plus_body_float_float_v8_s4_12 \
+ ./generated/dslash_plus_body_float_float_v8_s4_18 \
+ ./generated/dslash_plus_body_float_float_v8_s8_12 \
+ ./generated/dslash_plus_body_float_float_v8_s8_18
+
+if QPHIX_BUILD_CLOVER
+nobase_avx_include_HEADERS += \
+	./clov_dslash_avx_complete_specialization.h \
+	./clov_dslash_avx_complete_specialization_form.h \
+./generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s2_12 \
+./generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s2_18 \
+./generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s4_12 \
+./generated/clov_double_dslash_achimbdpsi_minus_body_double_double_v4_s4_18 \
+./generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s2_12 \
+./generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s2_18 \
+./generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s4_12 \
+./generated/clov_double_dslash_achimbdpsi_plus_body_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_T_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_T_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_X_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_X_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Y_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_back_Z_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_T_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_X_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Y_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_minus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s2_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s2_18 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_12 \
+./generated/clov_double_dslash_face_unpack_from_forw_Z_plus_double_double_v4_s4_18 \
+./generated/clov_double_dslash_minus_body_double_double_v4_s2_12 \
+./generated/clov_double_dslash_minus_body_double_double_v4_s2_18 \
+./generated/clov_double_dslash_minus_body_double_double_v4_s4_12 \
+./generated/clov_double_dslash_minus_body_double_double_v4_s4_18 \
+./generated/clov_double_dslash_plus_body_double_double_v4_s2_12 \
+./generated/clov_double_dslash_plus_body_double_double_v4_s2_18 \
+./generated/clov_double_dslash_plus_body_double_double_v4_s4_12 \
+./generated/clov_double_dslash_plus_body_double_double_v4_s4_18 \
+./generated/clov_float_dslash_achimbdpsi_minus_body_float_float_v8_s4_12 \
+./generated/clov_float_dslash_achimbdpsi_minus_body_float_float_v8_s4_18 \
+./generated/clov_float_dslash_achimbdpsi_minus_body_float_float_v8_s8_12 \
+./generated/clov_float_dslash_achimbdpsi_minus_body_float_float_v8_s8_18 \
+./generated/clov_float_dslash_achimbdpsi_plus_body_float_float_v8_s4_12 \
+./generated/clov_float_dslash_achimbdpsi_plus_body_float_float_v8_s4_18 \
+./generated/clov_float_dslash_achimbdpsi_plus_body_float_float_v8_s8_12 \
+./generated/clov_float_dslash_achimbdpsi_plus_body_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_T_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_T_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_T_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_T_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_T_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_T_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_T_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_T_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_X_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_X_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_X_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_X_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_X_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_X_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_X_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_X_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Y_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_back_Z_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_T_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_X_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Y_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_minus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_minus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_minus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_minus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_plus_float_float_v8_s4_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_plus_float_float_v8_s4_18 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_plus_float_float_v8_s8_12 \
+./generated/clov_float_dslash_face_unpack_from_forw_Z_plus_float_float_v8_s8_18 \
+./generated/clov_float_dslash_minus_body_float_float_v8_s4_12 \
+./generated/clov_float_dslash_minus_body_float_float_v8_s4_18 \
+./generated/clov_float_dslash_minus_body_float_float_v8_s8_12 \
+./generated/clov_float_dslash_minus_body_float_float_v8_s8_18 \
+./generated/clov_float_dslash_plus_body_float_float_v8_s4_12 \
+./generated/clov_float_dslash_plus_body_float_float_v8_s4_18 \
+./generated/clov_float_dslash_plus_body_float_float_v8_s8_12 \
+./generated/clov_float_dslash_plus_body_float_float_v8_s8_18
+
+endif
+
