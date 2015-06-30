@@ -26,8 +26,9 @@ using namespace QPhiX;
 #endif
 
 
-#if defined(QPHIX_AVX_SOURCE) 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 #define VECLEN_SP 8
+#define VECLEN_HP 8
 #define VECLEN_DP 4
 #endif
 
@@ -643,7 +644,7 @@ timeTWMDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
   }
 
 #if 1
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE)
   if ( precision == HALF_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
       masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);

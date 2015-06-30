@@ -48,11 +48,10 @@ using namespace QPhiX;
 #define VECLEN_DP 8
 #include <immintrin.h>
 
-#elif defined(QPHIX_AVX_SOURCE) 
-
-
+#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 
 #define VECLEN_SP 8
+#define VECLEN_HP 8
 #define VECLEN_DP 4
 
 #else
@@ -194,9 +193,9 @@ testTWMDslashFull::run(void)
 
 #endif // If 0
 
-#if 0
+#if 1
   if (precision == HALF_PREC ) { 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -218,14 +217,16 @@ testTWMDslashFull::run(void)
       }
 
       if( soalen == 16 ) {
+#if defined(QPHIX_MIC_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=16 " << endl;
 	testTWMDslashWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testTWMDslashAChiMBDPsiWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testTWMCGWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
+#endif
       }
     }
 #else
-    QDPIO::cout << " Half Prec is only supported on MIC Targets just now " << endl;
+    QDPIO::cout << " Half Prec is only supported on MIC and AVX2 Targets just now " << endl;
 #endif
   }
 #endif // If 0
@@ -240,7 +241,7 @@ testTWMDslashFull::run(void)
     
     {
       if( soalen == 2) {
-#if defined (QPHIX_AVX_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
 	testTWMDslashWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 	testTWMDslashAChiMBDPsiWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);

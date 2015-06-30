@@ -44,10 +44,19 @@ endif
 
 if QPHIX_BUILD_CLOVER
 qphix_include_HEADERS += ./clover.h \
-	./clover_dslash_def.h\
-        ./clover_dslash_body.h \
-        ./clov_dslash_generated.h \
+	./clover_dslash_def.h \
+	./clover_dslash_body.h \
+	./clov_dslash_generated.h \
 	./clov_face.h
+endif
+
+
+if QPHIX_BUILD_TWISTED_MASS
+qphix_include_HEADERS += ./twisted_mass.h \
+	./tm_dslash_def.h \
+	./tm_dslash_body.h \
+	./tm_dslash_generated.h \
+	./tm_face.h
 endif
 
 nodist_qphix_include_HEADERS=./qphix_config_internal.h
