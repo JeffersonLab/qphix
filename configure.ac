@@ -130,7 +130,7 @@ AC_ARG_WITH(qdp,
 AC_ARG_ENABLE(proc,
    AC_HELP_STRING(
 	[--enable-proc=proc],
-	[ Build code specializations for proc. proc=NONE,SSE,AVX,MIC ]
+	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,MIC ]
    ),
    [ proc="${enable_proc}" ],
    [ proc="NONE"]
@@ -392,6 +392,16 @@ AVX|avx)
 	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
 	fi		       	    
 ;;
+AVX2|avx2) 
+	AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
+	AC_MSG_NOTICE([Configuring AVX2 Specializations ])
+	if test $SOALEN -gt 8;
+	then 
+	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX2]);
+	fi		       	    
+;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
@@ -426,6 +436,12 @@ AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS, [ test "x${build_twisted}x" = "xyesx" ]
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(include/Makefile)
+AC_CONFIG_FILES(include/qphix/Makefile)
+AC_CONFIG_FILES(include/qphix/avx/Makefile)
+AC_CONFIG_FILES(include/qphix/avx2/Makefile)
+AC_CONFIG_FILES(include/qphix/mic/Makefile)
+AC_CONFIG_FILES(include/qphix/scalar/Makefile)
+AC_CONFIG_FILES(include/qphix/qpx/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_OUTPUT

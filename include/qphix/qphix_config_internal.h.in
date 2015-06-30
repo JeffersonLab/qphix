@@ -21,6 +21,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Generate AVX2 Specializations */
+#undef QPHIX_AVX2_SOURCE
+
 /* Generate AVX Specializations */
 #undef QPHIX_AVX_SOURCE
 
