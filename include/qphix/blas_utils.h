@@ -43,7 +43,7 @@ namespace QPhiX {
     // Generic stream in
     template<typename FT, int V>
     inline void
-      streamInSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+      streamInSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
       
 #if defined(__MIC__)
       const int prefdist1 = 12;
@@ -70,7 +70,7 @@ namespace QPhiX {
     // Generic write  out
     template<typename FT, int V>
     inline void
-      writeSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+      writeSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
       
 #pragma vector aligned(src)
 #pragma vector aligned(dst)
@@ -86,7 +86,7 @@ namespace QPhiX {
     // Generic stream out
     template<typename FT, int V>
     inline void
-      streamOutSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+      streamOutSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
       
 #pragma vector aligned(src)
 #pragma vector aligned(dst)
@@ -103,7 +103,7 @@ namespace QPhiX {
     // Stream In to a different type
     template<typename FT, int V>
     inline void
-      streamInSpinor(typename ArithType<FT>::Type* restrict dst, const FT* restrict src, int numvec) { 
+      streamInSpinor(volatile typename ArithType<FT>::Type* restrict dst, const volatile  FT* restrict src, int numvec) { 
       
 #if defined(__MIC__)
       const int prefdist1 = 12;
@@ -130,7 +130,7 @@ namespace QPhiX {
     // Write out to a different type
     template<typename FT, int V>
     inline void
-      writeSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
+      writeSpinor(volatile FT* restrict dst, const volatile  typename ArithType<FT>::Type* restrict src, int numvec) { 
       
 #pragma vector aligned(src)
 #pragma vector aligned(dst)
@@ -146,7 +146,7 @@ namespace QPhiX {
     // Stream out to a different type
     template<typename FT, int V>
     inline void
-      streamOutSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
+      streamOutSpinor(volatile FT* restrict dst, const volatile typename ArithType<FT>::Type* restrict src, int numvec) { 
       
 #pragma vector aligned(src)
 #pragma vector aligned(dst)
@@ -166,7 +166,7 @@ namespace QPhiX {
     // Half prec specicialize 
     template<>
     inline void
-      streamInSpinor<half,16>(typename ArithType<half>::Type* restrict dst, const half* restrict src, int numvec) { 
+      streamInSpinor<half,16>(volatile typename ArithType<half>::Type* restrict dst, const volatile half* restrict src, int numvec) { 
      
       const int prefdist1 = 12;
       const int prefdist2 = 64;
@@ -187,7 +187,7 @@ namespace QPhiX {
    
     template<>
     inline void
-      writeSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
+      writeSpinor<half,16>(volatile half* restrict dst, const volatile typename ArithType<half>::Type* restrict src, int numvec) { 
       const int prefdist1 = 12;
       const int prefdist2 = 64;
       
@@ -209,7 +209,7 @@ namespace QPhiX {
 
     template<>
     inline void
-      streamOutSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
+      streamOutSpinor<half,16>(volatile half* restrict dst, const volatile typename ArithType<half>::Type* restrict src, int numvec) { 
       const int prefdist1 = 12;
       const int prefdist2 = 64;
       
