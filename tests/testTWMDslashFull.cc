@@ -508,8 +508,8 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
   typedef typename Geometry<T,V,S,compress>::FourSpinorBlock  Spinor;
 
   QDPIO::cout << "In testTWMAChiMBDPsi " << endl;
-  double aniso_fac_s = (double)(0.35);
-  double aniso_fac_t = (double)(1.4);
+  double aniso_fac_s = (double)(1.);
+  double aniso_fac_t = (double)(1.);
   double t_boundary = (double)(t_bc);
 
   double Mass    = 0.01;
@@ -571,13 +571,15 @@ testTWMDslashFull::testTWMDslashAChiMBDPsi(const U& u, int t_bc)
 
   QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
   U u_test(Nd);
-  for(int mu=0; mu < Nd; mu++) { 
-    Real factor = Real(aniso_fac_s);
-    if( mu == Nd -1) { 
-      factor = Real(aniso_fac_t);
-    }
-    u_test[mu] = factor*u[mu];
-  }
+//  for(int mu=0; mu < Nd; mu++) {
+//    Real factor = Real(aniso_fac_s);
+//    if( mu == Nd -1) {
+//      factor = Real(aniso_fac_t);
+//    }
+//    u_test[mu] = factor*u[mu];
+//  }
+
+  u_test = u;
 
   // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
   u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3]-1),
