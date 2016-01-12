@@ -6,7 +6,7 @@
 
 #include <cstdlib>
 #include <iostream>
-
+#include "immintrin.h"
 
 using namespace std;
 
@@ -23,13 +23,21 @@ namespace QPhiX {
 #if defined(QPHIX_MIC_SOURCE)
   float cvtHalf2Float(half val) {
     float ret;
+  #if defined(QPHIX_MIC_SOURCE)
     _mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
+  #elif defined(QPHIX_AVX512_SOURCE)
+  _mm512_mask_storeu_ps(&ret, 0x1, _mm512_cvtph_ps(_mm256_set1_epi16(val)) );
+  #endif
     return ret;
   }
   
   half cvtFloat2Half(float val) {
     half ret;
+  #if defined(QPHIX_MIC_SOURCE)
     _mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
+  #elif defined(QPHIX_AVX512_SOURCE)
+  _mm512_mask_storeu_epi16(&ret, 0x01, _mm512_cvtps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT ) );
+  #endif
     return ret;
   }
   
@@ -41,11 +49,11 @@ namespace QPhiX {
     if(sizeof(T1) != sizeof(T2)) {
       
       if(sizeof(T1) == 2) // we are converting float/double to half
-	return cvtFloat2Half((float)in);
+  return cvtFloat2Half((float)in);
       else if(sizeof(T2) == 2) // we are converting half to float/double
-	return (T1)cvtHalf2Float(in);
+  return (T1)cvtHalf2Float(in);
       else
-	return (T1)in; // we are converting between float and double so just cast is enough
+  return (T1)in; // we are converting between float and double so just cast is enough
     }
     else {
       return static_cast<T1>(in);  // both T1 and T2 are same
@@ -82,14 +90,14 @@ namespace QPhiX {
     };
 
     Geometry(const int latt_size[],
-	     int By_,
-	     int Bz_,
-	     int NCores_,
-	     int Sy_,
-	     int Sz_,
-	     int PadXY_,
-	     int PadXYZ_,
-	     int MinCt_)
+       int By_,
+       int Bz_,
+       int NCores_,
+       int Sy_,
+       int Sz_,
+       int PadXY_,
+       int PadXYZ_,
+       int MinCt_)
       : Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_)
     {   
       Nx_ = latt_size[0];
@@ -102,8 +110,8 @@ namespace QPhiX {
       if (Nxh()% S != 0) nvecs_++;
       
       if ( V % S != 0 ) { 
-	cerr << "Error: Geometry constructor: SOALEN="<< S <<" does not divide V=" << V << endl;
-	abort();
+  cerr << "Error: Geometry constructor: SOALEN="<< S <<" does not divide V=" << V << endl;
+  abort();
       }
       ngy_ = V/S;
       
@@ -116,7 +124,6 @@ namespace QPhiX {
       spinor_bytes = (Pxyz * Nt_ + 1)*sizeof(FourSpinorBlock);
       gauge_bytes = ((Pxyz*Nt_*S)/V)*sizeof(SU3MatrixBlock);
       clover_bytes = ((Pxyz*Nt_*S)/V)*sizeof(CloverBlock);
-
       // This works out the phase breakdown
       int ly = Ny_ / By;
       int lz = Nz_ / Bz;
@@ -125,17 +132,17 @@ namespace QPhiX {
       n_phases = 0;
       int n_cores_per_minct = num_cores / MinCt;
       while(rem > 0) {
-	int ctd = n_cores_per_minct / rem;
-	int ctu = (n_cores_per_minct + rem - 1) / rem;
-	CorePhase& p = getCorePhase(n_phases);
-	p.Ct = (ctu <= 4 ? ctu : ctd)*MinCt;
-	p.Cyz = num_cores / p.Ct;
-	if(p.Cyz > rem) p.Cyz = rem;
-	p.startBlock = stblk;
-	stblk += p.Cyz;
-	rem -= p.Cyz;
-	//	masterPrintf("Phase %d: Cyz = %d Ct = %d, start = %d\n", n_phases, p.Cyz, p.Ct, p.startBlock);
-	n_phases++;
+  int ctd = n_cores_per_minct / rem;
+  int ctu = (n_cores_per_minct + rem - 1) / rem;
+  CorePhase& p = getCorePhase(n_phases);
+  p.Ct = (ctu <= 4 ? ctu : ctd)*MinCt;
+  p.Cyz = num_cores / p.Ct;
+  if(p.Cyz > rem) p.Cyz = rem;
+  p.startBlock = stblk;
+  stblk += p.Cyz;
+  rem -= p.Cyz;
+  //  masterPrintf("Phase %d: Cyz = %d Ct = %d, start = %d\n", n_phases, p.Cyz, p.Ct, p.startBlock);
+  n_phases++;
       }
     }
     
@@ -161,8 +168,8 @@ namespace QPhiX {
             
       FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 128);
       if ( ret_val == (FourSpinorBlock *)0x0 ) { 
-	masterPrintf("Failed to allocate FourSpinorBlock\n");
-	abort();
+  masterPrintf("Failed to allocate FourSpinorBlock\n");
+  abort();
       }
 
       // Zero the field.
@@ -180,7 +187,7 @@ namespace QPhiX {
 #endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
-	ret_val_ft[i] =rep<T,double>(0.0);
+  ret_val_ft[i] =rep<T,double>(0.0);
       }
       
       return ret_val+1;
@@ -203,8 +210,8 @@ namespace QPhiX {
     {
       SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 128);
       if ( ret_val == (SU3MatrixBlock *)0x0 ) { 
-	masterPrintf("Failed to allocate SU3MatrixBlock\n");
-	abort();
+  masterPrintf("Failed to allocate SU3MatrixBlock\n");
+  abort();
       }
 
       // For AVX we should loop and zero it here....
@@ -225,7 +232,7 @@ namespace QPhiX {
 #endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
-	ret_val_ft[i] = rep<T,double>(0.0);
+  ret_val_ft[i] = rep<T,double>(0.0);
       }
       
       return ret_val;
@@ -240,8 +247,8 @@ namespace QPhiX {
     {
       CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 128);
       if ( ret_val == (CloverBlock *)0x0 ) { 
-	masterPrintf("Failed to allocate CloverBlock\n");
-	abort();
+  masterPrintf("Failed to allocate CloverBlock\n");
+  abort();
       }
 
       // For AVX we should loop and zero it here....
@@ -262,7 +269,7 @@ namespace QPhiX {
 #endif
 #pragma omp parallel for
       for(int i=0; i < num_ft; i++) {
-	ret_val_ft[i] = rep<T,double>(0.0);
+  ret_val_ft[i] = rep<T,double>(0.0);
       }
 
       return ret_val;
