@@ -382,6 +382,12 @@ MIC|mic)
 
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
+AVX512|avx512)
+	AC_DEFINE([QPHIX_AVX512_SOURCE],[1], [ Generate AVX512 Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
+	AC_MSG_NOTICE([Configuring AVX512 Specializations ])
+;;
 SCALAR|scalar)
 	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )

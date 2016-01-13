@@ -39,6 +39,9 @@
 /* Generate MIC Specializations */
 #undef QPHIX_MIC_SOURCE
 
+/* Generate AVX512 Specializations */
+#undef QPHIX_AVX512_SOURCE
+
 /* Parscalar Arch */
 #undef QPHIX_PARSCALAR
 
