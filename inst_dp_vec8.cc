@@ -171,7 +171,15 @@ string LoadBroadcast::serialize() const
 {
     std::ostringstream buf;
 
-
+#ifdef AVX512
+	if(!a->isHalfType()) {
+        buf << v.getName() << " = _mm512_set1_pd(*" << a->serialize() << ");" << endl;
+    }
+    else {
+        buf << v.getName() << " = _mm512_cvtpslo_pd(_mm512_set1_ps(*" << a->serialize() << "));"
+            << endl;
+    }
+#else
     if(!a->isHalfType()) {
         buf << v.getName() << " = _mm512_extload_pd(" << a->serialize()
             << ", _MM_UPCONV_PD_NONE, _MM_BROADCAST_1X8, _MM_HINT_NONE);" << endl;
@@ -181,7 +189,7 @@ string LoadBroadcast::serialize() const
             << a->serialize() << ", _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE));"
             << endl;
     }
-
+#endif
     return buf.str();
 }
 

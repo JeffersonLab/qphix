@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include "instructions.h"
 
+//_MM_FROUND_CUR_DIRECTION was unavailable on knl using SDE
+#ifndef SET_ROUND
+  #define SET_ROUND "_MM_FROUND_TO_NEAREST_INT"
+#endif
+
 #if PRECISION == 1 && VECLEN == 16
 #pragma message "Using single Precision"
 
@@ -77,7 +82,13 @@ string LoadFVec::serialize() const
         upConv = "_MM_UPCONV_PS_FLOAT16";
     }
 
-
+#ifdef AVX512
+	if (upConv == "_MM_UPCONV_PS_FLOAT16") {
+		buf << v.getName() << " = _mm512_mask_cvtph_ps(" << v.getName() << ", " << lmask << ", "<< "_mm256_load_si256((__m256i*)" << a->serialize() << "));" <<endl;
+	}
+	else
+#else
+#endif
     buf << v.getName() << " = _mm512_mask_extload_ps(" << v.getName() << ", " << lmask << ", "  << a->serialize() << ", " << upConv << ", _MM_BROADCAST32_NONE, _MM_HINT_NONE);" <<endl;
 
     return buf.str();
@@ -103,6 +114,14 @@ string StoreFVec::serialize() const
 #endif
     }
     else {
+#ifdef AVX512
+		if (downConv == "_MM_DOWNCONV_PS_FLOAT16") {
+			//buf << "_mm256_store_si256((__m256i *)" << a->serialize() << ", _mm512_cvtps_ph(" << v.getName() << ", _MM_FROUND_CUR_DIRECTION));" <<endl;
+			buf << "_mm256_store_si256((__m256i *)" << a->serialize() << ", _mm512_cvtps_ph(" << v.getName() << ", "<<SET_ROUND<<"));" <<endl;
+		}
+		else
+#else
+#endif
         buf << "_mm512_extstore_ps(" << a->serialize() << "," << v.getName() <<  ", " << downConv << ", _MM_HINT_NONE);" <<endl;
     }
 
@@ -162,8 +181,13 @@ string LoadBroadcast::serialize() const
     if(a->isHalfType()) {
         upConv = "_MM_UPCONV_PS_FLOAT16";
     }
-
-
+ #ifdef AVX512
+	if (upConv == "_MM_UPCONV_PS_FLOAT16") {
+		buf << v.getName() << " = _mm512_cvtph_ps(_mm256_set1_epi16(*" << a->serialize() << "));" << endl;
+	}
+	else
+#else
+#endif
     buf << v.getName() << " = _mm512_extload_ps(" << a->serialize() << ", " << upConv << ", _MM_BROADCAST_1X16, _MM_HINT_NONE);" << endl;
 
     return buf.str();
@@ -260,7 +284,8 @@ public:
             buf << "_mm256_storeu_si256((__m256i*)" << a->serialize()
                 << ", " <<  "_mm512_cvtps_ph(_mm512_mask_compress_ps(_mm512_cvtph_ps(_mm256_loadu_si256((__m256i const *)"
                 << a->serialize() << ")), " << lmask << ", "
-                << v.getName() << "), _MM_FROUND_CUR_DIRECTION));" << endl;
+                //<< v.getName() << "), _MM_FROUND_CUR_DIRECTION));" << endl;
+				<< v.getName() << "), "<<SET_ROUND<<"));" << endl;
         }
 
 #endif
