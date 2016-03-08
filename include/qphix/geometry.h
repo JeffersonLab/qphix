@@ -20,7 +20,7 @@ namespace QPhiX {
 
   typedef unsigned short half;
   
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
   float cvtHalf2Float(half val) {
     float ret;
   #if defined(QPHIX_MIC_SOURCE)
@@ -36,7 +36,10 @@ namespace QPhiX {
   #if defined(QPHIX_MIC_SOURCE)
     _mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
   #elif defined(QPHIX_AVX512_SOURCE)
-  _mm512_mask_storeu_epi16(&ret, 0x01, _mm512_cvtps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT ) );
+    //ret = _mm256_extract_epi16( _mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT), 0);
+    unsigned temp;
+    _mm512_mask_storeu_epi32(&temp, 0x01, _mm512_castsi256_si512(_mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT)) );
+    ret = (half)temp;
   #endif
     return ret;
   }
