@@ -9,6 +9,7 @@
 
 #include <qmp.h>
 #include <mpi.h>
+#include <queue>
 #endif
 #endif
 
@@ -410,6 +411,35 @@ namespace QPhiX
       }
 #endif
     }
+	
+
+	//test if sent/received is completed
+	inline bool testSendToDir(int d){
+		bool flag;
+#ifndef QPHIX_MPI_COMMS_CALLS
+		flag=QMP_is_complete(mh_sendToDir[d]);
+#else
+		if( MPI_Test(reqSendToDir[d], &flag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+			QMP_error("Test on send to dir failed\n");
+			QMP_abort(1);
+		}
+#endif
+		return flag;
+	}
+	
+	inline bool testRecvFromDir(int d){
+		bool flag;
+#ifndef QPHIX_MPI_COMMS_CALLS
+		flag=QMP_is_complete(mh_recvFromDir[d]);
+#else
+		if( MPI_Test(reqRecvFromDir[d], &flag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+			QMP_error("Test on recv from dir failed\n");
+			QMP_abort(1);
+		}
+#endif
+		return flag;
+	}
+	
 
     inline void progressComms() {
       int flag = 0;
@@ -448,6 +478,7 @@ namespace QPhiX
     // Ranks of the neighbours in the Y, Z and T directions
     int myRank;
     int myNeighboursInDir[8];
+	queue<int> commqueue;
     
     unsigned int faceInBytes[4];
     size_t totalBufSize;
