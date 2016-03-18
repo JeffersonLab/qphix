@@ -23,10 +23,10 @@
    */
 
 
-  void mesField(multi1d<LatticeColorMatrixF>& f,
-		const multi1d<LatticeColorMatrixF>& u);
+  void mesField(QDP::multi1d<QDP::LatticeColorMatrixF>& f,
+		const QDP::multi1d<QDP::LatticeColorMatrixF>& u);
 
-  void mesField(multi1d<LatticeColorMatrixD>& f,
-		const multi1d<LatticeColorMatrixD>& u);
+  void mesField(QDP::multi1d<QDP::LatticeColorMatrixD>& f,
+		const QDP::multi1d<QDP::LatticeColorMatrixD>& u);
 
 #endif

@@ -419,10 +419,12 @@ namespace QPhiX
 #ifndef QPHIX_MPI_COMMS_CALLS
 		flag=QMP_is_complete(mh_sendToDir[d]);
 #else
-		if( MPI_Test(reqSendToDir[d], &flag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+		int iflag;
+		if( MPI_Test(&reqSendToDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
 			QMP_error("Test on send to dir failed\n");
 			QMP_abort(1);
 		}
+		flag=static_cast<bool>(iflag);
 #endif
 		return flag;
 	}
@@ -432,10 +434,12 @@ namespace QPhiX
 #ifndef QPHIX_MPI_COMMS_CALLS
 		flag=QMP_is_complete(mh_recvFromDir[d]);
 #else
-		if( MPI_Test(reqRecvFromDir[d], &flag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+		int iflag;
+		if( MPI_Test(&reqRecvFromDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
 			QMP_error("Test on recv from dir failed\n");
 			QMP_abort(1);
 		}
+		flag=static_cast<bool>(iflag);
 #endif
 		return flag;
 	}
@@ -472,13 +476,13 @@ namespace QPhiX
     
     T* sendToDir[8]; // Send Buffers
     T*  recvFromDir[8]; // Recv Buffers
+	queue<int> queue; //communication queue
 
   private:
     
     // Ranks of the neighbours in the Y, Z and T directions
     int myRank;
     int myNeighboursInDir[8];
-	queue<int> commqueue;
     
     unsigned int faceInBytes[4];
     size_t totalBufSize;
