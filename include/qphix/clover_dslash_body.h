@@ -1577,10 +1577,11 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, beta ,cb, d/2, d%2, 1);		
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, invclov, bet, cb, d/2, d%2, 1);
 				}
-			} // end if
+			}
+			else comms->queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS
@@ -1643,10 +1644,11 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, beta ,cb, d/2, d%2, 0);		
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, invclov, bet, cb, d/2, d%2, 0);		
 				}
-			} // end if
+			}
+			else comms->queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS
@@ -1710,10 +1712,11 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, beta, cb, d/2, d%2, 1);		
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);		
 				}
-			} // end if
+			}
+			else comms->queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS
@@ -1775,10 +1778,11 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, beta, cb, d/2, d%2, 0);	
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);	
 				}
-			} // end if
+			}
+			else comms->queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS

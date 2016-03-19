@@ -1556,8 +1556,8 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 					
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, beta ,cb, d/2, d%2, 1);	
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);	
 				}
 			}
 			else comms->queue.push(d);
@@ -1623,8 +1623,8 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 	      
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, beta ,cb, d/2, d%2, 0);	
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);	
 				}
 			}
 			else comms->queue.push(d);
@@ -1696,8 +1696,8 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 					
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, beta, cb, d/2, d%2, 1);	
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);	
 				}
 			}
 			else comms->queue.push(d);
@@ -1766,8 +1766,8 @@ namespace QPhiX
 				{
 					int tid=omp_get_thread_num();
 	      
-	      		  	double beta=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, beta, cb, d/2, d%2, 0);
+	      		  	double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
+					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);
 				}
 			}
 			else comms->queue.push(d);
