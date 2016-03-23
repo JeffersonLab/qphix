@@ -185,10 +185,13 @@ namespace QPhiX
       
 			// Now we are hopefully both in L1 and in the right layout so
 #ifndef QPHIX_USE_CEAN
-			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-						for(int i=0; i < S; i++) {
+#pragma omp simd collapse(2) safelen(2)
+			for(int reim=0; reim < 2; reim++) { 
+				for(int i=0; i < S; i++) {
+#pragma unroll
+					for(int col=0; col < 3; col++) { 
+#pragma unroll
+						for(int spin=0; spin < 4; spin ++) { 
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + y_spinor[col][spin][reim][i];
 						}
 					}
@@ -239,10 +242,13 @@ namespace QPhiX
       
 			// Now we are hopefully both in L1 and in the right layout so
 #ifndef QPHIX_USE_CEAN
-			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-						for(int i=0; i < S; i++) {
+#pragma omp simd collapse(2) safelen(2)
+			for(int reim=0; reim < 2; reim++) { 
+				for(int i=0; i < S; i++) {
+#pragma unroll
+					for(int col=0; col < 3; col++) { 
+#pragma unroll
+						for(int spin=0; spin < 4; spin ++) { 
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + b*y_spinor[col][spin][reim][i];
 						}
 					}
@@ -292,10 +298,13 @@ namespace QPhiX
       
 			// Now we are hopefully both in L1 and in the right layout so
 #ifndef QPHIX_USE_CEAN
-			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-						for(int i=0; i < S; i++) {
+#pragma omp simd collapse(2) safelen(2)
+			for(int reim=0; reim < 2; reim++) {
+				for(int i=0; i < S; i++) {
+#pragma unroll
+					for(int col=0; col < 3; col++) { 
+#pragma unroll
+						for(int spin=0; spin < 4; spin ++) { 
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i];
 						}
 					}
@@ -338,11 +347,14 @@ namespace QPhiX
 #endif
 
 			BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
-      
-			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-						for(int s=0; s < S; s++) {
+#pragma omp simd safelen(1)
+			for(int s=0; s < S; s++) {
+#pragma unroll
+				for(int col=0; col < 3; col++) { 
+#pragma unroll
+					for(int spin=0; spin < 4; spin ++) { 
+#pragma unroll
+						for(int reim=0; reim < 2; reim++) { 
 							double xfoo = rep<double,AT>(x_spinor[col][spin][reim][s]);
 							reduction[s] += xfoo*xfoo;
 						}
@@ -496,18 +508,28 @@ namespace QPhiX
 			BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
 			BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
 			// Now we are hopefully both in L1 and in the right layout so
-			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
 #ifndef QPHIX_USE_CEAN
-						for(int i = 0; i < S; i++)
+#pragma omp simd collapse(2) safelen(2)
+			for(int reim=0; reim < 2; reim++) { 
+				for(int i = 0; i < S; i++){
+#pragma unroll
+					for(int col=0; col < 3; col++) {
+#pragma unroll
+						for(int spin=0; spin < 4; spin ++) { 
 							y_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
-#else
-						y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
-#endif
+						}
 					}
 				}
 			}
+#else
+			for(int col=0; col < 3; col++) { 
+				for(int spin=0; spin < 4; spin ++) { 
+					for(int reim=0; reim < 2; reim++) { 
+						y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
+					}
+				}
+			}
+#endif
 			BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
 		}
    
