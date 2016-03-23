@@ -36,7 +36,7 @@ namespace QPhiX
 				_mm_prefetch(&pref1base[numv*V*sizeof(FT)], _MM_HINT_T0);
 				_mm_prefetch(&pref2base[numv*V*sizeof(FT)], _MM_HINT_T1);
 	
-#pragma omp simd
+#pragma omp simd aligned(resbase,srcbase:V)
 				for(int s=0; s < V; s++) {
 					resbase[numv*V + s ] = srcbase[ numv*V + s ];
 				}
@@ -301,7 +301,6 @@ namespace QPhiX
 					}
 				}
 			}
-
 #else
 			// CEAN notation
 			y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:];
