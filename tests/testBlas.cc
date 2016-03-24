@@ -20,7 +20,7 @@ using namespace Assertions;
 #define VECLEN 16
 #endif
 
-#ifdef QPHIX_AVX_SOURCE
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 #define VECLEN 8
 #endif
 

@@ -21,4 +21,6 @@
 #ifdef QPHIX_AVX_SOURCE
 #endif
 
+#ifdef QPHIX_AVX2_SOURCE
+#endif
 #endif

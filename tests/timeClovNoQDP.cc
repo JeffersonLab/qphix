@@ -26,7 +26,7 @@ using namespace QPhiX;
 #define VECLEN_DP 8
 #endif
 
-#if defined(QPHIX_AVX_SOURCE) 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 #endif
