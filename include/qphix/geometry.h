@@ -20,46 +20,57 @@ namespace QPhiX {
 
 	typedef unsigned short half;
   
-#if defined(QPHIX_MIC_SOURCE)
-	float cvtHalf2Float(half val) {
-		float ret;
-		_mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
-		return ret;
-	}
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+  float cvtHalf2Float(half val) {
+    float ret;
+  #if defined(QPHIX_MIC_SOURCE)
+    _mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
+  #elif defined(QPHIX_AVX512_SOURCE)
+  _mm512_mask_storeu_ps(&ret, 0x1, _mm512_cvtph_ps(_mm256_set1_epi16(val)) );
+  #endif
+    return ret;
+  }
   
-	half cvtFloat2Half(float val) {
-		half ret;
-		_mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
-		return ret;
-	}
+  half cvtFloat2Half(float val) {
+    half ret;
+  #if defined(QPHIX_MIC_SOURCE)
+    _mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
+  #elif defined(QPHIX_AVX512_SOURCE)
+    //ret = _mm256_extract_epi16( _mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT), 0);
+    unsigned temp;
+    _mm512_mask_storeu_epi32(&temp, 0x01, _mm512_castsi256_si512(_mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT)) );
+    ret = (half)temp;
+  #endif
+    return ret;
+  }
   
 
-	// rep: cast 'in' of type T2 into a 'T1' and return it. 
-	template <typename T1, typename T2>
-	T1 rep(const T2& in) 
-	{
-		if(sizeof(T1) != sizeof(T2)) {
+  // rep: cast 'in' of type T2 into a 'T1' and return it. 
+  template <typename T1, typename T2>
+  T1 rep(const T2& in) 
+  {
+    if(sizeof(T1) != sizeof(T2)) {
       
-			if(sizeof(T1) == 2) // we are converting float/double to half
-				return cvtFloat2Half((float)in);
-			else if(sizeof(T2) == 2) // we are converting half to float/double
-				return (T1)cvtHalf2Float(in);
-			else
-				return (T1)in; // we are converting between float and double so just cast is enough
-		}
-		else {
-			return static_cast<T1>(in);  // both T1 and T2 are same
-		}
-	}
+      if(sizeof(T1) == 2) // we are converting float/double to half
+  return cvtFloat2Half((float)in);
+      else if(sizeof(T2) == 2) // we are converting half to float/double
+  return (T1)cvtHalf2Float(in);
+      else
+  return (T1)in; // we are converting between float and double so just cast is enough
+    }
+    else {
+      return static_cast<T1>(in);  // both T1 and T2 are same
+    }
+  }
   
 #else 
 
-	// rep: cast 'in' of type T2 into a 'T1' and return it. 
-	template <typename T1, typename T2>
-	T1 rep(const T2& in) 
-	{
-		return (T1)(in); 
-	}
+  // rep: cast 'in' of type T2 into a 'T1' and return it. 
+  template <typename T1, typename T2>
+  T1 rep(const T2& in) 
+  {
+    return (T1)(in); 
+  }
  
 
 #endif
