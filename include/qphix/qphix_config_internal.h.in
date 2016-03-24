@@ -18,6 +18,12 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Generate AVX2 Specializations */
+#undef QPHIX_AVX2_SOURCE
+
+/* Generate AVX512 Specializations */
+#undef QPHIX_AVX512_SOURCE
+
 /* Generate AVX Specializations */
 #undef QPHIX_AVX_SOURCE
 
@@ -35,9 +41,6 @@
 
 /* Generate MIC Specializations */
 #undef QPHIX_MIC_SOURCE
-
-/* Generate AVX512 Specializations */
-#undef QPHIX_AVX512_SOURCE
 
 /* Parscalar Arch */
 #undef QPHIX_PARSCALAR

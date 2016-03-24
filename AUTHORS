@@ -6,6 +6,7 @@ Karthikeyan Vaidyanathan, Intel Parallel Computing Labs, Bangalore, India  email
 Mikhail Smelyanskiy, Intel Parallel Computing Labs, Santa Clara, USA   email: mikhail.smelianskiy AT intel.com
 
 Contributors:
+*) Thorsten Kurth (LBL) 
 *) Aaron Walden (ODU) - for integrating the AVX512 output from the code-generator and testing in Intel SDE
 
 *) Mario Schroeck (INFN) (mario.schroeck AT roma3.infn.it) and Alexei Strelchenko (FNAL, astrel AT fnal.gov) - for work on the Twisted Mass Fermion (qphix-tmf) branch

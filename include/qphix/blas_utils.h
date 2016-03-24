@@ -124,7 +124,7 @@ namespace QPhiX {
 				_mm_prefetch(&prefl1base[v*V*sizeof(FT)], _MM_HINT_T0);
 				_mm_prefetch(&prefl2base[v*V*sizeof(FT)], _MM_HINT_T1);
 				
-#pragma simd
+#pragma omp simd
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}

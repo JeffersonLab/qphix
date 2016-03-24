@@ -191,7 +191,7 @@ namespace QPhiX
 	int btid = smtid  + n_blas_simt*cid;
 	
 	// Each thread zeroes
-#pragma simd
+#pragma omp simd
 	for(int s=0; s < V; s++){ 
 	  new_iprod_array[btid][0][s] = (double)0;
 	  new_iprod_array[btid][1][s]= (double)0;

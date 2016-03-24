@@ -50,9 +50,10 @@ using namespace QPhiX;
 #define VECLEN_DP 8
 #include <immintrin.h>
 
-#elif defined(QPHIX_AVX_SOURCE)  ||  defined(QPHIX_AVX2_SOURCE)
+#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 
 #define VECLEN_SP 8
+#define VECLEN_HP 8
 #define VECLEN_DP 4
 
 #elif defined(QPHIX_SCALAR_SOURCE)
@@ -173,7 +174,7 @@ testDslashFull::run(void)
       }
 
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)  || defined(QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
@@ -185,7 +186,7 @@ testDslashFull::run(void)
 
 
       if( soalen == 8 ) {
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE)  || defined(QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 	testDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
@@ -218,7 +219,7 @@ testDslashFull::run(void)
 
 #if 1
   if (precision == HALF_PREC ) { 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -244,16 +245,18 @@ testDslashFull::run(void)
       }
 
       if( soalen == 16 ) {
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=16 " << endl;
 	testDslashWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testMWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testCGWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
 	testBiCGStabWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
+#endif
       }
     }
 #else
-    QDPIO::cout << " Half Prec is only supported on MIC Targets just now " << endl;
+    QDPIO::cout << " Half Prec is only supported on MIC and AVX2 Targets just now " << endl;
 #endif
   }
 #endif // If 0
@@ -282,7 +285,7 @@ testDslashFull::run(void)
 
 
       if( soalen == 2) {
-#if defined (QPHIX_AVX_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
 	testDslashWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
@@ -294,7 +297,7 @@ testDslashFull::run(void)
       }
 
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
 	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
@@ -313,7 +316,7 @@ testDslashFull::run(void)
       }
 
       if( soalen == 8 ) { 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
 	testDslashWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
 	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
@@ -338,7 +341,7 @@ testDslashFull::run(void)
     int t_bc=-1;
     
 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     if ( Nx % 32 == 0 ){
       testBiCGStabWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
       testRichardson<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD,PhiD>(u_in, t_bc);

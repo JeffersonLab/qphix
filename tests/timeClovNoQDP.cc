@@ -27,6 +27,7 @@ using namespace QPhiX;
 #endif
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
+#define VECLEN_HP 8
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 #endif
@@ -677,7 +678,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 {
 
 
-#if defined (QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_AVX_SOURCE) || defined (QPHIX_SCLAR_SOURCE)
   if ( precision == FLOAT_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_SP ) { 
       masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);
@@ -693,12 +693,11 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
   
-#endif
 
 
   if( precision == HALF_PREC ) { 
 
-#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_AVX2_SOURCE)
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();
