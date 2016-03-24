@@ -9,6 +9,7 @@
 
 #include <qmp.h>
 #include <mpi.h>
+#include <queue>
 #endif
 #endif
 
@@ -410,6 +411,39 @@ namespace QPhiX
       }
 #endif
     }
+	
+
+	//test if sent/received is completed
+	inline bool testSendToDir(int d){
+		bool flag;
+#ifndef QPHIX_MPI_COMMS_CALLS
+		flag=QMP_is_complete(mh_sendToDir[d]);
+#else
+		int iflag;
+		if( MPI_Test(&reqSendToDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+			QMP_error("Test on send to dir failed\n");
+			QMP_abort(1);
+		}
+		flag=static_cast<bool>(iflag);
+#endif
+		return flag;
+	}
+	
+	inline bool testRecvFromDir(int d){
+		bool flag;
+#ifndef QPHIX_MPI_COMMS_CALLS
+		flag=QMP_is_complete(mh_recvFromDir[d]);
+#else
+		int iflag;
+		if( MPI_Test(&reqRecvFromDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS){
+			QMP_error("Test on recv from dir failed\n");
+			QMP_abort(1);
+		}
+		flag=static_cast<bool>(iflag);
+#endif
+		return flag;
+	}
+	
 
     inline void progressComms() {
       int flag = 0;
@@ -442,6 +476,7 @@ namespace QPhiX
     
     T* sendToDir[8]; // Send Buffers
     T*  recvFromDir[8]; // Recv Buffers
+	queue<int> queue; //communication queue
 
   private:
     
