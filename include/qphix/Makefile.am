@@ -1,4 +1,4 @@
-SUBDIRS = ./avx ./avx2 ./mic ./scalar ./qpx
+SUBDIRS = ./avx ./avx2 ./avx512 ./mic ./scalar ./qpx
 
 qphix_includedir=$(includedir)/qphix
 

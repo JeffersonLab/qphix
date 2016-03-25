@@ -20,15 +20,15 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 #endif
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-#define VECLEN_SP 8
 #define VECLEN_HP 8
+#define VECLEN_SP 8
 #define VECLEN_DP 4
 #endif
 
@@ -418,10 +418,10 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	      // This will work out to be between 0 and veclen
 	      int xx = (y%nyg)*S+x;
 	      for(int i=0; i < 6; i++){ 
-		A_cb0[block].diag1[i][xx] =rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double).238);
-		A_cb0[block].diag2[i][xx] = rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double) .238);
+		A_cb0[block].diag1[i][xx] =rep<FT,double>((double)4.1);
+		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double)1/(double)4.1);
+		A_cb0[block].diag2[i][xx] = rep<FT,double>((double)4.1);
+		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double)1/(double)4.1);
 	      }
 	      
 	      for(int i=0; i < 15; i++){ 
@@ -678,7 +678,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 {
 
 
-#if defined (QPHIX_MIC_SOURCE) || defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined (QPHIX_SCLAR_SOURCE)
   if ( precision == FLOAT_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_SP ) { 
       masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);
@@ -694,12 +693,11 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
   
-#endif
 
 
   if( precision == HALF_PREC ) { 
 
-#if defined(QPHIX_MIC_SOURCE) 
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_AVX2_SOURCE)
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();

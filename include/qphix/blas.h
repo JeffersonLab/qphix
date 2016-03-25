@@ -21,8 +21,6 @@
 #ifdef QPHIX_AVX_SOURCE
 #endif
 
-// AVX2 Specialization
 #ifdef QPHIX_AVX2_SOURCE
 #endif
-
 #endif

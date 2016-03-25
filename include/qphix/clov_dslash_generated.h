@@ -4,6 +4,9 @@
 #if defined (QPHIX_MIC_SOURCE)
 #include "qphix/mic/clov_dslash_mic_complete_specialization.h"
 
+#elif defined (QPHIX_AVX512_SOURCE)
+#include "qphix/avx512/clov_dslash_avx512_complete_specialization.h"
+
 #elif defined(QPHIX_AVX_SOURCE)
 #include "qphix/avx/clov_dslash_avx_complete_specialization.h"
 

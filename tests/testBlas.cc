@@ -16,7 +16,7 @@ using namespace Assertions;
 #include "qphix/blas_new_c.h"
 
 
-#ifdef  QPHIX_MIC_SOURCE
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 #define VECLEN 16
 #endif
 

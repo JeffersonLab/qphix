@@ -41,7 +41,7 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
@@ -187,7 +187,7 @@ testClovDslashFull::runTest(void)
   clparam.anisoParam = aniso;
 
   // Some mass
-  clparam.Mass = Real(0.01);
+  clparam.Mass = Real(0.1);
   
   // Some random clover coeffs
   clparam.clovCoeffR=Real(1);
@@ -845,7 +845,7 @@ testClovDslashFull::run(void)
 
 
    if( precision == FLOAT_PREC ) { 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -861,7 +861,7 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,8,false,UF, PhiF>();
     }
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     if( compress12 ) { 
       runTest<float,VECLEN_SP,16,true,UF, PhiF>();
     }
@@ -869,13 +869,13 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,16,false,UF, PhiF>();
     }
 #endif
-#endif  // QPHIX_AVX_SOURCE|| QPHIX_AVX2_SOURCE|| QPHIX_MIC_SOURCE
+#endif  // QPHIX_AVX_SOURCE|| QPHIX_AVX2_SOURCE|| QPHIX_MIC_SOURCE | QPHIX_AVX512_SOURCE
 
   }
 
 
   if( precision == HALF_PREC ) { 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_AVX2_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<half,VECLEN_HP,4,true,UF, PhiF>();
@@ -892,12 +892,14 @@ testClovDslashFull::run(void)
     }
 
 
+#if defined (QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     if( compress12 ) { 
       runTest<half,VECLEN_HP,16,true,UF, PhiF>();
     }
     else { 
       runTest<half,VECLEN_HP,16,false,UF, PhiF>();
     }
+#endif
 #else
     QDPIO::cout << "Half precision tests are not available in this build. Currently only in MIC builds" << endl;
 #endif
@@ -924,7 +926,7 @@ testClovDslashFull::run(void)
       runTest<double,VECLEN_DP,4,false,UD, PhiD>();
     }
     
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     // Only MIC can do DP 8
     if( compress12 ) { 
       runTest<double,VECLEN_DP,8,true,UD, PhiD>();
