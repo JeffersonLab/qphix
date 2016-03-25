@@ -419,9 +419,9 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	      int xx = (y%nyg)*S+x;
 	      for(int i=0; i < 6; i++){ 
 		A_cb0[block].diag1[i][xx] =rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double).238);
+		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double)4.2);
 		A_cb0[block].diag2[i][xx] = rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double) .238);
+		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double)4.2);
 	      }
 	      
 	      for(int i=0; i < 15; i++){ 

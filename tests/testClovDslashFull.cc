@@ -187,7 +187,7 @@ testClovDslashFull::runTest(void)
   clparam.anisoParam = aniso;
 
   // Some mass
-  clparam.Mass = Real(0.01);
+  clparam.Mass = Real(0.1);
   
   // Some random clover coeffs
   clparam.clovCoeffR=Real(1);
