@@ -211,6 +211,7 @@ namespace QPhiX
     void tune(void) 
     {
       int iters=100;
+#if 0
       tuneZeroThreads(iters); 
       tuneNorm2Threads(iters);
       tuneXMYThreads(iters);
@@ -219,6 +220,7 @@ namespace QPhiX
       tunePUpdateThreads(iters);
       tuneSUpdateThreads(iters);
       tuneRXUpdateThreads(iters);
+#endif
       reportTuning();
     }
 

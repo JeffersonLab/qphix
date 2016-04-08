@@ -15,6 +15,8 @@ namespace QPhiX
 		CopyFunctor( typename Geometry<FT,V,S,compress>::FourSpinorBlock* res_,
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* src_ ) : res(res_), src(src_) {}
     
+	CopyFunctor(const CopyFunctor<FT,V,S,compress>& rhs) : res(rhs.res), src(rhs.src){}
+
 		~CopyFunctor() {}
     
 		inline void 
@@ -24,7 +26,7 @@ namespace QPhiX
 			const FT* srcbase=&src[block][0][0][0][0];
 			FT* resbase = &res[block][0][0][0][0];
 
-#if defined(__MIC__)
+#if defined(QPHIX_MIC_SOURCE)
 			//Intel MIC
 			const int prefdist1 = 12;
 			const char* pref1base = (const char *)srcbase+prefdist1*64;
@@ -43,8 +45,8 @@ namespace QPhiX
 			}
 #else
 			//Generic
-#pragma omp simd collapse(2) aligned(resbase,srcbase:V)
 			for(int numv=0; numv < nvec_in_spinor; numv++) { 
+#pragma omp simd aligned(resbase,srcbase:V)
 				for(int s=0; s < V; s++) {
 					resbase[numv*V + s ] = srcbase[ numv*V + s ];
 				}
@@ -53,8 +55,10 @@ namespace QPhiX
 		}
     
 	private: 
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict src;
+		//typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res;
+		//const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict src;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* res;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* src; 
 	};
   
   
@@ -81,24 +85,20 @@ namespace QPhiX
 			// Now we are hopefully both in L1 and in the right layout so
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN
+					for(int reim=0; reim < 2; reim++) {
+						#pragma omp simd aligned(res_spinor:QPHIX_LLC_CACHE_ALIGN) 
 						for(int i=0; i < S; i++) {
 							res_spinor[col][spin][reim][i] = rep<AT,double>((double)0);
 						}
-#else
-						res_spinor[col][spin][reim][:] = rep<AT,double>((double)0);
-#endif
 					}
 				}
 			}
-      
 			BLASUtils::streamOutSpinor<FT,V>(resbase, (const AT *)res_spinor, nvec_in_spinor);
 
 		}
     
 	private: 
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* res;
 	};
   
 	template<typename FT, int V, int S, bool compress>
@@ -109,6 +109,9 @@ namespace QPhiX
 		AYPXFunctor(double a_, 
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
+
+	AYPXFunctor(const AYPXFunctor<FT,V,S,compress>& rhs) : a(rhs.a), x(rhs.x), y(rhs.y) {}
+
 		~AYPXFunctor() {}
     
 		inline void 
@@ -134,13 +137,10 @@ namespace QPhiX
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN
-						for(int i=0; i < S; i++) {
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN)
+					  for(int i=0; i < S; i++) {
 							y_spinor[col][spin][reim][i] = a*y_spinor[col][spin][reim][i] + x_spinor[col][spin][reim][i];
 						}
-#else
-						y_spinor[col][spin][reim][:] = a*y_spinor[col][spin][reim][:] + x_spinor[col][spin][reim][:];
-#endif
 					}
 				}
 			}
@@ -150,8 +150,8 @@ namespace QPhiX
     
 	private: 
 		AT a;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 	};
 
 	template<typename FT, int V, int S, bool compress>
@@ -162,6 +162,9 @@ namespace QPhiX
 		AXPYFunctor(double a_, 
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)), x(x_), y(y_) {}
+
+	AXPYFunctor(const AXPYFunctor<FT,V,S,compress>& rhs) : a(rhs.a), x(rhs.x), y(rhs.y){}
+
 		~AXPYFunctor() {}
     
 		inline void 
@@ -184,27 +187,24 @@ namespace QPhiX
 			BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
       
 			// Now we are hopefully both in L1 and in the right layout so
-#ifndef QPHIX_USE_CEAN
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
+					for(int reim=0; reim < 2; reim++) {
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN) 
 						for(int i=0; i < S; i++) {
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + y_spinor[col][spin][reim][i];
 						}
 					}
 				}
 			}
-#else
-			y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:] + y_spinor[:][:][:][:];
-#endif
       
 			BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
 		}
     
 	private: 
 		AT a;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 	};
 
 	template<typename FT, int V, int S, bool compress>
@@ -216,6 +216,7 @@ namespace QPhiX
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
 		double b_,
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y_) : a(rep<AT,double>(a_)),b(rep<AT,double>(b_)), x(x_), y(y_) {}
+	AXPBYFunctor(const AXPBYFunctor<FT,V,S,compress>& rhs) : a(rhs.a), b(rhs.b), x(rhs.x), y(rhs.y) {}
 		~AXPBYFunctor() {}
     
 		inline void 
@@ -238,28 +239,24 @@ namespace QPhiX
 			BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
       
 			// Now we are hopefully both in L1 and in the right layout so
-#ifndef QPHIX_USE_CEAN
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
+					for(int reim=0; reim < 2; reim++) {
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN) 
 						for(int i=0; i < S; i++) {
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + b*y_spinor[col][spin][reim][i];
 						}
 					}
 				}
-			}
-#else
-			y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:] + b*y_spinor[:][:][:][:];
-#endif
-      
+			}      
 			BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
 		}
     
 	private: 
 		AT a;
 		AT b;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 	};
 
 	template<typename FT, int V, int S, bool compress>
@@ -291,28 +288,24 @@ namespace QPhiX
 			BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
       
 			// Now we are hopefully both in L1 and in the right layout so
-#ifndef QPHIX_USE_CEAN
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN)
 						for(int i=0; i < S; i++) {
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i];
 						}
 					}
 				}
 			}
-#else
-			// CEAN notation
-			y_spinor[:][:][:][:] = a*x_spinor[:][:][:][:];
-#endif
       
 			BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
 		}
     
 	private: 
 		AT a;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 
 	};
 
@@ -338,13 +331,14 @@ namespace QPhiX
 #endif
 
 			BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
-      
+    
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
 						for(int s=0; s < S; s++) {
+
 							double xfoo = rep<double,AT>(x_spinor[col][spin][reim][s]);
-							reduction[s] += xfoo*xfoo;
+	      						reduction[s] += xfoo*xfoo;
 						}
 					}
 				}
@@ -372,7 +366,7 @@ namespace QPhiX
     
 		inline 
 			void 
-		func(int block, double* reduction) {
+		func(int block, double* red) {
 			int nvec_in_spinor = (3*4*2*S)/V;
 			const FT* xbase=&x[block][0][0][0][0];
 			const FT* ybase=&y[block][0][0][0][0];
@@ -391,30 +385,38 @@ namespace QPhiX
       
 			BLASUtils::streamInSpinor<FT,V>((AT *)x_spinor, xbase, nvec_in_spinor);
 			BLASUtils::streamInSpinor<FT,V>((AT *)y_spinor, ybase, nvec_in_spinor);
+			
       
 			// Now we are hopefully both in L1 and in the right layout so
 			for(int col=0; col < 3; col++) { 
-				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN 
-						for(int i = 0; i < S; i++)
-							res_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
-#else
-						res_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
-#endif
-						for(int s=0; s < S; s++) {
-							reduction[s] += (double)res_spinor[col][spin][reim][s]*(double)res_spinor[col][spin][reim][s];
-						}
-					}
-				}
+			  for(int spin=0; spin < 4; spin ++) { 
+			    for(int reim=0; reim < 2; reim++) { 
+			      #pragma omp simd aligned(res_spinor, x_spinor, y_spinor:QPHIX_LLC_CACHE_ALIGN) 
+			      for(int i = 0; i < S; i++){
+				res_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
+			      }
+			    }
+			  }
 			}
+
+#if 1
+			for(int col=0; col < 3; col++) {
+                          for(int spin=0; spin < 4; spin ++) {
+                            for(int reim=0; reim < 2; reim++) {
+                              for(int i = 0; i < S; i++){
+                                red[i] += (double)res_spinor[col][spin][reim][i]*(double)res_spinor[col][spin][reim][i];
+                              }
+                            }
+                          }
+			}
+#endif
 			BLASUtils::streamOutSpinor<FT,V>(resbase, (const AT *)res_spinor, nvec_in_spinor);
 		}
     
 	private: 
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* res;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  x;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  y;
 	};
   
 	template<typename FT, int V, int S, bool compress>
@@ -449,22 +451,35 @@ namespace QPhiX
 			// Now we are hopefully both in L1 and in the right layout so
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
-					for(int reim=0; reim < 2; reim++) { 
+					for(int reim=0; reim < 2; reim++) {
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN) 
 						for(int i=0; i < S; i++) {
 							y_spinor[col][spin][reim][i] = a*x_spinor[col][spin][reim][i] + y_spinor[col][spin][reim][i];
-							reduction[i] += rep<double,AT>(y_spinor[col][spin][reim][i])*rep<double,AT>(y_spinor[col][spin][reim][i]);
 						}
 					}
 				}
 			}
+
+#if 1
+                        for(int col=0; col < 3; col++) {
+                          for(int spin=0; spin < 4; spin ++) {
+                            for(int reim=0; reim < 2; reim++) {
+                              for(int i = 0; i < S; i++){
+				reduction[i] += rep<double,AT>(y_spinor[col][spin][reim][i])*rep<double,AT>(y_spinor[col][spin][reim][i]);
+                              }
+                            }
+                          }
+                        }
+#endif
+
       
 			BLASUtils::streamOutSpinor<FT,V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
 		}
     
 	private: 
 		AT a;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 	};
 
 	template<typename FT, int V, int S, bool compress>
@@ -499,12 +514,10 @@ namespace QPhiX
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN
-						for(int i = 0; i < S; i++)
+					  #pragma omp simd aligned(y_spinor,x_spinor:QPHIX_LLC_CACHE_ALIGN)
+					  for(int i = 0; i < S; i++){
 							y_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] -  y_spinor[col][spin][reim][i];
-#else
-						y_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] -  y_spinor[col][spin][reim][:];
-#endif
+					  }
 					}
 				}
 			}
@@ -512,8 +525,8 @@ namespace QPhiX
 		}
    
 	private: 
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* y;
 	};
   
 
@@ -528,6 +541,8 @@ namespace QPhiX
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* p_
 			) : a(rep<AT,double>(a_)), r(r_), mmp(mmp_), x(x_), p(p_) {}
+
+		RmammpNorm2rxpapFunctor(const RmammpNorm2rxpapFunctor<FT,V,S,compress>& rhs) : a(rhs.a), r(rhs.r), mmp(rhs.mmp), x(rhs.x), p(rhs.p) {}
     
 		~RmammpNorm2rxpapFunctor() {}
     
@@ -551,6 +566,7 @@ namespace QPhiX
 			__declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock x_spinor;
 			__declspec(align(QPHIX_LLC_CACHE_ALIGN)) typename Geometry<AT,V,S,compress>::FourSpinorBlock p_spinor;
 #endif
+
  
 			BLASUtils::streamInSpinor<FT,V>((AT *)r_spinor, rbase, nvec_in_spinor);
 			BLASUtils::streamInSpinor<FT,V>((AT *)mmp_spinor, mmpbase, nvec_in_spinor);
@@ -561,24 +577,23 @@ namespace QPhiX
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN
-						for(int i = 0; i < S; i++)
+					  #pragma omp simd aligned(r_spinor,mmp_spinor,x_spinor,p_spinor:QPHIX_LLC_CACHE_ALIGN)
+					  for(int i = 0; i < S; i++){
 							r_spinor[col][spin][reim][i] = r_spinor[col][spin][reim][i] -  a * mmp_spinor[col][spin][reim][i];
-#else
-						r_spinor[col][spin][reim][:] = r_spinor[col][spin][reim][:] -  a * mmp_spinor[col][spin][reim][:];
-#endif
-						for(int s =0 ; s < S; s++) { 
-							reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
-						}
-
-#ifndef QPHIX_USE_CEAN
-						for(int i = 0; i < S; i++)
 							x_spinor[col][spin][reim][i] = x_spinor[col][spin][reim][i] + a * p_spinor[col][spin][reim][i];
-#else
-						x_spinor[col][spin][reim][:] = x_spinor[col][spin][reim][:] + a * p_spinor[col][spin][reim][:];
-#endif
+					  }
 					}
 				}
+			}
+
+                      for(int col=0; col < 3; col++) {
+                          for(int spin=0; spin < 4; spin ++) {
+                            for(int reim=0; reim < 2; reim++) {
+                              for(int i = 0; i < S; i++){
+					reduction[i] += (double)r_spinor[col][spin][reim][i]*(double)r_spinor[col][spin][reim][i];
+                              }
+                            }
+                          }
 			}
 	
 			BLASUtils::streamOutSpinor<FT,V>(rbase, (const AT *)r_spinor, nvec_in_spinor);
@@ -588,10 +603,10 @@ namespace QPhiX
 
 	private: 
 		AT a;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict mmp;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* r;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  mmp;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock*  x;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  p;
 	};
 
 
@@ -640,21 +655,25 @@ namespace QPhiX
 			for(int col=0; col < 3; col++) { 
 				for(int spin=0; spin < 4; spin ++) { 
 					for(int reim=0; reim < 2; reim++) { 
-#ifndef QPHIX_USE_CEAN
+						#pragma omp simd aligned(x_spinor,r_spinor,delta_x_spinor,delta_r_spinor:QPHIX_LLC_CACHE_ALIGN)
 						for(int i = 0; i < S; i++) {
 							x_spinor[col][spin][reim][i] += delta_x_spinor[col][spin][reim][i];
 							r_spinor[col][spin][reim][i] -= delta_r_spinor[col][spin][reim][i];
 						}
-#else
-						x_spinor[col][spin][reim][:] += delta_x_spinor[col][spin][reim][:];
-						r_spinor[col][spin][reim][:] -= delta_r_spinor[col][spin][reim][:];
-#endif
-						for(int s =0 ; s < S; s++) { 
-							reduction[s] += (double)r_spinor[col][spin][reim][s]*(double)r_spinor[col][spin][reim][s];
-						}
 					}
 				}
 			}
+
+  			for(int col=0; col < 3; col++) {
+                          for(int spin=0; spin < 4; spin ++) {
+                            for(int reim=0; reim < 2; reim++) { 
+                              for(int i = 0; i < S; i++){	
+					reduction[i] += (double)r_spinor[col][spin][reim][i]*(double)r_spinor[col][spin][reim][i];
+
+                              }
+                            }
+                          }
+                        }
 
 			BLASUtils::writeSpinor<FT,V>(xbase, (const AT *)x_spinor, nvec_in_spinor);	
 			BLASUtils::writeSpinor<FT,V>(rbase, (const AT *)r_spinor, nvec_in_spinor);
@@ -663,10 +682,10 @@ namespace QPhiX
 
 
 	private: 
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict delta_x;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict delta_r;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock*  x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock*  r;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  delta_x;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  delta_r;
 	};
 
 

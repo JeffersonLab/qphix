@@ -393,8 +393,18 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   }
   end = omp_get_wtime();
   masterPrintf(" %g sec\n", end -start);
-  
-#if 1      
+
+  masterPrintf("Creating Even Odd Operator\n"); 
+  double Mass=0.1;
+  EvenOddWilsonOperator<FT, V, S,compress> M(Mass, u_packed, &geom, t_boundary, coeff_s, coeff_t);
+
+  double rsd_target=rsdTarget<FT>::value;
+  int max_iters=5000;
+  int niters;
+  double rsd_final;
+ int len = (geom.getPxyz()*geom.Nt()*sizeof(Spinor))/sizeof(FT);
+ 
+  if ( do_dslash ) { 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   for(int isign=1; isign >= -1; isign -=2) {
     for(int cb=0; cb < 2; cb++) { 
@@ -429,13 +439,10 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       }
     }
   }
-#endif
+ }
 
 
-#if 1
-  masterPrintf("Creating Wilson Op\n");
-  double Mass=0.1;
-  EvenOddWilsonOperator<FT, V, S,compress> M(Mass, u_packed, &geom, t_boundary, coeff_s, coeff_t);
+ if ( do_m ) { 
 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   for(int isign=1; isign >= -1; isign -=2) {
@@ -471,15 +478,11 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     }
     
   }
-#endif
+ }
 
-#if 1
-  double rsd_target=rsdTarget<FT>::value;
-  int max_iters=5000;
-  int niters;
-  double rsd_final;
-  int len = (geom.getPxyz()*geom.Nt()*sizeof(Spinor))/sizeof(FT); 
-  FT *c_s0 = (FT *)chi_s[0];
+ FT *c_s0 = (FT *)chi_s[0];
+
+ if( do_cg ) { 
 
   {
     masterPrintf("Creating Solver\n");
@@ -543,9 +546,9 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     
     }
   } // Solver
-#endif  
+ }
   
-#if 1
+ if( do_bicgstab )  
   {
     masterPrintf("Creating BiCGStab Solver\n");
     InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
@@ -608,7 +611,6 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       masterPrintf("BICGSTAB GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
     }
   }
-#endif
   
   masterPrintf("Cleaning up\n");
 

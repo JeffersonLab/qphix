@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <iostream>
 
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#include <immintrin.h>
+#endif
 
 using namespace std;
 
@@ -185,7 +188,6 @@ namespace QPhiX {
       
 			// Zero it all (including) (especially) the pad regions.
 			// FIXME: this is not NUMA friendly necessarily
-#pragma omp parallel for simd
 			for(int i=0; i < num_ft; i++) {
 				ret_val_ft[i] =rep<T,double>(0.0);
 			}
@@ -226,7 +228,6 @@ namespace QPhiX {
       
 			// Zero it all (including) (especially) the pad regions.
 			// FIXME: this is not NUMA friendly necessarily
-#pragma omp parallel for simd
 			for(int i=0; i < num_ft; i++) {
 				ret_val_ft[i] = rep<T,double>(0.0);
 			}
@@ -259,7 +260,6 @@ namespace QPhiX {
 
 			// Zero it all (including) (especially) the pad regions.
 			// FIXME: this is not NUMA friendly necessarily
-#pragma omp parallel for simd
 			for(int i=0; i < num_ft; i++) {
 				ret_val_ft[i] = rep<T,double>(0.0);
 			}

@@ -16,7 +16,7 @@ check_PROGRAMS +=  t_clov_dslash t_clov_invert_from_file
 endif
 endif
 
-# check_PROGRAMS += test_blas
+check_PROGRAMS += test_blas
 
 bin_PROGRAMS = $(check_PROGRAMS)
 
@@ -78,12 +78,12 @@ time_clov_noqdp_DEPENDENCIES = build_lib
 
 endif
 
-#test_blas_SOURCES=$(FRAMEWORK_SRCS) \
-#	test_blas.cc \
-#	testBlas.h \
-#	testBlas.cc
-#
-#test_blas_DEPENDENCIES= build_lib
+test_blas_SOURCES=$(FRAMEWORK_SRCS) \
+	test_blas.cc \
+	testBlas.h \
+	testBlas.cc
+
+test_blas_DEPENDENCIES= build_lib
 
 DEPENDENCIES = build_lib
 ${bin_PROGRAMS}: ${DEPENDENCIES}

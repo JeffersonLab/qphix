@@ -38,7 +38,8 @@ namespace QPhiX  {
 			// Accumulate the inner product from this spinor
 
 			for(int col=0; col < 3; col++) {
-				for(int spin=0; spin < 4; spin++) { 
+				for(int spin=0; spin < 4; spin++) {
+					#pragma omp simd aligned(l_spinor,r_spinor:V) 
 					for(int s = 0; s < S; s++) { 
 						reduction_re[s] += l_spinor[col][spin][0][s]*r_spinor[col][spin][0][s]
 							+ l_spinor[col][spin][1][s]*r_spinor[col][spin][1][s];
@@ -50,8 +51,8 @@ namespace QPhiX  {
 		}
     
 	private: 
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict l;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* l;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* r;
 	};
   
 
@@ -125,9 +126,9 @@ namespace QPhiX  {
 		}
   
 	private: 
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict v;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* r;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* p;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* v;
 		AT beta[2];
 		AT omega[2];
   
@@ -187,8 +188,8 @@ namespace QPhiX  {
 		}
     
 	private: 
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict s;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict v;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* s;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* v;
 		AT alpha[2];
 	};
 
@@ -272,10 +273,10 @@ namespace QPhiX  {
 		}
 			   
 	private:
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x;
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict t;
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* x;
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* r;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* t;
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* p;
 		AT alpha[2];
 		AT omega[2];
 	};

@@ -13,7 +13,7 @@ namespace QPhiX {
 		{
 			//  (a[RE] x[RE] - a[IM] y[IM])  + res[RE]
 			//  (a[RE] y[IM] + a[IM] y[RE])  + res[IM]
-#pragma omp simd
+#pragma omp simd aligned(res,x,y:S)
 			for(int s=0; s < S; s++) { 
 				res[0][s] = alpha[0]*x[0][s] - alpha[1]*x[1][s]  + y[0][s];
 				res[1][s] = alpha[0]*x[1][s] + alpha[1]*x[0][s]  + y[1][s];
@@ -32,7 +32,7 @@ namespace QPhiX {
       
 			//  res[IM] -(a[RE] y[IM] + a[IM] y[RE])
 			// =res[IM] -a[RE]y[IM] - a[IM] y[RE]
-#pragma omp simd 
+#pragma omp simd aligned(res,x,y:S)
 			for(int s=0; s < S; s++) { 
 				res[0][s] = y[0][s] - alpha[0]*x[0][s] + alpha[1]*x[1][s];
 				res[1][s] = y[1][s] - alpha[0]*x[1][s] - alpha[1]*x[0][s];
@@ -43,7 +43,7 @@ namespace QPhiX {
 		// Generic stream in
 		template<typename FT, int V>
 		inline void
-		streamInSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
+		streamInSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
       
 #if defined(__MIC__)
 			//Intel MIC
@@ -56,15 +56,15 @@ namespace QPhiX {
 			for(int v=0; v < numvec; v++) { 
 				_mm_prefetch(&prefl1base[v*V*sizeof(FT)], _MM_HINT_T0);
 				_mm_prefetch(&prefl2base[v*V*sizeof(FT)], _MM_HINT_T1);
-#pragma omp simd
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
 			}
 #else
 			//Generic
-#pragma omp simd collapse(2) aligned(dst,src:V)
 			for(int v=0; v < numvec; v++) {
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -75,13 +75,9 @@ namespace QPhiX {
 		// Generic write  out
 		template<typename FT, int V>
 		inline void
-		writeSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
-      
-			//#pragma vector aligned(src)
-			//#pragma vector aligned(dst)
-#pragma omp simd collapse(2) aligned(dst,src:V) //by thorsten
-			for(int v=0; v < numvec; v++) { 
-				//#pragma simd
+		writeSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+		  for(int v=0; v < numvec; v++) { 
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -92,14 +88,11 @@ namespace QPhiX {
 		// Generic stream out
 		template<typename FT, int V>
 		inline void
-		streamOutSpinor(volatile FT* restrict dst, const volatile FT* restrict src, int numvec) { 
-      
-			//#pragma vector aligned(src)
-			//#pragma vector aligned(dst)
-			//#pragma vector nontemporal(dst)
-#pragma omp simd collapse(2) aligned(dst,src:V) //by thorsten
+		streamOutSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+
 			for(int v=0; v < numvec; v++) { 
-				//#pragma simd
+#pragma vector temporal(dst)
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -110,7 +103,7 @@ namespace QPhiX {
 		// Stream In to a different type
 		template<typename FT, int V>
 		inline void
-		streamInSpinor(volatile typename ArithType<FT>::Type* restrict dst, const volatile  FT* restrict src, int numvec) { 
+		streamInSpinor(typename ArithType<FT>::Type* restrict dst, const FT* restrict src, int numvec) { 
       
 #if defined(__MIC__)
 			//Intel MIC
@@ -131,8 +124,9 @@ namespace QPhiX {
 			}
 #else
 			//Generic
-#pragma omp simd collapse(2) aligned(dst,src:V)
 			for(int v=0; v < numvec; v++) { 
+#pragma vector temporal(dst)
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -143,13 +137,10 @@ namespace QPhiX {
 		// Write out to a different type
 		template<typename FT, int V>
 		inline void
-		writeSpinor(volatile FT* restrict dst, const volatile  typename ArithType<FT>::Type* restrict src, int numvec) { 
+		writeSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
       
-			//#pragma vector aligned(src)
-			//#pragma vector aligned(dst)
-#pragma omp simd collapse(2) aligned(dst,src:V)
 			for(int v=0; v < numvec; v++) { 
-				//#pragma simd
+#pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -160,14 +151,10 @@ namespace QPhiX {
 		// Stream out to a different type
 		template<typename FT, int V>
 		inline void
-		streamOutSpinor(volatile FT* restrict dst, const volatile typename ArithType<FT>::Type* restrict src, int numvec) { 
+		streamOutSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
       
-			//#pragma vector aligned(src)
-			//#pragma vector aligned(dst)
-			//#pragma vector nontemporal(dst)
-#pragma omp simd collapse(2) aligned(dst,src:V)
 			for(int v=0; v < numvec; v++) { 
-				//#pragma simd
+			  #pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
 					dst[v*V+s]=src[v*V+s];
 				}
@@ -181,7 +168,7 @@ namespace QPhiX {
 		// Half prec specicialize 
 		template<>
 		inline void
-		streamInSpinor<half,16>(volatile typename ArithType<half>::Type* restrict dst, const volatile half* restrict src, int numvec) { 
+		streamInSpinor<half,16>(typename ArithType<half>::Type* restrict dst, const half* restrict src, int numvec) { 
      
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
@@ -202,7 +189,7 @@ namespace QPhiX {
    
 		template<>
 		inline void
-		writeSpinor<half,16>(volatile half* restrict dst, const volatile typename ArithType<half>::Type* restrict src, int numvec) { 
+		writeSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
       
@@ -224,7 +211,7 @@ namespace QPhiX {
 
 		template<>
 		inline void
-		streamOutSpinor<half,16>(volatile half* restrict dst, const volatile typename ArithType<half>::Type* restrict src, int numvec) { 
+		streamOutSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
       
