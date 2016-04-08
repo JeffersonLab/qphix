@@ -11,10 +11,6 @@
 #include <immintrin.h>
 #endif
 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-#include <immintrin.h>
-#endif
-
 using namespace std;
 
 namespace QPhiX {
