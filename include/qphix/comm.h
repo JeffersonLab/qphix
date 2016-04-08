@@ -137,7 +137,7 @@ namespace QPhiX
 
     T* sendToDir[8];
     T* recvFromDir[8];
-
+	queue<int> queue; //fake communication queue
 
     void initBuffers() {
       masterPrintf("Initing face buffers\n");
