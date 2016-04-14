@@ -9,7 +9,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		void copySpinor(FT* restrict res, FT* restrict src, int n)
+		void copySpinor(FT*   res, FT*   src, int n)
 	{
 
 		//#pragma prefetch src
@@ -23,7 +23,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2res, int n) 
+		void xmyNorm2Spinor(FT*   res, FT*   x, FT*   y, double& n2res, int n) 
 	{
      
 		double norm2res=0;
@@ -46,7 +46,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		double norm2Spinor(FT* restrict res, int n)
+		double norm2Spinor(FT*   res, int n)
 	{
 		double norm2res=0;
 
@@ -63,7 +63,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		void rmammpNorm2rxpap(FT* restrict r, FT ar, FT* restrict  mmp, double& cp, FT* restrict  x, FT* restrict p,int n)
+		void rmammpNorm2rxpap(FT*   r, FT ar, FT*    mmp, double& cp, FT*    x, FT*   p,int n)
 	{
 		double cp_internal = 0;
 
@@ -88,7 +88,7 @@ namespace QPhiX {
 	// Original
 	template<typename FT, int veclen>
 	inline
-		void aypx(FT a, FT* restrict x, FT* restrict y, int n) 
+		void aypx(FT a, FT*   x, FT*   y, int n) 
 	{
 
 		//#pragma prefetch x,y
@@ -111,7 +111,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		void xmyNorm2Spinor(FT* restrict res, FT* restrict x, FT* restrict y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
+		void xmyNorm2Spinor(FT*   res, FT*   x, FT*   y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
 	{
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -176,7 +176,7 @@ namespace QPhiX {
 
 	template<typename FT, int veclen>
 	inline
-		double norm2Spinor(FT* restrict res, int n, int n_cores, int n_simt, int n_blas_simt)
+		double norm2Spinor(FT*   res, int n, int n_cores, int n_simt, int n_blas_simt)
 	{
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -236,7 +236,7 @@ namespace QPhiX {
  
 	template<typename FT, int veclen>
 	inline
-		void rmammpNorm2rxpap(FT* restrict r, const FT ar, FT* restrict  mmp, double& cp, FT* restrict  x, FT* restrict p,int n, int n_cores, int n_simt, int n_blas_simt) 
+		void rmammpNorm2rxpap(FT*   r, const FT ar, FT*    mmp, double& cp, FT*    x, FT*   p,int n, int n_cores, int n_simt, int n_blas_simt) 
 	{
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -298,7 +298,7 @@ namespace QPhiX {
 	// Messed about with
 	template<typename FT, int veclen>
 	inline
-		void copySpinor(FT* restrict res, FT* restrict src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+		void copySpinor(FT*   res, FT*   src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
 	{
 
 #pragma omp parallel
@@ -348,7 +348,7 @@ namespace QPhiX {
 	// Messed about with
 	template<typename FT, int veclen>
 	inline
-		void aypx(FT a, FT* restrict x, FT* restrict y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+		void aypx(FT a, FT*   x, FT*   y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
 	{
 
 #pragma omp parallel

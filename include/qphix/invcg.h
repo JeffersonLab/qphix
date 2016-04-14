@@ -4,7 +4,7 @@
 ///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
 #define QPHIX_TIMING_CG
 
-
+#define CGEBUG
 
 
 #include "qphix/linearOp.h"

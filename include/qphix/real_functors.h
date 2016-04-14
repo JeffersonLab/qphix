@@ -55,8 +55,6 @@ namespace QPhiX
 		}
     
 	private: 
-		//typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res;
-		//const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict src;
 		typename Geometry<FT,V,S,compress>::FourSpinorBlock* res;
 		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* src; 
 	};

@@ -7,7 +7,7 @@ namespace QPhiX {
 
 template<>
 inline
-  void xmyNorm2Spinor<float,16>(float* restrict res, float* restrict x, float* restrict y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
+  void xmyNorm2Spinor<float,16>(float*   res, float*   x, float*   y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
 {
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
   double norm2res=0 __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
@@ -98,7 +98,7 @@ inline
 
  template<>
 inline
-void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restrict  mmp, double& cp, float* restrict  x, float* restrict p,int n, int n_cores, int n_simt, int n_blas_simt) 
+void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, double& cp, float*    x, float*   p,int n, int n_cores, int n_simt, int n_blas_simt) 
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -205,7 +205,7 @@ void rmammpNorm2rxpap<float,16>(float* restrict r, const float ar, float* restri
 
 template<>
 inline
-double norm2Spinor<float,16>(float* restrict res, int n, int n_cores, int n_simt, int n_blas_simt)
+double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n_blas_simt)
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -291,7 +291,7 @@ double norm2Spinor<float,16>(float* restrict res, int n, int n_cores, int n_simt
 // Messed about with
 template<>
 inline
-void aypx<float,16>(float a, float* restrict x, float* restrict y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+void aypx<float,16>(float a, float*   x, float*   y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
 {
   const int veclen = 16;
 #pragma omp parallel
@@ -346,7 +346,7 @@ void aypx<float,16>(float a, float* restrict x, float* restrict y, int n, int n_
 // Messed about with
 template<>
 inline
-void copySpinor<float,16>(float* restrict res, float* restrict src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+void copySpinor<float,16>(float*   res, float*   src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
 {
   const int veclen = 16;
 #pragma omp parallel

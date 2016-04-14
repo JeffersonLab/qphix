@@ -62,9 +62,9 @@ namespace QPhiX  {
 	public:
 		typedef typename ArithType<FT>::Type AT;
 
-		BiCGStabPUpdateFunctor(const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r_,
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p_,
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict v_,
+		BiCGStabPUpdateFunctor(const typename Geometry<FT,V,S,compress>::FourSpinorBlock* r_,
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* p_,
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  v_,
 		double beta_[2], double omega_[2]) : r(r_), p(p_), v(v_)
 		{
 			beta[0]=rep<AT,double>(beta_[0]);
@@ -141,8 +141,8 @@ namespace QPhiX  {
 		typedef typename ArithType<FT>::Type AT;
 
 		BiCGStabSUpdateFunctor(double alpha_[2],
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict s_,
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict  v_)
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* s_,
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* v_)
 			: s(s_), v(v_)
 		{
 			alpha[0]=rep<AT,double>(alpha_[0]);
@@ -199,10 +199,10 @@ namespace QPhiX  {
 	public:
 		typedef typename ArithType<FT>::Type AT;
 		BiCGStabRXUpdateFunctor(
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x_,
-		typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r_,
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict t_,
-		const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p_,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock* x_,
+		typename Geometry<FT,V,S,compress>::FourSpinorBlock* r_,
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  t_,
+		const typename Geometry<FT,V,S,compress>::FourSpinorBlock*  p_,
 		double omega_[2],
 		double alpha_[2]
 			) : x(x_),r(r_),t(t_),p(p_)

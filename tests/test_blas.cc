@@ -6,7 +6,7 @@ using namespace std;
 #include <omp.h>
 #include "testBlas.h"
 
-int qmp_geom[4]={-1,-1,-1,-1};
+int qmp_geom[4]={1,1,1,1};
 int nrow_in[4]={4,4,4,4};
 int iters=10000;
 int NCores_user = -1;

@@ -43,7 +43,7 @@ namespace QPhiX {
 		// Generic stream in
 		template<typename FT, int V>
 		inline void
-		streamInSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+		streamInSpinor(FT* dst, const FT* src, int numvec) { 
       
 #if defined(__MIC__)
 			//Intel MIC
@@ -75,7 +75,7 @@ namespace QPhiX {
 		// Generic write  out
 		template<typename FT, int V>
 		inline void
-		writeSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+		writeSpinor(FT* dst, const FT* src, int numvec) { 
 		  for(int v=0; v < numvec; v++) { 
 #pragma omp simd aligned(dst,src:V)
 				for(int s=0; s < V; s++) {
@@ -88,7 +88,7 @@ namespace QPhiX {
 		// Generic stream out
 		template<typename FT, int V>
 		inline void
-		streamOutSpinor(FT* restrict dst, const FT* restrict src, int numvec) { 
+		streamOutSpinor(FT* dst, const FT* src, int numvec) { 
 
 			for(int v=0; v < numvec; v++) { 
 #pragma vector temporal(dst)
@@ -103,7 +103,7 @@ namespace QPhiX {
 		// Stream In to a different type
 		template<typename FT, int V>
 		inline void
-		streamInSpinor(typename ArithType<FT>::Type* restrict dst, const FT* restrict src, int numvec) { 
+		streamInSpinor(typename ArithType<FT>::Type* dst, const FT* src, int numvec) { 
       
 #if defined(__MIC__)
 			//Intel MIC
@@ -137,7 +137,7 @@ namespace QPhiX {
 		// Write out to a different type
 		template<typename FT, int V>
 		inline void
-		writeSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
+		writeSpinor(FT* dst, const typename ArithType<FT>::Type* src, int numvec) { 
       
 			for(int v=0; v < numvec; v++) { 
 #pragma omp simd aligned(dst,src:V)
@@ -151,7 +151,7 @@ namespace QPhiX {
 		// Stream out to a different type
 		template<typename FT, int V>
 		inline void
-		streamOutSpinor(FT* restrict dst, const typename ArithType<FT>::Type* restrict src, int numvec) { 
+		streamOutSpinor(FT* dst, const typename ArithType<FT>::Type* src, int numvec) { 
       
 			for(int v=0; v < numvec; v++) { 
 			  #pragma omp simd aligned(dst,src:V)
@@ -168,7 +168,7 @@ namespace QPhiX {
 		// Half prec specicialize 
 		template<>
 		inline void
-		streamInSpinor<half,16>(typename ArithType<half>::Type* restrict dst, const half* restrict src, int numvec) { 
+		streamInSpinor<half,16>(typename ArithType<half>::Type* dst, const half* src, int numvec) { 
      
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
@@ -189,7 +189,7 @@ namespace QPhiX {
    
 		template<>
 		inline void
-		writeSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
+		writeSpinor<half,16>(half* dst, const typename ArithType<half>::Type*  src, int numvec) { 
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
       
@@ -211,7 +211,7 @@ namespace QPhiX {
 
 		template<>
 		inline void
-		streamOutSpinor<half,16>(half* restrict dst, const typename ArithType<half>::Type* restrict src, int numvec) { 
+		streamOutSpinor<half,16>(half* dst, const typename ArithType<half>::Type* src, int numvec) { 
 			const int prefdist1 = 12;
 			const int prefdist2 = 64;
       

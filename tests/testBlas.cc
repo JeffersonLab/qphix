@@ -184,6 +184,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
  
 
   masterPrintf("Initializing Geometry\n");
+  int NV = geom.nVecs();
 
   // Allocate data for the spinors
   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
@@ -203,7 +204,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
 
 
-#if 1
+#if 0
  // =============== COPY ==================
   {
     
@@ -326,7 +327,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 #endif
   //  ================== END COPY =======================
 
-#if 1
+#if 0
  //   ====================   AYPX ========================
   {
    resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);  
@@ -439,19 +440,27 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
  //  ============ XMYNORM2SPINOR =========================
   {
 
- resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
-    masterPrintf("Testing xmyNorm2Spinor: ");
+    resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
+    masterPrintf("Testing xmyNorm2SpinoBarfaroni: "); // Printed
+ 
     copy(z1,x1, N_blocks);
     copy(t1,y1, N_blocks);
 
     int NV = geom.nVecs();
 
+    masterPrintf("Done copying NV=%d\n", NV);
+
     double norm=0;
     float *x1f = (float *)x1;
     float *y1f = (float *)y1;
     float *w1f = (float *)w1;
-    
+
+
+    masterPrintf("Nt = %d \n", Nt);
+    fflush(stdout);
+
     for(int t=0; t < Nt; t++) { 
+
       for(int z=0; z < Nz; z++) { 
 	for(int y=0; y < Ny; y++) { 
 	  for(int vec=0; vec < NV; vec++) { 
@@ -461,8 +470,9 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 		  for(int s=0; s < QPHIX_SOALEN; s++) { 
 		    int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
 		    w1[block][col][spin][reim][s] = x1[block][col][spin][reim][s] - y1[block][col][spin][reim][s];
-		    double w1sd =  w1[block][col][spin][reim][s];
+		    double w1sd = (double) w1[block][col][spin][reim][s];
 		    norm += w1sd*w1sd;
+		    fflush(stdout);
 		  }
 		}
 	      }
@@ -480,6 +490,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     double norm2=0;
     xmyNorm2Spinor<float,VECLEN>((float *)w2,(float *)x2, (float *)y2, norm2, len);
 
+    masterPrintf("norm=%16.8e norm2 =%16.8e \n", norm,norm2);
 
     float *w2f = (float *)w2;
     
@@ -589,7 +600,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   
 #endif
  
-#if 1
+#if 0
 // RMAMMPNORM2RXPAP
   {
     double norm;
