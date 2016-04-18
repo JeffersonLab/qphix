@@ -53,6 +53,11 @@ using namespace QPhiX;
 #define VECLEN_HP 8
 #define VECLEN_DP 4
 
+#elif defined(QPHIX_SSE_SOURCE)
+
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+
 #elif defined(QPHIX_SCALAR_SOURCE)
 #define VECLEN_DP 1
 #define VECLEN_SP 1
@@ -845,7 +850,7 @@ testClovDslashFull::run(void)
 
 
    if( precision == FLOAT_PREC ) { 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_SSE_SOURCE)
     QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if( compress12 ) { 
       runTest<float,VECLEN_SP,4,true,UF, PhiF>();
@@ -854,12 +859,14 @@ testClovDslashFull::run(void)
       runTest<float,VECLEN_SP,4,false,UF, PhiF>();
     }
 
+#if !defined(QPHIX_SSE_SOURCE)
     if( compress12 ) { 
       runTest<float,VECLEN_SP,8,true,UF, PhiF>();
     }
     else { 
       runTest<float,VECLEN_SP,8,false,UF, PhiF>();
     }
+#endif
 
 #if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
     if( compress12 ) { 

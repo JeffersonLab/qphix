@@ -2,6 +2,14 @@
 #include <cstdio>
 
 using namespace std;
+#include "qphix/qphix_config.h"
+#include "qphix/print_utils.h"
+#include "qphix/threadbind.h"
+
+#ifdef QPHIX_QMP_COMMS
+#include "qmp.h"
+#endif
+
 
 #include <omp.h>
 #include "testBlas.h"

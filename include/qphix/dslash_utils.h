@@ -183,7 +183,9 @@ ALIGNED_FREE(void *addr)
 #include "qphix/Barrier_stubs.h"
 #endif
 
+#ifndef MIN
 #define MIN(a,b)   ( (a) < (b) ? (a) : (b) )
+#endif
 
 #define BARRIER_TSLICES 16
 #define N_PROBES 8

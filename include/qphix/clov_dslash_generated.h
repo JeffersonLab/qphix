@@ -19,6 +19,9 @@
 #elif defined(QPHIX_QPX_SOURCE)
 #include "qphix/qpx/clov_dslash_qpx_complete_specialization.h"
 
+#elif defined(QPHIX_SSE_SOURCE)
+#include "qphix/sse/clov_dslash_sse_complete_specialization.h"
+
 #endif
 
 #endif

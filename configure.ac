@@ -315,6 +315,11 @@ case ${SOALEN} in
 	AC_MSG_NOTICE([Building for SOALEN=1])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[1], [SOALEN is 1])
 	;;
+2) 
+	AC_MSG_NOTICE([Building for SOALEN=2])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[2], [SOALEN is 2])
+	;;
+
 4)
 	AC_MSG_NOTICE([Building for SOALEN=4])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
@@ -391,6 +396,15 @@ AVX512|avx512)
         AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 
         AC_MSG_NOTICE([Configuring AVX512 Specializations ])
+;;
+SSE|sse)
+	AC_DEFINE([QPHIX_SSE_SOURCE],[1], [ Generate SSE4 Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN],[64], [ L2 Cache alignment ])
+	AC_MSG_NOTICE([Configuring SSE4 Specializations])
+	if test $SOALEN -gt 4;
+        then
+	  AC_MSG_ERROR([Cannot have SOALEN more than 4 for SSE])
+        fi
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])

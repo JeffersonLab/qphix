@@ -56,6 +56,10 @@ using namespace QPhiX;
 #define VECLEN_HP 8
 #define VECLEN_DP 4
 
+#elif defined(QPHIX_SSE_SOURCE) 
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+
 #elif defined(QPHIX_SCALAR_SOURCE)
 #warning SCALAR_SOURCE
 #define VECLEN_SP 1
@@ -174,7 +178,7 @@ testDslashFull::run(void)
       }
 
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) ||defined (QPHIX_SSE_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);

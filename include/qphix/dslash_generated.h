@@ -21,6 +21,8 @@
 #elif defined(QPHIX_QPX_SOURCE)
 #include "qphix/qpx/dslash_qpx_complete_specialization.h"
 
+#elif defined(QPHIX_SSE_SOURCE)
+#include "qphix/sse/dslash_sse_complete_specialization.h"
 
 #endif
 

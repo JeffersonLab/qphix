@@ -54,6 +54,10 @@ using namespace QPhiX;
 #define VECLEN_SP 8
 #define VECLEN_DP 4
 
+#elif defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+
 #elif defined(QPHIX_SCALAR_SOURCE)
 #warning SCALAR_SOURCE
 #define VECLEN_DP 1

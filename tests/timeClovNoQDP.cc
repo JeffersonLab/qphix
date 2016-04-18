@@ -42,6 +42,10 @@ using namespace QPhiX;
 #define VECLEN_DP 4
 #endif
 
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+#endif
 
 
 template<typename T>

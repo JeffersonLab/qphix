@@ -24,6 +24,10 @@ using namespace Assertions;
 #define VECLEN 8
 #endif
 
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN 4
+#endif
+
 #ifdef QPHIX_SCALAR_SOURCE
 #define VECLEN 1
 #endif

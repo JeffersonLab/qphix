@@ -57,6 +57,11 @@ using namespace QPhiX;
 
 #endif
 
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+#endif
+
   // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = false;
