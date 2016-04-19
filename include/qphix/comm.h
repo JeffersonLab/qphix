@@ -9,8 +9,12 @@
 
 #include <qmp.h>
 #include <mpi.h>
-#include <queue>
+
 #endif
+#endif
+
+#ifdef QPHIX_DO_COMMS
+#include <queue>
 #endif
 
 namespace QPhiX
@@ -137,7 +141,7 @@ namespace QPhiX
 
     T* sendToDir[8];
     T* recvFromDir[8];
-    std::queue<int> queue; //fake communication queue
+    std::queue<int> recv_queue;
 
     void initBuffers() {
       masterPrintf("Initing face buffers\n");
@@ -164,6 +168,9 @@ namespace QPhiX
     }
     inline int numNonLocalDir() { return numNonLocalDir_; }
     inline int nonLocalDir(int d)  { return nonLocalDir_[d]; }
+    inline bool testSendToDir(int d){}
+    inline bool testRecvFromDir(int d){}
+
 
   private:
     bool localDir_[4];
@@ -476,7 +483,7 @@ namespace QPhiX
     
     T* sendToDir[8]; // Send Buffers
     T*  recvFromDir[8]; // Recv Buffers
-	std::queue<int> queue; //communication queue
+    std::queue<int> recv_queue; //communication queue
 
   private:
     

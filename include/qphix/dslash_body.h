@@ -1534,8 +1534,8 @@ namespace QPhiX
 				}
 				comms->startSendDir(2*d+1);
 				comms->startSendDir(2*d+0);
-				comms->queue.push(2*d+1);
-				comms->queue.push(2*d+0);
+				comms->recv_queue.push(2*d+1);
+				comms->recv_queue.push(2*d+0);
 			}
 		}
 #endif   // QPHIX_DO_COMMS
@@ -1548,9 +1548,9 @@ namespace QPhiX
 		}
 
 #ifdef  QPHIX_DO_COMMS
-		while(!comms->queue.empty()){
-			int d=comms->queue.front();
-			comms->queue.pop();
+		while(!comms->recv_queue.empty()){
+			int d=comms->recv_queue.front();
+			comms->recv_queue.pop();
 			if(comms->testSendToDir(d) && comms->testRecvFromDir(d)){
 #pragma omp parallel 
 				{
@@ -1560,7 +1560,7 @@ namespace QPhiX
 					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);	
 				}
 			}
-			else comms->queue.push(d);
+			else comms->recv_queue.push(d);
 		}
 #endif	// QPHIX_DO_COMMS
 	
@@ -1601,8 +1601,8 @@ namespace QPhiX
 				}
 				comms->startSendDir(2*d+1);
 				comms->startSendDir(2*d+0);
-				comms->queue.push(2*d+1);
-				comms->queue.push(2*d+0);
+				comms->recv_queue.push(2*d+1);
+				comms->recv_queue.push(2*d+0);
 			}
 		}
 #endif   // QPHIX_DO_COMMS
@@ -1615,9 +1615,9 @@ namespace QPhiX
 		}
 
 #ifdef  QPHIX_DO_COMMS
-		while(!comms->queue.empty()){
-			int d=comms->queue.front();
-			comms->queue.pop();
+		while(!comms->recv_queue.empty()){
+			int d=comms->recv_queue.front();
+			comms->recv_queue.pop();
 			if(comms->testSendToDir(d) && comms->testRecvFromDir(d)){
 #pragma omp parallel 
 				{
@@ -1627,7 +1627,7 @@ namespace QPhiX
 					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);	
 				}
 			}
-			else comms->queue.push(d);
+			else comms->recv_queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS
@@ -1674,8 +1674,8 @@ namespace QPhiX
 				}
 				comms->startSendDir(2*d+1);
 				comms->startSendDir(2*d+0);
-				comms->queue.push(2*d+1);
-				comms->queue.push(2*d+0);
+				comms->recv_queue.push(2*d+1);
+				comms->recv_queue.push(2*d+0);
 			}
 		}
 #endif   // QPHIX_DO_COMMS
@@ -1688,9 +1688,9 @@ namespace QPhiX
 		}
 
 #ifdef  QPHIX_DO_COMMS
-		while(!comms->queue.empty()){
-			int d=comms->queue.front();
-			comms->queue.pop();
+		while(!comms->recv_queue.empty()){
+			int d=comms->recv_queue.front();
+			comms->recv_queue.pop();
 			if(comms->testSendToDir(d) && comms->testRecvFromDir(d)){
 #pragma omp parallel 
 				{
@@ -1700,7 +1700,7 @@ namespace QPhiX
 					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);	
 				}
 			}
-			else comms->queue.push(d);
+			else comms->recv_queue.push(d);
 		} // end for
 #endif	// QPHIX_DO_COMMS
 
@@ -1744,8 +1744,8 @@ namespace QPhiX
 				}
 				comms->startSendDir(2*d+1);
 				comms->startSendDir(2*d+0);
-				comms->queue.push(2*d+1);
-				comms->queue.push(2*d+0);
+				comms->recv_queue.push(2*d+1);
+				comms->recv_queue.push(2*d+0);
 			}
 		}
 #endif   // QPHIX_DO_COMMS
@@ -1758,9 +1758,9 @@ namespace QPhiX
 		}
 
 #ifdef  QPHIX_DO_COMMS
-		while(!comms->queue.empty()){
-			int d=comms->queue.front();
-			comms->queue.pop();
+		while(!comms->recv_queue.empty()){
+			int d=comms->recv_queue.front();
+			comms->recv_queue.pop();
 			if(comms->testSendToDir(d) && comms->testRecvFromDir(d)){
 #pragma omp parallel 
 				{
@@ -1770,7 +1770,7 @@ namespace QPhiX
 					completeFaceDir(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);
 				}
 			}
-			else comms->queue.push(d);
+			else comms->recv_queue.push(d);
 		} // end for
 
 #endif	// QPHIX_DO_COMMS
