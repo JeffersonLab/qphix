@@ -1,4 +1,4 @@
-avx_includedir=$(includedir)/qphix/sse
+sse_includedir=$(includedir)/qphix/sse
 
 nobase_sse_include_HEADERS = \
 	 ./sse_utils.h \

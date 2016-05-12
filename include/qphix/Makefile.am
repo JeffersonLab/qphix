@@ -30,7 +30,8 @@ qphix_include_HEADERS += \
 	./site_loops.h \
 	./blas_new_c.h \
 	./print_utils.h \
-	./threadbind.h
+	./threadbind.h \
+	./thread_limits.h
 
 
 #
