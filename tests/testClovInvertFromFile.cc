@@ -24,7 +24,7 @@ using namespace QDP;
 
 
 #include "qphix/qdp_packer.h"
-#include "clover_term_qdp_w.h"
+#include "clover_term.h"
 
 #if 1
 #include "qphix/clover.h"
@@ -306,7 +306,7 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
   QDPIO::cout << "Creating the Clover Term " << endl;
 
   // Clover term deals with anisotropy internally -- so use original u field.
-  QDPCloverTermT<Phi, U> clov_qdp;
+  CloverTermT<Phi, U> clov_qdp;
   
   QDPIO::cout << "Adding on boundary field" << endl;
   // Modify u (antiperiodic BC's) 
@@ -315,7 +315,7 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   clov_qdp.create(u, clparam);
   QDPIO::cout << "Inverting Clover Term" << endl;
-  QDPCloverTermT<Phi, U> invclov_qdp(clov_qdp);
+  CloverTermT<Phi, U> invclov_qdp(clov_qdp);
   for(int cb=0; cb < 2; cb++) { 
     invclov_qdp.choles(cb);
   }

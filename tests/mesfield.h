@@ -2,6 +2,7 @@
 #ifndef __mesfield_h__
 #define __mesfield_h__
 
+namespace QPhiX { 
   //! Calculates the antihermitian field strength tensor  iF(mu,nu)
   /* 
    * \ingroup glue
@@ -28,5 +29,6 @@
 
   void mesField(QDP::multi1d<QDP::LatticeColorMatrixD>& f,
 		const QDP::multi1d<QDP::LatticeColorMatrixD>& u);
+}
 
 #endif

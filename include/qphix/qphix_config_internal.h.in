@@ -30,6 +30,9 @@
 /* Build Clover Term */
 #undef QPHIX_BUILD_CLOVER
 
+/* Build wtth QDPJIT */
+#undef QPHIX_BUILD_QDPJIT
+
 /* Do the actual comms */
 #undef QPHIX_DO_COMMS
 

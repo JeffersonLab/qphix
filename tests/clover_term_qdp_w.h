@@ -2,9 +2,12 @@
 #ifndef __clover_term_qdp_w_h__
 #define __clover_term_qdp_w_h__
 
-#include "clover_fermact_params_w.h"
-#include "mesfield.h"
+#include "./clover_fermact_params_w.h"
+#include "./mesfield.h"
 
+using namespace QDP;
+
+namespace QPhiX {
 //! Special structure used for triangular objects
 template<typename R>
 struct PrimitiveClovTriang
@@ -1458,5 +1461,5 @@ void QDPCloverTermT<T,U>::create(const multi1d<U>& u_,
   typedef QDPCloverTermT<LatticeFermionD, LatticeColorMatrixD> QDPCloverTermD;
 
 
-
+}
 #endif

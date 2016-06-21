@@ -49,13 +49,22 @@ time_dslash_noqdp_DEPENDENCIES=build_lib
 t_minvcg_DEPENDENCIES=build_lib
 
 if QPHIX_BUILD_CLOVER
+
+if QPHIX_BUILD_QDPJIT_CLOVER
+CLOVER_SRCS=clover_term_llvm_w.h
+endif
+
+if QPHIX_BUILD_QDP_CLOVER
+CLOVER_SRCS=clover_term_qdp_w.h
+endif
+
 t_clov_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testClovDslashFull.h \
 	testClovDslashFull.cc \
 	t_clov_dslash.cc \
 	mesfield.h \
 	mesfield.cc \
-	clover_term_qdp_w.h \
+	$(CLOVER_SRCS) \
 	clover_fermact_params_w.h
 
 t_clov_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
@@ -64,7 +73,7 @@ t_clov_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
 	t_clov_invert_from_file.cc \
 	mesfield.h \
 	mesfield.cc \
-	clover_term_qdp_w.h \
+	$(CLOVER_SRCS) \
 	clover_fermact_params_w.h
 
 time_clov_noqdp_SOURCES= \

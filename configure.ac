@@ -128,6 +128,18 @@ AC_ARG_ENABLE(proc,
    [ proc="NONE"]
 )
 
+AC_ARG_ENABLE(qdpjit,
+   AC_HELP_STRING(
+	[ --enable-qdpjit],
+	[ Indicate that QDP-JIT is being used ]
+   ),
+   [ qdpjit=${enable_qdpjit} ],
+   [ qdpjit="no" ]
+)
+
+
+   
+   
 dnl dnl ******************** DONE WITH USER INPUT *********************
 dnl dnl ***        Now Configuration                               ****
 dnl dnl ***************************************************************
@@ -432,7 +444,26 @@ QPX|qpx)
 	;;
 esac
 
+build_qdpjit_clover="no"
+
+case ${qdpjit} in
+yes|YES)
+   AC_MSG_NOTICE([Building with QDPJIT])
+   AC_DEFINE([QPHIX_BUILD_QDPJIT], [1], [ Build wtth QDPJIT ] )
+   if test "x${build_clover}x" = "xyesx";
+   then 
+       build_qdpjit_clover="yes"
+   fi     
+;;
+*)
+  AC_MSG_NOTICE([Building regular QDP Clover Term])
+;;
+esac
+
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QDPJIT_CLOVER, [ test "x${build_qdpjit_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QDP_CLOVER, [ test "x${build_qdpjit_clover}x" = "xnox" ])
+
 AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 
 dnl dnl produce output
