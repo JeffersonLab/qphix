@@ -146,12 +146,16 @@ testDslashFull::run(void)
   LatticeColorMatrix g;
   LatticeColorMatrix uf;
   for(int mu=0; mu < 4; mu++) { 
-    uf = 1;   // Unit gauge
+#if 0
+	  uf = 1;   // Unit gauge
 
-    Real factor=Real(0.09);
-    gaussian(g);
-    u[mu] = uf + factor*g;
-    reunit(u[mu]);
+	  Real factor=Real(0.09);
+	  gaussian(g);
+	  u[mu] = uf + factor*g;
+	  reunit(u[mu]);
+#else
+	  u[mu]=1;
+#endif
   }
 
 
@@ -181,14 +185,18 @@ testDslashFull::run(void)
 #if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) ||defined (QPHIX_SSE_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+
+	// Comment out to speed building.
+#if 0
 	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 	testBiCGStabWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 #endif
+#endif
       }
 
-
+#if 0
       if( soalen == 8 ) {
 #if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
@@ -199,7 +207,9 @@ testDslashFull::run(void)
 	testBiCGStabWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 #endif
       }
+#endif
 
+#if 0
       if ( soalen == 16 ) { 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
@@ -214,7 +224,7 @@ testDslashFull::run(void)
 #endif
 
       }
-
+#endif
 
     }
   }
@@ -452,11 +462,15 @@ testDslashFull::testDslash(const U& u, int t_bc)
 
   U u_test(Nd);
   for(int mu=0; mu < Nd; mu++) { 
+#if 1
     Real factor = Real(aniso_fac_s);
     if( mu == Nd -1) { 
       factor = Real(aniso_fac_t);
     }
     u_test[mu] = factor*u[mu];
+#else
+    u_test[mu] = u[mu];
+#endif
   }
   QDPIO::cout << "U field prepared" <<endl;
   
@@ -473,23 +487,43 @@ testDslashFull::testDslash(const U& u, int t_bc)
       int target_cb = cb;
 
       chi = zero;
-      
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
-      
-      // Apply Optimized Dslash
-      D32.dslash(chi_s[target_cb],	
-		 psi_s[source_cb],
-		 u_packed[target_cb],
-		 isign, 
-		 target_cb);
+      QDPIO::cout << "Fields before optimized Dslash" <<std::endl;
+      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
+      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
 
-      //      qdp_unpack_spinor<T,V,S,compress, Phi >(chi_even,chi_odd, chi, geom);
-      qdp_unpack_spinor<>(chi_even,chi_odd, chi, geom);
-    
+      QDPIO::cout << "Packing Chi, Psi already packed" << std::endl;
+      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+
+      // Apply Optimized Dslash
+      QDPIO::cout << "Applying Optimized Dslash" << std::endl;
+      D32.dslash(chi_s[target_cb], psi_s[source_cb], u_packed[target_cb],
+    		  isign, target_cb);
+
+			//      qdp_unpack_spinor<T,V,S,compress, Phi >(chi_even,chi_odd, chi, geom);
+      QDPIO::cout << "Unpacking result chi" << std::endl;
+      qdp_unpack_spinor<>(chi_even, chi_odd, chi, geom);
+      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
+      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi,rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+
+      QDPIO::cout << "Before applying QDP Dslash" <<std::endl;
       // Apply QDP Dslash
       chi2 = zero;
-      dslash(chi2,u_test,psi, isign, target_cb);
- 
+      QDPIO::cout << "chi2_norm[cb=0]=" << norm2(chi2, rb[0]) << std::endl;
+      QDPIO::cout << "chi2_norm[cb=1]=" << norm2(chi2, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi,rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+
+      QDPIO::cout << "Applying QDP Dslash" <<std::endl;
+      dslash(chi2, u_test, psi, isign, target_cb);
+      QDPIO::cout << "chi2_norm[cb=0]=" << norm2(chi2, rb[0]) << std::endl;
+      QDPIO::cout << "chi2_norm[cb=1]=" << norm2(chi2, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi,rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+
       // Check the difference per number in chi vector
       Phi diff = chi2 -chi;
       

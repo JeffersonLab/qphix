@@ -171,6 +171,8 @@ testClovDslashFull::runTest(void)
   // Set anisotropy parameters -- pick some random numbers
   double xi_0_f = 0.3;
   double nu_f = 1.4;
+  //double xi_0_f = 1;
+  //double nu_f = 1;
 
   // This is what makeFermCoeffs does under the hood.
   // Get the direct spatial and temporal anisotropy factors
@@ -195,8 +197,9 @@ testClovDslashFull::runTest(void)
   clparam.Mass = Real(0.1);
   
   // Some random clover coeffs
-  clparam.clovCoeffR=Real(1);
-  clparam.clovCoeffT=Real(1);
+  // This should be wilson...
+  clparam.clovCoeffR=Real(1.2);
+  clparam.clovCoeffT=Real(0.9);
 
   // Set up the 'periodic BC dslash'
   QDPIO::cout << "Dslash will run with " << omp_get_max_threads() << " threads" << endl;
@@ -244,9 +247,9 @@ testClovDslashFull::runTest(void)
   Gauge* u_packed[2];
   u_packed[0] = packed_gauge_cb0;
   u_packed[1] = packed_gauge_cb1;
-  QDPIO::cout << "done" << endl;
+  QDPIO::cout << "done" << std::endl << std::flush;
   
-  QDPIO::cout << " Packing fermions..." ;	
+  QDPIO::cout << " Packing fermions..." << std::flush;
   Spinor *psi_s[2] = { psi_even, psi_odd };
   Spinor *chi_s[2] = { chi_even, chi_odd };
 
@@ -257,21 +260,121 @@ testClovDslashFull::runTest(void)
 
   // Clover term deals with anisotropy internally -- so use original u field.
   CloverTermT<Phi, U> clov_qdp;
+  QDPIO::cout << "Calling CloverTermT::create: " << std::endl;
+  QDPIO::cout << " clparam.Mass = " << clparam.Mass << std::endl;
+  QDPIO::cout << " clparam.clovCoeffR = " << clparam.clovCoeffR << std::endl;
+  QDPIO::cout << " clparam.clovCoeffT = " << clparam.clovCoeffT << std::endl;
   clov_qdp.create(u, clparam);
-  QDPIO::cout << "Inverting Clover Term" << endl;
+  clov_qdp.printDiag();
+
+  QDPIO::cout << "Copying into InvClover Term" << endl;
   CloverTermT<Phi, U> invclov_qdp(clov_qdp);
+
+
+  // Test Clover Term has been copied properly
+  // Test invclov_apply
+  // fill clov_chi with noise
+  // Then manually scale it.
+  // But apply invclov_apply to a copy
+  // Compare the two
+  gaussian(chi2);
+
+  // Apply clover
+  clov_qdp.apply(clov_chi,chi2,1,0);
+
+  // Apply copy
+  invclov_qdp.apply(clov_chi2, chi2, 1, 0);
+
+  chi2[rb[0]] = clov_chi2 - clov_chi;
+  QDPIO::cout << "Copy clov diff = " << sqrt( norm2(chi2,rb[0])) << std::endl;
+
+#if 0
+  {
+		int Nxh=Nx/2;
+		for(int t=0; t < Nt; t++){
+		  for(int z=0; z < Nz; z++) {
+		    for(int y=0; y < Ny; y++){
+		      for(int x=0; x < Nxh; x++){
+
+			// These are unpadded QDP++ indices...
+			int ind = x + Nxh*(y + Ny*(z + Nz*t));
+			for(int s =0 ; s < Ns; s++) {
+			  for(int c=0; c < Nc; c++) {
+			    REAL dr = chi2.elem(rb[0].start()+ind).elem(s).elem(c).real();
+			    REAL di = chi2.elem(rb[0].start()+ind).elem(s).elem(c).imag();
+			    if( toBool( fabs(dr) > tolerance<FT>::small ) || toBool ( fabs(di) > tolerance<FT>::small) ) {
+			      QDPIO::cout <<"(x,y,z,t)=(" << x <<"," <<y<<","<<z<<","<<t<<") site=" << ind << " spin=" << s
+			    		  	  << " color=" << c << " Diff = " << chi2.elem(rb[0].start()+ind).elem(s).elem(c) << endl;
+
+			    }
+			  }
+			}
+		      } // x
+		    } // y
+		  } // z
+		} // t
+  }
+#endif
+
+  // Invert
+  QDPIO::cout << "Inverting Clover Term" << std::endl;
+
   for(int cb=0; cb < 2; cb++) { 
     invclov_qdp.choles(cb);
   }
   QDPIO::cout << "Done" << endl;
 
+  // Test inverse
+  gaussian(chi2);
+
+  for(int cb=0; cb < 2; ++cb ) {
+	  // Apply clover
+	  clov_qdp.apply(clov_chi, chi2, 1, cb);
+
+	  // Apply invclov onto the onto the last one.
+	  invclov_qdp.apply(clov_chi2, clov_chi, 1,cb);
+  }
+  // This should be  zero:    A^{-1} A chi2 - chi2 = chi2 - chi2;
+  clov_chi2 -= chi2;
+
+  QDPIO::cout << "Invclov_diff = " << sqrt( norm2(clov_chi2) ) << std::endl;
+
+#if 0
+  {
+		int Nxh=Nx/2;
+		for(int t=0; t < Nt; t++){
+		  for(int z=0; z < Nz; z++) {
+		    for(int y=0; y < Ny; y++){
+		      for(int x=0; x < Nxh; x++){
+
+			// These are unpadded QDP++ indices...
+			int ind = x + Nxh*(y + Ny*(z + Nz*t));
+			for(int s =0 ; s < Ns; s++) {
+			  for(int c=0; c < Nc; c++) {
+			    REAL dr = chi2.elem(rb[0].start()+ind).elem(s).elem(c).real();
+			    REAL di = chi2.elem(rb[0].start()+ind).elem(s).elem(c).imag();
+			    if( toBool( fabs(dr) > tolerance<FT>::small ) || toBool ( fabs(di) > tolerance<FT>::small) ) {
+			      QDPIO::cout <<"(x,y,z,t)=(" << x <<"," <<y<<","<<z<<","<<t<<") site=" << ind << " spin=" << s
+			    		  	  << " color=" << c << " Diff = " << clov_chi2.elem(rb[0].start()+ind).elem(s).elem(c) << endl;
+
+			    }
+			  }
+			}
+		      } // x
+		    } // y
+		  } // z
+		} // t
+  }
+#endif
+
+#if 1
   QDPIO::cout << "Packing Clover term..." << endl;
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp.getTriBuffer(), invclov_packed[cb], geom, cb);
+    qdp_pack_clover<>(invclov_qdp, invclov_packed[cb], geom, cb);
   }
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp.getTriBuffer(), clov_packed[cb], geom, cb);
+    qdp_pack_clover<>(clov_qdp, clov_packed[cb], geom, cb);
   }
   QDPIO::cout << "Done" << endl;
 
@@ -322,7 +425,7 @@ testClovDslashFull::runTest(void)
       
       // Apply QDP Dslash
       chi2 = zero;
-
+      clov_chi2=zero;
       dslash(chi2,u_test,psi, isign, target_cb);
       invclov_qdp.apply(clov_chi2,chi2,isign, target_cb);
 
@@ -350,7 +453,8 @@ testClovDslashFull::runTest(void)
 		    REAL di = diff.elem(rb[target_cb].start()+ind).elem(s).elem(c).imag();
 		    if( toBool( fabs(dr) > tolerance<FT>::small ) || toBool ( fabs(di) > tolerance<FT>::small) ) {
 		      QDPIO::cout <<"(x,y,z,t)=(" << x <<"," <<y<<","<<z<<","<<t<<") site=" << ind << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[target_cb].start()+ind).elem(s).elem(c) 
-				  << "  chi = " << clov_chi.elem(rb[target_cb].start()+ind).elem(s).elem(c)  << " qdp++ =" << clov_chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c)  << endl;
+				  << "  chi = " << clov_chi.elem(rb[target_cb].start()+ind).elem(s).elem(c)
+				  << " qdp++ =" << clov_chi2.elem(rb[target_cb].start()+ind).elem(s).elem(c)  << endl;
 		      
 		    }
 		  }
@@ -366,12 +470,12 @@ testClovDslashFull::runTest(void)
     } // cb
   } // isign
 
-
+#endif
 #endif
 
 
 
-#if 1
+#if 0
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -434,7 +538,7 @@ testClovDslashFull::runTest(void)
 #endif
 
 
-#if 1
+#if 0
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
@@ -470,11 +574,11 @@ testClovDslashFull::runTest(void)
   // Now we need to repack this.
   QDPIO::cout << "Packing Clover term..." << endl;
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp_ap.getTriBuffer(), invclov_packed[cb], D32_ap.getGeometry(), cb);
+    qdp_pack_clover<>(invclov_qdp_ap, invclov_packed[cb], D32_ap.getGeometry(), cb);
   }
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp_ap.getTriBuffer(), clov_packed[cb], D32_ap.getGeometry(), cb);
+    qdp_pack_clover<>(clov_qdp_ap, clov_packed[cb], D32_ap.getGeometry(), cb);
   }
 
   QDPIO::cout << "Folding aniso factors into gauge field for testing" << endl;
@@ -567,7 +671,7 @@ testClovDslashFull::runTest(void)
 
 
 
-#if 1
+#if 0
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -630,7 +734,7 @@ testClovDslashFull::runTest(void)
 #endif
 
   // Disabling testing the even odd operator until recoded with new vectorization
-#if 1
+#if 0
   QDPIO::cout << "Testing Even Odd Operator" << endl;
   t_boundary=(double)(-1);
   EvenOddCloverOperator<FT,V,S,compress> M(u_packed,  
@@ -697,7 +801,7 @@ testClovDslashFull::runTest(void)
 
 #endif
 
-#if 1
+#if 0
   {
     chi = zero;
     qdp_pack_cb_spinor<>(chi, chi_s[1], geom,1);
@@ -755,7 +859,7 @@ testClovDslashFull::runTest(void)
   }
 #endif
 
-#if 1
+#if 0
   {
     chi = zero;
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);

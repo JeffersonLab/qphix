@@ -38,7 +38,8 @@ public:
       }
     }
   }
-  
+
+
   template<typename T, int V, int S, typename U, typename Phi>
   void testDslashAChiMBDPsiWrapper(const U& u) {
     for(int t_bc=1; t_bc >= -1; t_bc-=2) {

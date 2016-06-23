@@ -6,10 +6,10 @@
 #ifdef QPHIX_BUILD_CLOVER
 #ifdef QPHIX_BUILD_QDPJIT
 #warning using LLVM Clover Term
-namespace QPhix
-{
 
 #include "./clover_term_llvm_w.h"
+namespace QPhiX
+{
 template<typename Phi, typename U>
 using CloverTermT = LLVMCloverTermT<Phi,U>;
 };

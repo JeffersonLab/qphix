@@ -7,14 +7,15 @@
 #define __clover_term_llvm_w_h__
 
 #warning "Using QPD-JIT/LLVM clover"
-
+#include "qdp.h"
 #include "./clover_fermact_params_w.h"
 #include "./mesfield.h"
 
 using namespace QDP;
 
-namespace QPhiX;
+namespace QDP
 {
+
   class PackForQUDATimer {
     double acc_time;
     PackForQUDATimer(): acc_time(0.0) {}
@@ -275,13 +276,13 @@ struct LeafFunctor<PTriOff<T>, PrintTag>
 };
 #endif
 
-
-
 }
 
 
 
-namespace Chroma 
+
+
+namespace QPhiX
 { 
   template<typename R>
   struct QUDAPackedClovSite {
@@ -293,7 +294,7 @@ namespace Chroma
 
 
   template<typename T, typename U>
-  class LLVMCloverTermT : public CloverTermBase<T, U>
+  class LLVMCloverTermT
   {
   public:
     // Typedefs to save typing
@@ -309,12 +310,13 @@ namespace Chroma
     ~LLVMCloverTermT() {}
 
     //! Creation routine
-    void create(Handle< FermState<T, multi1d<U>, multi1d<U> > > fs,
-		const CloverFermActParams& param_);
+   void create(const multi1d<U>& u_,
+ 	      const CloverFermActParams& param_);
 
-    virtual void create(Handle< FermState<T, multi1d<U>, multi1d<U> > > fs,
-			const CloverFermActParams& param_,
-			const LLVMCloverTermT<T,U>& from_);
+   void create(const multi1d<U>& u_,
+ 	      const CloverFermActParams& param_,
+ 	      const LLVMCloverTermT<T,U>& from_);
+
 
     //! Computes the inverse of the term on cb using Cholesky
     /*!
@@ -346,16 +348,14 @@ namespace Chroma
      * \param isign   D'^dag or D'  ( MINUS | PLUS ) resp.        (Read)
      * \param cb      Checkerboard of OUTPUT std::vector               (Read) 
      */
-    void apply (T& chi, const T& psi, enum PlusMinus isign, int cb) const;
+    void apply (T& chi, const T& psi, int isign, int cb) const;
 
 
-    void applySite(T& chi, const T& psi, enum PlusMinus isign, int site) const;
+    void applySite(T& chi, const T& psi, int isign, int site) const;
 
     //! Calculates Tr_D ( Gamma_mat L )
     void triacntr(U& B, int mat, int cb) const;
 
-    //! Return the fermion BC object for this linear operator
-    const FermBC<T, multi1d<U>, multi1d<U> >& getFermBC() const {return *fbc;}
 
     //! PACK UP the Clover term for QUDA library:
     void packForQUDA(multi1d<QUDAPackedClovSite<REALT> >& quda_pack, int cb) const; 
@@ -363,7 +363,13 @@ namespace Chroma
     int getDiaId() const { return tri_dia.getId(); }
     int getOffId() const { return tri_off.getId(); }
 
-      
+    using DiagType =  OLattice<PComp<PTriDia<RScalar <Word<REALT> > > > >;
+    using OffDiagType =  OLattice<PComp<PTriOff<RComplex<Word<REALT> > > > >;
+
+    const DiagType& getDiagBuffer() const { return tri_dia ; }
+    const OffDiagType& getOffDiagBuffer() const { return tri_off; }
+    void printDiag(void) const;
+
   protected:
     //! Create the clover term on cb
     /*!
@@ -383,8 +389,10 @@ namespace Chroma
     Real getCloverCoeff(int mu, int nu) const;
 
 
+
+
   private:
-    Handle< FermBC<T,multi1d<U>,multi1d<U> > >      fbc;
+
     multi1d<U>  u;
     CloverFermActParams          param;
     LatticeREAL                  tr_log_diag_; // Fill this out during create
@@ -404,27 +412,22 @@ namespace Chroma
 
   // Now copy
   template<typename T, typename U>
-  void LLVMCloverTermT<T,U>::create(Handle< FermState<T,multi1d<U>,multi1d<U> > > fs,
+  void LLVMCloverTermT<T,U>::create(const multi1d<U>& u_,
 				   const CloverFermActParams& param_,
 				   const LLVMCloverTermT<T,U>& from)
   {
-    START_CODE();
+
 
     //std::cout << "LLVM Clover create from other "  << (void*)this << "\n";
 
     u.resize(Nd);
+    for(int mu=0; mu < Nd; mu++) {
+         u[mu] = u_[mu];
+       }
+       param = param_;
 
-    u = fs->getLinks();
-    fbc = fs->getFermBC();
-    param = param_;
-    
-    // Sanity check
-    if (fbc.operator->() == 0) {
-      QDPIO::cerr << "LLVMCloverTerm: error: fbc is null" << std::endl;
-      QDP_abort(1);
-    }
-    
-    {
+       // Apply anisotropy
+   {
       RealT ff = where(param.anisoParam.anisoP, Real(1) / param.anisoParam.xi_0, Real(1));
       param.clovCoeffR *= Real(0.5) * ff;
       param.clovCoeffT *= Real(0.5);
@@ -457,30 +460,23 @@ namespace Chroma
     tri_dia = from.tri_dia;
     tri_off = from.tri_off;
 
-    END_CODE();  
+
   }
 
 
   //! Creation routine
   template<typename T, typename U>
-  void LLVMCloverTermT<T,U>::create(Handle< FermState<T,multi1d<U>,multi1d<U> > > fs,
+  void LLVMCloverTermT<T,U>::create(const multi1d<U>& u_,
 				   const CloverFermActParams& param_)
   {
-    START_CODE();
+
 
     //std::cout << "LLVM Clover create "  << (void*)this << "\n";
    
     u.resize(Nd);
     
-    u = fs->getLinks();
-    fbc = fs->getFermBC();
+    u = u_;
     param = param_;
-    
-    // Sanity check
-    if (fbc.operator->() == 0) {
-      QDPIO::cerr << "LLVMCloverTerm: error: fbc is null" << std::endl;
-      QDP_abort(1);
-    }
 
     {
       RealT ff = where(param.anisoParam.anisoP, Real(1) / param.anisoParam.xi_0, Real(1));
@@ -498,7 +494,7 @@ namespace Chroma
       RealT ff = where(param.anisoParam.anisoP, param.anisoParam.nu / param.anisoParam.xi_0, Real(1));
       diag_mass = 1 + (Nd-1)*ff + param.Mass;
     }
-    
+    QDPIO::cout << "Param Mass=" << param.Mass << " diag_mass = " << diag_mass << std::endl;
     /* Calculate F(mu,nu) */
     multi1d<U> f;
     mesField(f, u);
@@ -509,9 +505,34 @@ namespace Chroma
       choles_done[i] = false;
     }    
 
-    END_CODE();
+
+
   }
 
+  //! Creation routine
+   template<typename T, typename U>
+   void LLVMCloverTermT<T,U>::printDiag(void) const {
+
+	    for(int site=0; site < 8; ++site) {
+	    	QDPIO::cout << "site = " << site;
+	    	for(int block=0; block < 2; ++block) {
+	    		QDPIO::cout << "  block =  " << block << " diag = ( ";
+	     		for(int d=0; d < 6; ++d ) {
+	    			QDPIO::cout << tri_dia.elem(site).comp[block].diag[d].elem().elem()<< " ";
+	    		}
+	     		QDPIO::cout << " )  ";
+	    	}
+	    	QDPIO::cout << std::endl;
+	    	for(int block=0; block < 2; ++block) {
+	    		QDPIO::cout << "  block =  " << block << " od = ( ";
+	     		for(int od=0; od < 15; ++od ) {
+	    			QDPIO::cout << tri_off.elem(site).comp[block].offd[od] << " ";
+	    		}
+	     		QDPIO::cout << " )  ";
+	    	}
+	    	QDPIO::cout << std::endl;
+	    }
+   }
 
   /*
    * MAKCLOV 
@@ -770,7 +791,7 @@ namespace Chroma
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::makeClov(const multi1d<U>& f, const RealT& diag_mass)
   {
-    START_CODE();
+
     
     if ( Nd != 4 ){
       QDPIO::cerr << __func__ << ": expecting Nd==4" << std::endl;
@@ -801,7 +822,7 @@ namespace Chroma
     // Execute the function
     function_make_clov_exec(function, diag_mass, f0,f1,f2,f3,f4,f5,tri_dia, tri_off);
 
-    END_CODE();
+
   }
   
 
@@ -812,14 +833,14 @@ namespace Chroma
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::choles(int cb)
   {
-    START_CODE();
+
 
     // When you are doing the cholesky - also fill out the trace_log_diag piece)
     // chlclovms(tr_log_diag_, cb);
     // Switch to LDL^\dag inversion
     ldagdlinv(tr_log_diag_,cb);
 
-    END_CODE();
+
   }
 
 
@@ -832,7 +853,7 @@ namespace Chroma
   template<typename T, typename U>
   Double LLVMCloverTermT<T,U>::cholesDet(int cb) const
   {
-    START_CODE();
+
 
     if( choles_done[cb] == false ) 
       {
@@ -849,7 +870,7 @@ namespace Chroma
       tmp[rb[cb]] = param.sub_zero;
       ff[rb[cb]] -= tmp;
     }
-    END_CODE();
+
 
     // Need to thread generic sums in QDP++?
     // Need to thread generic norm2() in QDP++?
@@ -1076,7 +1097,7 @@ namespace Chroma
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::ldagdlinv(LatticeREAL& tr_log_diag, int cb)
   {
-    START_CODE();
+
 
     if ( 2*Nc < 3 )
       {
@@ -1101,7 +1122,7 @@ namespace Chroma
 
     // This comes from the days when we used to do Cholesky
     choles_done[cb] = true;
-    END_CODE();
+
   }
  
   /*! CHLCLOVMS - Cholesky decompose the clover mass term and uses it to
@@ -1520,7 +1541,7 @@ namespace Chroma
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::triacntr(U& B, int mat, int cb) const
   {
-    START_CODE();
+
 
     B = zero;
 
@@ -1542,7 +1563,7 @@ namespace Chroma
     // Execute the function
     function_triacntr_exec(function, B, tri_dia, tri_off, mat, rb[cb] );
 
-    END_CODE();
+
   }
 
   //! Returns the appropriate clover coefficient for indices mu and nu
@@ -1550,7 +1571,7 @@ namespace Chroma
   Real
   LLVMCloverTermT<T,U>::getCloverCoeff(int mu, int nu) const 
   { 
-    START_CODE();
+
 
     if( param.anisoParam.anisoP )  {
       if (mu==param.anisoParam.t_dir || nu == param.anisoParam.t_dir) { 
@@ -1567,7 +1588,7 @@ namespace Chroma
       return param.clovCoeffR; 
     } 
     
-    END_CODE();
+
   }
 
 
@@ -1701,9 +1722,9 @@ namespace Chroma
    */
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::apply(T& chi, const T& psi, 
-				  enum PlusMinus isign, int cb) const
+				  int isign, int cb) const
   {
-    START_CODE();
+
     
     if ( Ns != 4 ) {
       QDPIO::cerr << __func__ << ": CloverTerm::apply requires Ns==4" << std::endl;
@@ -1722,9 +1743,6 @@ namespace Chroma
     // Execute the function
     function_apply_clov_exec(function, chi, psi, tri_dia, tri_off, rb[cb] );
 
-    (*this).getFermBC().modifyF(chi, QDP::rb[cb]);
-
-    END_CODE();
   }
 
 
@@ -1815,7 +1833,7 @@ namespace Chroma
 
   template<typename T, typename U>
   void LLVMCloverTermT<T,U>::applySite(T& chi, const T& psi, 
-				      enum PlusMinus isign, int site) const
+				      int isign, int site) const
   {
     QDP_error_exit("LLVMCloverTermT<T,U>::applySite(T& chi, const T& psi,..) not implemented ");
 #if 0
@@ -1826,7 +1844,7 @@ namespace Chroma
   typedef LLVMCloverTermT<LatticeFermion, LatticeColorMatrix> LLVMCloverTerm;
   typedef LLVMCloverTermT<LatticeFermionF, LatticeColorMatrixF> LLVMCloverTermF;
   typedef LLVMCloverTermT<LatticeFermionD, LatticeColorMatrixD> LLVMCloverTermD;
-} // End Namespace Chroma
 
 
+}
 #endif

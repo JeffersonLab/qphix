@@ -44,143 +44,55 @@ namespace QPhiX {
       u_minus[mu] = shift(u[mu], BACKWARD, mu);
     }
 
-    std::cout << "QDP Shift is complete. Entering OpenMP Pack Region" << std::endl;
+    
+#pragma omp parallel for collapse(4)
+    for(int t = 0; t < Nt; t++) {
+      for(int z = 0; z < Nz; z++) {
+  for(int y = 0; y < Ny; y++) {
+    for(int s = 0; s < nvecs; s++) {
+      for(int mu = 0; mu < 4; mu++) {
+        int outer_c = 3;
+        if ( compress ) {
+    outer_c = 2;
+        }
+        for(int c = 0; c < outer_c; c++) {
+    for(int c2 = 0; c2 < 3; c2++) {
+      for(int x = 0; x < soalen; x++) {
 
-// No Elem calls in parallel regions
-// #pragma omp parallel for collapse(4)
-		for(int t = 0; t < Nt; t++) {
-			for(int z = 0; z < Nz; z++) {
-				for(int y = 0; y < Ny; y++) {
-					for(int s = 0; s < nvecs; s++) {
-						for(int mu = 0; mu < 4; mu++) {
-							int outer_c = 3;
-							if ( compress ) {
-								outer_c = 2;
-							}
-							for(int c = 0; c < outer_c; c++) {
-								for(int c2 = 0; c2 < 3; c2++) {
-									for(int x = 0; x < soalen; x++) {
+        //#ifndef USE_PACKED_GAUGES
+        //int xx = x;
+        //int block = ((t*Nz+z)*Ny+y)*nvecs+s;
 
-										//#ifndef USE_PACKED_GAUGES
-										//int xx = x;
-										//int block = ((t*Nz+z)*Ny+y)*nvecs+s;
+        //#endif
+        //#else // USE_PACKED_GAUGES
+        int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
+        int xx = (y%nyg)*soalen+x;
+        // #endif // USE_PACKED_GAUGES
 
-										//#endif
-										//#else // USE_PACKED_GAUGES
-										int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-										int xx = (y%nyg)*soalen+x;
-										// #endif // USE_PACKED_GAUGES
-
-										int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
-										u_cb0[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
-										u_cb0[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
-										u_cb0[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
-										u_cb0[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
-
-										u_cb1[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
-										u_cb1[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
-										u_cb1[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
-										u_cb1[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		QDPIO::cout << "Leaving Gauge PAck" << std::endl;
-	}
+        int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
+        u_cb0[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
+        u_cb0[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
+        u_cb0[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
+        u_cb0[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
+        
+        
+        u_cb1[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
+        u_cb1[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
+        u_cb1[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
+        u_cb1[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
+      }   
+    }   
+        }
+      }
+    }
+  }
+      }
+    }
+  }
 
 #ifdef QPHIX_BUILD_CLOVER
-
-#ifdef QPHIX_BUILD_QDPJIT
-  // extern int64_t getDataLayoutInnerSize();
-
-  // This accesses the Internals of the LLVMCloverTerm
   template<typename FT, int veclen, int soalen, bool compress, typename ClovTerm>
-     void qdp_pack_clover(const ClovTerm& qdp_clov_in,
-        typename ClovDslash<FT,veclen,soalen,compress>::CloverBlock* cl_out,Geometry<FT,veclen,soalen,compress>& s, int cb)
-   {
-     // Get the subgrid latt size.
-     int Nt = s.Nt();
-     int Nz = s.Nz();
-     int Ny = s.Ny();
-     int nvecs = s.nVecs();
-     int nyg = s.nGY();
-     int Pxy = s.getPxy();
-     int Pxyz = s.getPxyz();
-
-     // Sanity Check
-     // QDP Type is
-     // Outer x 2 chiral blocks x 6 floats x inner sites
-     const typename ClovTerm::DiagType& diag_buf = qdp_clov_in.getDiagBuffer();
-     const typename ClovTerm::OffDiagType& off_diag_buf = qdp_clov_in.getOffDiagBuffer();
-
-   //  const int qdp_inner_size =(int)getDataLayoutInnerSize();
-   //  const int num_comp = 2;
-   //  const int num_complex = 2;
-
-
-
-
- // No elem calls in parallel region
- //#pragma omp parallel for collapse(4)
-     for(int t = 0; t < Nt; t++) {
-       for(int z = 0; z < Nz; z++) {
-   for(int y = 0; y < Ny; y++) {
-     for(int s = 0; s < nvecs; s++) {
-       for(int x = 0; x < soalen; x++) {
-
-         int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-         int xx = (y%nyg)*soalen+x;
-
-         int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
-        // int qdp_osite = qdpsite/qdp_inner_size;
-        // int qdp_isite = qdpsite%qdp_inner_size;
-
-
-         for(int d=0; d < 6; d++) {
-        	cl_out[block].diag1[d][xx] = (FT)diag_buf.elem(qdpsite).comp[0].diag[d].elem().elem();
-        //  cl_out[block].diag1[d][xx] = (FT)1/(FT)4.1;
-         }
-         for(int od=0; od < 15; od++) {
-        	cl_out[block].off_diag1[od][RE][xx] = off_diag_buf.elem(qdpsite).comp[0].offd[od].real().elem();
-        	cl_out[block].off_diag1[od][IM][xx] = off_diag_buf.elem(qdpsite).comp[0].offd[od].imag().elem();
-
-        	// cl_out[block].off_diag1[od][RE][xx] = 0;
-            //  cl_out[block].off_diag1[od][IM][xx] = 0;
-
-
-         }
-
-         for(int d=0; d < 6; d++) {
-        	 cl_out[block].diag2[d][xx] = diag_buf.elem(qdpsite).comp[1].diag[d].elem().elem();
-     //   	 cl_out[block].diag2[d][xx] = (FT)1/(FT)4.1;
-         }
-         for(int od=0; od < 15; od++) {
-
-         	 cl_out[block].off_diag2[od][RE][xx] = off_diag_buf.elem(qdpsite).comp[1].offd[od].real().elem();
-         	 cl_out[block].off_diag2[od][IM][xx] = off_diag_buf.elem(qdpsite).comp[1].offd[od].imag().elem();
-
-       //       cl_out[block].off_diag2[od][RE][xx] = 0;
-       //       cl_out[block].off_diag2[od][IM][xx] = 0;
-
-
-         }
-       }
-     }
-   }
-       }
-     }
-   }
-
-
-#else
-
-  template<typename FT, int veclen, int soalen, bool compress, typename ClovTerm>
-    void qdp_pack_clover(const ClovTerm& clov_in,
+    void qdp_pack_clover(const ClovTerm& qdp_clov_in,
        typename ClovDslash<FT,veclen,soalen,compress>::CloverBlock* cl_out,Geometry<FT,veclen,soalen,compress>& s, int cb)
   {
     // Get the subgrid latt size.
@@ -192,9 +104,6 @@ namespace QPhiX {
     int Pxy = s.getPxy();
     int Pxyz = s.getPxyz();
     
-    auto qdp_clov_in = clov_in.getTriBuffer();
-
-
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < Nt; t++) {
       for(int z = 0; z < Nz; z++) {
@@ -207,20 +116,19 @@ namespace QPhiX {
         int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
         
         for(int d=0; d < 6; d++) { 
-        	cl_out[block].diag1[d][xx]=qdp_clov_in[qdpsite].diag[0][d].elem();
+    cl_out[block].diag1[d][xx]=qdp_clov_in[qdpsite].diag[0][d].elem();
         }
         for(int od=0; od < 15; od++) { 
-        	cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in[qdpsite].offd[0][od].real();
-        	cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in[qdpsite].offd[0][od].imag();
+    cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in[qdpsite].offd[0][od].real();
+    cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in[qdpsite].offd[0][od].imag();
         }
 
         for(int d=0; d < 6; d++) { 
-        	cl_out[block].diag2[d][xx]=qdp_clov_in[qdpsite].diag[1][d].elem();
-
+    cl_out[block].diag2[d][xx]=qdp_clov_in[qdpsite].diag[1][d].elem();
         }
         for(int od=0; od < 15; od++) { 
-        	cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in[qdpsite].offd[1][od].real();
-        	cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in[qdpsite].offd[1][od].imag();
+    cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in[qdpsite].offd[1][od].real();
+    cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in[qdpsite].offd[1][od].imag();
         }
       }
     }
@@ -229,7 +137,6 @@ namespace QPhiX {
     }
   }
   
-#endif
 #endif  // IFDEF BUILD CLOVER
 
 
@@ -248,8 +155,7 @@ namespace QPhiX {
     int Pxy = s.getPxy();
     int Pxyz = s.getPxyz();
 
-    // No elem in OpenMP parallel region
-//#pragma omp parallel for collapse(4)
+#pragma omp parallel for collapse(4)
       for(int t=0; t < Nt; t++) {
   for(int z=0; z < Nz; z++) {
     for(int y=0; y < Ny; y++) {
@@ -347,8 +253,7 @@ namespace QPhiX {
     int Pxyz = s.getPxyz();
 
 
-    // No elem() in OpenMP parallel
-//#pragma omp parallel for collapse(4)
+#pragma omp parallel for collapse(4)    
     for(int t=0; t < Nt; t++) {
       for(int z=0; z < Nz; z++) {
   for(int y=0; y < Ny; y++) {

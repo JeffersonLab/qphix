@@ -323,19 +323,19 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   QDPIO::cout << "Packing Clover term..." << endl;
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp.getTriBuffer(), invclov_packed[cb], geom, cb);
+    qdp_pack_clover<>(invclov_qdp, invclov_packed[cb], geom, cb);
   }
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp.getTriBuffer(), invclov_packed_i[cb], geom_inner, cb);
+    qdp_pack_clover<>(invclov_qdp, invclov_packed_i[cb], geom_inner, cb);
   }
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp.getTriBuffer(), clov_packed[cb], geom, cb);
+    qdp_pack_clover<>(clov_qdp, clov_packed[cb], geom, cb);
   }
   QDPIO::cout << "Done" << endl;
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp.getTriBuffer(), clov_packed_i[cb], geom_inner, cb);
+    qdp_pack_clover<>(clov_qdp, clov_packed_i[cb], geom_inner, cb);
   }
   QDPIO::cout << "Done" << endl;
 

@@ -6,7 +6,7 @@
 #endif
 
 using namespace QDP;
-
+namespace QPhiX {
 
 void dslash(LatticeFermionF& chi, 
 	    const multi1d<LatticeColorMatrixF>& u, 
@@ -18,5 +18,6 @@ void dslash(LatticeFermionD& chi,
 	    const multi1d<LatticeColorMatrixD>& u, 
 	    const LatticeFermionD& psi,
 	    int isign, int cb);
+}
 
 #endif
