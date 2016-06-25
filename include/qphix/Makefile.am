@@ -39,7 +39,7 @@ qphix_include_HEADERS += \
 #
 
 if QPHIX_BUILD_WITH_QDP
-qphix_include_HEADERS += ./qdp_packer.h
+qphix_include_HEADERS += ./qdp_packer.h ./qdp_packer_parscalar.h qdp_packer_qdpjit.h
 endif
 
 

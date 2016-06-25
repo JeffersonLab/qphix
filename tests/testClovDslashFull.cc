@@ -265,7 +265,7 @@ testClovDslashFull::runTest(void)
   QDPIO::cout << " clparam.clovCoeffR = " << clparam.clovCoeffR << std::endl;
   QDPIO::cout << " clparam.clovCoeffT = " << clparam.clovCoeffT << std::endl;
   clov_qdp.create(u, clparam);
-  clov_qdp.printDiag();
+ // clov_qdp.printDiag();
 
   QDPIO::cout << "Copying into InvClover Term" << endl;
   CloverTermT<Phi, U> invclov_qdp(clov_qdp);
@@ -404,6 +404,7 @@ testClovDslashFull::runTest(void)
       int target_cb = cb;
 
       clov_chi = zero;
+      chi = zero;
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
 
@@ -475,7 +476,7 @@ testClovDslashFull::runTest(void)
 
 
 
-#if 0
+#if 1
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -538,7 +539,7 @@ testClovDslashFull::runTest(void)
 #endif
 
 
-#if 0
+#if 1
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
@@ -671,7 +672,7 @@ testClovDslashFull::runTest(void)
 
 
 
-#if 0
+#if 1
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -734,7 +735,7 @@ testClovDslashFull::runTest(void)
 #endif
 
   // Disabling testing the even odd operator until recoded with new vectorization
-#if 0
+#if 1
   QDPIO::cout << "Testing Even Odd Operator" << endl;
   t_boundary=(double)(-1);
   EvenOddCloverOperator<FT,V,S,compress> M(u_packed,  
@@ -801,7 +802,7 @@ testClovDslashFull::runTest(void)
 
 #endif
 
-#if 0
+#if 1
   {
     chi = zero;
     qdp_pack_cb_spinor<>(chi, chi_s[1], geom,1);
@@ -859,7 +860,7 @@ testClovDslashFull::runTest(void)
   }
 #endif
 
-#if 0
+#if 1
   {
     chi = zero;
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);

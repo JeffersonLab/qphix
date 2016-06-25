@@ -1,3 +1,4 @@
+6/24/2015 (Balint Joo/Thorsten Kurth) - Added lots of cleanup for KNL. Added packers for QDP-JIT (OCSRI layout for now)
 1/12/2016 (Balint Joo/Aaron Walden) - Added AVX512 output from code generator. Tested on Intel SDE. Single and Double precision work, 16-bit precision is currently broken.
 
 4/9/2015 (Balint Joo): Added Basic Multi-Shift solvers -- but can still add more optimizations. Need to test multi-node etc.
