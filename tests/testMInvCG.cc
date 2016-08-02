@@ -64,7 +64,7 @@ using namespace QPhiX;
 
   // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
-bool verbose = false;
+bool verbose = true;
 
 template<typename F> 
 struct tolerance { 
@@ -192,23 +192,25 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   int niters;
   unsigned long site_flops;
   unsigned long mv_apps;
-  
-  MInvCG<T,V,S,compress> solver(M, max_iters, n_shift);
+  double r2=0;
+  double isign=1;
+  double start=0;
+  double end=0;
+  { 
+   MInvCG<T,V,S,compress> solver(M, max_iters, n_shift);
   //  solver.tune();
-  double r2;
   norm2Spinor<T,V,S,compress>(r2,chi_d,geom,threads_per_core);
   masterPrintf("chi has norm2 = %16.8e\n", r2);
 
-  int isign=1;
-  double start = omp_get_wtime();
+  start = omp_get_wtime();
   
   solver(psi_d, chi_d, n_shift,shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
 
   
-  double end = omp_get_wtime();
-
+  end = omp_get_wtime();
+  
   QDPIO::cout << "Solver Completed. Iters = " << niters << " Wallclock = " << end -start << " sec." << endl;
-
+  }
   // check solutions
   Phi psi,psi2,psi3;
   for(int s=0; s < n_shift; s++) {
@@ -240,6 +242,8 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
   
   masterPrintf("GFLOPS=%e\n", 1.0e-9*(double)(total_flops)/(end -start));
+
+#if 0						\
   
   geom.free(packed_gauge_cb0);
   geom.free(packed_gauge_cb1);
@@ -248,6 +252,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
     geom.free(psi_d[i]);
   }
 
+#endif
 
 }
 
@@ -318,7 +323,7 @@ MInvCGTester::run(void)
 #endif
       }
 
-#if 0
+#if 1
       if( soalen == 4 ) { 
 #if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;

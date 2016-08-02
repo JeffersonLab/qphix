@@ -103,7 +103,8 @@ namespace QPhiX {
     int nyg = s.nGY();
     int Pxy = s.getPxy();
     int Pxyz = s.getPxyz();
-    
+    const auto& qdp_clov_in_buf = qdp_clov_in.getTriBuffer();
+ 
 #pragma omp parallel for collapse(4)
     for(int t = 0; t < Nt; t++) {
       for(int z = 0; z < Nz; z++) {
@@ -116,19 +117,19 @@ namespace QPhiX {
         int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
         
         for(int d=0; d < 6; d++) { 
-    cl_out[block].diag1[d][xx]=qdp_clov_in[qdpsite].diag[0][d].elem();
+    cl_out[block].diag1[d][xx]=qdp_clov_in_buf[qdpsite].diag[0][d].elem();
         }
         for(int od=0; od < 15; od++) { 
-    cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in[qdpsite].offd[0][od].real();
-    cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in[qdpsite].offd[0][od].imag();
+    cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].real();
+    cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].imag();
         }
 
         for(int d=0; d < 6; d++) { 
-    cl_out[block].diag2[d][xx]=qdp_clov_in[qdpsite].diag[1][d].elem();
+    cl_out[block].diag2[d][xx]=qdp_clov_in_buf[qdpsite].diag[1][d].elem();
         }
         for(int od=0; od < 15; od++) { 
-    cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in[qdpsite].offd[1][od].real();
-    cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in[qdpsite].offd[1][od].imag();
+    cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].real();
+    cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].imag();
         }
       }
     }

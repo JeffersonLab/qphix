@@ -18,6 +18,7 @@
 #include "qphix/clover_dslash_def.h"
 #endif
 
+#undef DEBUG_PACKER
 using namespace QDP;
 
 namespace QPhiX { 
@@ -30,15 +31,19 @@ namespace QPhiX {
       Geometry<FT,veclen,soalen,compress>& s)
   {
     // Get the subgrid latt size.
-    int Nt = s.Nt();
-    int Nz = s.Nz();
-    int Ny = s.Ny();
-    int nvecs = s.nVecs();
-    int nyg = s.nGY();
-    int Pxy = s.getPxy();
-    int Pxyz = s.getPxyz();
-	int qdp_inner_dim = (int)getDataLayoutInnerSize();
-	const int n_complex_dim = 2;
+    int64_t Nt =(int64_t) s.Nt();
+    int64_t Nz =(int64_t) s.Nz();
+    int64_t Ny =(int64_t) s.Ny();
+    int64_t nvecs = s.nVecs();
+    int64_t nyg = s.nGY();
+    int64_t Pxy = s.getPxy();
+    int64_t Pxyz = s.getPxyz();
+    int64_t qdp_inner_dim = (int64_t)getDataLayoutInnerSize();
+    const int64_t n_complex_dim = 2;
+
+#if 1
+    int64_t volcb = rb[0].numSiteTable();
+#endif
 
     // Shift the lattice to get U(x-mu)
     QDPGauge u_minus(4);
@@ -49,29 +54,31 @@ namespace QPhiX {
     // This ought to be the underlying precision type (float/double) in use
     // by QDP-JIT and may well be different from FT
     // So casting will be needed
-    using WT = typename WordType<QDPGauge>::Type_t;
+    using WT = typename WordType<typename QDPGauge::InnerType_t>::Type_t;
 
-#pragma omp parallel for collapse(4)
-		for(int t = 0; t < Nt; t++) {
-			for(int z = 0; z < Nz; z++) {
-				for(int y = 0; y < Ny; y++) {
-					for(int s = 0; s < nvecs; s++) {
-						for(int mu = 0; mu < 4; mu++) {
+#ifdef DEBUG_PACKER
+    QDPIO::cout <<"QDP GaugePacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
+#endif
+		for(int64_t t = 0; t < Nt; t++) {
+			for(int64_t z = 0; z < Nz; z++) {
+				for(int64_t y = 0; y < Ny; y++) {
+					for(int64_t s = 0; s < nvecs; s++) {
+						for(int64_t mu = 0; mu < 4; mu++) {
 
 						    const WT* u_ptr = (const WT*)((u[mu]).getFjit());
 							const WT* u_minus_ptr = (const WT*)((u_minus[mu]).getFjit());
 
-							int outer_c = 3;
+							int64_t outer_c = 3;
 							if ( compress ) {
 								outer_c = 2;
 							}
-							for(int c = 0; c < outer_c; c++) {
-								for(int c2 = 0; c2 < 3; c2++) {
-									for(int x = 0; x < soalen; x++) {
+							for(int64_t c = 0; c < outer_c; c++) {
+								for(int64_t c2 = 0; c2 < 3; c2++) {
+									for(int64_t x = 0; x < soalen; x++) {
 
 
-										int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-										int xx = (y%nyg)*soalen+x;
+										int64_t block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
+										int64_t xx = (y%nyg)*soalen+x;
 
 										// QDP-JIT in OCSRI layout:
 										//  Outer x Color x Spin x Real x Inner
@@ -79,22 +86,30 @@ namespace QPhiX {
 										// However, it hardly matters maybe because
 										// There is no spin on the gauge fields
 
-										int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
+										int64_t qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
 
-										int qdpsite_rb0 = qdpsite+rb[0].start();
-										int qdp_outer_rb0 = qdpsite_rb0 / qdp_inner_dim;
-										int qdp_inner_rb0 = qdpsite_rb0 % qdp_inner_dim;
-										int rb0_offset = qdp_inner_rb0 + qdp_inner_dim*n_complex_dim*Nc*Nc*qdp_outer_rb0;
+#if 0
+										int64_t qdpsite_rb0 = qdpsite+rb[0].start();
+#else
+										int64_t qdpsite_rb0 = qdpsite;
+#endif
+										int64_t qdp_outer_rb0 = qdpsite_rb0 / qdp_inner_dim;
+										int64_t qdp_inner_rb0 = qdpsite_rb0 % qdp_inner_dim;
+										int64_t rb0_offset = qdp_inner_rb0 + qdp_inner_dim*n_complex_dim*Nc*Nc*qdp_outer_rb0;
 
 										u_cb0[block][2*mu][c][c2][RE][xx] = (FT)u_minus_ptr[rb0_offset + qdp_inner_dim*(RE+n_complex_dim*(c + Nc*c2)) ];
 										u_cb0[block][2*mu][c][c2][IM][xx] = (FT)u_minus_ptr[rb0_offset + qdp_inner_dim*(IM+n_complex_dim*(c + Nc*c2)) ];
 										u_cb0[block][2*mu+1][c][c2][RE][xx] = (FT)u_ptr[rb0_offset + qdp_inner_dim*(RE+n_complex_dim*(c + Nc*c2)) ];
 										u_cb0[block][2*mu+1][c][c2][IM][xx] = (FT)u_ptr[rb0_offset + qdp_inner_dim*(IM+n_complex_dim*(c + Nc*c2)) ];
 
-										int qdpsite_rb1 = qdpsite+rb[1].start();
-										int qdp_outer_rb1 = qdpsite_rb1 / qdp_inner_dim;
-										int qdp_inner_rb1 = qdpsite_rb1 % qdp_inner_dim;
-										int rb1_offset = qdp_inner_rb1 + qdp_inner_dim*n_complex_dim*Nc*Nc*qdp_outer_rb1;
+#if 0
+										int64_t qdpsite_rb1 = qdpsite+rb[1].start();
+#else
+										int64_t qdpsite_rb1 = qdpsite + rb[1].numSiteTable();
+#endif
+										int64_t qdp_outer_rb1 = qdpsite_rb1 / qdp_inner_dim;
+										int64_t qdp_inner_rb1 = qdpsite_rb1 % qdp_inner_dim;
+										int64_t rb1_offset = qdp_inner_rb1 + qdp_inner_dim*n_complex_dim*Nc*Nc*qdp_outer_rb1;
 
 										u_cb1[block][2*mu][c][c2][RE][xx] = (FT)u_minus_ptr[rb1_offset + qdp_inner_dim*(RE+n_complex_dim*(c + Nc*c2)) ];
 										u_cb1[block][2*mu][c][c2][IM][xx] = (FT)u_minus_ptr[rb1_offset + qdp_inner_dim*(IM+n_complex_dim*(c + Nc*c2)) ];
@@ -121,13 +136,13 @@ namespace QPhiX {
 			typename ClovDslash<FT,veclen,soalen,compress>::CloverBlock* cl_out,Geometry<FT,veclen,soalen,compress>& s, int cb)
 	{
 		// Get the subgrid latt size.
-		int Nt = s.Nt();
-		int Nz = s.Nz();
-		int Ny = s.Ny();
-		int nvecs = s.nVecs();
-		int nyg = s.nGY();
-		int Pxy = s.getPxy();
-		int Pxyz = s.getPxyz();
+		int64_t Nt = s.Nt();
+		int64_t Nz = s.Nz();
+		int64_t Ny = s.Ny();
+		int64_t nvecs = s.nVecs();
+		int64_t nyg = s.nGY();
+		int64_t Pxy = s.getPxy();
+		int64_t Pxyz = s.getPxyz();
 
 		// Sanity Check
 		// QDP Type is
@@ -147,28 +162,34 @@ namespace QPhiX {
 		const WT* diag_buf = (const WT*)diag_term.getFjit();
 		const WT* off_diag_buf = (const WT*)off_diag_term.getFjit();
 
-		int qdp_inner_dim = (int)getDataLayoutInnerSize();
-		const int n_complex_dim = 2;
-		const int diag_dim = 6;
-		const int offdiag_dim = 15;
-		const int chiral_dim = 2;
-		const int diag_offset = qdp_inner_dim*diag_dim*chiral_dim;
-		const int offdiag_offset = qdp_inner_dim*offdiag_dim*n_complex_dim*chiral_dim;
+		int64_t qdp_inner_dim = (int64_t)getDataLayoutInnerSize();
+		const int64_t n_complex_dim = 2;
+		const int64_t diag_dim = 6;
+		const int64_t offdiag_dim = 15;
+		const int64_t chiral_dim = 2;
+		const int64_t diag_offset = qdp_inner_dim*diag_dim*chiral_dim;
+		const int64_t offdiag_offset = qdp_inner_dim*offdiag_dim*n_complex_dim*chiral_dim;
 
+#ifdef DEBUG_PACKER
+		QDPIO::cout <<"QDP CloverPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
+#endif
 		// No elem calls in parallel region
-#pragma omp parallel for collapse(4)
-		for(int t = 0; t < Nt; t++) {
-			for(int z = 0; z < Nz; z++) {
-				for(int y = 0; y < Ny; y++) {
-					for(int s = 0; s < nvecs; s++) {
-						for(int x = 0; x < soalen; x++) {
+		for(int64_t t = 0; t < Nt; t++) {
+			for(int64_t z = 0; z < Nz; z++) {
+				for(int64_t y = 0; y < Ny; y++) {
+					for(int64_t s = 0; s < nvecs; s++) {
+						for(int64_t x = 0; x < soalen; x++) {
 
-							int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-							int xx = (y%nyg)*soalen+x;
+							int64_t block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
+							int64_t xx = (y%nyg)*soalen+x;
 
-							int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
-							int qdp_outer_idx = qdpsite / qdp_inner_dim;
-							int qdp_inner_idx = qdpsite % qdp_inner_dim;
+#if 0
+							int64_t qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
+#else
+							int64_t qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+cb*rb[cb].numSiteTable();
+#endif
+							int64_t qdp_outer_idx = qdpsite / qdp_inner_dim;
+							int64_t qdp_inner_idx = qdpsite % qdp_inner_dim;
 
 							const WT* diag_base = &diag_buf[diag_offset*qdp_outer_idx];
 							const WT* offdiag_base = &off_diag_buf[offdiag_offset*qdp_outer_idx];
@@ -181,11 +202,11 @@ namespace QPhiX {
 							// Logical Outer x Spin x Color x Inner => Outer x Comp x Diag x Inner
 							// But we are using OCSRI => Outer Diag Comp Inner
 
-							for(int d=0; d < 6; d++) {
+							for(int64_t d=0; d < 6; d++) {
 								cl_out[block].diag1[d][xx] = (FT)(diag_base[ qdp_inner_idx + qdp_inner_dim*(0 + chiral_dim*d ) ]);
 							}
 
-							for(int od=0; od < 15; od++) {
+							for(int64_t od=0; od < 15; od++) {
 
 								cl_out[block].off_diag1[od][RE][xx] = (FT)(offdiag_base[ qdp_inner_idx +
 										qdp_inner_dim*(RE + n_complex_dim*(0 + chiral_dim*od))]);
@@ -195,11 +216,11 @@ namespace QPhiX {
 
 							}
 
-							for(int d=0; d < 6; d++) {
+							for(int64_t d=0; d < 6; d++) {
 								cl_out[block].diag2[d][xx] = (FT)(diag_base[ qdp_inner_idx + qdp_inner_dim*(1 + chiral_dim*d ) ]);
 							}
 
-							for(int od=0; od < 15; od++) {
+							for(int64_t od=0; od < 15; od++) {
 								cl_out[block].off_diag2[od][RE][xx] = (FT)(offdiag_base[ qdp_inner_idx +
 										qdp_inner_dim*(RE + n_complex_dim*(1 + chiral_dim*od))]);
 
@@ -226,35 +247,42 @@ namespace QPhiX {
 			int cb)
 	{
 		// Get the subgrid latt size.
-		int Nt = s.Nt();
-		int Nz = s.Nz();
-		int Ny = s.Ny();
-		int Nxh = s.Nxh();
-		int nvecs = s.nVecs();
-		int Pxy = s.getPxy();
-		int Pxyz = s.getPxyz();
+		int64_t Nt = s.Nt();
+		int64_t Nz = s.Nz();
+		int64_t Ny = s.Ny();
+		int64_t Nxh = s.Nxh();
+		int64_t nvecs = s.nVecs();
+		int64_t Pxy = s.getPxy();
+		int64_t Pxyz = s.getPxyz();
 
-		int qdp_inner_dim = (int)getDataLayoutInnerSize();
-		const int n_complex_dim = 2;
+		int64_t qdp_inner_dim = (int64_t)getDataLayoutInnerSize();
+		const int64_t n_complex_dim = 2;
 		using WT =typename WordType<QDPSpinor>::Type_t;
 
-		const int outer_block_size = qdp_inner_dim*n_complex_dim*Nc*Ns;
+		const int64_t outer_block_size = qdp_inner_dim*n_complex_dim*Nc*Ns;
+#ifdef DEBUG_PACKER
+		QDPIO::cout <<"QDP CBSpinorPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
+#endif
 
-#pragma omp parallel for collapse(4)
-		for(int t=0; t < Nt; t++) {
-			for(int z=0; z < Nz; z++) {
-				for(int y=0; y < Ny; y++) {
-					for(int s=0; s < nvecs; s++) {
-						for(int col=0; col < 3; col++) {
-							for(int spin=0; spin < 4; spin++) {
-								for(int x=0; x < soalen; x++) {
+		for(int64_t t=0; t < Nt; t++) {
+			for(int64_t z=0; z < Nz; z++) {
+				for(int64_t y=0; y < Ny; y++) {
+					for(int64_t s=0; s < nvecs; s++) {
+						for(int64_t col=0; col < 3; col++) {
+							for(int64_t spin=0; spin < 4; spin++) {
+								for(int64_t x=0; x < soalen; x++) {
 
-									int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-									int x_coord = s*soalen + x;
+									int64_t ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+									int64_t x_coord = s*soalen + x;
+#if 0
 
-									int qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + rb[cb].start();
-									int qdp_inner_idx = qdp_index % qdp_inner_dim;
-									int qdp_outer_idx = qdp_index / qdp_inner_dim;
+									int64_t qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + rb[cb].start();
+#else
+									int64_t qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + cb*rb[cb].numSiteTable();
+#endif
+
+									int64_t qdp_inner_idx = qdp_index % qdp_inner_dim;
+									int64_t qdp_outer_idx = qdp_index / qdp_inner_dim;
 
 									WT* psiptr=(WT *)(psi_in.getFjit());
 
@@ -262,7 +290,7 @@ namespace QPhiX {
 									// qdp_outer*block-size + qdp_inner
 									// and the iteration is over the spinor as Inner x Complex x Spin x Color
 
-									int offset =  qdp_inner_idx + outer_block_size*qdp_outer_idx;
+									int64_t offset =  qdp_inner_idx + outer_block_size*qdp_outer_idx;
 									psi[ind][col][spin][0][x] = (FT)psiptr[offset+qdp_inner_dim*(RE + n_complex_dim*(spin + Ns*col)) ];
 
 									psi[ind][col][spin][1][x] = (FT)psiptr[offset+qdp_inner_dim*(IM + n_complex_dim*(spin + Ns*col)) ];
@@ -283,43 +311,49 @@ namespace QPhiX {
             Geometry<FT,veclen,soalen,compress>& s,
             int cb) 
   { 
-    int Nt = s.Nt();
-    int Nz = s.Nz();
-    int Ny = s.Ny();
-    int Nxh = s.Nxh();
-    int nvecs = s.nVecs();
-    int Pxy = s.getPxy();
-    int Pxyz = s.getPxyz();
+    int64_t Nt = s.Nt();
+    int64_t Nz = s.Nz();
+    int64_t Ny = s.Ny();
+    int64_t Nxh = s.Nxh();
+    int64_t nvecs = s.nVecs();
+    int64_t Pxy = s.getPxy();
+    int64_t Pxyz = s.getPxyz();
 
-    int qdp_inner_dim = (int)getDataLayoutInnerSize();
-    const int n_complex_dim = 2;
+    int64_t qdp_inner_dim = (int64_t)getDataLayoutInnerSize();
+    const int64_t n_complex_dim = 2;
     using WT =typename WordType<QDPSpinor>::Type_t;
 
-    const int outer_block_size = qdp_inner_dim*n_complex_dim*Nc*Ns;
+    const int64_t outer_block_size = qdp_inner_dim*n_complex_dim*Nc*Ns;
 
+#ifdef DEBUG_PACKER
+    QDPIO::cout <<"QDP CBSpinorUnPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
+#endif
 
-#pragma omp parallel for collapse(4)
-		for(int t=0; t < Nt; t++) {
-			for(int z=0; z < Nz; z++) {
-				for(int y=0; y < Ny; y++) {
-					for(int s=0; s < nvecs; s++) {
-						for(int spin=0; spin < 4; spin++) {
-							for(int col=0; col < 3; col++) {
-								for(int x=0; x < soalen; x++) {
+		for(int64_t t=0; t < Nt; t++) {
+			for(int64_t z=0; z < Nz; z++) {
+				for(int64_t y=0; y < Ny; y++) {
+					for(int64_t s=0; s < nvecs; s++) {
+						for(int64_t spin=0; spin < 4; spin++) {
+							for(int64_t col=0; col < 3; col++) {
+								for(int64_t x=0; x < soalen; x++) {
 
-									int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-									int x_coord = s*soalen + x;
+									int64_t ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+									int64_t x_coord = s*soalen + x;
 
-									int qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + rb[cb].start();
-									int qdp_inner_idx = qdp_index % qdp_inner_dim;
-									int qdp_outer_idx = qdp_index / qdp_inner_dim;
+#if 0
+									int64_t qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + rb[cb].start();
+#else
+									int64_t qdp_index = ((t*Nz + z)*Ny + y)*Nxh + x_coord + cb*rb[cb].numSiteTable();
+#endif
+									int64_t qdp_inner_idx = qdp_index % qdp_inner_dim;
+									int64_t qdp_outer_idx = qdp_index / qdp_inner_dim;
 
 									WT* chiptr=(WT *)(chi.getFjit());
 									// ASSUME OCSRI order. So the fixed points our
 									// qdp_outer*block-size + qdp_inner
 									// and the iteration is over the spinor as Inner x Complex x Spin x Color
 
-									int offset = qdp_inner_idx + outer_block_size*qdp_outer_idx;
+									int64_t offset = qdp_inner_idx + outer_block_size*qdp_outer_idx;
 
 									chiptr[offset+qdp_inner_dim*(RE + n_complex_dim*(spin + Ns*col)) ] = (WT)chi_packed[ind][col][spin][0][x];
 									chiptr[offset+qdp_inner_dim*(IM + n_complex_dim*(spin + Ns*col)) ] = (WT)chi_packed[ind][col][spin][1][x];
@@ -331,6 +365,9 @@ namespace QPhiX {
 				}
 			}
 		}
+#ifdef DEBUG_PACKER
+	QDPIO::cout << "QDP CBSpinorUnPacker: Done" << std::endl;
+#endif
 	}
 
 };

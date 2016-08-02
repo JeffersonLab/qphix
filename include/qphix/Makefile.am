@@ -31,7 +31,8 @@ qphix_include_HEADERS += \
 	./blas_new_c.h \
 	./print_utils.h \
 	./threadbind.h \
-	./thread_limits.h
+	./thread_limits.h \
+	./qphix_cli_args.h
 
 
 #

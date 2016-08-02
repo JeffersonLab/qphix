@@ -271,6 +271,7 @@ testClovDslashFull::runTest(void)
   CloverTermT<Phi, U> invclov_qdp(clov_qdp);
 
 
+#if 0
   // Test Clover Term has been copied properly
   // Test invclov_apply
   // fill clov_chi with noise
@@ -287,7 +288,7 @@ testClovDslashFull::runTest(void)
 
   chi2[rb[0]] = clov_chi2 - clov_chi;
   QDPIO::cout << "Copy clov diff = " << sqrt( norm2(chi2,rb[0])) << std::endl;
-
+#endif
 #if 0
   {
 		int Nxh=Nx/2;
@@ -324,6 +325,7 @@ testClovDslashFull::runTest(void)
   }
   QDPIO::cout << "Done" << endl;
 
+#if 0
   // Test inverse
   gaussian(chi2);
 
@@ -338,7 +340,7 @@ testClovDslashFull::runTest(void)
   clov_chi2 -= chi2;
 
   QDPIO::cout << "Invclov_diff = " << sqrt( norm2(clov_chi2) ) << std::endl;
-
+#endif
 #if 0
   {
 		int Nxh=Nx/2;
@@ -396,7 +398,7 @@ testClovDslashFull::runTest(void)
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash \n" << endl;
 
-  // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
+  const int cbsize_in_blocks = rb[0].numSiteTable() / S;
 
   for(int isign=1; isign >= -1; isign -=2) {
     for(int cb=0; cb < 2; cb++) { 
@@ -405,10 +407,14 @@ testClovDslashFull::runTest(void)
 
       clov_chi = zero;
       chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      //
+
 
 
       // Apply Optimized Dslash
+#if 1
+      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+
       D32.dslash(chi_s[target_cb],	
 		 psi_s[source_cb],
 		 u_packed[target_cb],
@@ -417,6 +423,26 @@ testClovDslashFull::runTest(void)
 		 target_cb);
 
       qdp_unpack_spinor<>(chi_even,chi_odd, clov_chi, geom);
+
+#else
+      // Work directly with the QDP-JIT pointers...
+          Spinor* chi_targ = (Spinor *)(chi.getFjit())+target_cb*cbsize_in_blocks;
+          Spinor* psi_src  = (Spinor *)(psi.getFjit())+source_cb*cbsize_in_blocks;
+
+      QDPIO::cout << "Direct Interface" <<std::endl;
+      Spinor* clov_chi_targ = (Spinor *)(clov_chi.getFjit())+target_cb*cbsize_in_blocks;
+      Spinor* psi_in_src  = (Spinor *)(psi.getFjit())+source_cb*cbsize_in_blocks;
+
+
+      D32.dslash(clov_chi_targ,
+      		 psi_in_src,
+      		 u_packed[target_cb],
+      		 invclov_packed[target_cb],
+      		 isign,
+      		 target_cb);
+#endif
+
+
 
       // Account for Clover term from QDP++
       // We should remove this once the actual clover implementation is ready.

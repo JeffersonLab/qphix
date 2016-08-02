@@ -23,6 +23,7 @@ using namespace std;
 // Options
 #undef SCATTERED_THREAD_IDS
 
+#if 0
 #define S0     (0)
 #define S1     (1)
 #define S2     (2)
@@ -34,11 +35,25 @@ using namespace std;
 
 #define RE     (0)
 #define IM     (1)
+#endif
+
 
 // Use _mm_malloc on non MIC for now.
 
 
 namespace QPhiX { 
+
+   const int S0=0;
+   const int S1=1;
+   const int S2=2;
+   const int S3=3;
+
+   const int C0=0;
+   const int C1=1;
+   const int C2=2;
+
+   const int RE=0;
+   const int IM=1; 
 
   struct BlockPhase {
     int by;

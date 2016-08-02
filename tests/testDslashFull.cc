@@ -398,10 +398,14 @@ template<typename T, int V, int S, bool compress, typename U, typename Phi>
 void 
 testDslashFull::testDslash(const U& u, int t_bc)
 {
+  QDPIO::cout << "RNG seeed = " << rng_seed << std::endl;
   RNG::setrn(rng_seed);
 
+#if 1
   typedef typename Geometry<T,V,S,compress>::SU3MatrixBlock Gauge;
   typedef typename Geometry<T,V,S,compress>::FourSpinorBlock Spinor;
+#endif
+
   QDPIO::cout << "In testDslash" << endl;
   double aniso_fac_s = ((double)0.35);
   double aniso_fac_t = ((double)1.4);
@@ -416,13 +420,7 @@ testDslashFull::testDslash(const U& u, int t_bc)
 
 
   
-
-#if 0
-  Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
-  
-  Geometry<T,V,S,compress>& geom= D32.getGeometry();
-#endif
-  
+#if 1
   Geometry<T,V,S,compress> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
   Dslash<T,V,S,compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
   
@@ -458,7 +456,7 @@ testDslashFull::testDslash(const U& u, int t_bc)
   qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     
   QDPIO::cout << "done" << endl; 
-
+#endif
 
   U u_test(Nd);
   for(int mu=0; mu < Nd; mu++) { 
@@ -487,6 +485,7 @@ testDslashFull::testDslash(const U& u, int t_bc)
       int target_cb = cb;
 
       chi = zero;
+#if 1
       QDPIO::cout << "Fields before optimized Dslash" <<std::endl;
       QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
       QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
@@ -510,7 +509,10 @@ testDslashFull::testDslash(const U& u, int t_bc)
       QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
 
       QDPIO::cout << "Before applying QDP Dslash" <<std::endl;
+#endif
+
       // Apply QDP Dslash
+
       chi2 = zero;
       QDPIO::cout << "chi2_norm[cb=0]=" << norm2(chi2, rb[0]) << std::endl;
       QDPIO::cout << "chi2_norm[cb=1]=" << norm2(chi2, rb[1]) << std::endl;
@@ -524,6 +526,7 @@ testDslashFull::testDslash(const U& u, int t_bc)
       QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi,rb[0]) << std::endl;
       QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
 
+#if 1
       // Check the difference per number in chi vector
       Phi diff = chi2 -chi;
       
@@ -557,21 +560,22 @@ testDslashFull::testDslash(const U& u, int t_bc)
 	  } // z 
 	} // t
 	assertion( toBool( diff_norm <= tolerance<T>::small ) );
-      }
+      } // if
 	
+#endif
       
     } // cb
   } // isign
 
 
-
+#if 1
   geom.free(packed_gauge_cb0);
   geom.free(packed_gauge_cb1);
   geom.free(psi_even);
   geom.free(psi_odd);
   geom.free(chi_even);
   geom.free(chi_odd);
-
+#endif
 }
 
 
