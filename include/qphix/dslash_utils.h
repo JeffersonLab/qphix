@@ -5,6 +5,11 @@
 
 #include <cerrno>
 #include "qphix/qphix_config.h"
+
+#ifdef QPHIX_USE_QDPXX_ALLOC
+#include "qdp_pool_allocator.h"
+#endif
+
 #include "qphix/tsc.h"
 
 
@@ -150,7 +155,9 @@ inline
 void* BUFFER_MALLOC(size_t size, int alignment) 
 {
 
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	void* ret_val = QDP::Allocator::theQDPPoolAllocator::Instance().alloc(size);
+#elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -161,7 +168,10 @@ void* BUFFER_MALLOC(size_t size, int alignment)
 inline
 void BUFFER_FREE(void *addr,size_t length)
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	QDP::Allocator::theQDPPoolAllocator::Instance().free(addr);
+
+#elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
 #else
   free(addr);
@@ -171,7 +181,9 @@ void BUFFER_FREE(void *addr,size_t length)
 inline 
 void* ALIGNED_MALLOC(size_t size, unsigned int alignment) 
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	void* ret_val = QDP::Allocator::theQDPPoolAllocator::Instance().alloc(size);
+#elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -182,7 +194,10 @@ void* ALIGNED_MALLOC(size_t size, unsigned int alignment)
 inline void
 ALIGNED_FREE(void *addr)
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	QDP::Allocator::theQDPPoolAllocator::Instance().free(addr);
+
+#elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
 #else
   free(addr);

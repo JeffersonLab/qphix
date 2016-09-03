@@ -72,5 +72,8 @@
 /* MM_MALLOC is on */
 #undef QPHIX_USE_MM_MALLOC
 
+/* Use QDP Allocator */
+#undef QPHIX_USE_QDPXX_ALLOC
+
 /* Version number of package */
 #undef VERSION

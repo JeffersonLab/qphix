@@ -137,7 +137,14 @@ AC_ARG_ENABLE(qdpjit,
    [ qdpjit="no" ]
 )
 
-
+AC_ARG_ENABLE(qdpalloc,
+   AC_HELP_STRING(
+	[ --enable-qdpalloc],
+	[ Indicate we should use QDP Allocator ] 
+  ),
+  [ qdpalloc=${enable_qdpalloc} ],
+  [ qdpalloc="no" ]
+)
    
    
 dnl dnl ******************** DONE WITH USER INPUT *********************
@@ -151,9 +158,16 @@ dnl     ***************************************************************
 
 dnl 
 
+if test "x${qdpalloc}x" = "xyesx"; then
+	AC_MSG_NOTICE([Will Use QDP++ Pool Allocator ])
+	AC_DEFINE(QPHIX_USE_QDPXX_ALLOC, [1], [ Use QDP Allocator ])
+fi
+
 
 if test "X${QDPXX_GIVEN}X" = "XyesX"; then 
+
      dnl Find the QDP++ config program 
+
      if test "X${QDPXX_HOME}X" = "XX" ; 
      then
 	AC_PATH_PROG(QDPXX_CONFIG, [qdp++-config], [])
