@@ -21,6 +21,8 @@
 #undef DEBUG_PACKER
 using namespace QDP;
 
+#define MANUAL_COLLAPSE	1
+
 namespace QPhiX { 
 
 
@@ -59,10 +61,32 @@ namespace QPhiX {
 #ifdef DEBUG_PACKER
     QDPIO::cout <<"QDP GaugePacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
 #endif
+
+#ifndef MANUAL_COLLAPSE
+#pragma omp parallel for collapse(4)
 		for(int64_t t = 0; t < Nt; t++) {
 			for(int64_t z = 0; z < Nz; z++) {
 				for(int64_t y = 0; y < Ny; y++) {
 					for(int64_t s = 0; s < nvecs; s++) {
+#else
+
+		// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+		// in case collapse(4) doesnt work in OpenMP
+		int max_cindex = Nt*Nz*Ny*nvecs;
+
+#pragma omp parallel for
+		for(int cindex=0; cindex < max_cindex; cindex++) {
+			int64_t t1=cindex/nvecs;
+			int64_t s = cindex - nvecs*t1;
+
+			int64_t t2= t1/Ny;
+			int64_t y = t1 - Ny*t2;
+
+			int64_t t = t2/Nz;
+			int64_t z = t2 - Nz*t;
+
+
+#endif
 						for(int64_t mu = 0; mu < 4; mu++) {
 
 						    const WT* u_ptr = (const WT*)((u[mu]).getFjit());
@@ -116,15 +140,20 @@ namespace QPhiX {
 										u_cb1[block][2*mu+1][c][c2][RE][xx] = (FT)u_ptr[rb1_offset + qdp_inner_dim*(RE+n_complex_dim*(c + Nc*c2)) ];
 										u_cb1[block][2*mu+1][c][c2][IM][xx] = (FT)u_ptr[rb1_offset + qdp_inner_dim*(IM+n_complex_dim*(c + Nc*c2)) ];
 
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+									} // x
+								} // c2
+							} // c
+						} // mu
 
+
+#ifndef MANUAL_COLLAPSE
+					} // collapsed s
+				} // collapsed y
+			} // collapsed z
+		} // collapsed t
+#else
+		} // Hanc Collapsed OMP
+#endif
 
 	}
 
@@ -174,20 +203,36 @@ namespace QPhiX {
 		QDPIO::cout <<"QDP CloverPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
 #endif
 		// No elem calls in parallel region
+
+#ifndef MANUAL_COLLAPSE
+#pragma omp parallel for collapse(4)
 		for(int64_t t = 0; t < Nt; t++) {
 			for(int64_t z = 0; z < Nz; z++) {
 				for(int64_t y = 0; y < Ny; y++) {
 					for(int64_t s = 0; s < nvecs; s++) {
+#else
+		// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+		// in case collapse(4) doesnt work in OpenMP
+		int max_cindex = Nt*Nz*Ny*nvecs;
+
+		#pragma omp parallel for
+		for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
+
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
+
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+
+
+#endif
 						for(int64_t x = 0; x < soalen; x++) {
 
 							int64_t block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
 							int64_t xx = (y%nyg)*soalen+x;
-
-#if 0
-							int64_t qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
-#else
 							int64_t qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+cb*rb[cb].numSiteTable();
-#endif
 							int64_t qdp_outer_idx = qdpsite / qdp_inner_dim;
 							int64_t qdp_inner_idx = qdpsite % qdp_inner_dim;
 
@@ -195,31 +240,24 @@ namespace QPhiX {
 							const WT* offdiag_base = &off_diag_buf[offdiag_offset*qdp_outer_idx];
 
 							// WARNING: THIS WORKS ONLY IN OCSRI Layout in QDP_JIT
-							//
-							// For OSCRI Layout: chiral component and diagonal must be transposed.
+							// For OSCRI Layout: chiral component and diagonal must be transpose
 							//                   chiral component and off diagonal must also be transposed
-
 							// Logical Outer x Spin x Color x Inner => Outer x Comp x Diag x Inner
 							// But we are using OCSRI => Outer Diag Comp Inner
 
 							for(int64_t d=0; d < 6; d++) {
 								cl_out[block].diag1[d][xx] = (FT)(diag_base[ qdp_inner_idx + qdp_inner_dim*(0 + chiral_dim*d ) ]);
 							}
-
 							for(int64_t od=0; od < 15; od++) {
-
 								cl_out[block].off_diag1[od][RE][xx] = (FT)(offdiag_base[ qdp_inner_idx +
 										qdp_inner_dim*(RE + n_complex_dim*(0 + chiral_dim*od))]);
 
 								cl_out[block].off_diag1[od][IM][xx] = (FT)(offdiag_base[ qdp_inner_idx +
 										qdp_inner_dim*(IM + n_complex_dim*(0 + chiral_dim*od))]);
-
 							}
-
 							for(int64_t d=0; d < 6; d++) {
 								cl_out[block].diag2[d][xx] = (FT)(diag_base[ qdp_inner_idx + qdp_inner_dim*(1 + chiral_dim*d ) ]);
 							}
-
 							for(int64_t od=0; od < 15; od++) {
 								cl_out[block].off_diag2[od][RE][xx] = (FT)(offdiag_base[ qdp_inner_idx +
 										qdp_inner_dim*(RE + n_complex_dim*(1 + chiral_dim*od))]);
@@ -228,15 +266,16 @@ namespace QPhiX {
 										qdp_inner_dim*(IM + n_complex_dim*(1 + chiral_dim*od))]);
 
 							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-
-
+						} // x
+#ifndef MANUAL_COLLAPSE
+				} // collapsed s
+			} // collapsed y
+		} // collapsed z
+	} // collapsed t
+#else
+				} // Hand collapsed cindex
+#endif
+	} // function
 #endif  // IFDEF BUILD CLOVER
 
 
@@ -264,10 +303,29 @@ namespace QPhiX {
 		QDPIO::cout <<"QDP CBSpinorPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
 #endif
 
+#ifndef MANUAL_COLLAPSE
+#pragma omp parallel for collapse(4)
 		for(int64_t t=0; t < Nt; t++) {
 			for(int64_t z=0; z < Nz; z++) {
 				for(int64_t y=0; y < Ny; y++) {
 					for(int64_t s=0; s < nvecs; s++) {
+#else
+						// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+						// in case collapse(4) doesnt work in OpenMP
+						int max_cindex = Nt*Nz*Ny*nvecs;
+
+#pragma omp parallel for
+						for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
+
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
+
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+#endif
+
 						for(int64_t col=0; col < 3; col++) {
 							for(int64_t spin=0; spin < 4; spin++) {
 								for(int64_t x=0; x < soalen; x++) {
@@ -294,14 +352,17 @@ namespace QPhiX {
 									psi[ind][col][spin][0][x] = (FT)psiptr[offset+qdp_inner_dim*(RE + n_complex_dim*(spin + Ns*col)) ];
 
 									psi[ind][col][spin][1][x] = (FT)psiptr[offset+qdp_inner_dim*(IM + n_complex_dim*(spin + Ns*col)) ];
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
+								} // x
+							} // spin
+						}  // col
+#ifndef MANUAL_COLLAPSE
+					} //s
+				} //y
+			} // z
+		} // t
+#else
+		} // cindex
+#endif
 	}
 
 
@@ -329,10 +390,28 @@ namespace QPhiX {
     QDPIO::cout <<"QDP CBSpinorUnPacker: sizeof(FT)=" <<sizeof(FT) << " sizeof(WT)=" << sizeof(WT) << " qdp_inner=" << qdp_inner_dim << " SOA=" << soalen << " veclen=" << veclen << std::endl;
 #endif
 
+#ifndef MANUAL_COLLAPSE
+#pragma omp parallel  for collapse(4)
 		for(int64_t t=0; t < Nt; t++) {
 			for(int64_t z=0; z < Nz; z++) {
 				for(int64_t y=0; y < Ny; y++) {
 					for(int64_t s=0; s < nvecs; s++) {
+#else
+						// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+						// in case collapse(4) doesnt work in OpenMP
+						int max_cindex = Nt*Nz*Ny*nvecs;
+
+				#pragma omp parallel for
+						for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
+
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
+
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+#endif
 						for(int64_t spin=0; spin < 4; spin++) {
 							for(int64_t col=0; col < 3; col++) {
 								for(int64_t x=0; x < soalen; x++) {
@@ -358,17 +437,22 @@ namespace QPhiX {
 									chiptr[offset+qdp_inner_dim*(RE + n_complex_dim*(spin + Ns*col)) ] = (WT)chi_packed[ind][col][spin][0][x];
 									chiptr[offset+qdp_inner_dim*(IM + n_complex_dim*(spin + Ns*col)) ] = (WT)chi_packed[ind][col][spin][1][x];
 
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+								} // x
+							} // spin
+ 						} // col
+#ifndef MANUAL_COLLAPSE
+					} // s
+				} // y
+			} // z
+		} //t
+#else
+		} // cindex
+#endif
+
 #ifdef DEBUG_PACKER
 	QDPIO::cout << "QDP CBSpinorUnPacker: Done" << std::endl;
 #endif
-	}
+	} // function
 
 };
 

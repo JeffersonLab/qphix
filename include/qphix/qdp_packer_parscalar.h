@@ -17,6 +17,8 @@
 #include "qphix/clover_dslash_def.h"
 #endif
 
+#define MANUAL_COLLAPSE 1
+
 using namespace QDP;
 
 namespace QPhiX { 
@@ -44,51 +46,80 @@ namespace QPhiX {
       u_minus[mu] = shift(u[mu], BACKWARD, mu);
     }
 
-    
+#ifndef MANUAL_COLLAPSE
 #pragma omp parallel for collapse(4)
-    for(int t = 0; t < Nt; t++) {
-      for(int z = 0; z < Nz; z++) {
-  for(int y = 0; y < Ny; y++) {
-    for(int s = 0; s < nvecs; s++) {
-      for(int mu = 0; mu < 4; mu++) {
-        int outer_c = 3;
-        if ( compress ) {
-    outer_c = 2;
-        }
-        for(int c = 0; c < outer_c; c++) {
-    for(int c2 = 0; c2 < 3; c2++) {
-      for(int x = 0; x < soalen; x++) {
+    for(int64_t t = 0; t < Nt; t++) {
+    	for(int64_t z = 0; z < Nz; z++) {
+    		for(int64_t y = 0; y < Ny; y++) {
+    			for(int64_t s = 0; s < nvecs; s++) {
+#else
 
-        //#ifndef USE_PACKED_GAUGES
-        //int xx = x;
-        //int block = ((t*Nz+z)*Ny+y)*nvecs+s;
+    				// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+    				// in case collapse(4) doesnt work in OpenMP
+    				int max_cindex = Nt*Nz*Ny*nvecs;
 
-        //#endif
-        //#else // USE_PACKED_GAUGES
-        int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-        int xx = (y%nyg)*soalen+x;
-        // #endif // USE_PACKED_GAUGES
+#pragma omp parallel for
+    				for(int cindex=0; cindex < max_cindex; cindex++) {
+    					int64_t t1=cindex/nvecs;
+    					int64_t s = cindex - nvecs*t1;
 
-        int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
-        u_cb0[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
-        u_cb0[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
-        u_cb0[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
-        u_cb0[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
-        
-        
-        u_cb1[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
-        u_cb1[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
-        u_cb1[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
-        u_cb1[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
-      }   
-    }   
-        }
-      }
-    }
-  }
-      }
-    }
-  }
+    					int64_t t2= t1/Ny;
+    					int64_t y = t1 - Ny*t2;
+
+    					int64_t t = t2/Nz;
+    					int64_t z = t2 - Nz*t;
+
+
+#endif
+
+    					for(int mu = 0; mu < 4; mu++) {
+    						int outer_c = 3;
+    						if	 ( compress ) {
+    							outer_c = 2;
+    						}
+    						for(int c = 0; c < outer_c; c++) {
+    							for(int c2 = 0; c2 < 3; c2++) {
+    								for(int x = 0; x < soalen; x++) {
+
+    									//#ifndef USE_PACKED_GAUGES
+    									//int xx = x;
+    									//int block = ((t*Nz+z)*Ny+y)*nvecs+s;
+
+    									//#endif
+    									//#else // USE_PACKED_GAUGES
+    									int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
+    									int xx = (y%nyg)*soalen+x;
+    									// #endif // USE_PACKED_GAUGES
+
+    									int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)));
+    									u_cb0[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
+    									u_cb0[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
+    									u_cb0[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).real();
+    									u_cb0[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[0].start() + qdpsite).elem().elem(c2,c).imag();
+
+
+    									u_cb1[block][2*mu][c][c2][0][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
+    									u_cb1[block][2*mu][c][c2][1][xx] = u_minus[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
+    									u_cb1[block][2*mu+1][c][c2][0][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).real();
+    									u_cb1[block][2*mu+1][c][c2][1][xx] = u[mu].elem(rb[1].start() + qdpsite).elem().elem(c2,c).imag();
+    								}   // x
+    							}    //c2
+    						} //c
+    					} // mu
+#ifndef MANUAL_COLLAPSE
+    				} // collapsed s
+    			} // collapsed y
+    		} // collapsed z
+
+    	} // collapsed t
+#else
+    } // cindex
+#endif
+
+  } // end of function
+
+
+
 
 #ifdef QPHIX_BUILD_CLOVER
   template<typename FT, int veclen, int soalen, bool compress, typename ClovTerm>
@@ -105,39 +136,63 @@ namespace QPhiX {
     int Pxyz = s.getPxyz();
     const auto& qdp_clov_in_buf = qdp_clov_in.getTriBuffer();
  
+#ifndef MANUAL_COLLAPSE
 #pragma omp parallel for collapse(4)
-    for(int t = 0; t < Nt; t++) {
-      for(int z = 0; z < Nz; z++) {
-  for(int y = 0; y < Ny; y++) {
-    for(int s = 0; s < nvecs; s++) {
-      for(int x = 0; x < soalen; x++) {
-        
-        int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
-        int xx = (y%nyg)*soalen+x;
-        int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
-        
-        for(int d=0; d < 6; d++) { 
-    cl_out[block].diag1[d][xx]=qdp_clov_in_buf[qdpsite].diag[0][d].elem();
-        }
-        for(int od=0; od < 15; od++) { 
-    cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].real();
-    cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].imag();
-        }
+		for(int64_t t = 0; t < Nt; t++) {
+			for(int64_t z = 0; z < Nz; z++) {
+				for(int64_t y = 0; y < Ny; y++) {
+					for(int64_t s = 0; s < nvecs; s++) {
+#else
+		// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+		// in case collapse(4) doesnt work in OpenMP
+		int max_cindex = Nt*Nz*Ny*nvecs;
 
-        for(int d=0; d < 6; d++) { 
-    cl_out[block].diag2[d][xx]=qdp_clov_in_buf[qdpsite].diag[1][d].elem();
-        }
-        for(int od=0; od < 15; od++) { 
-    cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].real();
-    cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].imag();
-        }
-      }
-    }
+		#pragma omp parallel for
+		for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
+
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
+
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+
+
+#endif
+							for(int64_t x = 0; x < soalen; x++) {
+
+								int block = (t*Pxyz+z*Pxy)/nyg+(y/nyg)*nvecs+s;
+								int xx = (y%nyg)*soalen+x;
+								int qdpsite = x + soalen*(s + nvecs*(y + Ny*(z + Nz*t)))+rb[cb].start();
+
+								for(int d=0; d < 6; d++) {
+									cl_out[block].diag1[d][xx]=qdp_clov_in_buf[qdpsite].diag[0][d].elem();
+								}
+								for(int od=0; od < 15; od++) {
+									cl_out[block].off_diag1[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].real();
+									cl_out[block].off_diag1[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[0][od].imag();
+								}
+
+								for(int d=0; d < 6; d++) {
+									cl_out[block].diag2[d][xx]=qdp_clov_in_buf[qdpsite].diag[1][d].elem();
+								}
+								for(int od=0; od < 15; od++) {
+									cl_out[block].off_diag2[od][RE][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].real();
+									cl_out[block].off_diag2[od][IM][xx]=qdp_clov_in_buf[qdpsite].offd[1][od].imag();
+								}
+							}// x
+
+#ifndef MANUAL_COLLAPSE
+				} // collapsed s
+			} // collapsed y
+		} // collapsed z
+	} // collapsed t
+#else
+				} // Hand collapsed cindex
+#endif
+
   }
-      }
-    }
-  }
-  
 #endif  // IFDEF BUILD CLOVER
 
 
@@ -156,29 +211,53 @@ namespace QPhiX {
     int Pxy = s.getPxy();
     int Pxyz = s.getPxyz();
 
+#ifndef MANUAL_COLLAPSE
 #pragma omp parallel for collapse(4)
-      for(int t=0; t < Nt; t++) {
-  for(int z=0; z < Nz; z++) {
-    for(int y=0; y < Ny; y++) {
-      for(int s=0; s < nvecs; s++) { 
-        for(int col=0; col < 3; col++)  {
-    for(int spin=0; spin < 4; spin++) { 
-      for(int x=0; x < soalen; x++) { 
+		for(int64_t t=0; t < Nt; t++) {
+			for(int64_t z=0; z < Nz; z++) {
+				for(int64_t y=0; y < Ny; y++) {
+					for(int64_t s=0; s < nvecs; s++) {
+#else
+						// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+						// in case collapse(4) doesnt work in OpenMP
+						int max_cindex = Nt*Nz*Ny*nvecs;
 
-        int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-        int x_coord = s*soalen + x;
+				#pragma omp parallel for
+						for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
+
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
+
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+#endif
+
+
+        for(int col=0; col < 3; col++)  {
+        	for(int spin=0; spin < 4; spin++) {
+        		for(int x=0; x < soalen; x++) {
+
+        			int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+        			int x_coord = s*soalen + x;
         
-        int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
-        psi[ind][col][spin][0][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real();
-        psi[ind][col][spin][1][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag();
+        			int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
+        			psi[ind][col][spin][0][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real();
+        			psi[ind][col][spin][1][x] = psi_in.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag();
       
-      }
-    }
+        		}
+        	}
         }
-      }
-    }
-  }
-      }
+#ifndef MANUAL_COLLAPSE
+					} //s
+				} //y
+			} // z
+		} // t
+#else
+		}
+#endif
+
       
   }
 
@@ -197,31 +276,55 @@ namespace QPhiX {
     int Pxy = s.getPxy();
     int Pxyz = s.getPxyz();
 
+#ifndef MANUAL_COLLAPSE
+#pragma omp parallel  for collapse(4)
+		for(int64_t t=0; t < Nt; t++) {
+			for(int64_t z=0; z < Nz; z++) {
+				for(int64_t y=0; y < Ny; y++) {
+					for(int64_t s=0; s < nvecs; s++) {
+#else
+						// cindex = combined index = s + nvecs*(y + Ny*(z + Nz*t ) )
+						// in case collapse(4) doesnt work in OpenMP
+						int max_cindex = Nt*Nz*Ny*nvecs;
 
-#pragma omp parallel for collapse(4)    
-    for(int t=0; t < Nt; t++) {
-      for(int z=0; z < Nz; z++) {
-  for(int y=0; y < Ny; y++) {
-    for(int s=0; s < nvecs; s++) { 
-      for(int spin=0; spin < 4; spin++) { 
-        for(int col=0; col < 3; col++)  {
-    for(int x=0; x < soalen; x++) { 
+#pragma omp parallel for
+						for(int cindex=0; cindex < max_cindex; cindex++) {
+							int64_t t1=cindex/nvecs;
+							int64_t s = cindex - nvecs*t1;
 
-      int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-      int x_coord = s*soalen + x;
-      
-      int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
-      
-      chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real() =  chi_packed[ind][col][spin][0][x];
-      chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag() =  chi_packed[ind][col][spin][1][x];
+							int64_t t2= t1/Ny;
+							int64_t y = t1 - Ny*t2;
 
-    }
-        }
-      }
-    }
-  }
-      }
-    }
+							int64_t t = t2/Nz;
+							int64_t z = t2 - Nz*t;
+#endif
+
+							for(int spin=0; spin < 4; spin++) {
+								for(int col=0; col < 3; col++)  {
+									for(int x=0; x < soalen; x++) {
+
+										int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+										int x_coord = s*soalen + x;
+
+										int qdp_ind = ((t*Nz + z)*Ny + y)*Nxh + x_coord;
+
+										chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).real() =  chi_packed[ind][col][spin][0][x];
+										chi.elem(rb[cb].start()+qdp_ind).elem(spin).elem(col).imag() =  chi_packed[ind][col][spin][1][x];
+
+									}
+								}
+							}
+#ifndef MANUAL_COLLAPSE
+						}
+					}
+				}
+			}
+#else
+		}
+#endif
+
+
+
   }
 
 };
