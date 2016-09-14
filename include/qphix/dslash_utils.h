@@ -7,7 +7,8 @@
 #include "qphix/qphix_config.h"
 
 #ifdef QPHIX_USE_QDPXX_ALLOC
-#include "qdp_pool_allocator.h"
+#include "qdp.h"
+#include "qdp_allocator.h"
 #endif
 
 #include "qphix/tsc.h"
@@ -156,7 +157,12 @@ void* BUFFER_MALLOC(size_t size, int alignment)
 {
 
 #if defined(QPHIX_USE_QDPXX_ALLOC)
-	void* ret_val = QDP::Allocator::theQDPPoolAllocator::Instance().alloc(size);
+	void* ret_val = QDP::Allocator::theQDPAllocator::Instance().allocate(size, QDP::Allocator::DEFAULT);
+	if (ret_val == nullptr ) {
+		QDP::QDPIO::cout << "QDP Memory Allocation Failed in QPhiX::BUFFER_MALLOC. Dumping Memmap and aborting " << std::endl;
+		QDP::Allocator::theQDPAllocator::Instance().dump();
+		QDP::QDP_abort(1);
+	}
 #elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
@@ -169,7 +175,7 @@ inline
 void BUFFER_FREE(void *addr,size_t length)
 {
 #if defined(QPHIX_USE_QDPXX_ALLOC)
-	QDP::Allocator::theQDPPoolAllocator::Instance().free(addr);
+	QDP::Allocator::theQDPAllocator::Instance().free(addr);
 
 #elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
@@ -182,7 +188,12 @@ inline
 void* ALIGNED_MALLOC(size_t size, unsigned int alignment) 
 {
 #if defined(QPHIX_USE_QDPXX_ALLOC)
-	void* ret_val = QDP::Allocator::theQDPPoolAllocator::Instance().alloc(size);
+	void* ret_val = QDP::Allocator::theQDPAllocator::Instance().allocate(size,QDP::Allocator::DEFAULT);
+	if( ret_val == nullptr ) {
+		QDP::QDPIO::cout << "QDP Memory Allocation Failed in QPhiX::ALIGNED_MALLOC. Dumping Memmap and aborting " << std::endl;
+ 		QDP::Allocator::theQDPAllocator::Instance().dump();
+		QDP::QDP_abort(1);
+	}
 #elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
@@ -195,7 +206,7 @@ inline void
 ALIGNED_FREE(void *addr)
 {
 #if defined(QPHIX_USE_QDPXX_ALLOC)
-	QDP::Allocator::theQDPPoolAllocator::Instance().free(addr);
+	QDP::Allocator::theQDPAllocator::Instance().free(addr);
 
 #elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
