@@ -5,6 +5,12 @@
 
 #include <cerrno>
 #include "qphix/qphix_config.h"
+
+#ifdef QPHIX_USE_QDPXX_ALLOC
+#include "qdp.h"
+#include "qdp_allocator.h"
+#endif
+
 #include "qphix/tsc.h"
 
 
@@ -23,6 +29,7 @@ using namespace std;
 // Options
 #undef SCATTERED_THREAD_IDS
 
+#if 0
 #define S0     (0)
 #define S1     (1)
 #define S2     (2)
@@ -34,11 +41,25 @@ using namespace std;
 
 #define RE     (0)
 #define IM     (1)
+#endif
+
 
 // Use _mm_malloc on non MIC for now.
 
 
 namespace QPhiX { 
+
+   const int S0=0;
+   const int S1=1;
+   const int S2=2;
+   const int S3=3;
+
+   const int C0=0;
+   const int C1=1;
+   const int C2=2;
+
+   const int RE=0;
+   const int IM=1; 
 
   struct BlockPhase {
     int by;
@@ -135,7 +156,14 @@ inline
 void* BUFFER_MALLOC(size_t size, int alignment) 
 {
 
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	void* ret_val = QDP::Allocator::theQDPAllocator::Instance().allocate(size, QDP::Allocator::DEFAULT);
+	if (ret_val == nullptr ) {
+		QDP::QDPIO::cout << "QDP Memory Allocation Failed in QPhiX::BUFFER_MALLOC. Dumping Memmap and aborting " << std::endl;
+		QDP::Allocator::theQDPAllocator::Instance().dump();
+		QDP::QDP_abort(1);
+	}
+#elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -146,7 +174,10 @@ void* BUFFER_MALLOC(size_t size, int alignment)
 inline
 void BUFFER_FREE(void *addr,size_t length)
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	QDP::Allocator::theQDPAllocator::Instance().free(addr);
+
+#elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
 #else
   free(addr);
@@ -156,7 +187,14 @@ void BUFFER_FREE(void *addr,size_t length)
 inline 
 void* ALIGNED_MALLOC(size_t size, unsigned int alignment) 
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	void* ret_val = QDP::Allocator::theQDPAllocator::Instance().allocate(size,QDP::Allocator::DEFAULT);
+	if( ret_val == nullptr ) {
+		QDP::QDPIO::cout << "QDP Memory Allocation Failed in QPhiX::ALIGNED_MALLOC. Dumping Memmap and aborting " << std::endl;
+ 		QDP::Allocator::theQDPAllocator::Instance().dump();
+		QDP::QDP_abort(1);
+	}
+#elif defined(QPHIX_USE_MM_MALLOC)
   void* ret_val =  _mm_malloc(size, alignment);
 #else
   void* ret_val =  QPhiX::aligned_malloc(size, alignment);
@@ -167,7 +205,10 @@ void* ALIGNED_MALLOC(size_t size, unsigned int alignment)
 inline void
 ALIGNED_FREE(void *addr)
 {
-#ifdef QPHIX_USE_MM_MALLOC
+#if defined(QPHIX_USE_QDPXX_ALLOC)
+	QDP::Allocator::theQDPAllocator::Instance().free(addr);
+
+#elif defined(QPHIX_USE_MM_MALLOC)
   _mm_free(addr);
 #else
   free(addr);
@@ -183,7 +224,9 @@ ALIGNED_FREE(void *addr)
 #include "qphix/Barrier_stubs.h"
 #endif
 
+#ifndef MIN
 #define MIN(a,b)   ( (a) < (b) ? (a) : (b) )
+#endif
 
 #define BARRIER_TSLICES 16
 #define N_PROBES 8

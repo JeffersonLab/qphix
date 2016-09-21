@@ -2,9 +2,12 @@
 #ifndef __clover_term_qdp_w_h__
 #define __clover_term_qdp_w_h__
 
-#include "clover_fermact_params_w.h"
-#include "mesfield.h"
+#include "./clover_fermact_params_w.h"
+#include "./mesfield.h"
 
+using namespace QDP;
+
+namespace QPhiX {
 //! Special structure used for triangular objects
 template<typename R>
 struct PrimitiveClovTriang
@@ -74,6 +77,8 @@ public:
     return tri;
   }
 
+  void printDiag(void) const;
+
 protected:
   //! Create the clover term on cb
   /*!
@@ -90,6 +95,7 @@ protected:
 
   //! Calculates Tr_D ( Gamma_mat L )
   Real getCloverCoeff(int mu, int nu) const;
+
 
 
 private:
@@ -190,9 +196,34 @@ void QDPCloverTermT<T,U>::create(const multi1d<U>& u_,
       choles_done[i] = false;
     }
     
+
+
   }
 
-
+    template<typename T, typename U>
+	void QDPCloverTermT<T,U>::printDiag(void) const
+	{
+		for(int site=0; site < 8; ++site) {
+			QDPIO::cout << "site = " << site;
+			for(int block=0; block < 2; ++block) {
+				QDPIO::cout << "  block =  " << block << " diag = ( ";
+				for(int d=0; d < 6; ++d ) {
+					QDPIO::cout << tri[site].diag[block][d] << " ";
+				}
+				QDPIO::cout << " )  ";
+			}
+			QDPIO::cout << std::endl;
+			QDPIO::cout << std::endl;
+			for(int block=0; block < 2; ++block) {
+				QDPIO::cout << "  block =  " << block << " od = ( ";
+				for(int od=0; od < 15; ++od ) {
+					QDPIO::cout << tri[site].offd[block][od] << " ";
+				}
+				QDPIO::cout << " )  ";
+			}
+			QDPIO::cout << std::endl;
+		}
+	}
   /*
    * MAKCLOV 
    *
@@ -1458,5 +1489,5 @@ void QDPCloverTermT<T,U>::create(const multi1d<U>& u_,
   typedef QDPCloverTermT<LatticeFermionD, LatticeColorMatrixD> QDPCloverTermD;
 
 
-
+}
 #endif

@@ -24,6 +24,9 @@
 /* Generate AVX2 Specializations */
 #undef QPHIX_AVX2_SOURCE
 
+/* Generate AVX512 Specializations */
+#undef QPHIX_AVX512_SOURCE
+
 /* Generate AVX Specializations */
 #undef QPHIX_AVX_SOURCE
 
@@ -32,6 +35,9 @@
 
 /* Build Twisted Mass Term */
 #undef QPHIX_BUILD_TWISTED_MASS
+
+/* Build wtth QDPJIT */
+#undef QPHIX_BUILD_QDPJIT
 
 /* Do the actual comms */
 #undef QPHIX_DO_COMMS
@@ -63,11 +69,17 @@
 /* SOALEN is 16 */
 #undef QPHIX_SOALEN
 
+/* Generate SSE4 Specializations */
+#undef QPHIX_SSE_SOURCE
+
 /* CEAN is on */
 #undef QPHIX_USE_CEAN
 
 /* MM_MALLOC is on */
 #undef QPHIX_USE_MM_MALLOC
+
+/* Use QDP Allocator */
+#undef QPHIX_USE_QDPXX_ALLOC
 
 /* Version number of package */
 #undef VERSION

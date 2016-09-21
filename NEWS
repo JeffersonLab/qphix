@@ -1,3 +1,6 @@
+6/24/2015 (Balint Joo/Thorsten Kurth) - Added lots of cleanup for KNL. Added packers for QDP-JIT (OCSRI layout for now)
+1/12/2016 (Balint Joo/Aaron Walden) - Added AVX512 output from code generator. Tested on Intel SDE. Single and Double precision work, 16-bit precision is currently broken.
+
 4/9/2015 (Balint Joo): Added Basic Multi-Shift solvers -- but can still add more optimizations. Need to test multi-node etc.
 3/5/2015 (Balint Joo): Changed the interface to solvers, to accept isign parameter. For CG this lets one choose the operator either as M^\dagger M or M M^\dagger. This will allow CGNE vs CGNR implementations later. For BiCG it enables one to perform either the M or the M^\dagger solve without creating a new solver object, Also added checkerboard only spinor packers. Solvers which work only on one checkerboard can now just allocate cb-s worth of spinors in the calling wrappers.
 

@@ -130,12 +130,31 @@ AC_ARG_WITH(qdp,
 AC_ARG_ENABLE(proc,
    AC_HELP_STRING(
 	[--enable-proc=proc],
-	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,MIC ]
+	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,AVX512,MIC ]
    ),
    [ proc="${enable_proc}" ],
    [ proc="NONE"]
 )
 
+AC_ARG_ENABLE(qdpjit,
+   AC_HELP_STRING(
+	[ --enable-qdpjit],
+	[ Indicate that QDP-JIT is being used ]
+   ),
+   [ qdpjit=${enable_qdpjit} ],
+   [ qdpjit="no" ]
+)
+
+AC_ARG_ENABLE(qdpalloc,
+   AC_HELP_STRING(
+	[ --enable-qdpalloc],
+	[ Indicate we should use QDP Allocator ] 
+  ),
+  [ qdpalloc=${enable_qdpalloc} ],
+  [ qdpalloc="no" ]
+)
+   
+   
 dnl dnl ******************** DONE WITH USER INPUT *********************
 dnl dnl ***        Now Configuration                               ****
 dnl dnl ***************************************************************
@@ -147,9 +166,16 @@ dnl     ***************************************************************
 
 dnl 
 
+if test "x${qdpalloc}x" = "xyesx"; then
+	AC_MSG_NOTICE([Will Use QDP++ Pool Allocator ])
+	AC_DEFINE(QPHIX_USE_QDPXX_ALLOC, [1], [ Use QDP Allocator ])
+fi
+
 
 if test "X${QDPXX_GIVEN}X" = "XyesX"; then 
+
      dnl Find the QDP++ config program 
+
      if test "X${QDPXX_HOME}X" = "XX" ; 
      then
 	AC_PATH_PROG(QDPXX_CONFIG, [qdp++-config], [])
@@ -323,6 +349,11 @@ case ${SOALEN} in
 	AC_MSG_NOTICE([Building for SOALEN=1])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[1], [SOALEN is 1])
 	;;
+2) 
+	AC_MSG_NOTICE([Building for SOALEN=2])
+	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[2], [SOALEN is 2])
+	;;
+
 4)
 	AC_MSG_NOTICE([Building for SOALEN=4])
 	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
@@ -392,15 +423,30 @@ AVX|avx)
 	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
 	fi		       	    
 ;;
-AVX2|avx2) 
-	AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
-	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+AVX2|avx2)
+        AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
+        AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 
-	AC_MSG_NOTICE([Configuring AVX2 Specializations ])
-	if test $SOALEN -gt 8;
-	then 
-	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX2]);
-	fi		       	    
+        AC_MSG_NOTICE([Configuring AVX2 Specializations ])
+        if test $SOALEN -gt 8;
+        then
+          AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX2]);
+        fi
+;;
+AVX512|avx512)
+        AC_DEFINE([QPHIX_AVX512_SOURCE],[1], [ Generate AVX512 Specializations ])
+        AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+
+        AC_MSG_NOTICE([Configuring AVX512 Specializations ])
+;;
+SSE|sse)
+	AC_DEFINE([QPHIX_SSE_SOURCE],[1], [ Generate SSE4 Specializations ])
+	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN],[64], [ L2 Cache alignment ])
+	AC_MSG_NOTICE([Configuring SSE4 Specializations])
+	if test $SOALEN -gt 4;
+        then
+	  AC_MSG_ERROR([Cannot have SOALEN more than 4 for SSE])
+        fi
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
@@ -428,7 +474,26 @@ QPX|qpx)
 	;;
 esac
 
+build_qdpjit_clover="no"
+
+case ${qdpjit} in
+yes|YES)
+   AC_MSG_NOTICE([Building with QDPJIT])
+   AC_DEFINE([QPHIX_BUILD_QDPJIT], [1], [ Build wtth QDPJIT ] )
+   if test "x${build_clover}x" = "xyesx";
+   then 
+       build_qdpjit_clover="yes"
+   fi     
+;;
+*)
+  AC_MSG_NOTICE([Building regular QDP Clover Term])
+;;
+esac
+
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QDPJIT_CLOVER, [ test "x${build_qdpjit_clover}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_QDP_CLOVER, [ test "x${build_qdpjit_clover}x" = "xnox" ])
+
 AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 
 AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS, [ test "x${build_twisted}x" = "xyesx" ])
@@ -439,9 +504,11 @@ AC_CONFIG_FILES(include/Makefile)
 AC_CONFIG_FILES(include/qphix/Makefile)
 AC_CONFIG_FILES(include/qphix/avx/Makefile)
 AC_CONFIG_FILES(include/qphix/avx2/Makefile)
-AC_CONFIG_FILES(include/qphix/mic/Makefile)
+AC_CONFIG_FILES(include/qphix/avx512/Makefile)
 AC_CONFIG_FILES(include/qphix/scalar/Makefile)
 AC_CONFIG_FILES(include/qphix/qpx/Makefile)
+AC_CONFIG_FILES(include/qphix/sse/Makefile)
+AC_CONFIG_FILES(include/qphix/mic/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_OUTPUT

@@ -16,12 +16,16 @@ using namespace Assertions;
 #include "qphix/blas_new_c.h"
 
 
-#ifdef  QPHIX_MIC_SOURCE
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 #define VECLEN 16
 #endif
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 #define VECLEN 8
+#endif
+
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN 4
 #endif
 
 #ifdef QPHIX_SCALAR_SOURCE
@@ -75,14 +79,14 @@ void resetSpinors( Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*  x
   
   
   
-  
+  int NV=geom.nVecs();  
   // Now we need to fill the arrays with drand48 numbers
   // We could speed this up with a parallel RNG
 #pragma omp parallel for collapse(4)
   for(int t=0; t < Nt; t++) { 
     for(int z=0; z < Nz; z++) { 
       for(int y=0; y < Ny; y++) { 
-	for(int vec=0; vec < geom.nVecs(); vec++) { 
+	for(int vec=0; vec < NV; vec++) { 
 	  for(int col=0; col < 3; col++) {
 	    for( int spin=0; spin < 4; spin++) { 
 	      int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
@@ -184,6 +188,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
  
 
   masterPrintf("Initializing Geometry\n");
+  int NV = geom.nVecs();
 
   // Allocate data for the spinors
   Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock* x1=(Geometry<float,VECLEN,QPHIX_SOALEN,true>::FourSpinorBlock*)geom.allocCBFourSpinor();
@@ -203,7 +208,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
 
 
-#if 1
+#if 0
  // =============== COPY ==================
   {
     
@@ -252,14 +257,14 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 #else
       copySpinor<float,VECLEN,QPHIX_SOALEN,true>(y2, x1, geom, bt);
 #endif
-
+      int NV=geom.nVecs();
       try { 
 
 #pragma omp parallel for collapse(6)
 	for(int t=0; t < Nt; t++) { 
 	  for(int z=0; z < Nz; z++) { 
 	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < geom.nVecs(); vec++) { 
+	      for(int vec=0; vec < NV; vec++) { 
 		for(int col=0; col < 3; col++) {
 		  for( int spin=0; spin < 4; spin++) { 
 		    for( int reim=0; reim < 2; reim++) { 
@@ -326,10 +331,10 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 #endif
   //  ================== END COPY =======================
 
-#if 1
+#if 0
  //   ====================   AYPX ========================
   {
-    
+   resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);  
     // copy to x2,y2,z2,t2
     copy(z1,x1,N_blocks);
     copy(t1,y1, N_blocks);
@@ -359,7 +364,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       masterPrintf("FAILED \n");
     }
     
-    
+    int NV=geom.nVecs(); 
    
     // Optimized (?) it
     for( int bt=1; bt <=N_simt; bt++) { 
@@ -374,7 +379,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 	for(int t=0; t < Nt; t++) { 
 	  for(int z=0; z < Nz; z++) { 
 	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < geom.nVecs(); vec++) { 
+	      for(int vec=0; vec < NV; vec++) { 
 		for(int col=0; col < 3; col++) {
 		  for( int spin=0; spin < 4; spin++) { 
 		    for( int reim=0; reim < 2; reim++) { 
@@ -434,31 +439,44 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 //   ====================  END  AYPX ========================
 
 
-#if 0
+#if 1
 
  //  ============ XMYNORM2SPINOR =========================
   {
-    masterPrintf("Testing xmyNorm2Spinor: ");
+
+    resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
+    masterPrintf("Testing xmyNorm2SpinoBarfaroni: "); // Printed
+ 
     copy(z1,x1, N_blocks);
     copy(t1,y1, N_blocks);
+
+    int NV = geom.nVecs();
+
+    masterPrintf("Done copying NV=%d\n", NV);
 
     double norm=0;
     float *x1f = (float *)x1;
     float *y1f = (float *)y1;
     float *w1f = (float *)w1;
-    
+
+
+    masterPrintf("Nt = %d \n", Nt);
+    fflush(stdout);
+
     for(int t=0; t < Nt; t++) { 
+
       for(int z=0; z < Nz; z++) { 
 	for(int y=0; y < Ny; y++) { 
-	  for(int vec=0; vec < geom.nVecs(); vec++) { 
+	  for(int vec=0; vec < NV; vec++) { 
 	    for(int col=0; col < 3; col++) {
 	      for( int spin=0; spin < 4; spin++) { 
 		for( int reim=0; reim < 2; reim++) { 
 		  for(int s=0; s < QPHIX_SOALEN; s++) { 
 		    int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
 		    w1[block][col][spin][reim][s] = x1[block][col][spin][reim][s] - y1[block][col][spin][reim][s];
-		    double w1sd =  w1[block][col][spin][reim][s];
+		    double w1sd = (double) w1[block][col][spin][reim][s];
 		    norm += w1sd*w1sd;
+		    fflush(stdout);
 		  }
 		}
 	      }
@@ -476,6 +494,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     double norm2=0;
     xmyNorm2Spinor<float,VECLEN>((float *)w2,(float *)x2, (float *)y2, norm2, len);
 
+    masterPrintf("norm=%16.8e norm2 =%16.8e \n", norm,norm2);
 
     float *w2f = (float *)w2;
     
@@ -501,7 +520,8 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       
       masterPrintf("Testing xmyNorm2Spinor with %d threads: ", bt);
       
-      
+     int NV = geom.nVecs();
+ 
       copy(z1, x2, N_blocks);
       copy(t1, y2, N_blocks);
       norm2=0;
@@ -512,7 +532,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 	for(int t=0; t < Nt; t++) { 
 	  for(int z=0; z < Nz; z++) { 
 	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < geom.nVecs(); vec++) { 
+	      for(int vec=0; vec < NV; vec++) { 
 		for(int col=0; col < 3; col++) {
 		  for( int spin=0; spin < 4; spin++) { 
 		    for( int reim=0; reim < 2; reim++) { 
@@ -584,7 +604,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   
 #endif
  
-#if 1
+#if 0
 // RMAMMPNORM2RXPAP
   {
     double norm;
@@ -600,13 +620,15 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     float *mmp1f = (float *)t1;
 
     masterPrintf("Testing rmammpNorm2rxpap\n");
-    
+   
+int NV = geom.nVecs();
+ 
     float ar=0.6;
     norm = 0;
     for(int t=0; t < Nt; t++) { 
       for(int z=0; z < Nz; z++) { 
 	for(int y=0; y < Ny; y++) { 
-	  for(int vec=0; vec < geom.nVecs(); vec++) { 
+	  for(int vec=0; vec < NV; vec++) { 
 	    for(int col=0; col < 3; col++) {
 	      for( int spin=0; spin < 4; spin++) { 
 		for( int reim=0; reim < 2; reim++) { 
@@ -639,7 +661,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       for(int t=0; t < Nt; t++) { 
 	for(int z=0; z < Nz; z++) { 
 	  for(int y=0; y < Ny; y++) { 
-	    for(int vec=0; vec < geom.nVecs(); vec++) { 
+	    for(int vec=0; vec < NV; vec++) { 
 	      for(int col=0; col < 3; col++) {
 		for( int spin=0; spin < 4; spin++) { 
 		  for( int reim=0; reim < 2; reim++) { 
@@ -664,7 +686,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
       for(int t=0; t < Nt; t++) { 
 	for(int z=0; z < Nz; z++) { 
 	  for(int y=0; y < Ny; y++) { 
-	    for(int vec=0; vec < geom.nVecs(); vec++) { 
+	    for(int vec=0; vec < NV; vec++) { 
 	      for(int col=0; col < 3; col++) {
 		for( int spin=0; spin < 4; spin++) { 
 		  for( int reim=0; reim < 2; reim++) { 
@@ -711,7 +733,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 	for(int t=0; t < Nt; t++) { 
 	  for(int z=0; z < Nz; z++) { 
 	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < geom.nVecs(); vec++) { 
+	      for(int vec=0; vec < NV; vec++) { 
 		for(int col=0; col < 3; col++) {
 		  for( int spin=0; spin < 4; spin++) { 
 		    for( int reim=0; reim < 2; reim++) { 
@@ -739,7 +761,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
 	for(int t=0; t < Nt; t++) { 
 	  for(int z=0; z < Nz; z++) { 
 	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < geom.nVecs(); vec++) { 
+	      for(int vec=0; vec < NV; vec++) { 
 		for(int col=0; col < 3; col++) {
 		  for( int spin=0; spin < 4; spin++) { 
 		    for( int reim=0; reim < 2; reim++) { 
@@ -809,7 +831,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
   // NORM2SPINOR
   {
     masterPrintf("Testing norm2 spinor\n");
-   
+   resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom); 
     // Hand roll it
     double norm = 0;
     double norm2 = 0;
@@ -821,6 +843,7 @@ testBlas::run(const int lattSize[], const int qmp_geom[])
     CommsUtils::sumDouble(&norm);
 
 
+int NV = geom.nVecs();
     // Unoptimized version
     copy(y1,y2,N_blocks);
     norm2 = norm2Spinor<float,VECLEN>((float *)y2, len);

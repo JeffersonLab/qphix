@@ -2,11 +2,19 @@
 #include <cstdio>
 
 using namespace std;
+#include "qphix/qphix_config.h"
+#include "qphix/print_utils.h"
+#include "qphix/threadbind.h"
+
+#ifdef QPHIX_QMP_COMMS
+#include "qmp.h"
+#endif
+
 
 #include <omp.h>
 #include "testBlas.h"
 
-int qmp_geom[4]={-1,-1,-1,-1};
+int qmp_geom[4]={1,1,1,1};
 int nrow_in[4]={4,4,4,4};
 int iters=10000;
 int NCores_user = -1;

@@ -4,7 +4,7 @@
 ///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
 #define QPHIX_TIMING_CG
 
-
+#define CGEBUG
 
 
 #include "qphix/linearOp.h"
@@ -372,7 +372,7 @@ namespace  QPhiX
     void tune()
     {
       int iters=100;
-#if 1
+#if 0
       tuneCopyThreads(iters);
       tuneAypxThreads(iters);
       tuneNorm2Threads(iters);

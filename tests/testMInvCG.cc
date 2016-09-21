@@ -33,7 +33,7 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 #define VECLEN_SP 16 
 #define VECLEN_HP 16
@@ -43,7 +43,6 @@ using namespace QPhiX;
 #elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 
 #define VECLEN_SP 8
-#define VECLEN_HP 8
 #define VECLEN_DP 4
 
 #elif defined(QPHIX_SCALAR_SOURCE)
@@ -58,9 +57,14 @@ using namespace QPhiX;
 
 #endif
 
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+#endif
+
   // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
-bool verbose = false;
+bool verbose = true;
 
 template<typename F> 
 struct tolerance { 
@@ -188,23 +192,25 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   int niters;
   unsigned long site_flops;
   unsigned long mv_apps;
-  
-  MInvCG<T,V,S,compress> solver(M, max_iters, n_shift);
+  double r2=0;
+  double isign=1;
+  double start=0;
+  double end=0;
+  { 
+   MInvCG<T,V,S,compress> solver(M, max_iters, n_shift);
   //  solver.tune();
-  double r2;
   norm2Spinor<T,V,S,compress>(r2,chi_d,geom,threads_per_core);
   masterPrintf("chi has norm2 = %16.8e\n", r2);
 
-  int isign=1;
-  double start = omp_get_wtime();
+  start = omp_get_wtime();
   
   solver(psi_d, chi_d, n_shift,shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
 
   
-  double end = omp_get_wtime();
-
+  end = omp_get_wtime();
+  
   QDPIO::cout << "Solver Completed. Iters = " << niters << " Wallclock = " << end -start << " sec." << endl;
-
+  }
   // check solutions
   Phi psi,psi2,psi3;
   for(int s=0; s < n_shift; s++) {
@@ -236,6 +242,8 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   unsigned long total_flops = (site_flops + (72+2*1320)*mv_apps)*num_cb_sites;
   
   masterPrintf("GFLOPS=%e\n", 1.0e-9*(double)(total_flops)/(end -start));
+
+#if 0						\
   
   geom.free(packed_gauge_cb0);
   geom.free(packed_gauge_cb1);
@@ -244,6 +252,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
     geom.free(psi_d[i]);
   }
 
+#endif
 
 }
 
@@ -314,9 +323,9 @@ MInvCGTester::run(void)
 #endif
       }
 
-#if 0
+#if 1
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testMInvCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 #endif
@@ -326,7 +335,7 @@ MInvCGTester::run(void)
       if( soalen == 8 ) {
 	QDPIO::cout << "In the SOALEN =8 branch" << endl;
 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 	testMInvCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 #endif
@@ -334,7 +343,7 @@ MInvCGTester::run(void)
 
 
       if ( soalen == 16 ) { 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
 	testMInvCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
 #else 
@@ -351,7 +360,7 @@ MInvCGTester::run(void)
 
 #if 1
   if (precision == HALF_PREC ) { 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
@@ -398,7 +407,7 @@ MInvCGTester::run(void)
 
 
       if( soalen == 2) {
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
+#if defined (QPHIX_AVX_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
 	testMInvCGWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 #endif
@@ -409,7 +418,7 @@ MInvCGTester::run(void)
       }
 
       if( soalen == 8 ) { 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
 	testMInvCGWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
 #endif

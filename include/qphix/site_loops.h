@@ -6,26 +6,26 @@
 
 #include <omp.h>
 #include "qphix/print_utils.h"
+#include "qphix/thread_limits.h"
 #define MAXV 16
 
 namespace QPhiX
 { 
 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-  static double new_norm_array[240][MAXV] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
-  static double new_iprod_array[240][2][MAXV]  __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+  /*#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+  static double new_norm_array[MAX_THREADS][MAXV] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+  static double new_iprod_array[MAX_THREADS][2][MAXV]  __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
-  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_norm_array[240][MAXV];
-  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_iprod_array[240][2][MAXV];
-#endif
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_norm_array[MAX_THREADS][MAXV];
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double new_iprod_array[MAX_THREADS][2][MAXV];
+#endif*/
 
   template<typename FT, int V, int S, bool compress,
 	   typename SpinorFunctor >
-  void siteLoopNoReduction( SpinorFunctor& theFunctor,
+  void siteLoopNoReduction( SpinorFunctor theFunctor,
 			    const Geometry<FT,V,S,compress>& geom, 
 			    int n_blas_simt) 
-  {
-    
+  {    
     
     const int n_simt = geom.getNSIMT();
     const int n_cores = geom.getNumCores();
@@ -39,7 +39,8 @@ namespace QPhiX
     
     // This is the total number of spinor vectors
     const int n_soavec = (Nxh*Ny*Nz*Nt)/S;
-#pragma omp parallel
+
+#pragma omp parallel firstprivate(theFunctor)
     {
       // Self ID
       int tid = omp_get_thread_num();
@@ -81,7 +82,7 @@ namespace QPhiX
 
  template<typename FT, int V, int S, bool compress,
 	   typename Reduce1Functor >
-  void siteLoop1Reduction( Reduce1Functor& theFunctor,
+  void siteLoop1Reduction( Reduce1Functor theFunctor,
 			   double& reduction,
 			   const Geometry<FT,V,S,compress>& geom, 
 			   int n_blas_simt) 
@@ -101,7 +102,14 @@ namespace QPhiX
     
     // This is the total number of spinor vectors
     const int n_soavec = (Nxh*Ny*Nz*Nt)/S;
-#pragma omp parallel
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+    double new_norm_array[MAX_THREADS][MAXV] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double new_norm_array[MAX_THREADS][MAXV];
+#endif
+
+#pragma omp parallel firstprivate(theFunctor)
     {
       // Self ID
       int tid = omp_get_thread_num();
@@ -113,6 +121,7 @@ namespace QPhiX
 	int btid = smtid  + n_blas_simt*cid;
 	
 	// Each thread zeroes
+#pragma omp simd aligned(new_norm_array:V)
 	for(int s=0; s < V; s++){ 
 	  new_norm_array[btid][s] = (double)0;
 	}
@@ -141,7 +150,6 @@ namespace QPhiX
 	  int ztbase = Pxy*z + Pxyz*t;
 	  int block = vec + Nvecs*y + ztbase;
 	  theFunctor.func(block, new_norm_array[btid]);
-	  
 	}
       }
     }
@@ -160,7 +168,7 @@ namespace QPhiX
 
  template<typename FT, int V, int S, bool compress,
 	   typename Reduce2Functor >
-  void siteLoop2Reductions( Reduce2Functor& theFunctor,
+  void siteLoop2Reductions( Reduce2Functor theFunctor,
 			    double reduction[2],
 			    const Geometry<FT,V,S,compress>& geom, 
 			    int n_blas_simt) 
@@ -179,7 +187,16 @@ namespace QPhiX
     
     // This is the total number of spinor vectors
     const int n_soavec = (Nxh*Ny*Nz*Nt)/S;
-#pragma omp parallel
+
+
+#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
+    double new_iprod_array[MAX_THREADS][2][MAXV]  __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN)) double new_iprod_array[MAX_THREADS][2][MAXV];
+#endif
+
+
+#pragma omp parallel firstprivate(theFunctor)
     {
       // Self ID
       int tid = omp_get_thread_num();
@@ -191,7 +208,7 @@ namespace QPhiX
 	int btid = smtid  + n_blas_simt*cid;
 	
 	// Each thread zeroes
-#pragma simd
+#pragma omp simd aligned(new_iprod_array:V)
 	for(int s=0; s < V; s++){ 
 	  new_iprod_array[btid][0][s] = (double)0;
 	  new_iprod_array[btid][1][s]= (double)0;

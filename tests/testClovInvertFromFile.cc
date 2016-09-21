@@ -24,7 +24,7 @@ using namespace QDP;
 
 
 #include "qphix/qdp_packer.h"
-#include "clover_term_qdp_w.h"
+#include "clover_term.h"
 
 #if 1
 #include "qphix/clover.h"
@@ -43,17 +43,20 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
+#elif defined(QPHIX_AVX_SOURCE) || defined( QPHIX_AVX2_SOURCE) 
 
 #define VECLEN_SP 8
-#define VECLEN_HP 8
 #define VECLEN_DP 4
+
+#elif defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
 
 #elif defined(QPHIX_SCALAR_SOURCE)
 #warning SCALAR_SOURCE
@@ -303,7 +306,7 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
   QDPIO::cout << "Creating the Clover Term " << endl;
 
   // Clover term deals with anisotropy internally -- so use original u field.
-  QDPCloverTermT<Phi, U> clov_qdp;
+  CloverTermT<Phi, U> clov_qdp;
   
   QDPIO::cout << "Adding on boundary field" << endl;
   // Modify u (antiperiodic BC's) 
@@ -312,7 +315,7 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   clov_qdp.create(u, clparam);
   QDPIO::cout << "Inverting Clover Term" << endl;
-  QDPCloverTermT<Phi, U> invclov_qdp(clov_qdp);
+  CloverTermT<Phi, U> invclov_qdp(clov_qdp);
   for(int cb=0; cb < 2; cb++) { 
     invclov_qdp.choles(cb);
   }
@@ -320,19 +323,19 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
 
   QDPIO::cout << "Packing Clover term..." << endl;
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp.getTriBuffer(), invclov_packed[cb], geom, cb);
+    qdp_pack_clover<>(invclov_qdp, invclov_packed[cb], geom, cb);
   }
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(invclov_qdp.getTriBuffer(), invclov_packed_i[cb], geom_inner, cb);
+    qdp_pack_clover<>(invclov_qdp, invclov_packed_i[cb], geom_inner, cb);
   }
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp.getTriBuffer(), clov_packed[cb], geom, cb);
+    qdp_pack_clover<>(clov_qdp, clov_packed[cb], geom, cb);
   }
   QDPIO::cout << "Done" << endl;
 
   for(int cb=0; cb < 2; cb++) { 
-    qdp_pack_clover<>(clov_qdp.getTriBuffer(), clov_packed_i[cb], geom_inner, cb);
+    qdp_pack_clover<>(clov_qdp, clov_packed_i[cb], geom_inner, cb);
   }
   QDPIO::cout << "Done" << endl;
 
@@ -494,7 +497,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./qcdsf.632.01111.lime");
   double mass=-0.3321595;
   double clov_coeff=1.9192;
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);
@@ -505,7 +508,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./qcdsf.743.00600.lime");
   double mass=-0.3343108;
   double clov_coeff=1.9192;
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,8,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);
@@ -515,7 +518,7 @@ testClovInvertFromFile::run(void)
   std::string filename("./cl3_64_128_b5p0_m0p3550_m0p3550_cfg_544.lime");
   double mass=-0.3550;
   double clov_coeff=1.90497469553511;
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
   runTest<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD, PhiD>(mass,clov_coeff,filename);
 #else
   runTest<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD, PhiD>(mass,clov_coeff,filename);

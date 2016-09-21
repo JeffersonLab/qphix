@@ -1,1 +1,1 @@
-SUBDIRS = qphix
+SUBDIRS=./qphix

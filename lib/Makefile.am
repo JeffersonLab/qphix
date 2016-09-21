@@ -6,7 +6,8 @@ AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @QPHIX_AUX_CFLAGS@
 lib_LIBRARIES = libqphix_solver.a
 
 libqphix_solver_a_SOURCES = \
-	print_utils.cc
+	print_utils.cc \
+	qphix_cli_args.cc
 
 if QPHIX_BUILD_QPX
 libqphix_solver_a_SOURCES += bgq_threadbind.cc

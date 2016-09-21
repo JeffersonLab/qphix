@@ -20,15 +20,15 @@ using namespace QPhiX;
 #define QPHIX_SOALEN 4
 #endif
 
-#if defined(QPHIX_MIC_SOURCE)
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 #define VECLEN_SP 16 
 #define VECLEN_HP 16 
 #define VECLEN_DP 8
 #endif
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-#define VECLEN_SP 8
 #define VECLEN_HP 8
+#define VECLEN_SP 8
 #define VECLEN_DP 4
 #endif
 
@@ -42,6 +42,10 @@ using namespace QPhiX;
 #define VECLEN_DP 4
 #endif
 
+#if defined(QPHIX_SSE_SOURCE)
+#define VECLEN_SP 4
+#define VECLEN_DP 2
+#endif
 
 
 template<typename T>
@@ -418,10 +422,10 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	      // This will work out to be between 0 and veclen
 	      int xx = (y%nyg)*S+x;
 	      for(int i=0; i < 6; i++){ 
-		A_cb0[block].diag1[i][xx] =rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double).238);
-		A_cb0[block].diag2[i][xx] = rep<FT,double>((double)4.2);
-		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double) .238);
+		A_cb0[block].diag1[i][xx] =rep<FT,double>((double)4.1);
+		A_inv_cb1[block].diag1[i][xx] = rep<FT,double>((double)1/(double)4.1);
+		A_cb0[block].diag2[i][xx] = rep<FT,double>((double)4.1);
+		A_inv_cb1[block].diag2[i][xx] = rep<FT,double>((double)1/(double)4.1);
 	      }
 	      
 	      for(int i=0; i < 15; i++){ 
@@ -442,160 +446,162 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     }
     masterPrintf("Done\n");
     masterPrintf("Starting Timings\n");
+
+  masterPrintf("Creating EvenOdd Clover Op\n");
+  
+  EvenOddCloverOperator<FT,V,S,compress> M(u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
     
-#if 1      
-  // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
-    for(int isign=1; isign >= -1; isign -=2) {
-      for(int cb=0; cb < 2; cb++) { 
+    if( do_dslash ) { 
+
+      // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
+      for(int isign=1; isign >= -1; isign -=2) {
+	for(int cb=0; cb < 2; cb++) { 
+	  
+	  int source_cb = 1 - cb;
+	  int target_cb = cb;
+	  
+	  masterPrintf("Timing on cb=%d isign=%d\n", cb, isign);
+	  masterPrintf("=============================\n");
+	  
+	  for(int repeat=0; repeat < 3; repeat++) { 
+	    
+	    double start = omp_get_wtime();
 	
-	int source_cb = 1 - cb;
-	int target_cb = cb;
-	
-	masterPrintf("Timing on cb=%d isign=%d\n", cb, isign);
+	    for(int i=0; i < iters; i++) {
+	      // Apply Optimized Dslash
+	      D32.dslash(chi_s[target_cb],	
+			 psi_s[source_cb],
+			 u_packed[target_cb],
+			 A_inv_cb1,
+			 isign, 
+			 target_cb);
+	    }
+	    
+	    double end = omp_get_wtime();
+	    double time = end - start;
+	    CommsUtils::sumDouble(&time);
+	    time /= (double)CommsUtils::numNodes();
+	    
+	    
+	    // masterPrintf("\t timing %d of 3\n", repeat);
+	    masterPrintf("\t %d iterations in %e seconds\n", iters, time);
+	    masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
+	    double Gflops = 1824.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+	    double perf = Gflops/time;
+	    masterPrintf("\t Performance: %g GFLOPS total\n", perf);
+	    masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
+	    
+	  } //repeats
+	} // isign
+      } //cb
+    }// do dslash
+
+
+    if( do_m ) { 
+  
+      // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
+      for(int isign=1; isign >= -1; isign -=2) {
+	masterPrintf("Timing M: isign=%d\n",  isign);
 	masterPrintf("=============================\n");
 	
 	for(int repeat=0; repeat < 3; repeat++) { 
-	  
 	  double start = omp_get_wtime();
-	
+	  
 	  for(int i=0; i < iters; i++) {
 	    // Apply Optimized Dslash
-	    D32.dslash(chi_s[target_cb],	
-		       psi_s[source_cb],
-		       u_packed[target_cb],
-		       A_inv_cb1,
-		       isign, 
-		       target_cb);
+	    M(chi_s[0],	
+	      psi_s[0],
+	      isign);
 	  }
 	  
 	  double end = omp_get_wtime();
 	  double time = end - start;
+	  
 	  CommsUtils::sumDouble(&time);
 	  time /= (double)CommsUtils::numNodes();
 	  
-	  
-	  // masterPrintf("\t timing %d of 3\n", repeat);
+	  masterPrintf("\t timing %d of 3\n", repeat);
 	  masterPrintf("\t %d iterations in %e seconds\n", iters, time);
 	  masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
-	  double Gflops = 1824.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+	  double flops_per_iter = 3696.0f;
+	  double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
 	  double perf = Gflops/time;
 	  masterPrintf("\t Performance: %g GFLOPS total\n", perf);
 	  masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
-	  
-	} //repeats
-      } // isign
-    } //cb
-#endif
-
-
-#if 1
-  masterPrintf("Creating EvenOdd Clover Op\n");
-  
-  EvenOddCloverOperator<FT,V,S,compress> M(u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
-  
-  // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
-  for(int isign=1; isign >= -1; isign -=2) {
-    masterPrintf("Timing M: isign=%d\n",  isign);
-    masterPrintf("=============================\n");
-    
-    for(int repeat=0; repeat < 3; repeat++) { 
-      double start = omp_get_wtime();
-      
-      for(int i=0; i < iters; i++) {
-	// Apply Optimized Dslash
-	M(chi_s[0],	
-	  psi_s[0],
-	  isign);
+	}
       }
-      
-      double end = omp_get_wtime();
-      double time = end - start;
-      
-      CommsUtils::sumDouble(&time);
-      time /= (double)CommsUtils::numNodes();
-
-      masterPrintf("\t timing %d of 3\n", repeat);
-      masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-      masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
-      double flops_per_iter = 3696.0f;
-      double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
-      double perf = Gflops/time;
-      masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-      masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
     }
-  }
-#endif
 
-#if 1
-  
   double rsd_target=rsdTarget<FT>::value;
   int max_iters=250;
   int niters;
   double rsd_final;
+
+    if( do_cg )  {
   
-  {
-    InvCG<FT,V,S,compress> solver(M, max_iters);
-    solver.tune();
-
-    for( int solves = 0; solves < 5; solves++) { 
-      masterPrintf("Zeroing solution\n");
       
-      masterPrintf("Starting solver\n");
+      InvCG<FT,V,S,compress> solver(M, max_iters);
+      solver.tune();
       
-      unsigned long site_flops;
-      unsigned long mv_apps;
+      for( int solves = 0; solves < 5; solves++) { 
+	masterPrintf("Zeroing solution\n");
+	
+	masterPrintf("Starting solver\n");
       
+	unsigned long site_flops;
+	unsigned long mv_apps;
       
+	
 #pragma omp parallel for collapse(4)    
-      for(int t=0; t < lT; t++) {
-	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < lY; y++) {
-	    for(int s=0; s < nvecs; s++) { 
-	      for(int spin=0; spin < 4; spin++) { 
-		for(int col=0; col < 3; col++)  {
-		  for(int x=0; x < S; x++) { 
-		    
-		    int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-		    int x_coord = s*S + x;
-		    double d1 = drand48()-0.5;
-		    double d2 = drand48()-0.5;
-		    double d3 = drand48()-0.5;
-		    double d4 = drand48()-0.5;
-		    psi_s[0][ind][col][spin][0][x] = rep<FT,double>(d1); 
-		    psi_s[0][ind][col][spin][1][x] = rep<FT,double>(d2); 
-		    psi_s[1][ind][col][spin][0][x] = rep<FT,double>(d3); 
-		    psi_s[1][ind][col][spin][1][x] = rep<FT,double>(d4); 
-		    chi_s[0][ind][col][spin][0][x] = rep<FT,double>(0);
-		    chi_s[0][ind][col][spin][1][x] = rep<FT,double>(0);
-		    chi_s[1][ind][col][spin][0][x] = rep<FT,double>(0);
-		    chi_s[1][ind][col][spin][1][x] = rep<FT,double>(0);
+	for(int t=0; t < lT; t++) {
+	  for(int z=0; z < lZ; z++) {
+	    for(int y=0; y < lY; y++) {
+	      for(int s=0; s < nvecs; s++) { 
+		for(int spin=0; spin < 4; spin++) { 
+		  for(int col=0; col < 3; col++)  {
+		    for(int x=0; x < S; x++) { 
+		      
+		      int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+		      int x_coord = s*S + x;
+		      double d1 = drand48()-0.5;
+		      double d2 = drand48()-0.5;
+		      double d3 = drand48()-0.5;
+		      double d4 = drand48()-0.5;
+		      psi_s[0][ind][col][spin][0][x] = rep<FT,double>(d1); 
+		      psi_s[0][ind][col][spin][1][x] = rep<FT,double>(d2); 
+		      psi_s[1][ind][col][spin][0][x] = rep<FT,double>(d3); 
+		      psi_s[1][ind][col][spin][1][x] = rep<FT,double>(d4); 
+		      chi_s[0][ind][col][spin][0][x] = rep<FT,double>(0);
+		      chi_s[0][ind][col][spin][1][x] = rep<FT,double>(0);
+		      chi_s[1][ind][col][spin][0][x] = rep<FT,double>(0);
+		      chi_s[1][ind][col][spin][1][x] = rep<FT,double>(0);
 
+		    }
 		  }
 		}
 	      }
 	    }
 	  }
 	}
+	
+	int isign=1;
+	start = omp_get_wtime();
+	solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
+	end = omp_get_wtime();
+	
+	
+	unsigned long num_cb_sites=X1h*Ny*Nz*Nt;
+	unsigned long total_flops = (site_flops + (3696)*mv_apps)*num_cb_sites;
+	
+	masterPrintf("Solver iters=%d\n", niters);
+	masterPrintf("Solver Time=%g(s)\n", (end-start));
+	masterPrintf("CG GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
       }
-      
-      int isign=1;
-      start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
-      end = omp_get_wtime();
-      
-
-      unsigned long num_cb_sites=X1h*Ny*Nz*Nt;
-      unsigned long total_flops = (site_flops + (3696)*mv_apps)*num_cb_sites;
-      
-      masterPrintf("Solver iters=%d\n", niters);
-      masterPrintf("Solver Time=%g(s)\n", (end-start));
-      masterPrintf("CG GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
     }
-  }
-#endif  
 
-#if 1
-  {
+
+if( do_bicgstab )  {
+
     InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
     solver2.tune();
     
@@ -652,9 +658,9 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       masterPrintf("Solver Time=%g(s)\n", (end-start));
       masterPrintf("BICGSTAB GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
     }
-  }
+ }
 
-#endif
+
 
   masterPrintf("Cleaning up\n");
 
@@ -678,7 +684,6 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
 {
 
 
-#if defined (QPHIX_MIC_SOURCE) || defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined (QPHIX_SCLAR_SOURCE)
   if ( precision == FLOAT_PREC ) {
     if ( QPHIX_SOALEN > VECLEN_SP ) { 
       masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_SP);
@@ -694,12 +699,11 @@ timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
     }
   }
   
-#endif
 
 
   if( precision == HALF_PREC ) { 
 
-#if defined(QPHIX_MIC_SOURCE) 
+#if defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) || defined (QPHIX_AVX2_SOURCE)
     if ( QPHIX_SOALEN > VECLEN_HP ) { 
       masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n", QPHIX_SOALEN,VECLEN_DP);
       abort();

@@ -33,6 +33,10 @@ int qmp_geometry[4]={1,1,1,1};
 Prec prec_user = FLOAT_PREC;
 bool thread_bind = false;
 
+bool do_dslash = false;
+bool do_m = false;
+bool do_cg = false;
+bool do_bicgstab = false;
 
 void printHelp() 
 { 
@@ -50,7 +54,11 @@ void printHelp()
        cout << "   Pxyz is the extra pad in the XYZ plane" << endl;
        cout << "   MinCt is the MinCt parameter in the blocking scheme" << endl;
        cout << "   Px Py Pz Pt define a 4D grid of MPI tasks" << endl;
-       cout << "   Prec for precision " << endl;
+       cout << "   Prec for precision " << endl;	
+	cout << "  -dslash Do dslash timing " << endl;
+	cout << "  -mmat Do M testing " << endl;
+	cout << "  -cg Do CG Timing " << endl;
+	cout <<"   -bicgstab Do BiCGStab timing " << endl;
 }
 
 void processArgs(int argc, char *argv[]) 
@@ -140,6 +148,24 @@ void processArgs(int argc, char *argv[])
       i+=4;
       
     }
+    else if (string(argv[i]).compare("-dslash") == 0 ) {
+	do_dslash = true;
+ 	i++;
+
+    } 
+   else if (string(argv[i]).compare("-mmat") == 0 ) {
+        do_m = true;
+	i++;
+    } 
+   else if (string(argv[i]).compare("-cg") == 0 ) {
+        do_cg = true;
+	i++;
+
+    } 
+  else if (string(argv[i]).compare("-bicgstab") == 0 ) {
+        do_bicgstab = true;
+	i++;
+    } 
     else {
       i++;
     }
@@ -198,7 +224,7 @@ int main(int argc, char **argv)
   QPhiX::masterPrintf("Launching TestCase\n");
 
   // Launch the test case. 
-  timeDslashNoQDP test(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user,  iters, compress12, prec_user);
+  timeDslashNoQDP test(By_user, Bz_user, NCores_user, Sy_user, Sz_user, PadXY_user, PadXYZ_user, MinCt_user,  iters, compress12, prec_user,do_dslash, do_m, do_cg, do_bicgstab);
   
   test.run(nrow_in, qmp_geometry);
 #ifdef QPHIX_QMP_COMMS

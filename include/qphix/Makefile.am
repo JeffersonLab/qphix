@@ -1,4 +1,4 @@
-SUBDIRS = ./avx ./avx2 ./mic ./scalar ./qpx
+SUBDIRS = ./avx ./avx2 ./sse ./avx512 ./mic ./scalar ./qpx
 
 qphix_includedir=$(includedir)/qphix
 
@@ -30,7 +30,9 @@ qphix_include_HEADERS += \
 	./site_loops.h \
 	./blas_new_c.h \
 	./print_utils.h \
-	./threadbind.h
+	./threadbind.h \
+	./thread_limits.h \
+	./qphix_cli_args.h
 
 
 #
@@ -38,7 +40,7 @@ qphix_include_HEADERS += \
 #
 
 if QPHIX_BUILD_WITH_QDP
-qphix_include_HEADERS += ./qdp_packer.h
+qphix_include_HEADERS += ./qdp_packer.h ./qdp_packer_parscalar.h qdp_packer_qdpjit.h
 endif
 
 

@@ -8,10 +8,21 @@
 
 enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
 
+#include <qphix/qphix_cli_args.h>
+using namespace QPhiX;
 
 class testClovDslashFull : public TestFixture { 
 public: 
- testClovDslashFull(int By_, int Bz_, int NCores_, int Sy_, int Sz_, int PadXY_, int PadXYZ_, int MinCt_, bool c12, Prec precision_) : By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), N_simt(Sy_*Sz_), compress12(c12), precision(precision_) {}
+ testClovDslashFull(const QPhiXCLIArgs& GeomArgs_, bool c12, Prec precision_) :
+	 By(GeomArgs_.getBy()),
+	 Bz(GeomArgs_.getBz()),
+	 NCores(GeomArgs_.getNCores()),
+	 Sy(GeomArgs_.getSy()),
+	 Sz(GeomArgs_.getSz()),
+	 PadXY(GeomArgs_.getPxy()),
+	 PadXYZ(GeomArgs_.getPxyz()),
+	 MinCt(GeomArgs_.getMinCt()),
+	 N_simt(Sy*Sz), compress12(c12), precision(precision_), GeomArgs(GeomArgs_)  {}
 
   // Toplevel test function wrapper
   void run(void); 
@@ -31,6 +42,7 @@ public:
   const int N_simt;
   const bool compress12;
   const Prec precision;
+  QPhiXCLIArgs GeomArgs;
 };
 
 #endif

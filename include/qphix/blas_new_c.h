@@ -27,8 +27,8 @@ namespace QPhiX {
 namespace QPhiX { 
 
   template<typename FT, int V, int S, bool compress>
-  void copySpinor( typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res,
-		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict src,
+  void copySpinor( typename Geometry<FT,V,S,compress>::FourSpinorBlock*   res,
+		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   src,
 		   const Geometry<FT,V,S,compress>& geom, 
 		   int n_blas_simt) 
   {
@@ -37,7 +37,7 @@ namespace QPhiX {
   }
   
   template<typename FT, int V, int S, bool compress>
-  void zeroSpinor( typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res,
+  void zeroSpinor( typename Geometry<FT,V,S,compress>::FourSpinorBlock*   res,
 		   const Geometry<FT,V,S,compress>& geom, 
 		   int n_blas_simt) 
   {
@@ -47,8 +47,8 @@ namespace QPhiX {
 
   template<typename FT, int V, int S, bool compress>
   void axy(const double alpha, 
-	  const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-	  typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	  const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+	  typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 	  const Geometry<FT,V,S,compress>& geom, 
 	  int n_blas_simt) 
   {
@@ -59,8 +59,8 @@ namespace QPhiX {
   
   template<typename FT, int V, int S, bool compress>
   void aypx(const double alpha, 
-	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-	    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+	    typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 	    const Geometry<FT,V,S,compress>& geom, 
 	    int n_blas_simt) 
   {
@@ -71,8 +71,8 @@ namespace QPhiX {
 
   template<typename FT, int V, int S, bool compress>
   void axpy(const double alpha, 
-	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-	    typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+	    typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 	    const Geometry<FT,V,S,compress>& geom, 
 	    int n_blas_simt) 
   {
@@ -84,9 +84,9 @@ namespace QPhiX {
 
  template<typename FT, int V, int S, bool compress>
   void axpby(const double alpha, 
-	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
+	    const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
 	     const double beta, 
-	     typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+	     typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 	     const Geometry<FT,V,S,compress>& geom, 
 	     int n_blas_simt) 
   {
@@ -109,8 +109,8 @@ namespace QPhiX {
 
   template<typename FT, int V, int S, bool compress>
     void axpyNorm2(const double alpha,
-		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-		   typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+		   typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 		   double& norm2y,
 		   const Geometry<FT,V,S,compress>& geom, 
 		   int n_blas_simt) 
@@ -122,9 +122,9 @@ namespace QPhiX {
 
 
   template<typename FT, int V, int S, bool compress>
-  void xmyNorm2Spinor(typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict res,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-		      typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+  void xmyNorm2Spinor(typename Geometry<FT,V,S,compress>::FourSpinorBlock*   res,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 		      double& n2res,
 		      const Geometry<FT,V,S,compress>& geom, 
 		      int n_blas_simt) 
@@ -137,12 +137,12 @@ namespace QPhiX {
   
   template<typename FT, int V, int S, bool compress>
   void rmammpNorm2rxpap(
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
 			const double& ar, 
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict mmp,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   mmp,
 			double& cp, 
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   p,
 			const Geometry<FT,V,S,compress>& geom, 
 			int n_blas_simt) 
   {
@@ -152,10 +152,10 @@ namespace QPhiX {
  
  template<typename FT, int V, int S, bool compress>
   void richardson_rxupdateNormR(
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r,
-			const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict delta_x,
-			const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict delta_r,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
+			const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   delta_x,
+			const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   delta_r,
 			double& cp, 
 			const Geometry<FT,V,S,compress>& geom, 
 			int n_blas_simt) 
@@ -166,8 +166,8 @@ namespace QPhiX {
  
 
   template<typename FT, int V, int S, bool compress>
-    void bicgstab_xmy( const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-	       	       typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+    void bicgstab_xmy( const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+	       	       typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 		       const Geometry<FT,V,S,compress>& geom, 
 		       int n_blas_simt) 
   {
@@ -178,8 +178,8 @@ namespace QPhiX {
 
   template<typename FT, int V, int S, bool compress> 
     void innerProduct(double results[2],
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict y,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   y,
 		      const Geometry<FT,V,S,compress>& geom, 
 		      int n_blas_simt) 
   {
@@ -190,9 +190,9 @@ namespace QPhiX {
   template<typename FT, int V, int S, bool compress>
     void 
     bicgstab_p_update(		     
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r,
-		      typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict v,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
+		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   p,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   v,
 		      double beta[2],
 		      double omega[2],
 		      const Geometry<FT,V,S,compress>& geom, 
@@ -206,8 +206,8 @@ namespace QPhiX {
     void 
     bicgstab_s_update(
 		      double alpha[2],		     
-		      typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict s,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict v,
+		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   s,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   v,
 		      
 		      const Geometry<FT,V,S,compress>& geom, 
 		      int n_blas_simt) {
@@ -219,10 +219,10 @@ namespace QPhiX {
   template<typename FT, int V, int S, bool compress>
     void 
     bicgstab_rxupdate(
-		      typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict x,
-		      typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict r,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict t,
-		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock* restrict p,
+		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
+		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   t,
+		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   p,
 		      double omega[2],		     
 		      double alpha[2],
 		      double& r_norm,
@@ -237,9 +237,9 @@ namespace QPhiX {
   template<typename FTOut, int VOut, int SOut, bool CompressOut,
 	   typename FTIn, int VIn, int SIn, bool CompressIn>
   void convert( 
-	       typename Geometry<FTOut,VOut,SOut,CompressOut>::FourSpinorBlock* restrict spinor_out,
+	       typename Geometry<FTOut,VOut,SOut,CompressOut>::FourSpinorBlock*   spinor_out,
 	       double scale_factor,
-	       const typename Geometry<FTIn,VIn,SIn,CompressIn>::FourSpinorBlock* restrict spinor_in,
+	       const typename Geometry<FTIn,VIn,SIn,CompressIn>::FourSpinorBlock*   spinor_in,
 	       const Geometry<FTOut,VOut,SOut,CompressOut>& geom_out,
 	       const Geometry<FTIn,VIn,SIn,CompressIn>& geom_in,
 	       int n_blas_threads)
