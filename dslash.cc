@@ -317,7 +317,7 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     FVec (*outspinor)[4][3][2];
 
-    if(clover||twisted_mass) {
+    if(clover || twisted_mass) {
         outspinor = &dout_spinor;
         zeroResult(ivector, (*outspinor)[0][0]);
     }
@@ -337,12 +337,10 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
     matMultVec(ivector, adjMul);
     recons_add(ivector, rops[dim], *outspinor, mask);
 
-    if(clover) {
-        clover_term(ivector, *outspinor, true);
-    }
-    else if(twisted_mass) {
-        twisted_term(ivector, *outspinor, true, isPlus);
-    }
+    if(clover && !twisted_mass) clover_term(ivector, *outspinor, true);
+		else if(clover && twisted_mass) full_clover_term(ivector, *outspinor, true);
+    else if(!clover && twisted_mass) twisted_term(ivector, *outspinor, true, isPlus);
+		else if(!clover && !twisted_mass) {};
 
     // scatter it out
     StoreFullSpinor(ivector, out_spinor, outBase, outOffs);
