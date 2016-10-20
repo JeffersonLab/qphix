@@ -388,8 +388,6 @@ void generate_code(void)
 					for(auto isPlus : {true, false}) {
 						for(auto compress12 : {true, false}) {
 
-							if(twisted_mass && clover) continue; // TODO: still to be implemented
-
 							InstVector ivector;
 							InstVector l2prefs;
 							std::ostringstream filename;
@@ -403,7 +401,7 @@ void generate_code(void)
 							filename << "./" << ARCH_NAME << "/" << tmf_prefix << clov_prefix << kernel << "_" << plusminus << "_"
 								<< "body" << "_" << SpinorTypeName << "_" << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN << "_" << num_components;
 
-							cout << "GENERATING " << kernel << "_" << plusminus << "_" << "vec body" << endl;
+							cout << "GENERATING " << tmf_prefix << kernel << "_" << plusminus << "_" << "vec body" << endl;
 
 							// Generate instructions
 							generateL2Prefetches(l2prefs, compress12, chi_prefetches, clover, twisted_mass);
@@ -429,8 +427,6 @@ void generate_code(void)
 					for(int dim = 0; dim < 4; dim++) {
 						for(auto isPlus : {true, false}) {
 							for(auto compress12 : {true, false}) {
-
-								if(twisted_mass && clover) continue; // TODO: still to be implemented
 
 								InstVector ivector;
 								InstVector l2prefs;

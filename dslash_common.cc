@@ -840,70 +840,40 @@ void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string
     }
 }
 
-//TODO
-void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask)
+void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string mask)
 {
-    // FVec clout_tmp[2] = {tmp_1_re, tmp_1_im};
+    // FIXME: Function is never called with non-zero mask! Do we need this argument here?
+    if(mask != "") {
+        printf("full_clover_term:: ERROR: Non-empty mask is not implemented!\n");
+    }
 
-    // for(int block=0; block < 2; block++) {
-    //     PrefetchL1FullCloverFullBlockIn(ivector, clBase, clOffs, block);
-    //     LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block);
+    for(int block=0; block<2; block++) {
 
-    //     for(int c1=0; c1 < 6; c1++) {
-    //         int spin = 2*block+c1/3;
-    //         int col = c1 % 3;
-    //         bool acc = face;
-    //         string mask = _mask;
-    //         FVec *clout = out_spinor[spin][col];
-    //         FVec *clin  = in_spinor[spin][col];
-// #ifdef NO_HW_MASKING
+        PrefetchL1FullCloverFullBlockIn(ivector, clBase, clOffs, block);
+        LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block);
 
-    //         if(_mask != "") {
-    //             acc = false;
-    //             clout = clout_tmp;
-    //             mask = "";
-    //         }
+        for(int sc1=0; sc1<6; sc1++) { // half-spin-colour row
 
-// #endif
+            int spin_out = 2*block + sc1/3;
+            int col_out  = sc1 % 3;
+            FVec *clout  = out_spinor[spin_out][col_out];
 
-    //         if( acc ) {
-    //             fmaddFVec( ivector, clout[RE], clov_diag[c1], clin[RE], clout[RE], mask);
-    //             fmaddFVec( ivector, clout[IM], clov_diag[c1], clin[IM], clout[IM], mask);
-    //         }
-    //         else {
-    //             mulFVec( ivector,  clout[RE], clov_diag[c1],  clin[RE], mask);
-    //             mulFVec( ivector,  clout[IM], clov_diag[c1],  clin[IM], mask);
-    //         }
+            for(int sc2=0; sc2<6; sc2++) { // half-spin-colour column
 
-    //         for(int c2=0; c2 < 6; c2++) {
-    //             if(c1 == c2) {
-    //                 continue;    // diagonal case
-    //             }
+                int spin_in = 2*block + sc2/3;
+                int col_in  = sc2 % 3;
+                FVec *clin  = in_spinor[spin_in][col_in];
 
-    //             if(c1 < c2) {
-    //                 int od = c2*(c2-1)/2+c1;
-    //                 fmaddConjCVec(ivector, clout, clov_offdiag[od], in_spinor[2*block+c2/3][c2%3], clout, mask);
-    //             }
-    //             else {
-    //                 int od = c1*(c1-1)/2+c2;
-    //                 fmaddCVec(ivector, clout, clov_offdiag[od], in_spinor[2*block+c2/3][c2%3], clout, mask);
-    //             }
-    //         }
+                if(sc2 == 0 && !face) {
+                    mulCVec(ivector, clout, clov_full[sc1][sc2], clin, mask);
+                }
+                else {
+                    fmaddCVec(ivector, clout, clov_full[sc1][sc2], clin, clout, mask);
+                }
 
-// #ifdef NO_HW_MASKING
-
-    //         if(_mask != "") {
-    //             if(face) {
-    //                 addCVec(ivector, out_spinor[spin][col], clout, clout_spinor[block][c1], _mask);
-    //             }
-    //             else {
-    //                 movCVec(ivector, out_spinor[spin][col], clout, _mask);
-    //             }
-    //         }
-
-// #endif
-    //     }
-    // }
+            } // half-spin-colour column
+        } // half-spin-colour row
+    } // block
 }
 
 void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
