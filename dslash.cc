@@ -94,7 +94,7 @@ void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress1
         PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
     }
 		else if(clover && twisted_mass) {
-				// TODO: call the routines for full, non-hermitian, complex clover term
+        PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs", "clprefdist");
 		}
 
     PrefetchL2FullSpinorDirIn(ivector, outBase, "offs", "soprefdist");
@@ -114,7 +114,7 @@ void generateL2Prefetches(InstVector& ivector, bool compress12, bool chi, bool c
         PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
     }
 		else if(clover && twisted_mass) {
-				// TODO: call the routines for full, non-hermitian, complex clover term
+        PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs", "clprefdist");
 		}
 
     if(chi) {
@@ -397,9 +397,8 @@ void generate_code(void)
 							std::string tmf_prefix  = twisted_mass ? "tmf_" : "";
 							std::string clov_prefix = clover ? "clov_"+CloverTypeName+"_" : "";
 							std::string plusminus   = isPlus ? "plus" : "minus";
-							int num_components = (compress12 ? 12 : 18);
-							bool chi_prefetches = false;
-							if(kernel == "dslash_achimbdpsi") chi_prefetches = true;
+							int num_components = compress12 ? 12 : 18;
+							bool chi_prefetches = (kernel == "dslash_achimbdpsi") ? true : false;
 
 							filename << "./" << ARCH_NAME << "/" << tmf_prefix << clov_prefix << kernel << "_" << plusminus << "_"
 								<< "body" << "_" << SpinorTypeName << "_" << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN << "_" << num_components;
@@ -440,7 +439,7 @@ void generate_code(void)
 								std::string tmf_prefix  = twisted_mass ? "tmf_" : "";
 								std::string clov_prefix = clover ? "clov_"+CloverTypeName+"_" : "";
 								std::string plusminus   = isPlus ? "plus" : "minus";
-								int num_components = (compress12 ? 12 : 18);
+								int num_components = compress12 ? 12 : 18;
 
 								filename << "./" << ARCH_NAME << "/" << tmf_prefix << clov_prefix << "dslash_face_unpack_from_"
 									<< dirname[dir] << "_" << dimchar[dim] << "_" << plusminus << "_"

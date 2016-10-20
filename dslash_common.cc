@@ -846,8 +846,8 @@ void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, s
     // FVec clout_tmp[2] = {tmp_1_re, tmp_1_im};
 
     // for(int block=0; block < 2; block++) {
-    //     PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
-				// LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block)
+    //     PrefetchL1FullCloverFullBlockIn(ivector, clBase, clOffs, block);
+    //     LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block);
 
     //     for(int c1=0; c1 < 6; c1++) {
     //         int spin = 2*block+c1/3;

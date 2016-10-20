@@ -477,6 +477,32 @@ void prefetchL2CloverBlockIn(InstVector& ivector, string base, string off, int b
 #endif
 }
 
+// For twisted-mass + clover
+void prefetchL1CloverFullBlockIn(InstVector& ivector, string base, string off, int block, int imm)
+{
+#ifdef PREF_L1_CLOVER
+#ifndef USE_PACKED_CLOVER
+    PrefetchL1Specialized(ivector, new GatherAddress(new AddressImm(new FullClovAddress(base,block,0,0,RE,CloverType), imm), off ), 0);
+#else
+    prefetchL1(ivector, new AddressImm(new FullClovAddress(base,block,0,0,RE,CloverType), imm), 0);
+#endif
+#endif
+}
+
+// For twisted-mass + clover
+void prefetchL2CloverFullBlockIn(InstVector& ivector, string base, string off, int block, const string& pref_dist, int imm)
+{
+#ifdef PREF_L2_CLOVER
+#ifndef USE_PACKED_CLOVER
+    PrefetchL2Specialized(ivector, new GatherAddress(new AddressImm(new AddressOffset(new FullClovAddress(base,block,0,0,RE,CloverType), pref_dist), imm), off ), 0);
+#else
+		// This will look like:
+		// prefetch @ ( (*clBase).block($i)[0][0][RE] + clprefdist ) + imm
+    prefetchL2(ivector, new AddressImm(new AddressOffset(new FullClovAddress(base,block,0,0,RE,CloverType), pref_dist), imm), 0);
+#endif
+#endif
+}
+
 void PrefetchL1FullSpinorDirIn(InstVector& ivector, const string& base, const string& off, int dir, int type)
 {
     // for now we ignore direction but it can be used for specialization
@@ -579,6 +605,34 @@ void PrefetchL2FullCloverIn(InstVector& ivector, const string& base, const strin
 
     for(int i = 0; i < ((2*36*nSites*sizeof(CloverBaseType)+63)/64); i++) {
         prefetchL2CloverBlockIn(ivector, base, off, 0, pref_dist, i*(64/sizeof(CloverBaseType)));
+    }
+}
+
+// For twisted-mass + clover
+void PrefetchL1FullCloverFullBlockIn(InstVector& ivector, const string& base, const string& off, int block)
+{
+#ifndef USE_PACKED_CLOVER
+    int nSites = SOALEN;
+#else
+    int nSites = VECLEN;
+#endif
+
+    for(int i = 0; i < ((36*nSites*sizeof(CloverBaseType)+63)/64); i++) {
+        prefetchL1CloverFullBlockIn(ivector, base, off, block, i*(64/sizeof(CloverBaseType)));
+    }
+}
+
+// For twisted-mass + clover
+void PrefetchL2FullCloverFullIn(InstVector& ivector, const string& base, const string& off, const string& pref_dist)
+{
+#ifndef USE_PACKED_CLOVER
+    int nSites = SOALEN;
+#else
+    int nSites = VECLEN;
+#endif
+
+    for(int i = 0; i < ((2*36*nSites*sizeof(CloverBaseType)+63)/64); i++) {
+        prefetchL2CloverFullBlockIn(ivector, base, off, 0, pref_dist, i*(64/sizeof(CloverBaseType)));
     }
 }
 
