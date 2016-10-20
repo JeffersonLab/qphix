@@ -219,6 +219,94 @@ FVec clov_offdiag[15][2]= {
     { cl_offdiag_14_RE, cl_offdiag_14_IM }
 };
 
+FVec cl_full_00_RE("cl_full_00_RE");
+FVec cl_full_00_IM("cl_full_00_IM");
+FVec cl_full_01_RE("cl_full_01_RE");
+FVec cl_full_01_IM("cl_full_01_IM");
+FVec cl_full_02_RE("cl_full_02_RE");
+FVec cl_full_02_IM("cl_full_02_IM");
+FVec cl_full_03_RE("cl_full_03_RE");
+FVec cl_full_03_IM("cl_full_03_IM");
+FVec cl_full_04_RE("cl_full_04_RE");
+FVec cl_full_04_IM("cl_full_04_IM");
+FVec cl_full_05_RE("cl_full_05_RE");
+FVec cl_full_05_IM("cl_full_05_IM");
+FVec cl_full_10_RE("cl_full_10_RE");
+FVec cl_full_10_IM("cl_full_10_IM");
+FVec cl_full_11_RE("cl_full_11_RE");
+FVec cl_full_11_IM("cl_full_11_IM");
+FVec cl_full_12_RE("cl_full_12_RE");
+FVec cl_full_12_IM("cl_full_12_IM");
+FVec cl_full_13_RE("cl_full_13_RE");
+FVec cl_full_13_IM("cl_full_13_IM");
+FVec cl_full_14_RE("cl_full_14_RE");
+FVec cl_full_14_IM("cl_full_14_IM");
+FVec cl_full_15_RE("cl_full_15_RE");
+FVec cl_full_15_IM("cl_full_15_IM");
+FVec cl_full_20_RE("cl_full_20_RE");
+FVec cl_full_20_IM("cl_full_20_IM");
+FVec cl_full_21_RE("cl_full_21_RE");
+FVec cl_full_21_IM("cl_full_21_IM");
+FVec cl_full_22_RE("cl_full_22_RE");
+FVec cl_full_22_IM("cl_full_22_IM");
+FVec cl_full_23_RE("cl_full_23_RE");
+FVec cl_full_23_IM("cl_full_23_IM");
+FVec cl_full_24_RE("cl_full_24_RE");
+FVec cl_full_24_IM("cl_full_24_IM");
+FVec cl_full_25_RE("cl_full_25_RE");
+FVec cl_full_25_IM("cl_full_25_IM");
+FVec cl_full_30_RE("cl_full_30_RE");
+FVec cl_full_30_IM("cl_full_30_IM");
+FVec cl_full_31_RE("cl_full_31_RE");
+FVec cl_full_31_IM("cl_full_31_IM");
+FVec cl_full_32_RE("cl_full_32_RE");
+FVec cl_full_32_IM("cl_full_32_IM");
+FVec cl_full_33_RE("cl_full_33_RE");
+FVec cl_full_33_IM("cl_full_33_IM");
+FVec cl_full_34_RE("cl_full_34_RE");
+FVec cl_full_34_IM("cl_full_34_IM");
+FVec cl_full_35_RE("cl_full_35_RE");
+FVec cl_full_35_IM("cl_full_35_IM");
+FVec cl_full_40_RE("cl_full_40_RE");
+FVec cl_full_40_IM("cl_full_40_IM");
+FVec cl_full_41_RE("cl_full_41_RE");
+FVec cl_full_41_IM("cl_full_41_IM");
+FVec cl_full_42_RE("cl_full_42_RE");
+FVec cl_full_42_IM("cl_full_42_IM");
+FVec cl_full_43_RE("cl_full_43_RE");
+FVec cl_full_43_IM("cl_full_43_IM");
+FVec cl_full_44_RE("cl_full_44_RE");
+FVec cl_full_44_IM("cl_full_44_IM");
+FVec cl_full_45_RE("cl_full_45_RE");
+FVec cl_full_45_IM("cl_full_45_IM");
+FVec cl_full_50_RE("cl_full_50_RE");
+FVec cl_full_50_IM("cl_full_50_IM");
+FVec cl_full_51_RE("cl_full_51_RE");
+FVec cl_full_51_IM("cl_full_51_IM");
+FVec cl_full_52_RE("cl_full_52_RE");
+FVec cl_full_52_IM("cl_full_52_IM");
+FVec cl_full_53_RE("cl_full_53_RE");
+FVec cl_full_53_IM("cl_full_53_IM");
+FVec cl_full_54_RE("cl_full_54_RE");
+FVec cl_full_54_IM("cl_full_54_IM");
+FVec cl_full_55_RE("cl_full_55_RE");
+FVec cl_full_55_IM("cl_full_55_IM");
+
+FVec clov_full[6][6][2] = {
+  { { cl_full_00_RE, cl_full_00_IM }, { cl_full_01_RE, cl_full_01_IM }, { cl_full_02_RE, cl_full_02_IM },
+    { cl_full_03_RE, cl_full_03_IM }, { cl_full_04_RE, cl_full_04_IM }, { cl_full_05_RE, cl_full_05_IM }, },
+  { { cl_full_10_RE, cl_full_10_IM }, { cl_full_11_RE, cl_full_11_IM }, { cl_full_12_RE, cl_full_12_IM },
+    { cl_full_13_RE, cl_full_13_IM }, { cl_full_14_RE, cl_full_14_IM }, { cl_full_15_RE, cl_full_15_IM }, },
+  { { cl_full_20_RE, cl_full_20_IM }, { cl_full_21_RE, cl_full_21_IM }, { cl_full_22_RE, cl_full_22_IM },
+    { cl_full_23_RE, cl_full_23_IM }, { cl_full_24_RE, cl_full_24_IM }, { cl_full_25_RE, cl_full_25_IM }, },
+  { { cl_full_30_RE, cl_full_30_IM }, { cl_full_31_RE, cl_full_31_IM }, { cl_full_32_RE, cl_full_32_IM },
+    { cl_full_33_RE, cl_full_33_IM }, { cl_full_34_RE, cl_full_34_IM }, { cl_full_35_RE, cl_full_35_IM }, },
+  { { cl_full_40_RE, cl_full_40_IM }, { cl_full_41_RE, cl_full_41_IM }, { cl_full_42_RE, cl_full_42_IM },
+    { cl_full_43_RE, cl_full_43_IM }, { cl_full_44_RE, cl_full_44_IM }, { cl_full_45_RE, cl_full_45_IM }, },
+  { { cl_full_50_RE, cl_full_50_IM }, { cl_full_51_RE, cl_full_51_IM }, { cl_full_52_RE, cl_full_52_IM },
+    { cl_full_53_RE, cl_full_53_IM }, { cl_full_54_RE, cl_full_54_IM }, { cl_full_55_RE, cl_full_55_IM }, }
+};
+
 FVec zero("zero");
 FVec alpha_vec("alpha_vec");
 FVec beta_vec("beta_vec");
@@ -346,17 +434,14 @@ void declare_clover(InstVector& ivector)
     }
 }
 
-//TODO
 void declare_full_clover(InstVector& ivector)
 {
-    // for(int s=0; s < 6; s++) {
-    //     declareFVecFromFVec(ivector, clov_diag[s]);
-    // }
-
-    // for(int s=0; s < 15; s++) {
-    //     declareFVecFromFVec(ivector, clov_offdiag[s][RE]);
-    //     declareFVecFromFVec(ivector, clov_offdiag[s][IM]);
-    // }
+    for(int cs1=0; cs1<6; cs1++) {
+        for(int cs2=0; cs2<6; cs2++) {
+            declareFVecFromFVec(ivector, clov_full[cs1][cs2][RE]);
+            declareFVecFromFVec(ivector, clov_full[cs1][cs2][IM]);
+        }
+    }
 }
 
 void declare_misc(InstVector& ivector)
@@ -762,7 +847,7 @@ void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, s
 
     // for(int block=0; block < 2; block++) {
     //     PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
-    //     LoadFullCloverBlock(ivector, clov_diag, clov_offdiag, clBase, clOffs, block);
+				// LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block)
 
     //     for(int c1=0; c1 < 6; c1++) {
     //         int spin = 2*block+c1/3;

@@ -23,6 +23,17 @@ typedef struct {
     CloverBaseType off_diag2[15][2][SOALEN];
 } Clover;
 #endif
+#ifdef USE_PACKED_CLOVER
+typedef struct {
+    CloverBaseType block1[6][6][2][VECLEN];
+    CloverBaseType block2[6][6][2][VECLEN];
+} FullClover;
+#else
+typedef struct {
+    CloverBaseType block1[6][6][2][SOALEN];
+    CloverBaseType block2[6][6][2][SOALEN];
+} FullClover;
+#endif
 
 string serialize_data_types(bool compress12)
 {
@@ -142,6 +153,15 @@ void readFVecClovOffDiag(InstVector& ivector, const FVec& ret, string& base, str
     readFVecSpecialized(ivector, ret, new GatherAddress(new ClovOffDiagAddress(base,block,c,reim,CloverType), offset), string(""));
 #else
     loadFVec(ivector, ret, new ClovOffDiagAddress(base,block,c,reim,CloverType), string(""));
+#endif
+}
+
+void readFVecFullClov(InstVector& ivector, const FVec& ret, string& base, string& offset, int block, int row, int col, int reim)
+{
+#ifndef USE_PACKED_CLOVER
+    readFVecSpecialized(ivector, ret, new GatherAddress(new FullClovAddress(base,block,row,col,reim,CloverType), offset), string(""));
+#else
+    loadFVec(ivector, ret, new FullClovAddress(base,block,row,col,reim,CloverType), string(""));
 #endif
 }
 
@@ -341,6 +361,16 @@ void LoadFullCloverBlock(InstVector& ivector, const FVec diag[6], const FVec off
     for(int c=0; c < 15; c++) {
         readFVecClovOffDiag(ivector, off_diag[c][RE], base, offsets, block, c, RE);
         readFVecClovOffDiag(ivector, off_diag[c][IM], base, offsets, block, c, IM);
+    }
+}
+
+void LoadFullCloverFullBlock(InstVector& ivector, const FVec cl_block[6][6][2], string& base, string& offsets, int block)
+{
+    for(int sc1=0; sc1<6; sc1++) {
+        for(int sc2=0; sc2<6; sc2++) {
+            readFVecFullClov(ivector, cl_block[sc1][sc2][RE], base, offsets, block, sc1, sc2, RE);
+            readFVecFullClov(ivector, cl_block[sc1][sc2][IM], base, offsets, block, sc1, sc2, IM);
+        }
     }
 }
 

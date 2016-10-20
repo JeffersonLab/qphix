@@ -4,7 +4,7 @@
 
 using namespace std;
 
-enum AddressType { GAUGE, SPINOR, CLOVER_DIAG, CLOVER_OFFDIAG, ADDRESS_OF_SCALAR, GENERIC_ADDRESS};
+enum AddressType { GAUGE, SPINOR, CLOVER_DIAG, CLOVER_OFFDIAG, CLOVER_FULL, ADDRESS_OF_SCALAR, GENERIC_ADDRESS};
 
 class Address
 {
@@ -127,6 +127,30 @@ protected:
     const string base;
     const int block;
     const int component;
+    const int reim;
+};
+
+class FullClovAddress : public Address
+{
+public:
+    FullClovAddress(const string& base_, int block_, int row_, int column_, int reim_, int isHalfType) :
+			Address(isHalfType), base(base_), block(block_), row(row_), column(column_), reim(reim_) {};
+
+    string serialize(void) const
+    {
+        ostringstream outbuf;
+        outbuf << "(*" << base << ").block" << block+1 << "[" << row << "][" << column << "][" << reim << "]";
+        return outbuf.str();
+    }
+    AddressType getType(void) const
+    {
+        return CLOVER_FULL;
+    }
+protected:
+    const string base;
+    const int block;
+    const int row;
+    const int column;
     const int reim;
 };
 

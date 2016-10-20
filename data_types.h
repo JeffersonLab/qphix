@@ -63,6 +63,17 @@ public:
         FT off_diag2[15][2][SL];
     } Clover;
 #endif
+#ifdef USE_PACKED_CLOVER
+    typedef struct {
+        FT block1[6][6][2][VL];
+        FT block2[6][6][2][VL];
+    } FullClover;
+#else
+    typedef struct {
+        FT block1[6][6][2][SL];
+        FT block2[6][6][2][SL];
+    } FullClover;
+#endif
 };
 
 void LoadSpinorElement(InstVector& ivector, const FVec& ret, string& base, string& offsets, int spin, int col, int reim, bool isFace, string mask, int dir = -1);
