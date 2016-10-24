@@ -61,5 +61,14 @@ qphix_include_HEADERS += ./twisted_mass.h \
 	./tm_dslash_face.h
 endif
 
+
+if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
+qphix_include_HEADERS += ./twisted_mass_clover.h \
+	./tm_clov_dslash_def.h \
+	./tm_clov_dslash_body.h \
+	./tm_clov_dslash_generated.h \
+	./tm_clov_dslash_face.h
+endif
+
 nodist_qphix_include_HEADERS=./qphix_config_internal.h
 
