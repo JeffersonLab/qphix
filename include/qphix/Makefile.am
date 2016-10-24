@@ -58,7 +58,7 @@ qphix_include_HEADERS += ./twisted_mass.h \
 	./tm_dslash_def.h \
 	./tm_dslash_body.h \
 	./tm_dslash_generated.h \
-	./tm_face.h
+	./tm_dslash_face.h
 endif
 
 nodist_qphix_include_HEADERS=./qphix_config_internal.h

@@ -196,6 +196,6 @@ namespace QPhiX
 #include "qphix/tm_dslash_body.h"
 
 #ifdef QPHIX_QMP_COMMS
-#include "qphix/tm_face.h"
+#include "qphix/tm_dslash_face.h"
 #endif
 #endif

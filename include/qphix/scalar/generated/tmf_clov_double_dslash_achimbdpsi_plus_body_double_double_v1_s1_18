@@ -1,0 +1,2664 @@
+double b_S0_C0_RE = 0.0;
+double b_S0_C0_IM = 0.0;
+double b_S0_C1_RE = 0.0;
+double b_S0_C1_IM = 0.0;
+double b_S0_C2_RE = 0.0;
+double b_S0_C2_IM = 0.0;
+double b_S1_C0_RE = 0.0;
+double b_S1_C0_IM = 0.0;
+double b_S1_C1_RE = 0.0;
+double b_S1_C1_IM = 0.0;
+double b_S1_C2_RE = 0.0;
+double b_S1_C2_IM = 0.0;
+double ub_S0_C0_RE = 0.0;
+double ub_S0_C0_IM = 0.0;
+double ub_S0_C1_RE = 0.0;
+double ub_S0_C1_IM = 0.0;
+double ub_S0_C2_RE = 0.0;
+double ub_S0_C2_IM = 0.0;
+double ub_S1_C0_RE = 0.0;
+double ub_S1_C0_IM = 0.0;
+double ub_S1_C1_RE = 0.0;
+double ub_S1_C1_IM = 0.0;
+double ub_S1_C2_RE = 0.0;
+double ub_S1_C2_IM = 0.0;
+double u_00_re = 0.0;
+double u_00_im = 0.0;
+double u_01_re = 0.0;
+double u_01_im = 0.0;
+double u_02_re = 0.0;
+double u_02_im = 0.0;
+double u_10_re = 0.0;
+double u_10_im = 0.0;
+double u_11_re = 0.0;
+double u_11_im = 0.0;
+double u_12_re = 0.0;
+double u_12_im = 0.0;
+double u_20_re = 0.0;
+double u_20_im = 0.0;
+double u_21_re = 0.0;
+double u_21_im = 0.0;
+double u_22_re = 0.0;
+double u_22_im = 0.0;
+double psi_S0_RE = 0.0;
+double psi_S0_IM = 0.0;
+double psi_S1_RE = 0.0;
+double psi_S1_IM = 0.0;
+double tmp_1_re = 0.0;
+double tmp_1_im = 0.0;
+double tmp_2_re = 0.0;
+double tmp_2_im = 0.0;
+double tmp_3_re = 0.0;
+double tmp_3_im = 0.0;
+double tmp_4_re = 0.0;
+double tmp_4_im = 0.0;
+double zero = 0.0;
+zero = 0.0;
+double out_S0_C0_RE = 0.0;
+double out_S0_C0_IM = 0.0;
+double out_S0_C1_RE = 0.0;
+double out_S0_C1_IM = 0.0;
+double out_S0_C2_RE = 0.0;
+double out_S0_C2_IM = 0.0;
+double out_S1_C0_RE = 0.0;
+double out_S1_C0_IM = 0.0;
+double out_S1_C1_RE = 0.0;
+double out_S1_C1_IM = 0.0;
+double out_S1_C2_RE = 0.0;
+double out_S1_C2_IM = 0.0;
+double out_S2_C0_RE = 0.0;
+double out_S2_C0_IM = 0.0;
+double out_S2_C1_RE = 0.0;
+double out_S2_C1_IM = 0.0;
+double out_S2_C2_RE = 0.0;
+double out_S2_C2_IM = 0.0;
+double out_S3_C0_RE = 0.0;
+double out_S3_C0_IM = 0.0;
+double out_S3_C1_RE = 0.0;
+double out_S3_C1_IM = 0.0;
+double out_S3_C2_RE = 0.0;
+double out_S3_C2_IM = 0.0;
+double chi_S0_C0_RE = 0.0;
+double chi_S0_C0_IM = 0.0;
+double chi_S0_C1_RE = 0.0;
+double chi_S0_C1_IM = 0.0;
+double chi_S0_C2_RE = 0.0;
+double chi_S0_C2_IM = 0.0;
+double chi_S1_C0_RE = 0.0;
+double chi_S1_C0_IM = 0.0;
+double chi_S1_C1_RE = 0.0;
+double chi_S1_C1_IM = 0.0;
+double chi_S1_C2_RE = 0.0;
+double chi_S1_C2_IM = 0.0;
+double chi_S2_C0_RE = 0.0;
+double chi_S2_C0_IM = 0.0;
+double chi_S2_C1_RE = 0.0;
+double chi_S2_C1_IM = 0.0;
+double chi_S2_C2_RE = 0.0;
+double chi_S2_C2_IM = 0.0;
+double chi_S3_C0_RE = 0.0;
+double chi_S3_C0_IM = 0.0;
+double chi_S3_C1_RE = 0.0;
+double chi_S3_C1_IM = 0.0;
+double chi_S3_C2_RE = 0.0;
+double chi_S3_C2_IM = 0.0;
+double dout_S0_C0_RE = 0.0;
+double dout_S0_C0_IM = 0.0;
+double dout_S0_C1_RE = 0.0;
+double dout_S0_C1_IM = 0.0;
+double dout_S0_C2_RE = 0.0;
+double dout_S0_C2_IM = 0.0;
+double dout_S1_C0_RE = 0.0;
+double dout_S1_C0_IM = 0.0;
+double dout_S1_C1_RE = 0.0;
+double dout_S1_C1_IM = 0.0;
+double dout_S1_C2_RE = 0.0;
+double dout_S1_C2_IM = 0.0;
+double dout_S2_C0_RE = 0.0;
+double dout_S2_C0_IM = 0.0;
+double dout_S2_C1_RE = 0.0;
+double dout_S2_C1_IM = 0.0;
+double dout_S2_C2_RE = 0.0;
+double dout_S2_C2_IM = 0.0;
+double dout_S3_C0_RE = 0.0;
+double dout_S3_C0_IM = 0.0;
+double dout_S3_C1_RE = 0.0;
+double dout_S3_C1_IM = 0.0;
+double dout_S3_C2_RE = 0.0;
+double dout_S3_C2_IM = 0.0;
+double cl_full_00_RE = 0.0;
+double cl_full_00_IM = 0.0;
+double cl_full_01_RE = 0.0;
+double cl_full_01_IM = 0.0;
+double cl_full_02_RE = 0.0;
+double cl_full_02_IM = 0.0;
+double cl_full_03_RE = 0.0;
+double cl_full_03_IM = 0.0;
+double cl_full_04_RE = 0.0;
+double cl_full_04_IM = 0.0;
+double cl_full_05_RE = 0.0;
+double cl_full_05_IM = 0.0;
+double cl_full_10_RE = 0.0;
+double cl_full_10_IM = 0.0;
+double cl_full_11_RE = 0.0;
+double cl_full_11_IM = 0.0;
+double cl_full_12_RE = 0.0;
+double cl_full_12_IM = 0.0;
+double cl_full_13_RE = 0.0;
+double cl_full_13_IM = 0.0;
+double cl_full_14_RE = 0.0;
+double cl_full_14_IM = 0.0;
+double cl_full_15_RE = 0.0;
+double cl_full_15_IM = 0.0;
+double cl_full_20_RE = 0.0;
+double cl_full_20_IM = 0.0;
+double cl_full_21_RE = 0.0;
+double cl_full_21_IM = 0.0;
+double cl_full_22_RE = 0.0;
+double cl_full_22_IM = 0.0;
+double cl_full_23_RE = 0.0;
+double cl_full_23_IM = 0.0;
+double cl_full_24_RE = 0.0;
+double cl_full_24_IM = 0.0;
+double cl_full_25_RE = 0.0;
+double cl_full_25_IM = 0.0;
+double cl_full_30_RE = 0.0;
+double cl_full_30_IM = 0.0;
+double cl_full_31_RE = 0.0;
+double cl_full_31_IM = 0.0;
+double cl_full_32_RE = 0.0;
+double cl_full_32_IM = 0.0;
+double cl_full_33_RE = 0.0;
+double cl_full_33_IM = 0.0;
+double cl_full_34_RE = 0.0;
+double cl_full_34_IM = 0.0;
+double cl_full_35_RE = 0.0;
+double cl_full_35_IM = 0.0;
+double cl_full_40_RE = 0.0;
+double cl_full_40_IM = 0.0;
+double cl_full_41_RE = 0.0;
+double cl_full_41_IM = 0.0;
+double cl_full_42_RE = 0.0;
+double cl_full_42_IM = 0.0;
+double cl_full_43_RE = 0.0;
+double cl_full_43_IM = 0.0;
+double cl_full_44_RE = 0.0;
+double cl_full_44_IM = 0.0;
+double cl_full_45_RE = 0.0;
+double cl_full_45_IM = 0.0;
+double cl_full_50_RE = 0.0;
+double cl_full_50_IM = 0.0;
+double cl_full_51_RE = 0.0;
+double cl_full_51_IM = 0.0;
+double cl_full_52_RE = 0.0;
+double cl_full_52_IM = 0.0;
+double cl_full_53_RE = 0.0;
+double cl_full_53_IM = 0.0;
+double cl_full_54_RE = 0.0;
+double cl_full_54_IM = 0.0;
+double cl_full_55_RE = 0.0;
+double cl_full_55_IM = 0.0;
+
+chi_S0_C0_RE = *(((*chiBase)[0][0][0] + offs[0]));
+
+
+chi_S0_C0_IM = *(((*chiBase)[0][0][1] + offs[0]));
+
+
+chi_S1_C0_RE = *(((*chiBase)[0][1][0] + offs[0]));
+
+
+chi_S1_C0_IM = *(((*chiBase)[0][1][1] + offs[0]));
+
+
+chi_S2_C0_RE = *(((*chiBase)[0][2][0] + offs[0]));
+
+
+chi_S2_C0_IM = *(((*chiBase)[0][2][1] + offs[0]));
+
+
+chi_S3_C0_RE = *(((*chiBase)[0][3][0] + offs[0]));
+
+
+chi_S3_C0_IM = *(((*chiBase)[0][3][1] + offs[0]));
+
+
+chi_S0_C1_RE = *(((*chiBase)[1][0][0] + offs[0]));
+
+
+chi_S0_C1_IM = *(((*chiBase)[1][0][1] + offs[0]));
+
+
+chi_S1_C1_RE = *(((*chiBase)[1][1][0] + offs[0]));
+
+
+chi_S1_C1_IM = *(((*chiBase)[1][1][1] + offs[0]));
+
+
+chi_S2_C1_RE = *(((*chiBase)[1][2][0] + offs[0]));
+
+
+chi_S2_C1_IM = *(((*chiBase)[1][2][1] + offs[0]));
+
+
+chi_S3_C1_RE = *(((*chiBase)[1][3][0] + offs[0]));
+
+
+chi_S3_C1_IM = *(((*chiBase)[1][3][1] + offs[0]));
+
+
+chi_S0_C2_RE = *(((*chiBase)[2][0][0] + offs[0]));
+
+
+chi_S0_C2_IM = *(((*chiBase)[2][0][1] + offs[0]));
+
+
+chi_S1_C2_RE = *(((*chiBase)[2][1][0] + offs[0]));
+
+
+chi_S1_C2_IM = *(((*chiBase)[2][1][1] + offs[0]));
+
+
+chi_S2_C2_RE = *(((*chiBase)[2][2][0] + offs[0]));
+
+
+chi_S2_C2_IM = *(((*chiBase)[2][2][1] + offs[0]));
+
+
+chi_S3_C2_RE = *(((*chiBase)[2][3][0] + offs[0]));
+
+
+chi_S3_C2_IM = *(((*chiBase)[2][3][1] + offs[0]));
+
+cl_full_00_RE = *((*clBase).block1[0][0][0]);
+
+cl_full_00_IM = *((*clBase).block1[0][0][1]);
+
+cl_full_01_RE = *((*clBase).block1[0][1][0]);
+
+cl_full_01_IM = *((*clBase).block1[0][1][1]);
+
+cl_full_02_RE = *((*clBase).block1[0][2][0]);
+
+cl_full_02_IM = *((*clBase).block1[0][2][1]);
+
+cl_full_03_RE = *((*clBase).block1[0][3][0]);
+
+cl_full_03_IM = *((*clBase).block1[0][3][1]);
+
+cl_full_04_RE = *((*clBase).block1[0][4][0]);
+
+cl_full_04_IM = *((*clBase).block1[0][4][1]);
+
+cl_full_05_RE = *((*clBase).block1[0][5][0]);
+
+cl_full_05_IM = *((*clBase).block1[0][5][1]);
+
+cl_full_10_RE = *((*clBase).block1[1][0][0]);
+
+cl_full_10_IM = *((*clBase).block1[1][0][1]);
+
+cl_full_11_RE = *((*clBase).block1[1][1][0]);
+
+cl_full_11_IM = *((*clBase).block1[1][1][1]);
+
+cl_full_12_RE = *((*clBase).block1[1][2][0]);
+
+cl_full_12_IM = *((*clBase).block1[1][2][1]);
+
+cl_full_13_RE = *((*clBase).block1[1][3][0]);
+
+cl_full_13_IM = *((*clBase).block1[1][3][1]);
+
+cl_full_14_RE = *((*clBase).block1[1][4][0]);
+
+cl_full_14_IM = *((*clBase).block1[1][4][1]);
+
+cl_full_15_RE = *((*clBase).block1[1][5][0]);
+
+cl_full_15_IM = *((*clBase).block1[1][5][1]);
+
+cl_full_20_RE = *((*clBase).block1[2][0][0]);
+
+cl_full_20_IM = *((*clBase).block1[2][0][1]);
+
+cl_full_21_RE = *((*clBase).block1[2][1][0]);
+
+cl_full_21_IM = *((*clBase).block1[2][1][1]);
+
+cl_full_22_RE = *((*clBase).block1[2][2][0]);
+
+cl_full_22_IM = *((*clBase).block1[2][2][1]);
+
+cl_full_23_RE = *((*clBase).block1[2][3][0]);
+
+cl_full_23_IM = *((*clBase).block1[2][3][1]);
+
+cl_full_24_RE = *((*clBase).block1[2][4][0]);
+
+cl_full_24_IM = *((*clBase).block1[2][4][1]);
+
+cl_full_25_RE = *((*clBase).block1[2][5][0]);
+
+cl_full_25_IM = *((*clBase).block1[2][5][1]);
+
+cl_full_30_RE = *((*clBase).block1[3][0][0]);
+
+cl_full_30_IM = *((*clBase).block1[3][0][1]);
+
+cl_full_31_RE = *((*clBase).block1[3][1][0]);
+
+cl_full_31_IM = *((*clBase).block1[3][1][1]);
+
+cl_full_32_RE = *((*clBase).block1[3][2][0]);
+
+cl_full_32_IM = *((*clBase).block1[3][2][1]);
+
+cl_full_33_RE = *((*clBase).block1[3][3][0]);
+
+cl_full_33_IM = *((*clBase).block1[3][3][1]);
+
+cl_full_34_RE = *((*clBase).block1[3][4][0]);
+
+cl_full_34_IM = *((*clBase).block1[3][4][1]);
+
+cl_full_35_RE = *((*clBase).block1[3][5][0]);
+
+cl_full_35_IM = *((*clBase).block1[3][5][1]);
+
+cl_full_40_RE = *((*clBase).block1[4][0][0]);
+
+cl_full_40_IM = *((*clBase).block1[4][0][1]);
+
+cl_full_41_RE = *((*clBase).block1[4][1][0]);
+
+cl_full_41_IM = *((*clBase).block1[4][1][1]);
+
+cl_full_42_RE = *((*clBase).block1[4][2][0]);
+
+cl_full_42_IM = *((*clBase).block1[4][2][1]);
+
+cl_full_43_RE = *((*clBase).block1[4][3][0]);
+
+cl_full_43_IM = *((*clBase).block1[4][3][1]);
+
+cl_full_44_RE = *((*clBase).block1[4][4][0]);
+
+cl_full_44_IM = *((*clBase).block1[4][4][1]);
+
+cl_full_45_RE = *((*clBase).block1[4][5][0]);
+
+cl_full_45_IM = *((*clBase).block1[4][5][1]);
+
+cl_full_50_RE = *((*clBase).block1[5][0][0]);
+
+cl_full_50_IM = *((*clBase).block1[5][0][1]);
+
+cl_full_51_RE = *((*clBase).block1[5][1][0]);
+
+cl_full_51_IM = *((*clBase).block1[5][1][1]);
+
+cl_full_52_RE = *((*clBase).block1[5][2][0]);
+
+cl_full_52_IM = *((*clBase).block1[5][2][1]);
+
+cl_full_53_RE = *((*clBase).block1[5][3][0]);
+
+cl_full_53_IM = *((*clBase).block1[5][3][1]);
+
+cl_full_54_RE = *((*clBase).block1[5][4][0]);
+
+cl_full_54_IM = *((*clBase).block1[5][4][1]);
+
+cl_full_55_RE = *((*clBase).block1[5][5][0]);
+
+cl_full_55_IM = *((*clBase).block1[5][5][1]);
+
+out_S0_C0_RE = cl_full_00_RE * chi_S0_C0_RE;
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_00_IM * chi_S0_C0_IM);
+out_S0_C0_IM = cl_full_00_RE * chi_S0_C0_IM;
+out_S0_C0_IM = ((cl_full_00_IM * chi_S0_C0_RE) + out_S0_C0_IM);
+out_S0_C0_RE = ((cl_full_01_RE * chi_S0_C1_RE) + out_S0_C0_RE);
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_01_IM * chi_S0_C1_IM);
+out_S0_C0_IM = ((cl_full_01_RE * chi_S0_C1_IM) + out_S0_C0_IM);
+out_S0_C0_IM = ((cl_full_01_IM * chi_S0_C1_RE) + out_S0_C0_IM);
+out_S0_C0_RE = ((cl_full_02_RE * chi_S0_C2_RE) + out_S0_C0_RE);
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_02_IM * chi_S0_C2_IM);
+out_S0_C0_IM = ((cl_full_02_RE * chi_S0_C2_IM) + out_S0_C0_IM);
+out_S0_C0_IM = ((cl_full_02_IM * chi_S0_C2_RE) + out_S0_C0_IM);
+out_S0_C0_RE = ((cl_full_03_RE * chi_S1_C0_RE) + out_S0_C0_RE);
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_03_IM * chi_S1_C0_IM);
+out_S0_C0_IM = ((cl_full_03_RE * chi_S1_C0_IM) + out_S0_C0_IM);
+out_S0_C0_IM = ((cl_full_03_IM * chi_S1_C0_RE) + out_S0_C0_IM);
+out_S0_C0_RE = ((cl_full_04_RE * chi_S1_C1_RE) + out_S0_C0_RE);
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_04_IM * chi_S1_C1_IM);
+out_S0_C0_IM = ((cl_full_04_RE * chi_S1_C1_IM) + out_S0_C0_IM);
+out_S0_C0_IM = ((cl_full_04_IM * chi_S1_C1_RE) + out_S0_C0_IM);
+out_S0_C0_RE = ((cl_full_05_RE * chi_S1_C2_RE) + out_S0_C0_RE);
+out_S0_C0_RE = out_S0_C0_RE - (cl_full_05_IM * chi_S1_C2_IM);
+out_S0_C0_IM = ((cl_full_05_RE * chi_S1_C2_IM) + out_S0_C0_IM);
+out_S0_C0_IM = ((cl_full_05_IM * chi_S1_C2_RE) + out_S0_C0_IM);
+out_S0_C1_RE = cl_full_10_RE * chi_S0_C0_RE;
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_10_IM * chi_S0_C0_IM);
+out_S0_C1_IM = cl_full_10_RE * chi_S0_C0_IM;
+out_S0_C1_IM = ((cl_full_10_IM * chi_S0_C0_RE) + out_S0_C1_IM);
+out_S0_C1_RE = ((cl_full_11_RE * chi_S0_C1_RE) + out_S0_C1_RE);
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_11_IM * chi_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_11_RE * chi_S0_C1_IM) + out_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_11_IM * chi_S0_C1_RE) + out_S0_C1_IM);
+out_S0_C1_RE = ((cl_full_12_RE * chi_S0_C2_RE) + out_S0_C1_RE);
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_12_IM * chi_S0_C2_IM);
+out_S0_C1_IM = ((cl_full_12_RE * chi_S0_C2_IM) + out_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_12_IM * chi_S0_C2_RE) + out_S0_C1_IM);
+out_S0_C1_RE = ((cl_full_13_RE * chi_S1_C0_RE) + out_S0_C1_RE);
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_13_IM * chi_S1_C0_IM);
+out_S0_C1_IM = ((cl_full_13_RE * chi_S1_C0_IM) + out_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_13_IM * chi_S1_C0_RE) + out_S0_C1_IM);
+out_S0_C1_RE = ((cl_full_14_RE * chi_S1_C1_RE) + out_S0_C1_RE);
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_14_IM * chi_S1_C1_IM);
+out_S0_C1_IM = ((cl_full_14_RE * chi_S1_C1_IM) + out_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_14_IM * chi_S1_C1_RE) + out_S0_C1_IM);
+out_S0_C1_RE = ((cl_full_15_RE * chi_S1_C2_RE) + out_S0_C1_RE);
+out_S0_C1_RE = out_S0_C1_RE - (cl_full_15_IM * chi_S1_C2_IM);
+out_S0_C1_IM = ((cl_full_15_RE * chi_S1_C2_IM) + out_S0_C1_IM);
+out_S0_C1_IM = ((cl_full_15_IM * chi_S1_C2_RE) + out_S0_C1_IM);
+out_S0_C2_RE = cl_full_20_RE * chi_S0_C0_RE;
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_20_IM * chi_S0_C0_IM);
+out_S0_C2_IM = cl_full_20_RE * chi_S0_C0_IM;
+out_S0_C2_IM = ((cl_full_20_IM * chi_S0_C0_RE) + out_S0_C2_IM);
+out_S0_C2_RE = ((cl_full_21_RE * chi_S0_C1_RE) + out_S0_C2_RE);
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_21_IM * chi_S0_C1_IM);
+out_S0_C2_IM = ((cl_full_21_RE * chi_S0_C1_IM) + out_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_21_IM * chi_S0_C1_RE) + out_S0_C2_IM);
+out_S0_C2_RE = ((cl_full_22_RE * chi_S0_C2_RE) + out_S0_C2_RE);
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_22_IM * chi_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_22_RE * chi_S0_C2_IM) + out_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_22_IM * chi_S0_C2_RE) + out_S0_C2_IM);
+out_S0_C2_RE = ((cl_full_23_RE * chi_S1_C0_RE) + out_S0_C2_RE);
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_23_IM * chi_S1_C0_IM);
+out_S0_C2_IM = ((cl_full_23_RE * chi_S1_C0_IM) + out_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_23_IM * chi_S1_C0_RE) + out_S0_C2_IM);
+out_S0_C2_RE = ((cl_full_24_RE * chi_S1_C1_RE) + out_S0_C2_RE);
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_24_IM * chi_S1_C1_IM);
+out_S0_C2_IM = ((cl_full_24_RE * chi_S1_C1_IM) + out_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_24_IM * chi_S1_C1_RE) + out_S0_C2_IM);
+out_S0_C2_RE = ((cl_full_25_RE * chi_S1_C2_RE) + out_S0_C2_RE);
+out_S0_C2_RE = out_S0_C2_RE - (cl_full_25_IM * chi_S1_C2_IM);
+out_S0_C2_IM = ((cl_full_25_RE * chi_S1_C2_IM) + out_S0_C2_IM);
+out_S0_C2_IM = ((cl_full_25_IM * chi_S1_C2_RE) + out_S0_C2_IM);
+out_S1_C0_RE = cl_full_30_RE * chi_S0_C0_RE;
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_30_IM * chi_S0_C0_IM);
+out_S1_C0_IM = cl_full_30_RE * chi_S0_C0_IM;
+out_S1_C0_IM = ((cl_full_30_IM * chi_S0_C0_RE) + out_S1_C0_IM);
+out_S1_C0_RE = ((cl_full_31_RE * chi_S0_C1_RE) + out_S1_C0_RE);
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_31_IM * chi_S0_C1_IM);
+out_S1_C0_IM = ((cl_full_31_RE * chi_S0_C1_IM) + out_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_31_IM * chi_S0_C1_RE) + out_S1_C0_IM);
+out_S1_C0_RE = ((cl_full_32_RE * chi_S0_C2_RE) + out_S1_C0_RE);
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_32_IM * chi_S0_C2_IM);
+out_S1_C0_IM = ((cl_full_32_RE * chi_S0_C2_IM) + out_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_32_IM * chi_S0_C2_RE) + out_S1_C0_IM);
+out_S1_C0_RE = ((cl_full_33_RE * chi_S1_C0_RE) + out_S1_C0_RE);
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_33_IM * chi_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_33_RE * chi_S1_C0_IM) + out_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_33_IM * chi_S1_C0_RE) + out_S1_C0_IM);
+out_S1_C0_RE = ((cl_full_34_RE * chi_S1_C1_RE) + out_S1_C0_RE);
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_34_IM * chi_S1_C1_IM);
+out_S1_C0_IM = ((cl_full_34_RE * chi_S1_C1_IM) + out_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_34_IM * chi_S1_C1_RE) + out_S1_C0_IM);
+out_S1_C0_RE = ((cl_full_35_RE * chi_S1_C2_RE) + out_S1_C0_RE);
+out_S1_C0_RE = out_S1_C0_RE - (cl_full_35_IM * chi_S1_C2_IM);
+out_S1_C0_IM = ((cl_full_35_RE * chi_S1_C2_IM) + out_S1_C0_IM);
+out_S1_C0_IM = ((cl_full_35_IM * chi_S1_C2_RE) + out_S1_C0_IM);
+out_S1_C1_RE = cl_full_40_RE * chi_S0_C0_RE;
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_40_IM * chi_S0_C0_IM);
+out_S1_C1_IM = cl_full_40_RE * chi_S0_C0_IM;
+out_S1_C1_IM = ((cl_full_40_IM * chi_S0_C0_RE) + out_S1_C1_IM);
+out_S1_C1_RE = ((cl_full_41_RE * chi_S0_C1_RE) + out_S1_C1_RE);
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_41_IM * chi_S0_C1_IM);
+out_S1_C1_IM = ((cl_full_41_RE * chi_S0_C1_IM) + out_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_41_IM * chi_S0_C1_RE) + out_S1_C1_IM);
+out_S1_C1_RE = ((cl_full_42_RE * chi_S0_C2_RE) + out_S1_C1_RE);
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_42_IM * chi_S0_C2_IM);
+out_S1_C1_IM = ((cl_full_42_RE * chi_S0_C2_IM) + out_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_42_IM * chi_S0_C2_RE) + out_S1_C1_IM);
+out_S1_C1_RE = ((cl_full_43_RE * chi_S1_C0_RE) + out_S1_C1_RE);
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_43_IM * chi_S1_C0_IM);
+out_S1_C1_IM = ((cl_full_43_RE * chi_S1_C0_IM) + out_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_43_IM * chi_S1_C0_RE) + out_S1_C1_IM);
+out_S1_C1_RE = ((cl_full_44_RE * chi_S1_C1_RE) + out_S1_C1_RE);
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_44_IM * chi_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_44_RE * chi_S1_C1_IM) + out_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_44_IM * chi_S1_C1_RE) + out_S1_C1_IM);
+out_S1_C1_RE = ((cl_full_45_RE * chi_S1_C2_RE) + out_S1_C1_RE);
+out_S1_C1_RE = out_S1_C1_RE - (cl_full_45_IM * chi_S1_C2_IM);
+out_S1_C1_IM = ((cl_full_45_RE * chi_S1_C2_IM) + out_S1_C1_IM);
+out_S1_C1_IM = ((cl_full_45_IM * chi_S1_C2_RE) + out_S1_C1_IM);
+out_S1_C2_RE = cl_full_50_RE * chi_S0_C0_RE;
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_50_IM * chi_S0_C0_IM);
+out_S1_C2_IM = cl_full_50_RE * chi_S0_C0_IM;
+out_S1_C2_IM = ((cl_full_50_IM * chi_S0_C0_RE) + out_S1_C2_IM);
+out_S1_C2_RE = ((cl_full_51_RE * chi_S0_C1_RE) + out_S1_C2_RE);
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_51_IM * chi_S0_C1_IM);
+out_S1_C2_IM = ((cl_full_51_RE * chi_S0_C1_IM) + out_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_51_IM * chi_S0_C1_RE) + out_S1_C2_IM);
+out_S1_C2_RE = ((cl_full_52_RE * chi_S0_C2_RE) + out_S1_C2_RE);
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_52_IM * chi_S0_C2_IM);
+out_S1_C2_IM = ((cl_full_52_RE * chi_S0_C2_IM) + out_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_52_IM * chi_S0_C2_RE) + out_S1_C2_IM);
+out_S1_C2_RE = ((cl_full_53_RE * chi_S1_C0_RE) + out_S1_C2_RE);
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_53_IM * chi_S1_C0_IM);
+out_S1_C2_IM = ((cl_full_53_RE * chi_S1_C0_IM) + out_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_53_IM * chi_S1_C0_RE) + out_S1_C2_IM);
+out_S1_C2_RE = ((cl_full_54_RE * chi_S1_C1_RE) + out_S1_C2_RE);
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_54_IM * chi_S1_C1_IM);
+out_S1_C2_IM = ((cl_full_54_RE * chi_S1_C1_IM) + out_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_54_IM * chi_S1_C1_RE) + out_S1_C2_IM);
+out_S1_C2_RE = ((cl_full_55_RE * chi_S1_C2_RE) + out_S1_C2_RE);
+out_S1_C2_RE = out_S1_C2_RE - (cl_full_55_IM * chi_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_55_RE * chi_S1_C2_IM) + out_S1_C2_IM);
+out_S1_C2_IM = ((cl_full_55_IM * chi_S1_C2_RE) + out_S1_C2_IM);
+cl_full_00_RE = *((*clBase).block2[0][0][0]);
+
+cl_full_00_IM = *((*clBase).block2[0][0][1]);
+
+cl_full_01_RE = *((*clBase).block2[0][1][0]);
+
+cl_full_01_IM = *((*clBase).block2[0][1][1]);
+
+cl_full_02_RE = *((*clBase).block2[0][2][0]);
+
+cl_full_02_IM = *((*clBase).block2[0][2][1]);
+
+cl_full_03_RE = *((*clBase).block2[0][3][0]);
+
+cl_full_03_IM = *((*clBase).block2[0][3][1]);
+
+cl_full_04_RE = *((*clBase).block2[0][4][0]);
+
+cl_full_04_IM = *((*clBase).block2[0][4][1]);
+
+cl_full_05_RE = *((*clBase).block2[0][5][0]);
+
+cl_full_05_IM = *((*clBase).block2[0][5][1]);
+
+cl_full_10_RE = *((*clBase).block2[1][0][0]);
+
+cl_full_10_IM = *((*clBase).block2[1][0][1]);
+
+cl_full_11_RE = *((*clBase).block2[1][1][0]);
+
+cl_full_11_IM = *((*clBase).block2[1][1][1]);
+
+cl_full_12_RE = *((*clBase).block2[1][2][0]);
+
+cl_full_12_IM = *((*clBase).block2[1][2][1]);
+
+cl_full_13_RE = *((*clBase).block2[1][3][0]);
+
+cl_full_13_IM = *((*clBase).block2[1][3][1]);
+
+cl_full_14_RE = *((*clBase).block2[1][4][0]);
+
+cl_full_14_IM = *((*clBase).block2[1][4][1]);
+
+cl_full_15_RE = *((*clBase).block2[1][5][0]);
+
+cl_full_15_IM = *((*clBase).block2[1][5][1]);
+
+cl_full_20_RE = *((*clBase).block2[2][0][0]);
+
+cl_full_20_IM = *((*clBase).block2[2][0][1]);
+
+cl_full_21_RE = *((*clBase).block2[2][1][0]);
+
+cl_full_21_IM = *((*clBase).block2[2][1][1]);
+
+cl_full_22_RE = *((*clBase).block2[2][2][0]);
+
+cl_full_22_IM = *((*clBase).block2[2][2][1]);
+
+cl_full_23_RE = *((*clBase).block2[2][3][0]);
+
+cl_full_23_IM = *((*clBase).block2[2][3][1]);
+
+cl_full_24_RE = *((*clBase).block2[2][4][0]);
+
+cl_full_24_IM = *((*clBase).block2[2][4][1]);
+
+cl_full_25_RE = *((*clBase).block2[2][5][0]);
+
+cl_full_25_IM = *((*clBase).block2[2][5][1]);
+
+cl_full_30_RE = *((*clBase).block2[3][0][0]);
+
+cl_full_30_IM = *((*clBase).block2[3][0][1]);
+
+cl_full_31_RE = *((*clBase).block2[3][1][0]);
+
+cl_full_31_IM = *((*clBase).block2[3][1][1]);
+
+cl_full_32_RE = *((*clBase).block2[3][2][0]);
+
+cl_full_32_IM = *((*clBase).block2[3][2][1]);
+
+cl_full_33_RE = *((*clBase).block2[3][3][0]);
+
+cl_full_33_IM = *((*clBase).block2[3][3][1]);
+
+cl_full_34_RE = *((*clBase).block2[3][4][0]);
+
+cl_full_34_IM = *((*clBase).block2[3][4][1]);
+
+cl_full_35_RE = *((*clBase).block2[3][5][0]);
+
+cl_full_35_IM = *((*clBase).block2[3][5][1]);
+
+cl_full_40_RE = *((*clBase).block2[4][0][0]);
+
+cl_full_40_IM = *((*clBase).block2[4][0][1]);
+
+cl_full_41_RE = *((*clBase).block2[4][1][0]);
+
+cl_full_41_IM = *((*clBase).block2[4][1][1]);
+
+cl_full_42_RE = *((*clBase).block2[4][2][0]);
+
+cl_full_42_IM = *((*clBase).block2[4][2][1]);
+
+cl_full_43_RE = *((*clBase).block2[4][3][0]);
+
+cl_full_43_IM = *((*clBase).block2[4][3][1]);
+
+cl_full_44_RE = *((*clBase).block2[4][4][0]);
+
+cl_full_44_IM = *((*clBase).block2[4][4][1]);
+
+cl_full_45_RE = *((*clBase).block2[4][5][0]);
+
+cl_full_45_IM = *((*clBase).block2[4][5][1]);
+
+cl_full_50_RE = *((*clBase).block2[5][0][0]);
+
+cl_full_50_IM = *((*clBase).block2[5][0][1]);
+
+cl_full_51_RE = *((*clBase).block2[5][1][0]);
+
+cl_full_51_IM = *((*clBase).block2[5][1][1]);
+
+cl_full_52_RE = *((*clBase).block2[5][2][0]);
+
+cl_full_52_IM = *((*clBase).block2[5][2][1]);
+
+cl_full_53_RE = *((*clBase).block2[5][3][0]);
+
+cl_full_53_IM = *((*clBase).block2[5][3][1]);
+
+cl_full_54_RE = *((*clBase).block2[5][4][0]);
+
+cl_full_54_IM = *((*clBase).block2[5][4][1]);
+
+cl_full_55_RE = *((*clBase).block2[5][5][0]);
+
+cl_full_55_IM = *((*clBase).block2[5][5][1]);
+
+out_S2_C0_RE = cl_full_00_RE * chi_S2_C0_RE;
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_00_IM * chi_S2_C0_IM);
+out_S2_C0_IM = cl_full_00_RE * chi_S2_C0_IM;
+out_S2_C0_IM = ((cl_full_00_IM * chi_S2_C0_RE) + out_S2_C0_IM);
+out_S2_C0_RE = ((cl_full_01_RE * chi_S2_C1_RE) + out_S2_C0_RE);
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_01_IM * chi_S2_C1_IM);
+out_S2_C0_IM = ((cl_full_01_RE * chi_S2_C1_IM) + out_S2_C0_IM);
+out_S2_C0_IM = ((cl_full_01_IM * chi_S2_C1_RE) + out_S2_C0_IM);
+out_S2_C0_RE = ((cl_full_02_RE * chi_S2_C2_RE) + out_S2_C0_RE);
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_02_IM * chi_S2_C2_IM);
+out_S2_C0_IM = ((cl_full_02_RE * chi_S2_C2_IM) + out_S2_C0_IM);
+out_S2_C0_IM = ((cl_full_02_IM * chi_S2_C2_RE) + out_S2_C0_IM);
+out_S2_C0_RE = ((cl_full_03_RE * chi_S3_C0_RE) + out_S2_C0_RE);
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_03_IM * chi_S3_C0_IM);
+out_S2_C0_IM = ((cl_full_03_RE * chi_S3_C0_IM) + out_S2_C0_IM);
+out_S2_C0_IM = ((cl_full_03_IM * chi_S3_C0_RE) + out_S2_C0_IM);
+out_S2_C0_RE = ((cl_full_04_RE * chi_S3_C1_RE) + out_S2_C0_RE);
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_04_IM * chi_S3_C1_IM);
+out_S2_C0_IM = ((cl_full_04_RE * chi_S3_C1_IM) + out_S2_C0_IM);
+out_S2_C0_IM = ((cl_full_04_IM * chi_S3_C1_RE) + out_S2_C0_IM);
+out_S2_C0_RE = ((cl_full_05_RE * chi_S3_C2_RE) + out_S2_C0_RE);
+out_S2_C0_RE = out_S2_C0_RE - (cl_full_05_IM * chi_S3_C2_IM);
+out_S2_C0_IM = ((cl_full_05_RE * chi_S3_C2_IM) + out_S2_C0_IM);
+out_S2_C0_IM = ((cl_full_05_IM * chi_S3_C2_RE) + out_S2_C0_IM);
+out_S2_C1_RE = cl_full_10_RE * chi_S2_C0_RE;
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_10_IM * chi_S2_C0_IM);
+out_S2_C1_IM = cl_full_10_RE * chi_S2_C0_IM;
+out_S2_C1_IM = ((cl_full_10_IM * chi_S2_C0_RE) + out_S2_C1_IM);
+out_S2_C1_RE = ((cl_full_11_RE * chi_S2_C1_RE) + out_S2_C1_RE);
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_11_IM * chi_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_11_RE * chi_S2_C1_IM) + out_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_11_IM * chi_S2_C1_RE) + out_S2_C1_IM);
+out_S2_C1_RE = ((cl_full_12_RE * chi_S2_C2_RE) + out_S2_C1_RE);
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_12_IM * chi_S2_C2_IM);
+out_S2_C1_IM = ((cl_full_12_RE * chi_S2_C2_IM) + out_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_12_IM * chi_S2_C2_RE) + out_S2_C1_IM);
+out_S2_C1_RE = ((cl_full_13_RE * chi_S3_C0_RE) + out_S2_C1_RE);
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_13_IM * chi_S3_C0_IM);
+out_S2_C1_IM = ((cl_full_13_RE * chi_S3_C0_IM) + out_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_13_IM * chi_S3_C0_RE) + out_S2_C1_IM);
+out_S2_C1_RE = ((cl_full_14_RE * chi_S3_C1_RE) + out_S2_C1_RE);
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_14_IM * chi_S3_C1_IM);
+out_S2_C1_IM = ((cl_full_14_RE * chi_S3_C1_IM) + out_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_14_IM * chi_S3_C1_RE) + out_S2_C1_IM);
+out_S2_C1_RE = ((cl_full_15_RE * chi_S3_C2_RE) + out_S2_C1_RE);
+out_S2_C1_RE = out_S2_C1_RE - (cl_full_15_IM * chi_S3_C2_IM);
+out_S2_C1_IM = ((cl_full_15_RE * chi_S3_C2_IM) + out_S2_C1_IM);
+out_S2_C1_IM = ((cl_full_15_IM * chi_S3_C2_RE) + out_S2_C1_IM);
+out_S2_C2_RE = cl_full_20_RE * chi_S2_C0_RE;
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_20_IM * chi_S2_C0_IM);
+out_S2_C2_IM = cl_full_20_RE * chi_S2_C0_IM;
+out_S2_C2_IM = ((cl_full_20_IM * chi_S2_C0_RE) + out_S2_C2_IM);
+out_S2_C2_RE = ((cl_full_21_RE * chi_S2_C1_RE) + out_S2_C2_RE);
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_21_IM * chi_S2_C1_IM);
+out_S2_C2_IM = ((cl_full_21_RE * chi_S2_C1_IM) + out_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_21_IM * chi_S2_C1_RE) + out_S2_C2_IM);
+out_S2_C2_RE = ((cl_full_22_RE * chi_S2_C2_RE) + out_S2_C2_RE);
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_22_IM * chi_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_22_RE * chi_S2_C2_IM) + out_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_22_IM * chi_S2_C2_RE) + out_S2_C2_IM);
+out_S2_C2_RE = ((cl_full_23_RE * chi_S3_C0_RE) + out_S2_C2_RE);
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_23_IM * chi_S3_C0_IM);
+out_S2_C2_IM = ((cl_full_23_RE * chi_S3_C0_IM) + out_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_23_IM * chi_S3_C0_RE) + out_S2_C2_IM);
+out_S2_C2_RE = ((cl_full_24_RE * chi_S3_C1_RE) + out_S2_C2_RE);
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_24_IM * chi_S3_C1_IM);
+out_S2_C2_IM = ((cl_full_24_RE * chi_S3_C1_IM) + out_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_24_IM * chi_S3_C1_RE) + out_S2_C2_IM);
+out_S2_C2_RE = ((cl_full_25_RE * chi_S3_C2_RE) + out_S2_C2_RE);
+out_S2_C2_RE = out_S2_C2_RE - (cl_full_25_IM * chi_S3_C2_IM);
+out_S2_C2_IM = ((cl_full_25_RE * chi_S3_C2_IM) + out_S2_C2_IM);
+out_S2_C2_IM = ((cl_full_25_IM * chi_S3_C2_RE) + out_S2_C2_IM);
+out_S3_C0_RE = cl_full_30_RE * chi_S2_C0_RE;
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_30_IM * chi_S2_C0_IM);
+out_S3_C0_IM = cl_full_30_RE * chi_S2_C0_IM;
+out_S3_C0_IM = ((cl_full_30_IM * chi_S2_C0_RE) + out_S3_C0_IM);
+out_S3_C0_RE = ((cl_full_31_RE * chi_S2_C1_RE) + out_S3_C0_RE);
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_31_IM * chi_S2_C1_IM);
+out_S3_C0_IM = ((cl_full_31_RE * chi_S2_C1_IM) + out_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_31_IM * chi_S2_C1_RE) + out_S3_C0_IM);
+out_S3_C0_RE = ((cl_full_32_RE * chi_S2_C2_RE) + out_S3_C0_RE);
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_32_IM * chi_S2_C2_IM);
+out_S3_C0_IM = ((cl_full_32_RE * chi_S2_C2_IM) + out_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_32_IM * chi_S2_C2_RE) + out_S3_C0_IM);
+out_S3_C0_RE = ((cl_full_33_RE * chi_S3_C0_RE) + out_S3_C0_RE);
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_33_IM * chi_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_33_RE * chi_S3_C0_IM) + out_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_33_IM * chi_S3_C0_RE) + out_S3_C0_IM);
+out_S3_C0_RE = ((cl_full_34_RE * chi_S3_C1_RE) + out_S3_C0_RE);
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_34_IM * chi_S3_C1_IM);
+out_S3_C0_IM = ((cl_full_34_RE * chi_S3_C1_IM) + out_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_34_IM * chi_S3_C1_RE) + out_S3_C0_IM);
+out_S3_C0_RE = ((cl_full_35_RE * chi_S3_C2_RE) + out_S3_C0_RE);
+out_S3_C0_RE = out_S3_C0_RE - (cl_full_35_IM * chi_S3_C2_IM);
+out_S3_C0_IM = ((cl_full_35_RE * chi_S3_C2_IM) + out_S3_C0_IM);
+out_S3_C0_IM = ((cl_full_35_IM * chi_S3_C2_RE) + out_S3_C0_IM);
+out_S3_C1_RE = cl_full_40_RE * chi_S2_C0_RE;
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_40_IM * chi_S2_C0_IM);
+out_S3_C1_IM = cl_full_40_RE * chi_S2_C0_IM;
+out_S3_C1_IM = ((cl_full_40_IM * chi_S2_C0_RE) + out_S3_C1_IM);
+out_S3_C1_RE = ((cl_full_41_RE * chi_S2_C1_RE) + out_S3_C1_RE);
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_41_IM * chi_S2_C1_IM);
+out_S3_C1_IM = ((cl_full_41_RE * chi_S2_C1_IM) + out_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_41_IM * chi_S2_C1_RE) + out_S3_C1_IM);
+out_S3_C1_RE = ((cl_full_42_RE * chi_S2_C2_RE) + out_S3_C1_RE);
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_42_IM * chi_S2_C2_IM);
+out_S3_C1_IM = ((cl_full_42_RE * chi_S2_C2_IM) + out_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_42_IM * chi_S2_C2_RE) + out_S3_C1_IM);
+out_S3_C1_RE = ((cl_full_43_RE * chi_S3_C0_RE) + out_S3_C1_RE);
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_43_IM * chi_S3_C0_IM);
+out_S3_C1_IM = ((cl_full_43_RE * chi_S3_C0_IM) + out_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_43_IM * chi_S3_C0_RE) + out_S3_C1_IM);
+out_S3_C1_RE = ((cl_full_44_RE * chi_S3_C1_RE) + out_S3_C1_RE);
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_44_IM * chi_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_44_RE * chi_S3_C1_IM) + out_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_44_IM * chi_S3_C1_RE) + out_S3_C1_IM);
+out_S3_C1_RE = ((cl_full_45_RE * chi_S3_C2_RE) + out_S3_C1_RE);
+out_S3_C1_RE = out_S3_C1_RE - (cl_full_45_IM * chi_S3_C2_IM);
+out_S3_C1_IM = ((cl_full_45_RE * chi_S3_C2_IM) + out_S3_C1_IM);
+out_S3_C1_IM = ((cl_full_45_IM * chi_S3_C2_RE) + out_S3_C1_IM);
+out_S3_C2_RE = cl_full_50_RE * chi_S2_C0_RE;
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_50_IM * chi_S2_C0_IM);
+out_S3_C2_IM = cl_full_50_RE * chi_S2_C0_IM;
+out_S3_C2_IM = ((cl_full_50_IM * chi_S2_C0_RE) + out_S3_C2_IM);
+out_S3_C2_RE = ((cl_full_51_RE * chi_S2_C1_RE) + out_S3_C2_RE);
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_51_IM * chi_S2_C1_IM);
+out_S3_C2_IM = ((cl_full_51_RE * chi_S2_C1_IM) + out_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_51_IM * chi_S2_C1_RE) + out_S3_C2_IM);
+out_S3_C2_RE = ((cl_full_52_RE * chi_S2_C2_RE) + out_S3_C2_RE);
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_52_IM * chi_S2_C2_IM);
+out_S3_C2_IM = ((cl_full_52_RE * chi_S2_C2_IM) + out_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_52_IM * chi_S2_C2_RE) + out_S3_C2_IM);
+out_S3_C2_RE = ((cl_full_53_RE * chi_S3_C0_RE) + out_S3_C2_RE);
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_53_IM * chi_S3_C0_IM);
+out_S3_C2_IM = ((cl_full_53_RE * chi_S3_C0_IM) + out_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_53_IM * chi_S3_C0_RE) + out_S3_C2_IM);
+out_S3_C2_RE = ((cl_full_54_RE * chi_S3_C1_RE) + out_S3_C2_RE);
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_54_IM * chi_S3_C1_IM);
+out_S3_C2_IM = ((cl_full_54_RE * chi_S3_C1_IM) + out_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_54_IM * chi_S3_C1_RE) + out_S3_C2_IM);
+out_S3_C2_RE = ((cl_full_55_RE * chi_S3_C2_RE) + out_S3_C2_RE);
+out_S3_C2_RE = out_S3_C2_RE - (cl_full_55_IM * chi_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_55_RE * chi_S3_C2_IM) + out_S3_C2_IM);
+out_S3_C2_IM = ((cl_full_55_IM * chi_S3_C2_RE) + out_S3_C2_IM);
+ if ( accumulate[0] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*xyBase)[0][0][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][0][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][3][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][3][1] + xbOffs[0]));
+
+b_S0_C0_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C0_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[1][0][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][0][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][3][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][3][1] + xbOffs[0]));
+
+b_S0_C1_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C1_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[2][0][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][0][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][3][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][3][1] + xbOffs[0]));
+
+b_S0_C2_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C2_IM = (psi_S0_IM + psi_S1_RE);
+u_00_re = *((*gBase)[0][0][0][0]);
+
+u_00_im = *((*gBase)[0][0][0][1]);
+
+u_01_re = *((*gBase)[0][0][1][0]);
+
+u_01_im = *((*gBase)[0][0][1][1]);
+
+u_02_re = *((*gBase)[0][0][2][0]);
+
+u_02_im = *((*gBase)[0][0][2][1]);
+
+u_10_re = *((*gBase)[0][1][0][0]);
+
+u_10_im = *((*gBase)[0][1][0][1]);
+
+u_11_re = *((*gBase)[0][1][1][0]);
+
+u_11_im = *((*gBase)[0][1][1][1]);
+
+u_12_re = *((*gBase)[0][1][2][0]);
+
+u_12_im = *((*gBase)[0][1][2][1]);
+
+u_20_re = *((*gBase)[0][2][0][0]);
+
+u_20_im = *((*gBase)[0][2][0][1]);
+
+u_21_re = *((*gBase)[0][2][1][0]);
+
+u_21_im = *((*gBase)[0][2][1][1]);
+
+u_22_re = *((*gBase)[0][2][2][0]);
+
+u_22_im = *((*gBase)[0][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ((u_00_im * b_S0_C0_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ub_S0_C0_IM - (u_00_im * b_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_im * b_S0_C1_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_01_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_01_im * b_S0_C1_RE);
+ub_S0_C0_RE = ((u_02_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_02_im * b_S0_C2_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_02_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_02_im * b_S0_C2_RE);
+ub_S0_C1_RE = u_10_re * b_S0_C0_RE;
+ub_S0_C1_RE = ((u_10_im * b_S0_C0_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = u_10_re * b_S0_C0_IM;
+ub_S0_C1_IM = ub_S0_C1_IM - (u_10_im * b_S0_C0_RE);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_11_im * b_S0_C1_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_11_im * b_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_im * b_S0_C2_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_12_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_12_im * b_S0_C2_RE);
+ub_S0_C2_RE = u_20_re * b_S0_C0_RE;
+ub_S0_C2_RE = ((u_20_im * b_S0_C0_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = u_20_re * b_S0_C0_IM;
+ub_S0_C2_IM = ub_S0_C2_IM - (u_20_im * b_S0_C0_RE);
+ub_S0_C2_RE = ((u_21_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_21_im * b_S0_C1_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_21_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_21_im * b_S0_C1_RE);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_22_im * b_S0_C2_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_22_im * b_S0_C2_RE);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S3_C0_RE = out_S3_C0_RE - (beta_vec * ub_S0_C0_IM);
+out_S3_C0_IM = ((beta_vec * ub_S0_C0_RE) + out_S3_C0_IM);
+out_S3_C1_RE = out_S3_C1_RE - (beta_vec * ub_S0_C1_IM);
+out_S3_C1_IM = ((beta_vec * ub_S0_C1_RE) + out_S3_C1_IM);
+out_S3_C2_RE = out_S3_C2_RE - (beta_vec * ub_S0_C2_IM);
+out_S3_C2_IM = ((beta_vec * ub_S0_C2_RE) + out_S3_C2_IM);
+
+psi_S0_RE = *(((*xyBase)[0][1][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][1][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][2][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][2][1] + xbOffs[0]));
+
+b_S1_C0_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C0_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[1][1][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][1][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][2][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][2][1] + xbOffs[0]));
+
+b_S1_C1_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C1_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[2][1][0] + xbOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][1][1] + xbOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][2][0] + xbOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][2][1] + xbOffs[0]));
+
+b_S1_C2_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C2_IM = (psi_S0_IM + psi_S1_RE);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ((u_00_im * b_S1_C0_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ub_S1_C0_IM - (u_00_im * b_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_im * b_S1_C1_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_01_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_01_im * b_S1_C1_RE);
+ub_S1_C0_RE = ((u_02_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_02_im * b_S1_C2_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_02_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_02_im * b_S1_C2_RE);
+ub_S1_C1_RE = u_10_re * b_S1_C0_RE;
+ub_S1_C1_RE = ((u_10_im * b_S1_C0_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = u_10_re * b_S1_C0_IM;
+ub_S1_C1_IM = ub_S1_C1_IM - (u_10_im * b_S1_C0_RE);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_11_im * b_S1_C1_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_11_im * b_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_im * b_S1_C2_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_12_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_12_im * b_S1_C2_RE);
+ub_S1_C2_RE = u_20_re * b_S1_C0_RE;
+ub_S1_C2_RE = ((u_20_im * b_S1_C0_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = u_20_re * b_S1_C0_IM;
+ub_S1_C2_IM = ub_S1_C2_IM - (u_20_im * b_S1_C0_RE);
+ub_S1_C2_RE = ((u_21_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_21_im * b_S1_C1_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_21_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_21_im * b_S1_C1_RE);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_22_im * b_S1_C2_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_22_im * b_S1_C2_RE);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S2_C0_RE = out_S2_C0_RE - (beta_vec * ub_S1_C0_IM);
+out_S2_C0_IM = ((beta_vec * ub_S1_C0_RE) + out_S2_C0_IM);
+out_S2_C1_RE = out_S2_C1_RE - (beta_vec * ub_S1_C1_IM);
+out_S2_C1_IM = ((beta_vec * ub_S1_C1_RE) + out_S2_C1_IM);
+out_S2_C2_RE = out_S2_C2_RE - (beta_vec * ub_S1_C2_IM);
+out_S2_C2_IM = ((beta_vec * ub_S1_C2_RE) + out_S2_C2_IM);
+}
+ if ( accumulate[1] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*xyBase)[0][0][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][0][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][3][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][3][1] + xfOffs[0]));
+
+b_S0_C0_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C0_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[1][0][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][0][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][3][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][3][1] + xfOffs[0]));
+
+b_S0_C1_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C1_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[2][0][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][0][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][3][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][3][1] + xfOffs[0]));
+
+b_S0_C2_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C2_IM = (psi_S0_IM - psi_S1_RE);
+u_00_re = *((*gBase)[1][0][0][0]);
+
+u_00_im = *((*gBase)[1][0][0][1]);
+
+u_01_re = *((*gBase)[1][0][1][0]);
+
+u_01_im = *((*gBase)[1][0][1][1]);
+
+u_02_re = *((*gBase)[1][0][2][0]);
+
+u_02_im = *((*gBase)[1][0][2][1]);
+
+u_10_re = *((*gBase)[1][1][0][0]);
+
+u_10_im = *((*gBase)[1][1][0][1]);
+
+u_11_re = *((*gBase)[1][1][1][0]);
+
+u_11_im = *((*gBase)[1][1][1][1]);
+
+u_12_re = *((*gBase)[1][1][2][0]);
+
+u_12_im = *((*gBase)[1][1][2][1]);
+
+u_20_re = *((*gBase)[1][2][0][0]);
+
+u_20_im = *((*gBase)[1][2][0][1]);
+
+u_21_re = *((*gBase)[1][2][1][0]);
+
+u_21_im = *((*gBase)[1][2][1][1]);
+
+u_22_re = *((*gBase)[1][2][2][0]);
+
+u_22_im = *((*gBase)[1][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ub_S0_C0_RE - (u_00_im * b_S0_C0_IM);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ((u_00_im * b_S0_C0_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_10_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_10_im * b_S0_C1_IM);
+ub_S0_C0_IM = ((u_10_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_10_im * b_S0_C1_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_20_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_20_im * b_S0_C2_IM);
+ub_S0_C0_IM = ((u_20_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_20_im * b_S0_C2_RE) + ub_S0_C0_IM);
+ub_S0_C1_RE = u_01_re * b_S0_C0_RE;
+ub_S0_C1_RE = ub_S0_C1_RE - (u_01_im * b_S0_C0_IM);
+ub_S0_C1_IM = u_01_re * b_S0_C0_IM;
+ub_S0_C1_IM = ((u_01_im * b_S0_C0_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_11_im * b_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_im * b_S0_C1_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_21_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_21_im * b_S0_C2_IM);
+ub_S0_C1_IM = ((u_21_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_21_im * b_S0_C2_RE) + ub_S0_C1_IM);
+ub_S0_C2_RE = u_02_re * b_S0_C0_RE;
+ub_S0_C2_RE = ub_S0_C2_RE - (u_02_im * b_S0_C0_IM);
+ub_S0_C2_IM = u_02_re * b_S0_C0_IM;
+ub_S0_C2_IM = ((u_02_im * b_S0_C0_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_12_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_12_im * b_S0_C1_IM);
+ub_S0_C2_IM = ((u_12_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_12_im * b_S0_C1_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_22_im * b_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_im * b_S0_C2_RE) + ub_S0_C2_IM);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S3_C0_RE = ((beta_vec * ub_S0_C0_IM) + out_S3_C0_RE);
+out_S3_C0_IM = out_S3_C0_IM - (beta_vec * ub_S0_C0_RE);
+out_S3_C1_RE = ((beta_vec * ub_S0_C1_IM) + out_S3_C1_RE);
+out_S3_C1_IM = out_S3_C1_IM - (beta_vec * ub_S0_C1_RE);
+out_S3_C2_RE = ((beta_vec * ub_S0_C2_IM) + out_S3_C2_RE);
+out_S3_C2_IM = out_S3_C2_IM - (beta_vec * ub_S0_C2_RE);
+
+psi_S0_RE = *(((*xyBase)[0][1][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][1][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][2][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][2][1] + xfOffs[0]));
+
+b_S1_C0_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C0_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[1][1][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][1][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][2][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][2][1] + xfOffs[0]));
+
+b_S1_C1_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C1_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*xyBase)[2][1][0] + xfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][1][1] + xfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][2][0] + xfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][2][1] + xfOffs[0]));
+
+b_S1_C2_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C2_IM = (psi_S0_IM - psi_S1_RE);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ub_S1_C0_RE - (u_00_im * b_S1_C0_IM);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ((u_00_im * b_S1_C0_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_10_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_10_im * b_S1_C1_IM);
+ub_S1_C0_IM = ((u_10_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_10_im * b_S1_C1_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_20_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_20_im * b_S1_C2_IM);
+ub_S1_C0_IM = ((u_20_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_20_im * b_S1_C2_RE) + ub_S1_C0_IM);
+ub_S1_C1_RE = u_01_re * b_S1_C0_RE;
+ub_S1_C1_RE = ub_S1_C1_RE - (u_01_im * b_S1_C0_IM);
+ub_S1_C1_IM = u_01_re * b_S1_C0_IM;
+ub_S1_C1_IM = ((u_01_im * b_S1_C0_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_11_im * b_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_im * b_S1_C1_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_21_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_21_im * b_S1_C2_IM);
+ub_S1_C1_IM = ((u_21_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_21_im * b_S1_C2_RE) + ub_S1_C1_IM);
+ub_S1_C2_RE = u_02_re * b_S1_C0_RE;
+ub_S1_C2_RE = ub_S1_C2_RE - (u_02_im * b_S1_C0_IM);
+ub_S1_C2_IM = u_02_re * b_S1_C0_IM;
+ub_S1_C2_IM = ((u_02_im * b_S1_C0_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_12_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_12_im * b_S1_C1_IM);
+ub_S1_C2_IM = ((u_12_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_12_im * b_S1_C1_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_22_im * b_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_im * b_S1_C2_RE) + ub_S1_C2_IM);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S2_C0_RE = ((beta_vec * ub_S1_C0_IM) + out_S2_C0_RE);
+out_S2_C0_IM = out_S2_C0_IM - (beta_vec * ub_S1_C0_RE);
+out_S2_C1_RE = ((beta_vec * ub_S1_C1_IM) + out_S2_C1_RE);
+out_S2_C1_IM = out_S2_C1_IM - (beta_vec * ub_S1_C1_RE);
+out_S2_C2_RE = ((beta_vec * ub_S1_C2_IM) + out_S2_C2_RE);
+out_S2_C2_IM = out_S2_C2_IM - (beta_vec * ub_S1_C2_RE);
+}
+ if ( accumulate[2] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*xyBase)[0][0][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][0][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][3][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][3][1] + ybOffs[0]));
+
+b_S0_C0_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C0_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[1][0][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][0][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][3][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][3][1] + ybOffs[0]));
+
+b_S0_C1_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C1_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[2][0][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][0][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][3][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][3][1] + ybOffs[0]));
+
+b_S0_C2_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C2_IM = (psi_S0_IM - psi_S1_IM);
+u_00_re = *((*gBase)[2][0][0][0]);
+
+u_00_im = *((*gBase)[2][0][0][1]);
+
+u_01_re = *((*gBase)[2][0][1][0]);
+
+u_01_im = *((*gBase)[2][0][1][1]);
+
+u_02_re = *((*gBase)[2][0][2][0]);
+
+u_02_im = *((*gBase)[2][0][2][1]);
+
+u_10_re = *((*gBase)[2][1][0][0]);
+
+u_10_im = *((*gBase)[2][1][0][1]);
+
+u_11_re = *((*gBase)[2][1][1][0]);
+
+u_11_im = *((*gBase)[2][1][1][1]);
+
+u_12_re = *((*gBase)[2][1][2][0]);
+
+u_12_im = *((*gBase)[2][1][2][1]);
+
+u_20_re = *((*gBase)[2][2][0][0]);
+
+u_20_im = *((*gBase)[2][2][0][1]);
+
+u_21_re = *((*gBase)[2][2][1][0]);
+
+u_21_im = *((*gBase)[2][2][1][1]);
+
+u_22_re = *((*gBase)[2][2][2][0]);
+
+u_22_im = *((*gBase)[2][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ((u_00_im * b_S0_C0_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ub_S0_C0_IM - (u_00_im * b_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_im * b_S0_C1_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_01_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_01_im * b_S0_C1_RE);
+ub_S0_C0_RE = ((u_02_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_02_im * b_S0_C2_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_02_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_02_im * b_S0_C2_RE);
+ub_S0_C1_RE = u_10_re * b_S0_C0_RE;
+ub_S0_C1_RE = ((u_10_im * b_S0_C0_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = u_10_re * b_S0_C0_IM;
+ub_S0_C1_IM = ub_S0_C1_IM - (u_10_im * b_S0_C0_RE);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_11_im * b_S0_C1_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_11_im * b_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_im * b_S0_C2_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_12_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_12_im * b_S0_C2_RE);
+ub_S0_C2_RE = u_20_re * b_S0_C0_RE;
+ub_S0_C2_RE = ((u_20_im * b_S0_C0_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = u_20_re * b_S0_C0_IM;
+ub_S0_C2_IM = ub_S0_C2_IM - (u_20_im * b_S0_C0_RE);
+ub_S0_C2_RE = ((u_21_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_21_im * b_S0_C1_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_21_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_21_im * b_S0_C1_RE);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_22_im * b_S0_C2_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_22_im * b_S0_C2_RE);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S3_C0_RE = ((beta_vec * ub_S0_C0_RE) + out_S3_C0_RE);
+out_S3_C0_IM = ((beta_vec * ub_S0_C0_IM) + out_S3_C0_IM);
+out_S3_C1_RE = ((beta_vec * ub_S0_C1_RE) + out_S3_C1_RE);
+out_S3_C1_IM = ((beta_vec * ub_S0_C1_IM) + out_S3_C1_IM);
+out_S3_C2_RE = ((beta_vec * ub_S0_C2_RE) + out_S3_C2_RE);
+out_S3_C2_IM = ((beta_vec * ub_S0_C2_IM) + out_S3_C2_IM);
+
+psi_S0_RE = *(((*xyBase)[0][1][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][1][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][2][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][2][1] + ybOffs[0]));
+
+b_S1_C0_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C0_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[1][1][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][1][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][2][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][2][1] + ybOffs[0]));
+
+b_S1_C1_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C1_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[2][1][0] + ybOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][1][1] + ybOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][2][0] + ybOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][2][1] + ybOffs[0]));
+
+b_S1_C2_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C2_IM = (psi_S0_IM + psi_S1_IM);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ((u_00_im * b_S1_C0_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ub_S1_C0_IM - (u_00_im * b_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_im * b_S1_C1_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_01_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_01_im * b_S1_C1_RE);
+ub_S1_C0_RE = ((u_02_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_02_im * b_S1_C2_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_02_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_02_im * b_S1_C2_RE);
+ub_S1_C1_RE = u_10_re * b_S1_C0_RE;
+ub_S1_C1_RE = ((u_10_im * b_S1_C0_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = u_10_re * b_S1_C0_IM;
+ub_S1_C1_IM = ub_S1_C1_IM - (u_10_im * b_S1_C0_RE);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_11_im * b_S1_C1_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_11_im * b_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_im * b_S1_C2_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_12_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_12_im * b_S1_C2_RE);
+ub_S1_C2_RE = u_20_re * b_S1_C0_RE;
+ub_S1_C2_RE = ((u_20_im * b_S1_C0_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = u_20_re * b_S1_C0_IM;
+ub_S1_C2_IM = ub_S1_C2_IM - (u_20_im * b_S1_C0_RE);
+ub_S1_C2_RE = ((u_21_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_21_im * b_S1_C1_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_21_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_21_im * b_S1_C1_RE);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_22_im * b_S1_C2_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_22_im * b_S1_C2_RE);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S2_C0_RE = out_S2_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S2_C0_IM = out_S2_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S2_C1_RE = out_S2_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S2_C1_IM = out_S2_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S2_C2_RE = out_S2_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S2_C2_IM = out_S2_C2_IM - (beta_vec * ub_S1_C2_IM);
+}
+ if ( accumulate[3] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*xyBase)[0][0][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][0][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][3][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][3][1] + yfOffs[0]));
+
+b_S0_C0_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C0_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[1][0][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][0][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][3][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][3][1] + yfOffs[0]));
+
+b_S0_C1_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C1_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[2][0][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][0][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][3][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][3][1] + yfOffs[0]));
+
+b_S0_C2_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C2_IM = (psi_S0_IM + psi_S1_IM);
+u_00_re = *((*gBase)[3][0][0][0]);
+
+u_00_im = *((*gBase)[3][0][0][1]);
+
+u_01_re = *((*gBase)[3][0][1][0]);
+
+u_01_im = *((*gBase)[3][0][1][1]);
+
+u_02_re = *((*gBase)[3][0][2][0]);
+
+u_02_im = *((*gBase)[3][0][2][1]);
+
+u_10_re = *((*gBase)[3][1][0][0]);
+
+u_10_im = *((*gBase)[3][1][0][1]);
+
+u_11_re = *((*gBase)[3][1][1][0]);
+
+u_11_im = *((*gBase)[3][1][1][1]);
+
+u_12_re = *((*gBase)[3][1][2][0]);
+
+u_12_im = *((*gBase)[3][1][2][1]);
+
+u_20_re = *((*gBase)[3][2][0][0]);
+
+u_20_im = *((*gBase)[3][2][0][1]);
+
+u_21_re = *((*gBase)[3][2][1][0]);
+
+u_21_im = *((*gBase)[3][2][1][1]);
+
+u_22_re = *((*gBase)[3][2][2][0]);
+
+u_22_im = *((*gBase)[3][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ub_S0_C0_RE - (u_00_im * b_S0_C0_IM);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ((u_00_im * b_S0_C0_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_10_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_10_im * b_S0_C1_IM);
+ub_S0_C0_IM = ((u_10_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_10_im * b_S0_C1_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_20_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_20_im * b_S0_C2_IM);
+ub_S0_C0_IM = ((u_20_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_20_im * b_S0_C2_RE) + ub_S0_C0_IM);
+ub_S0_C1_RE = u_01_re * b_S0_C0_RE;
+ub_S0_C1_RE = ub_S0_C1_RE - (u_01_im * b_S0_C0_IM);
+ub_S0_C1_IM = u_01_re * b_S0_C0_IM;
+ub_S0_C1_IM = ((u_01_im * b_S0_C0_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_11_im * b_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_im * b_S0_C1_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_21_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_21_im * b_S0_C2_IM);
+ub_S0_C1_IM = ((u_21_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_21_im * b_S0_C2_RE) + ub_S0_C1_IM);
+ub_S0_C2_RE = u_02_re * b_S0_C0_RE;
+ub_S0_C2_RE = ub_S0_C2_RE - (u_02_im * b_S0_C0_IM);
+ub_S0_C2_IM = u_02_re * b_S0_C0_IM;
+ub_S0_C2_IM = ((u_02_im * b_S0_C0_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_12_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_12_im * b_S0_C1_IM);
+ub_S0_C2_IM = ((u_12_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_12_im * b_S0_C1_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_22_im * b_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_im * b_S0_C2_RE) + ub_S0_C2_IM);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S3_C0_RE = out_S3_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S3_C0_IM = out_S3_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S3_C1_RE = out_S3_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S3_C1_IM = out_S3_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S3_C2_RE = out_S3_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S3_C2_IM = out_S3_C2_IM - (beta_vec * ub_S0_C2_IM);
+
+psi_S0_RE = *(((*xyBase)[0][1][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[0][1][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[0][2][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[0][2][1] + yfOffs[0]));
+
+b_S1_C0_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C0_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[1][1][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[1][1][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[1][2][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[1][2][1] + yfOffs[0]));
+
+b_S1_C1_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C1_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*xyBase)[2][1][0] + yfOffs[0]));
+
+
+psi_S0_IM = *(((*xyBase)[2][1][1] + yfOffs[0]));
+
+
+psi_S1_RE = *(((*xyBase)[2][2][0] + yfOffs[0]));
+
+
+psi_S1_IM = *(((*xyBase)[2][2][1] + yfOffs[0]));
+
+b_S1_C2_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C2_IM = (psi_S0_IM - psi_S1_IM);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ub_S1_C0_RE - (u_00_im * b_S1_C0_IM);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ((u_00_im * b_S1_C0_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_10_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_10_im * b_S1_C1_IM);
+ub_S1_C0_IM = ((u_10_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_10_im * b_S1_C1_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_20_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_20_im * b_S1_C2_IM);
+ub_S1_C0_IM = ((u_20_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_20_im * b_S1_C2_RE) + ub_S1_C0_IM);
+ub_S1_C1_RE = u_01_re * b_S1_C0_RE;
+ub_S1_C1_RE = ub_S1_C1_RE - (u_01_im * b_S1_C0_IM);
+ub_S1_C1_IM = u_01_re * b_S1_C0_IM;
+ub_S1_C1_IM = ((u_01_im * b_S1_C0_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_11_im * b_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_im * b_S1_C1_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_21_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_21_im * b_S1_C2_IM);
+ub_S1_C1_IM = ((u_21_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_21_im * b_S1_C2_RE) + ub_S1_C1_IM);
+ub_S1_C2_RE = u_02_re * b_S1_C0_RE;
+ub_S1_C2_RE = ub_S1_C2_RE - (u_02_im * b_S1_C0_IM);
+ub_S1_C2_IM = u_02_re * b_S1_C0_IM;
+ub_S1_C2_IM = ((u_02_im * b_S1_C0_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_12_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_12_im * b_S1_C1_IM);
+ub_S1_C2_IM = ((u_12_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_12_im * b_S1_C1_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_22_im * b_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_im * b_S1_C2_RE) + ub_S1_C2_IM);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S2_C0_RE = ((beta_vec * ub_S1_C0_RE) + out_S2_C0_RE);
+out_S2_C0_IM = ((beta_vec * ub_S1_C0_IM) + out_S2_C0_IM);
+out_S2_C1_RE = ((beta_vec * ub_S1_C1_RE) + out_S2_C1_RE);
+out_S2_C1_IM = ((beta_vec * ub_S1_C1_IM) + out_S2_C1_IM);
+out_S2_C2_RE = ((beta_vec * ub_S1_C2_RE) + out_S2_C2_RE);
+out_S2_C2_IM = ((beta_vec * ub_S1_C2_IM) + out_S2_C2_IM);
+}
+ if ( accumulate[4] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*zbBase)[0][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[0][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[0][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[0][2][1] + offs[0]));
+
+b_S0_C0_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C0_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*zbBase)[1][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[1][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[1][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[1][2][1] + offs[0]));
+
+b_S0_C1_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C1_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*zbBase)[2][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[2][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[2][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[2][2][1] + offs[0]));
+
+b_S0_C2_RE = (psi_S0_RE - psi_S1_IM);
+b_S0_C2_IM = (psi_S0_IM + psi_S1_RE);
+u_00_re = *((*gBase)[4][0][0][0]);
+
+u_00_im = *((*gBase)[4][0][0][1]);
+
+u_01_re = *((*gBase)[4][0][1][0]);
+
+u_01_im = *((*gBase)[4][0][1][1]);
+
+u_02_re = *((*gBase)[4][0][2][0]);
+
+u_02_im = *((*gBase)[4][0][2][1]);
+
+u_10_re = *((*gBase)[4][1][0][0]);
+
+u_10_im = *((*gBase)[4][1][0][1]);
+
+u_11_re = *((*gBase)[4][1][1][0]);
+
+u_11_im = *((*gBase)[4][1][1][1]);
+
+u_12_re = *((*gBase)[4][1][2][0]);
+
+u_12_im = *((*gBase)[4][1][2][1]);
+
+u_20_re = *((*gBase)[4][2][0][0]);
+
+u_20_im = *((*gBase)[4][2][0][1]);
+
+u_21_re = *((*gBase)[4][2][1][0]);
+
+u_21_im = *((*gBase)[4][2][1][1]);
+
+u_22_re = *((*gBase)[4][2][2][0]);
+
+u_22_im = *((*gBase)[4][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ((u_00_im * b_S0_C0_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ub_S0_C0_IM - (u_00_im * b_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_im * b_S0_C1_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_01_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_01_im * b_S0_C1_RE);
+ub_S0_C0_RE = ((u_02_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_02_im * b_S0_C2_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_02_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_02_im * b_S0_C2_RE);
+ub_S0_C1_RE = u_10_re * b_S0_C0_RE;
+ub_S0_C1_RE = ((u_10_im * b_S0_C0_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = u_10_re * b_S0_C0_IM;
+ub_S0_C1_IM = ub_S0_C1_IM - (u_10_im * b_S0_C0_RE);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_11_im * b_S0_C1_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_11_im * b_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_im * b_S0_C2_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_12_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_12_im * b_S0_C2_RE);
+ub_S0_C2_RE = u_20_re * b_S0_C0_RE;
+ub_S0_C2_RE = ((u_20_im * b_S0_C0_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = u_20_re * b_S0_C0_IM;
+ub_S0_C2_IM = ub_S0_C2_IM - (u_20_im * b_S0_C0_RE);
+ub_S0_C2_RE = ((u_21_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_21_im * b_S0_C1_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_21_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_21_im * b_S0_C1_RE);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_22_im * b_S0_C2_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_22_im * b_S0_C2_RE);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S2_C0_RE = out_S2_C0_RE - (beta_vec * ub_S0_C0_IM);
+out_S2_C0_IM = ((beta_vec * ub_S0_C0_RE) + out_S2_C0_IM);
+out_S2_C1_RE = out_S2_C1_RE - (beta_vec * ub_S0_C1_IM);
+out_S2_C1_IM = ((beta_vec * ub_S0_C1_RE) + out_S2_C1_IM);
+out_S2_C2_RE = out_S2_C2_RE - (beta_vec * ub_S0_C2_IM);
+out_S2_C2_IM = ((beta_vec * ub_S0_C2_RE) + out_S2_C2_IM);
+
+psi_S0_RE = *(((*zbBase)[0][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[0][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[0][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[0][3][1] + offs[0]));
+
+b_S1_C0_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C0_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*zbBase)[1][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[1][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[1][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[1][3][1] + offs[0]));
+
+b_S1_C1_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C1_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*zbBase)[2][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zbBase)[2][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zbBase)[2][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zbBase)[2][3][1] + offs[0]));
+
+b_S1_C2_RE = (psi_S0_RE + psi_S1_IM);
+b_S1_C2_IM = (psi_S0_IM - psi_S1_RE);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ((u_00_im * b_S1_C0_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ub_S1_C0_IM - (u_00_im * b_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_im * b_S1_C1_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_01_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_01_im * b_S1_C1_RE);
+ub_S1_C0_RE = ((u_02_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_02_im * b_S1_C2_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_02_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_02_im * b_S1_C2_RE);
+ub_S1_C1_RE = u_10_re * b_S1_C0_RE;
+ub_S1_C1_RE = ((u_10_im * b_S1_C0_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = u_10_re * b_S1_C0_IM;
+ub_S1_C1_IM = ub_S1_C1_IM - (u_10_im * b_S1_C0_RE);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_11_im * b_S1_C1_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_11_im * b_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_im * b_S1_C2_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_12_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_12_im * b_S1_C2_RE);
+ub_S1_C2_RE = u_20_re * b_S1_C0_RE;
+ub_S1_C2_RE = ((u_20_im * b_S1_C0_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = u_20_re * b_S1_C0_IM;
+ub_S1_C2_IM = ub_S1_C2_IM - (u_20_im * b_S1_C0_RE);
+ub_S1_C2_RE = ((u_21_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_21_im * b_S1_C1_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_21_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_21_im * b_S1_C1_RE);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_22_im * b_S1_C2_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_22_im * b_S1_C2_RE);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S3_C0_RE = ((beta_vec * ub_S1_C0_IM) + out_S3_C0_RE);
+out_S3_C0_IM = out_S3_C0_IM - (beta_vec * ub_S1_C0_RE);
+out_S3_C1_RE = ((beta_vec * ub_S1_C1_IM) + out_S3_C1_RE);
+out_S3_C1_IM = out_S3_C1_IM - (beta_vec * ub_S1_C1_RE);
+out_S3_C2_RE = ((beta_vec * ub_S1_C2_IM) + out_S3_C2_RE);
+out_S3_C2_IM = out_S3_C2_IM - (beta_vec * ub_S1_C2_RE);
+}
+ if ( accumulate[5] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_s));
+
+
+psi_S0_RE = *(((*zfBase)[0][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[0][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[0][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[0][2][1] + offs[0]));
+
+b_S0_C0_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C0_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*zfBase)[1][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[1][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[1][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[1][2][1] + offs[0]));
+
+b_S0_C1_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C1_IM = (psi_S0_IM - psi_S1_RE);
+
+psi_S0_RE = *(((*zfBase)[2][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[2][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[2][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[2][2][1] + offs[0]));
+
+b_S0_C2_RE = (psi_S0_RE + psi_S1_IM);
+b_S0_C2_IM = (psi_S0_IM - psi_S1_RE);
+u_00_re = *((*gBase)[5][0][0][0]);
+
+u_00_im = *((*gBase)[5][0][0][1]);
+
+u_01_re = *((*gBase)[5][0][1][0]);
+
+u_01_im = *((*gBase)[5][0][1][1]);
+
+u_02_re = *((*gBase)[5][0][2][0]);
+
+u_02_im = *((*gBase)[5][0][2][1]);
+
+u_10_re = *((*gBase)[5][1][0][0]);
+
+u_10_im = *((*gBase)[5][1][0][1]);
+
+u_11_re = *((*gBase)[5][1][1][0]);
+
+u_11_im = *((*gBase)[5][1][1][1]);
+
+u_12_re = *((*gBase)[5][1][2][0]);
+
+u_12_im = *((*gBase)[5][1][2][1]);
+
+u_20_re = *((*gBase)[5][2][0][0]);
+
+u_20_im = *((*gBase)[5][2][0][1]);
+
+u_21_re = *((*gBase)[5][2][1][0]);
+
+u_21_im = *((*gBase)[5][2][1][1]);
+
+u_22_re = *((*gBase)[5][2][2][0]);
+
+u_22_im = *((*gBase)[5][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ub_S0_C0_RE - (u_00_im * b_S0_C0_IM);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ((u_00_im * b_S0_C0_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_10_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_10_im * b_S0_C1_IM);
+ub_S0_C0_IM = ((u_10_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_10_im * b_S0_C1_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_20_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_20_im * b_S0_C2_IM);
+ub_S0_C0_IM = ((u_20_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_20_im * b_S0_C2_RE) + ub_S0_C0_IM);
+ub_S0_C1_RE = u_01_re * b_S0_C0_RE;
+ub_S0_C1_RE = ub_S0_C1_RE - (u_01_im * b_S0_C0_IM);
+ub_S0_C1_IM = u_01_re * b_S0_C0_IM;
+ub_S0_C1_IM = ((u_01_im * b_S0_C0_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_11_im * b_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_im * b_S0_C1_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_21_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_21_im * b_S0_C2_IM);
+ub_S0_C1_IM = ((u_21_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_21_im * b_S0_C2_RE) + ub_S0_C1_IM);
+ub_S0_C2_RE = u_02_re * b_S0_C0_RE;
+ub_S0_C2_RE = ub_S0_C2_RE - (u_02_im * b_S0_C0_IM);
+ub_S0_C2_IM = u_02_re * b_S0_C0_IM;
+ub_S0_C2_IM = ((u_02_im * b_S0_C0_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_12_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_12_im * b_S0_C1_IM);
+ub_S0_C2_IM = ((u_12_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_12_im * b_S0_C1_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_22_im * b_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_im * b_S0_C2_RE) + ub_S0_C2_IM);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S2_C0_RE = ((beta_vec * ub_S0_C0_IM) + out_S2_C0_RE);
+out_S2_C0_IM = out_S2_C0_IM - (beta_vec * ub_S0_C0_RE);
+out_S2_C1_RE = ((beta_vec * ub_S0_C1_IM) + out_S2_C1_RE);
+out_S2_C1_IM = out_S2_C1_IM - (beta_vec * ub_S0_C1_RE);
+out_S2_C2_RE = ((beta_vec * ub_S0_C2_IM) + out_S2_C2_RE);
+out_S2_C2_IM = out_S2_C2_IM - (beta_vec * ub_S0_C2_RE);
+
+psi_S0_RE = *(((*zfBase)[0][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[0][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[0][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[0][3][1] + offs[0]));
+
+b_S1_C0_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C0_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*zfBase)[1][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[1][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[1][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[1][3][1] + offs[0]));
+
+b_S1_C1_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C1_IM = (psi_S0_IM + psi_S1_RE);
+
+psi_S0_RE = *(((*zfBase)[2][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*zfBase)[2][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*zfBase)[2][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*zfBase)[2][3][1] + offs[0]));
+
+b_S1_C2_RE = (psi_S0_RE - psi_S1_IM);
+b_S1_C2_IM = (psi_S0_IM + psi_S1_RE);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ub_S1_C0_RE - (u_00_im * b_S1_C0_IM);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ((u_00_im * b_S1_C0_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_10_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_10_im * b_S1_C1_IM);
+ub_S1_C0_IM = ((u_10_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_10_im * b_S1_C1_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_20_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_20_im * b_S1_C2_IM);
+ub_S1_C0_IM = ((u_20_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_20_im * b_S1_C2_RE) + ub_S1_C0_IM);
+ub_S1_C1_RE = u_01_re * b_S1_C0_RE;
+ub_S1_C1_RE = ub_S1_C1_RE - (u_01_im * b_S1_C0_IM);
+ub_S1_C1_IM = u_01_re * b_S1_C0_IM;
+ub_S1_C1_IM = ((u_01_im * b_S1_C0_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_11_im * b_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_im * b_S1_C1_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_21_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_21_im * b_S1_C2_IM);
+ub_S1_C1_IM = ((u_21_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_21_im * b_S1_C2_RE) + ub_S1_C1_IM);
+ub_S1_C2_RE = u_02_re * b_S1_C0_RE;
+ub_S1_C2_RE = ub_S1_C2_RE - (u_02_im * b_S1_C0_IM);
+ub_S1_C2_IM = u_02_re * b_S1_C0_IM;
+ub_S1_C2_IM = ((u_02_im * b_S1_C0_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_12_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_12_im * b_S1_C1_IM);
+ub_S1_C2_IM = ((u_12_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_12_im * b_S1_C1_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_22_im * b_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_im * b_S1_C2_RE) + ub_S1_C2_IM);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S3_C0_RE = out_S3_C0_RE - (beta_vec * ub_S1_C0_IM);
+out_S3_C0_IM = ((beta_vec * ub_S1_C0_RE) + out_S3_C0_IM);
+out_S3_C1_RE = out_S3_C1_RE - (beta_vec * ub_S1_C1_IM);
+out_S3_C1_IM = ((beta_vec * ub_S1_C1_RE) + out_S3_C1_IM);
+out_S3_C2_RE = out_S3_C2_RE - (beta_vec * ub_S1_C2_IM);
+out_S3_C2_IM = ((beta_vec * ub_S1_C2_RE) + out_S3_C2_IM);
+}
+ if ( accumulate[6] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_t_b));
+
+
+psi_S0_RE = *(((*tbBase)[0][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[0][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[0][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[0][2][1] + offs[0]));
+
+b_S0_C0_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C0_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*tbBase)[1][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[1][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[1][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[1][2][1] + offs[0]));
+
+b_S0_C1_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C1_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*tbBase)[2][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[2][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[2][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[2][2][1] + offs[0]));
+
+b_S0_C2_RE = (psi_S0_RE + psi_S1_RE);
+b_S0_C2_IM = (psi_S0_IM + psi_S1_IM);
+u_00_re = *((*gBase)[6][0][0][0]);
+
+u_00_im = *((*gBase)[6][0][0][1]);
+
+u_01_re = *((*gBase)[6][0][1][0]);
+
+u_01_im = *((*gBase)[6][0][1][1]);
+
+u_02_re = *((*gBase)[6][0][2][0]);
+
+u_02_im = *((*gBase)[6][0][2][1]);
+
+u_10_re = *((*gBase)[6][1][0][0]);
+
+u_10_im = *((*gBase)[6][1][0][1]);
+
+u_11_re = *((*gBase)[6][1][1][0]);
+
+u_11_im = *((*gBase)[6][1][1][1]);
+
+u_12_re = *((*gBase)[6][1][2][0]);
+
+u_12_im = *((*gBase)[6][1][2][1]);
+
+u_20_re = *((*gBase)[6][2][0][0]);
+
+u_20_im = *((*gBase)[6][2][0][1]);
+
+u_21_re = *((*gBase)[6][2][1][0]);
+
+u_21_im = *((*gBase)[6][2][1][1]);
+
+u_22_re = *((*gBase)[6][2][2][0]);
+
+u_22_im = *((*gBase)[6][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ((u_00_im * b_S0_C0_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ub_S0_C0_IM - (u_00_im * b_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_01_im * b_S0_C1_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_01_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_01_im * b_S0_C1_RE);
+ub_S0_C0_RE = ((u_02_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ((u_02_im * b_S0_C2_IM) + ub_S0_C0_RE);
+ub_S0_C0_IM = ((u_02_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ub_S0_C0_IM - (u_02_im * b_S0_C2_RE);
+ub_S0_C1_RE = u_10_re * b_S0_C0_RE;
+ub_S0_C1_RE = ((u_10_im * b_S0_C0_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = u_10_re * b_S0_C0_IM;
+ub_S0_C1_IM = ub_S0_C1_IM - (u_10_im * b_S0_C0_RE);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_11_im * b_S0_C1_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_11_im * b_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ((u_12_im * b_S0_C2_IM) + ub_S0_C1_RE);
+ub_S0_C1_IM = ((u_12_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ub_S0_C1_IM - (u_12_im * b_S0_C2_RE);
+ub_S0_C2_RE = u_20_re * b_S0_C0_RE;
+ub_S0_C2_RE = ((u_20_im * b_S0_C0_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = u_20_re * b_S0_C0_IM;
+ub_S0_C2_IM = ub_S0_C2_IM - (u_20_im * b_S0_C0_RE);
+ub_S0_C2_RE = ((u_21_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_21_im * b_S0_C1_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_21_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_21_im * b_S0_C1_RE);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ((u_22_im * b_S0_C2_IM) + ub_S0_C2_RE);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ub_S0_C2_IM - (u_22_im * b_S0_C2_RE);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S2_C0_RE = out_S2_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S2_C0_IM = out_S2_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S2_C1_RE = out_S2_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S2_C1_IM = out_S2_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S2_C2_RE = out_S2_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S2_C2_IM = out_S2_C2_IM - (beta_vec * ub_S0_C2_IM);
+
+psi_S0_RE = *(((*tbBase)[0][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[0][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[0][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[0][3][1] + offs[0]));
+
+b_S1_C0_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C0_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*tbBase)[1][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[1][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[1][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[1][3][1] + offs[0]));
+
+b_S1_C1_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C1_IM = (psi_S0_IM + psi_S1_IM);
+
+psi_S0_RE = *(((*tbBase)[2][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tbBase)[2][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tbBase)[2][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tbBase)[2][3][1] + offs[0]));
+
+b_S1_C2_RE = (psi_S0_RE + psi_S1_RE);
+b_S1_C2_IM = (psi_S0_IM + psi_S1_IM);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ((u_00_im * b_S1_C0_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ub_S1_C0_IM - (u_00_im * b_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_01_im * b_S1_C1_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_01_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_01_im * b_S1_C1_RE);
+ub_S1_C0_RE = ((u_02_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ((u_02_im * b_S1_C2_IM) + ub_S1_C0_RE);
+ub_S1_C0_IM = ((u_02_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ub_S1_C0_IM - (u_02_im * b_S1_C2_RE);
+ub_S1_C1_RE = u_10_re * b_S1_C0_RE;
+ub_S1_C1_RE = ((u_10_im * b_S1_C0_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = u_10_re * b_S1_C0_IM;
+ub_S1_C1_IM = ub_S1_C1_IM - (u_10_im * b_S1_C0_RE);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_11_im * b_S1_C1_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_11_im * b_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ((u_12_im * b_S1_C2_IM) + ub_S1_C1_RE);
+ub_S1_C1_IM = ((u_12_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ub_S1_C1_IM - (u_12_im * b_S1_C2_RE);
+ub_S1_C2_RE = u_20_re * b_S1_C0_RE;
+ub_S1_C2_RE = ((u_20_im * b_S1_C0_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = u_20_re * b_S1_C0_IM;
+ub_S1_C2_IM = ub_S1_C2_IM - (u_20_im * b_S1_C0_RE);
+ub_S1_C2_RE = ((u_21_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_21_im * b_S1_C1_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_21_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_21_im * b_S1_C1_RE);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ((u_22_im * b_S1_C2_IM) + ub_S1_C2_RE);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ub_S1_C2_IM - (u_22_im * b_S1_C2_RE);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S3_C0_RE = out_S3_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S3_C0_IM = out_S3_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S3_C1_RE = out_S3_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S3_C1_IM = out_S3_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S3_C2_RE = out_S3_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S3_C2_IM = out_S3_C2_IM - (beta_vec * ub_S1_C2_IM);
+}
+ if ( accumulate[7] ) { 
+double beta_vec = 0.0;
+beta_vec = (*(&coeff_t_f));
+
+
+psi_S0_RE = *(((*tfBase)[0][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[0][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[0][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[0][2][1] + offs[0]));
+
+b_S0_C0_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C0_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*tfBase)[1][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[1][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[1][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[1][2][1] + offs[0]));
+
+b_S0_C1_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C1_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*tfBase)[2][0][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[2][0][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[2][2][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[2][2][1] + offs[0]));
+
+b_S0_C2_RE = (psi_S0_RE - psi_S1_RE);
+b_S0_C2_IM = (psi_S0_IM - psi_S1_IM);
+u_00_re = *((*gBase)[7][0][0][0]);
+
+u_00_im = *((*gBase)[7][0][0][1]);
+
+u_01_re = *((*gBase)[7][0][1][0]);
+
+u_01_im = *((*gBase)[7][0][1][1]);
+
+u_02_re = *((*gBase)[7][0][2][0]);
+
+u_02_im = *((*gBase)[7][0][2][1]);
+
+u_10_re = *((*gBase)[7][1][0][0]);
+
+u_10_im = *((*gBase)[7][1][0][1]);
+
+u_11_re = *((*gBase)[7][1][1][0]);
+
+u_11_im = *((*gBase)[7][1][1][1]);
+
+u_12_re = *((*gBase)[7][1][2][0]);
+
+u_12_im = *((*gBase)[7][1][2][1]);
+
+u_20_re = *((*gBase)[7][2][0][0]);
+
+u_20_im = *((*gBase)[7][2][0][1]);
+
+u_21_re = *((*gBase)[7][2][1][0]);
+
+u_21_im = *((*gBase)[7][2][1][1]);
+
+u_22_re = *((*gBase)[7][2][2][0]);
+
+u_22_im = *((*gBase)[7][2][2][1]);
+
+ub_S0_C0_RE = u_00_re * b_S0_C0_RE;
+ub_S0_C0_RE = ub_S0_C0_RE - (u_00_im * b_S0_C0_IM);
+ub_S0_C0_IM = u_00_re * b_S0_C0_IM;
+ub_S0_C0_IM = ((u_00_im * b_S0_C0_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_10_re * b_S0_C1_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_10_im * b_S0_C1_IM);
+ub_S0_C0_IM = ((u_10_re * b_S0_C1_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_10_im * b_S0_C1_RE) + ub_S0_C0_IM);
+ub_S0_C0_RE = ((u_20_re * b_S0_C2_RE) + ub_S0_C0_RE);
+ub_S0_C0_RE = ub_S0_C0_RE - (u_20_im * b_S0_C2_IM);
+ub_S0_C0_IM = ((u_20_re * b_S0_C2_IM) + ub_S0_C0_IM);
+ub_S0_C0_IM = ((u_20_im * b_S0_C2_RE) + ub_S0_C0_IM);
+ub_S0_C1_RE = u_01_re * b_S0_C0_RE;
+ub_S0_C1_RE = ub_S0_C1_RE - (u_01_im * b_S0_C0_IM);
+ub_S0_C1_IM = u_01_re * b_S0_C0_IM;
+ub_S0_C1_IM = ((u_01_im * b_S0_C0_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_11_im * b_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_11_im * b_S0_C1_RE) + ub_S0_C1_IM);
+ub_S0_C1_RE = ((u_21_re * b_S0_C2_RE) + ub_S0_C1_RE);
+ub_S0_C1_RE = ub_S0_C1_RE - (u_21_im * b_S0_C2_IM);
+ub_S0_C1_IM = ((u_21_re * b_S0_C2_IM) + ub_S0_C1_IM);
+ub_S0_C1_IM = ((u_21_im * b_S0_C2_RE) + ub_S0_C1_IM);
+ub_S0_C2_RE = u_02_re * b_S0_C0_RE;
+ub_S0_C2_RE = ub_S0_C2_RE - (u_02_im * b_S0_C0_IM);
+ub_S0_C2_IM = u_02_re * b_S0_C0_IM;
+ub_S0_C2_IM = ((u_02_im * b_S0_C0_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_12_re * b_S0_C1_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_12_im * b_S0_C1_IM);
+ub_S0_C2_IM = ((u_12_re * b_S0_C1_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_12_im * b_S0_C1_RE) + ub_S0_C2_IM);
+ub_S0_C2_RE = ((u_22_re * b_S0_C2_RE) + ub_S0_C2_RE);
+ub_S0_C2_RE = ub_S0_C2_RE - (u_22_im * b_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_re * b_S0_C2_IM) + ub_S0_C2_IM);
+ub_S0_C2_IM = ((u_22_im * b_S0_C2_RE) + ub_S0_C2_IM);
+out_S0_C0_RE = out_S0_C0_RE - (beta_vec * ub_S0_C0_RE);
+out_S0_C0_IM = out_S0_C0_IM - (beta_vec * ub_S0_C0_IM);
+out_S0_C1_RE = out_S0_C1_RE - (beta_vec * ub_S0_C1_RE);
+out_S0_C1_IM = out_S0_C1_IM - (beta_vec * ub_S0_C1_IM);
+out_S0_C2_RE = out_S0_C2_RE - (beta_vec * ub_S0_C2_RE);
+out_S0_C2_IM = out_S0_C2_IM - (beta_vec * ub_S0_C2_IM);
+out_S2_C0_RE = ((beta_vec * ub_S0_C0_RE) + out_S2_C0_RE);
+out_S2_C0_IM = ((beta_vec * ub_S0_C0_IM) + out_S2_C0_IM);
+out_S2_C1_RE = ((beta_vec * ub_S0_C1_RE) + out_S2_C1_RE);
+out_S2_C1_IM = ((beta_vec * ub_S0_C1_IM) + out_S2_C1_IM);
+out_S2_C2_RE = ((beta_vec * ub_S0_C2_RE) + out_S2_C2_RE);
+out_S2_C2_IM = ((beta_vec * ub_S0_C2_IM) + out_S2_C2_IM);
+
+psi_S0_RE = *(((*tfBase)[0][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[0][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[0][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[0][3][1] + offs[0]));
+
+b_S1_C0_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C0_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*tfBase)[1][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[1][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[1][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[1][3][1] + offs[0]));
+
+b_S1_C1_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C1_IM = (psi_S0_IM - psi_S1_IM);
+
+psi_S0_RE = *(((*tfBase)[2][1][0] + offs[0]));
+
+
+psi_S0_IM = *(((*tfBase)[2][1][1] + offs[0]));
+
+
+psi_S1_RE = *(((*tfBase)[2][3][0] + offs[0]));
+
+
+psi_S1_IM = *(((*tfBase)[2][3][1] + offs[0]));
+
+b_S1_C2_RE = (psi_S0_RE - psi_S1_RE);
+b_S1_C2_IM = (psi_S0_IM - psi_S1_IM);
+ub_S1_C0_RE = u_00_re * b_S1_C0_RE;
+ub_S1_C0_RE = ub_S1_C0_RE - (u_00_im * b_S1_C0_IM);
+ub_S1_C0_IM = u_00_re * b_S1_C0_IM;
+ub_S1_C0_IM = ((u_00_im * b_S1_C0_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_10_re * b_S1_C1_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_10_im * b_S1_C1_IM);
+ub_S1_C0_IM = ((u_10_re * b_S1_C1_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_10_im * b_S1_C1_RE) + ub_S1_C0_IM);
+ub_S1_C0_RE = ((u_20_re * b_S1_C2_RE) + ub_S1_C0_RE);
+ub_S1_C0_RE = ub_S1_C0_RE - (u_20_im * b_S1_C2_IM);
+ub_S1_C0_IM = ((u_20_re * b_S1_C2_IM) + ub_S1_C0_IM);
+ub_S1_C0_IM = ((u_20_im * b_S1_C2_RE) + ub_S1_C0_IM);
+ub_S1_C1_RE = u_01_re * b_S1_C0_RE;
+ub_S1_C1_RE = ub_S1_C1_RE - (u_01_im * b_S1_C0_IM);
+ub_S1_C1_IM = u_01_re * b_S1_C0_IM;
+ub_S1_C1_IM = ((u_01_im * b_S1_C0_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_11_re * b_S1_C1_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_11_im * b_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_re * b_S1_C1_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_11_im * b_S1_C1_RE) + ub_S1_C1_IM);
+ub_S1_C1_RE = ((u_21_re * b_S1_C2_RE) + ub_S1_C1_RE);
+ub_S1_C1_RE = ub_S1_C1_RE - (u_21_im * b_S1_C2_IM);
+ub_S1_C1_IM = ((u_21_re * b_S1_C2_IM) + ub_S1_C1_IM);
+ub_S1_C1_IM = ((u_21_im * b_S1_C2_RE) + ub_S1_C1_IM);
+ub_S1_C2_RE = u_02_re * b_S1_C0_RE;
+ub_S1_C2_RE = ub_S1_C2_RE - (u_02_im * b_S1_C0_IM);
+ub_S1_C2_IM = u_02_re * b_S1_C0_IM;
+ub_S1_C2_IM = ((u_02_im * b_S1_C0_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_12_re * b_S1_C1_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_12_im * b_S1_C1_IM);
+ub_S1_C2_IM = ((u_12_re * b_S1_C1_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_12_im * b_S1_C1_RE) + ub_S1_C2_IM);
+ub_S1_C2_RE = ((u_22_re * b_S1_C2_RE) + ub_S1_C2_RE);
+ub_S1_C2_RE = ub_S1_C2_RE - (u_22_im * b_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_re * b_S1_C2_IM) + ub_S1_C2_IM);
+ub_S1_C2_IM = ((u_22_im * b_S1_C2_RE) + ub_S1_C2_IM);
+out_S1_C0_RE = out_S1_C0_RE - (beta_vec * ub_S1_C0_RE);
+out_S1_C0_IM = out_S1_C0_IM - (beta_vec * ub_S1_C0_IM);
+out_S1_C1_RE = out_S1_C1_RE - (beta_vec * ub_S1_C1_RE);
+out_S1_C1_IM = out_S1_C1_IM - (beta_vec * ub_S1_C1_IM);
+out_S1_C2_RE = out_S1_C2_RE - (beta_vec * ub_S1_C2_RE);
+out_S1_C2_IM = out_S1_C2_IM - (beta_vec * ub_S1_C2_IM);
+out_S3_C0_RE = ((beta_vec * ub_S1_C0_RE) + out_S3_C0_RE);
+out_S3_C0_IM = ((beta_vec * ub_S1_C0_IM) + out_S3_C0_IM);
+out_S3_C1_RE = ((beta_vec * ub_S1_C1_RE) + out_S3_C1_RE);
+out_S3_C1_IM = ((beta_vec * ub_S1_C1_IM) + out_S3_C1_IM);
+out_S3_C2_RE = ((beta_vec * ub_S1_C2_RE) + out_S3_C2_RE);
+out_S3_C2_IM = ((beta_vec * ub_S1_C2_IM) + out_S3_C2_IM);
+}
+*(((*oBase)[0][0][0] + offs[0])) = out_S0_C0_RE;
+
+*(((*oBase)[0][0][1] + offs[0])) = out_S0_C0_IM;
+
+*(((*oBase)[1][0][0] + offs[0])) = out_S0_C1_RE;
+
+*(((*oBase)[1][0][1] + offs[0])) = out_S0_C1_IM;
+
+*(((*oBase)[2][0][0] + offs[0])) = out_S0_C2_RE;
+
+*(((*oBase)[2][0][1] + offs[0])) = out_S0_C2_IM;
+
+*(((*oBase)[0][1][0] + offs[0])) = out_S1_C0_RE;
+
+*(((*oBase)[0][1][1] + offs[0])) = out_S1_C0_IM;
+
+*(((*oBase)[1][1][0] + offs[0])) = out_S1_C1_RE;
+
+*(((*oBase)[1][1][1] + offs[0])) = out_S1_C1_IM;
+
+*(((*oBase)[2][1][0] + offs[0])) = out_S1_C2_RE;
+
+*(((*oBase)[2][1][1] + offs[0])) = out_S1_C2_IM;
+
+*(((*oBase)[0][2][0] + offs[0])) = out_S2_C0_RE;
+
+*(((*oBase)[0][2][1] + offs[0])) = out_S2_C0_IM;
+
+*(((*oBase)[1][2][0] + offs[0])) = out_S2_C1_RE;
+
+*(((*oBase)[1][2][1] + offs[0])) = out_S2_C1_IM;
+
+*(((*oBase)[2][2][0] + offs[0])) = out_S2_C2_RE;
+
+*(((*oBase)[2][2][1] + offs[0])) = out_S2_C2_IM;
+
+*(((*oBase)[0][3][0] + offs[0])) = out_S3_C0_RE;
+
+*(((*oBase)[0][3][1] + offs[0])) = out_S3_C0_IM;
+
+*(((*oBase)[1][3][0] + offs[0])) = out_S3_C1_RE;
+
+*(((*oBase)[1][3][1] + offs[0])) = out_S3_C1_IM;
+
+*(((*oBase)[2][3][0] + offs[0])) = out_S3_C2_RE;
+
+*(((*oBase)[2][3][1] + offs[0])) = out_S3_C2_IM;
+

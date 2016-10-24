@@ -13,8 +13,7 @@
 #include "qphix/avx2/tm_dslash_avx2_complete_specialization.h"
 
 #elif defined(QPHIX_SCALAR_SOURCE)
-#warning "Scalar source is not implemented, including tm_dslash_avx_complete_specializations.h"
-#include "qphix/avx/tm_dslash_avx_complete_specialization.h"
+#include "qphix/scalar/tm_dslash_scalar_complete_specialization.h"
 
 #endif
 

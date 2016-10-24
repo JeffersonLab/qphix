@@ -611,7 +611,7 @@ namespace QPhiX
 		FT forw_t_coeff_T = rep<FT,double>(forw_t_coeff);
 		FT back_t_coeff_T = rep<FT,double>(back_t_coeff);
 
-		tmdslash_plus_vec<FT,veclen,soalen,compress12>(
+		tm_dslash_plus_vec<FT,veclen,soalen,compress12>(
 						  xyBase+X,
 						  zbBase+X,
 						  zfBase+X,
@@ -900,7 +900,7 @@ namespace QPhiX
 		FT forw_t_coeff_T = rep<FT,double>(forw_t_coeff);
 		FT back_t_coeff_T = rep<FT,double>(back_t_coeff);
 
-		tmdslash_minus_vec<FT,veclen,soalen,compress12>(
+		tm_dslash_minus_vec<FT,veclen,soalen,compress12>(
 						  xyBase+X,
 						  zbBase+X,
 						  zfBase+X,
@@ -1184,7 +1184,7 @@ namespace QPhiX
 		FT beta_t_f_T = rep<FT,double>(beta_t_f);
 		FT beta_t_b_T = rep<FT,double>(beta_t_b);
 
-		tmdslash_achimbdpsi_plus_vec<FT,veclen,soalen,compress12>(
+		tm_dslash_achimbdpsi_plus_vec<FT,veclen,soalen,compress12>(
 									xyBase+X,
 									zbBase+X,
 									zfBase+X,
@@ -1472,7 +1472,7 @@ namespace QPhiX
 		FT beta_t_f_T = rep<FT,double>(beta_t_f);
 		FT beta_t_b_T = rep<FT,double>(beta_t_b);
 
-		tmdslash_achimbdpsi_minus_vec<FT,veclen,soalen,compress12>(
+		tm_dslash_achimbdpsi_minus_vec<FT,veclen,soalen,compress12>(
 									 xyBase+X,
 									 zbBase+X,
 									 zfBase+X,
