@@ -95,6 +95,11 @@ namespace QPhiX {
 			T off_diag2[15][2][V];  // Complex, off diagonal part of block 2
 		};
 
+		struct FullCloverBlock {
+			T block1[6][6][2][V];  // Full complex, non-hermitian clover block 1
+			T block2[6][6][2][V];  // Full complex, non-hermitian clover block 2
+		};
+
 		Geometry(const int latt_size[],
 		int By_,
 		int Bz_,
