@@ -32,7 +32,7 @@ namespace QPhiX {
         void dslash(FourSpinorBlock* res,
             const FourSpinorBlock* psi,
             const SU3MatrixBlock* u,
-            const FullCloverBlock* invclov,
+            const FullCloverBlock* invclov[2],
             int isign,
             int cb);
 
@@ -43,7 +43,7 @@ namespace QPhiX {
             const FourSpinorBlock* psi,
             const FourSpinorBlock* chi,
             const SU3MatrixBlock* u,
-            const FullCloverBlock* clov,
+            const FullCloverBlock* clov[2],
             const double beta,
             int isign,
             int cb);

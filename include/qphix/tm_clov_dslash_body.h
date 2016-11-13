@@ -5,16 +5,14 @@
 #include <omp.h>
 #include "qphix/qphix_config.h"
 #include "qphix/print_utils.h"
-
-using namespace std;
-
-namespace QPhiX
-{
-
 #include "qphix/dslash_generated.h" // This sorts out the inclusion of face_proj
                                     // (which is independent of tm and/or clover)
 #include "qphix/tm_clov_dslash_generated.h"
 
+using namespace std; // FIXME: This is a library, do not globally use namespaces!
+
+namespace QPhiX
+{
 
   template <typename FT, int veclen, int soalen, bool compress12>
     void TMClovDslash<FT,veclen,soalen,compress12>::init()
@@ -326,22 +324,21 @@ namespace QPhiX
     void TMClovDslash<FT,veclen, soalen, compress12>::dslash(FourSpinorBlock* res,
         const FourSpinorBlock* psi,
         const SU3MatrixBlock* u, /* Gauge field suitably packed */
-        const FullCloverBlock *invclov, /* The clover inverse on the opposite checkerboard suitably packed */
+        const FullCloverBlock* invclov[2], /* The clover inverse on the opposite checkerboard suitably packed */
         int isign,
         int cb)
     {
 
       // Call the service functions
-      if (isign == 1) {
-        DPsiPlus(u,invclov,psi,res,cb);
+      if(isign == 1) {
+        DPsiPlus(u, invclov[0], psi, res, cb);
       }
 
-      if( isign == -1) {
-        DPsiMinus(u,invclov,psi,res,cb);
+      if(isign == -1) {
+        DPsiMinus(u, invclov[1], psi, res, cb);
       }
 
     }
-
 
 
 
@@ -351,20 +348,21 @@ namespace QPhiX
         const FourSpinorBlock* psi,
         const FourSpinorBlock* chi,
         const SU3MatrixBlock* u, /* Gauge field suitably packed */
-        const FullCloverBlock* clov, /* The clover term on the target checkerboard, packed */
+        const FullCloverBlock* clov[2], /* The clover term on the target checkerboard, packed */
         double beta,
         int isign,
         int cb)
     {
 
       // Call the service functions
-      if (isign == 1) {
-        DPsiPlusAChiMinusBDPsi(u,clov,psi,chi,res,beta,cb);
+      if(isign == 1) {
+        DPsiPlusAChiMinusBDPsi(u, clov[0], psi, chi, res, beta, cb);
       }
 
-      if( isign == -1) {
-        DPsiMinusAChiMinusBDPsi(u,clov,psi,chi,res,beta,cb);
+      if(isign == -1) {
+        DPsiMinusAChiMinusBDPsi(u, clov[1], psi, chi, res, beta, cb);
       }
+
     }
 
 

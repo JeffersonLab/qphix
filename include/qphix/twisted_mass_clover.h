@@ -18,8 +18,8 @@ namespace QPhiX {
         // Constructor
         // No anisotropy, all boundaries periodic for now.
         EvenOddTMCloverOperator( SU3MatrixBlock* u_[2],
-            FullCloverBlock* clov_,
-            FullCloverBlock* invclov_,
+            FullCloverBlock* clov_[2],
+            FullCloverBlock* invclov_[2],
             Geometry<FT,veclen,soalen,compress12>* geom_,
             double t_boundary,
             double aniso_coeff_s,
@@ -29,17 +29,11 @@ namespace QPhiX {
           Geometry<FT,veclen,soalen,compress12>& geom = D->getGeometry();
           u[0] = u_[0];
           u[1] = u_[1];
-          clov = clov_;
-          invclov = invclov_;
+          clov[0] = clov_[0];
+          clov[1] = clov_[1];
+          invclov[0] = invclov_[0];
+          invclov[1] = invclov_[1];
           tmp = (FourSpinorBlock*) geom.allocCBFourSpinor();
-        }
-
-        // Destructor
-        ~EvenOddTMCloverOperator()
-        {
-          Geometry<FT,veclen,soalen,compress12>& geom = D->getGeometry();
-          geom.free(tmp);
-          delete D;
         }
 
         EvenOddTMCloverOperator( Geometry<FT,veclen,soalen,compress12>* geom_,
@@ -50,20 +44,30 @@ namespace QPhiX {
           tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
         }
 
-        void setFields(SU3MatrixBlock* u_[2], FullCloverBlock* clov_, FullCloverBlock* invclov_)
+        // Destructor
+        ~EvenOddTMCloverOperator()
+        {
+          Geometry<FT,veclen,soalen,compress12>& geom = D->getGeometry();
+          geom.free(tmp);
+          delete D;
+        }
+
+        void setFields(SU3MatrixBlock* u_[2], FullCloverBlock* clov_[2], FullCloverBlock* invclov_[2])
         {
           u[0] = u_[0];
           u[1] = u_[1];
-          clov = clov_;
-          invclov = invclov_;
+          clov[0] = clov_[0];
+          clov[1] = clov_[1];
+          invclov[0] = invclov_[0];
+          invclov[1] = invclov_[1];
         }
 
         void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign)
         {
-          double beta=(double)0.25;
+          double beta = (double) 0.25;
 
-          D->dslash(tmp, in, u[0], invclov,  isign, 0);
-          D->dslashAChiMinusBDPsi(res, tmp, in, u[1], clov, beta, isign, 1);
+          D->dslash(tmp, in, u[0], &invclov,  isign, 0);
+          D->dslashAChiMinusBDPsi(res, tmp, in, u[1], &clov, beta, isign, 1);
         }
 
         Geometry<FT,veclen,soalen,compress12>& getGeometry() { return D->getGeometry(); }
@@ -73,10 +77,10 @@ namespace QPhiX {
 
         double Mass;
         TMClovDslash<FT,veclen,soalen,compress12>* D;
-        mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
-        mutable FullCloverBlock* clov;    // Mutable because of setFields
-        mutable FullCloverBlock* invclov; // Mutable because of setFields
-        FourSpinorBlock *tmp;
+        mutable SU3MatrixBlock* u[2]; // Mutable because of setFields
+        mutable FullCloverBlock* clov[2];    // Mutable because of setFields
+        mutable FullCloverBlock* invclov[2]; // Mutable because of setFields
+        FourSpinorBlock* tmp;
 
     }; // Class
 }; // Namespace
