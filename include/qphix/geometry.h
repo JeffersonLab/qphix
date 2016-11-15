@@ -135,6 +135,7 @@ namespace QPhiX {
 			spinor_bytes = (Pxyz * Nt_ + 1)*sizeof(FourSpinorBlock);
 			gauge_bytes = ((Pxyz*Nt_*S)/V)*sizeof(SU3MatrixBlock);
 			clover_bytes = ((Pxyz*Nt_*S)/V)*sizeof(CloverBlock);
+			full_clover_bytes = ((Pxyz*Nt_*S)/V)*sizeof(FullCloverBlock);
 
 			// This works out the phase breakdown
 			int ly = Ny_ / By;
@@ -277,6 +278,38 @@ namespace QPhiX {
 			BUFFER_FREE(p,clover_bytes);
 		}
 
+		FullCloverBlock* allocCBFullClov()
+		{
+			FullCloverBlock *ret_val = (FullCloverBlock*) BUFFER_MALLOC(full_clover_bytes, 128);
+			if ( ret_val == (FullCloverBlock *)0x0 ) {
+				masterPrintf("Failed to allocate FullCloverBlock\n");
+				abort();
+			}
+
+			// For AVX we should loop and zero it here....
+			// later on.
+
+			// Zero the field.
+			// Cast the pointer.
+			T *ret_val_ft = (T *)ret_val;
+
+			// change from number of bytes to number of T type elements
+			size_t num_ft = full_clover_bytes / sizeof(T);
+
+			// Zero it all (including) (especially) the pad regions.
+			// FIXME: this is not NUMA friendly necessarily
+			for(int i=0; i < num_ft; i++) {
+				ret_val_ft[i] = rep<T,double>(0.0);
+			}
+
+			return ret_val;
+		}
+
+		void free(FullCloverBlock* p)
+		{
+			BUFFER_FREE(p, full_clover_bytes);
+		}
+
 
 		int getBy() const { return By; }
 		int getBz() const { return Bz; }
@@ -336,6 +369,7 @@ namespace QPhiX {
 		size_t gauge_bytes;
 		size_t spinor_bytes;
 		size_t clover_bytes;
+		size_t full_clover_bytes;
 
 		//  minCt = 1 for single socket/Xeon Phi
 		//  minCt = 2 for dual socket
