@@ -66,8 +66,8 @@ namespace QPhiX {
         {
           double beta = (double) 0.25;
 
-          D->dslash(tmp, in, u[0], &invclov,  isign, 0);
-          D->dslashAChiMinusBDPsi(res, tmp, in, u[1], &clov, beta, isign, 1);
+          D->dslash(tmp, in, u[0], (const FullCloverBlock**) invclov,  isign, 0);
+          D->dslashAChiMinusBDPsi(res, tmp, in, u[1], (const FullCloverBlock**) clov, beta, isign, 1);
         }
 
         Geometry<FT,veclen,soalen,compress12>& getGeometry() { return D->getGeometry(); }
