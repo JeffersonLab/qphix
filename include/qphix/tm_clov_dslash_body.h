@@ -2,17 +2,18 @@
 #define QPHIX_TM_CLOVER_DSLASH_BODY_H
 
 #include <iostream>
-#include <omp.h>
 #include "qphix/qphix_config.h"
+#include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
-#include "qphix/dslash_generated.h" // This sorts out the inclusion of face_proj
-                                    // (which is independent of tm and/or clover)
-#include "qphix/tm_clov_dslash_generated.h"
-
-using namespace std; // FIXME: This is a library, do not globally use namespaces!
+#include <immintrin.h>
+#include <omp.h>
 
 namespace QPhiX
 {
+
+#include "qphix/dslash_generated.h" // This sorts out the inclusion of face_proj
+                                    // (which is independent of tm and/or clover)
+#include "qphix/tm_clov_dslash_generated.h"
 
   template <typename FT, int veclen, int soalen, bool compress12>
     void TMClovDslash<FT,veclen,soalen,compress12>::init()
