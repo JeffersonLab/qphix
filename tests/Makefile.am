@@ -17,9 +17,13 @@ endif
 endif
 
 if QPHIX_BUILD_TWISTED_MASS
-check_PROGRAMS +=  t_twm_dslash 
-# t_twm_invert_from_file
+check_PROGRAMS += t_twm_dslash
 check_PROGRAMS += time_twm_noqdp
+endif
+
+if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
+# check_PROGRAMS += t_twm_clover
+check_PROGRAMS += time_twm_clover
 endif
 
 check_PROGRAMS += test_blas
@@ -97,16 +101,7 @@ if QPHIX_BUILD_TWISTED_MASS
 t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testTWMDslashFull.h \
 	testTWMDslashFull.cc \
-	t_twm_dslash.cc 
-
-#t_twm_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
-#	testClovInvertFromFile.h \
-#	testClovInvertFromFile.cc \
-#	t_clov_invert_from_file.cc \
-#	mesfield.h \
-#	mesfield.cc \
-#	twm_term_qdp_w.h \
-#	twm_fermact_params_w.h
+	t_twm_dslash.cc
 
 time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_noqdp.cc \
@@ -114,9 +109,22 @@ time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	timeTWMNoQDP.cc
 
 t_twm_dslash_DEPENDENCIES = build_lib
-#t_twm_invert_from_file_DEPENDENCIES = build_lib
 time_twm_noqdp_DEPENDENCIES = build_lib
+endif
 
+if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
+# t_twm_clover_SOURCES = $(FRAMEWORK_SRCS) \
+# 	testTWMCloverFull.h \
+# 	testTWMCloverFull.cc \
+# 	t_twm_clover.cc
+
+time_twm_clover_SOURCES=$(FRAMEWORK_SRCS) \
+	time_twm_clover.cc \
+	timeTWMClover.h \
+	timeTWMClover.cc
+
+# t_twm_clover_DEPENDENCIES = build_lib
+time_twm_clover_DEPENDENCIES = build_lib
 endif
 
 test_blas_SOURCES=$(FRAMEWORK_SRCS) \
