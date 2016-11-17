@@ -1,5 +1,5 @@
-#ifndef _DSLASH_AVX512_COMPLETE_SPECIALIZATIONS_H_
-#define _DSLASH_AVX512_COMPLETE_SPECIALIZATIONS_H_
+#ifndef TM_DSLASH_AVX512_COMPLETE_SPECIALIZATIONS_H
+#define TM_DSLASH_AVX512_COMPLETE_SPECIALIZATIONS_H
 
 #include "immintrin.h"
 #include "qphix/geometry.h"
@@ -16,7 +16,7 @@
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
 // No SOALEN, COMPRESS12, COMPRESS_SUFFIX -> generic template
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 
 
 
@@ -30,15 +30,15 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -48,15 +48,15 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -75,11 +75,11 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #undef COMPRESS12
@@ -90,11 +90,11 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #undef COMPRESS12
@@ -118,15 +118,15 @@
 #define COMPRESS_SUFFIX _18
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
@@ -136,15 +136,15 @@
 #define COMPRESS_SUFFIX _12
 
 #define SOA 4
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 8
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 
 #define SOA 16
-#include "qphix/avx512/dslash_avx512_complete_specialization_form.h"
+#include "qphix/avx512/tm_dslash_avx512_complete_specialization_form.h"
 #undef SOA
 #undef COMPRESS12
 #undef COMPRESS_SUFFIX
