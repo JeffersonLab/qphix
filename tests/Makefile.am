@@ -22,7 +22,7 @@ check_PROGRAMS += time_twm_noqdp
 endif
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
-# check_PROGRAMS += t_twm_clover
+check_PROGRAMS += t_twm_clover
 check_PROGRAMS += time_twm_clover
 endif
 
@@ -112,18 +112,32 @@ t_twm_dslash_DEPENDENCIES = build_lib
 time_twm_noqdp_DEPENDENCIES = build_lib
 endif
 
+
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
-# t_twm_clover_SOURCES = $(FRAMEWORK_SRCS) \
-# 	testTWMCloverFull.h \
-# 	testTWMCloverFull.cc \
-# 	t_twm_clover.cc
+
+if QPHIX_BUILD_QDPJIT_CLOVER
+TM_CLOVER_SRCS = clover_term_llvm_w.h
+endif
+
+if QPHIX_BUILD_QDP_CLOVER
+TM_CLOVER_SRCS = clover_term_qdp_w.h
+endif
+
+t_twm_clover_SOURCES = $(FRAMEWORK_SRCS) \
+	testTWMCloverFull.h \
+	testTWMCloverFull.cc \
+	t_twm_clover.cc \
+	mesfield.h \
+	mesfield.cc \
+	$(TM_CLOVER_SRCS) \
+	clover_fermact_params_w.h
 
 time_twm_clover_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_clover.cc \
 	timeTWMClover.h \
 	timeTWMClover.cc
 
-# t_twm_clover_DEPENDENCIES = build_lib
+t_twm_clover_DEPENDENCIES = build_lib
 time_twm_clover_DEPENDENCIES = build_lib
 endif
 
