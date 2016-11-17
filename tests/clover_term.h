@@ -3,7 +3,7 @@
 
 #include "qphix/qphix_config.h"
 
-#ifdef QPHIX_BUILD_CLOVER
+#if defined(QPHIX_BUILD_CLOVER) || defined(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER)
 #ifdef QPHIX_BUILD_QDPJIT
 #warning using LLVM Clover Term
 
@@ -26,6 +26,6 @@ using CloverTermT = QDPCloverTermT<Phi,U>;
 };
 
 #endif // if else defined QDP-JIT
-#endif // if else defined BUILD-CLOVER
+#endif // if else defined WILSON/TWISTED-MASS CLOVER
 
 #endif

@@ -14,7 +14,7 @@
 #include <immintrin.h>
 #endif
 
-#ifdef QPHIX_BUILD_CLOVER
+#if defined(QPHIX_BUILD_CLOVER) || defined(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER)
 #include "qphix/clover_dslash_def.h"
 #endif
 
@@ -157,7 +157,7 @@ namespace QPhiX {
 
 	}
 
-#ifdef QPHIX_BUILD_CLOVER
+#if defined(QPHIX_BUILD_CLOVER) || defined(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER)
 
 	// This accesses the Internals of the LLVMCloverTerm
 	template<typename FT, int veclen, int soalen, bool compress, typename ClovTerm>

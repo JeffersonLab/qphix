@@ -227,7 +227,7 @@ namespace QPhiX {
 
    }
 
-#ifdef QPHIX_BUILD_CLOVER
+#if defined(QPHIX_BUILD_CLOVER) || defined(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER)
   template<int soalen, bool compress, typename ClovTerm>
     void qdp_pack_clover(const ClovTerm& qdp_clov_in,
        typename Geometry<half,16,soalen,compress>::CloverBlock* cl_out,
