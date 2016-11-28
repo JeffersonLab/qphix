@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "instructions.h"
 
+#ifndef SET_ROUND
+  #define SET_ROUND "_MM_FROUND_TO_NEAREST_INT"
+#endif
+
 #if PRECISION == 1 && VECLEN == 8
 #pragma message "Using AVX Single Precision"
 
@@ -99,7 +103,8 @@ string StoreFVec::serialize() const
             buf << "_mm256_stream_ps(" << a->serialize() << ", " << v.getName() <<  ");" <<endl;
         }
         else {
-            buf << "_mm_stream_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", _MM_FROUND_CUR_DIRECTION));" <<endl;
+            //buf << "_mm_stream_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", _MM_FROUND_CUR_DIRECTION));" <<endl;
+			buf << "_mm_stream_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", "<<SET_ROUND<<"));" <<endl;
         }
     }
     else {
@@ -107,7 +112,8 @@ string StoreFVec::serialize() const
             buf << "_mm256_store_ps(" << a->serialize() << ", " << v.getName() <<  ");" <<endl;
         }
         else {
-            buf << "_mm_store_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", _MM_FROUND_CUR_DIRECTION));" <<endl;
+            //buf << "_mm_store_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", _MM_FROUND_CUR_DIRECTION));" <<endl;
+			buf << "_mm_store_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph(" << v.getName() <<  ", "<<SET_ROUND<<"));" <<endl;
         }
     }
 
@@ -411,7 +417,8 @@ public:
             buf << "_mm_store_ps(" << a->serialize() <<  ", _mm256_extractf128_ps(" << v.getName() << ", " << num << "));" << endl;
         }
         else {
-            buf << "_mm_store_sd((double*)" << a->serialize() <<  ", _mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps(" << v.getName() << ", " << num << "), _MM_FROUND_CUR_DIRECTION)));" << endl;
+            //buf << "_mm_store_sd((double*)" << a->serialize() <<  ", _mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps(" << v.getName() << ", " << num << "), _MM_FROUND_CUR_DIRECTION)));" << endl;
+			buf << "_mm_store_sd((double*)" << a->serialize() <<  ", _mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps(" << v.getName() << ", " << num << "), "<<SET_ROUND<<")));" << endl;
         }
 
         return buf.str();
@@ -552,7 +559,8 @@ public:
             buf << "((int*)" << a->serialize() << ")[0] = _mm_extract_ps(_mm256_extractf128_ps(" << v.getName() << ", " << pos / 4 << "), " << (pos % 4) << ");" << endl;
         }
         else {
-            buf << "(" << a->serialize() << ")[0] = _mm_extract_epi16(_mm256_cvtps_ph(" << v.getName() << ", _MM_FROUND_CUR_DIRECTION), " << pos << ");" << endl;
+            //buf << "(" << a->serialize() << ")[0] = _mm_extract_epi16(_mm256_cvtps_ph(" << v.getName() << ", _MM_FROUND_CUR_DIRECTION), " << pos << ");" << endl;
+			buf << "(" << a->serialize() << ")[0] = _mm_extract_epi16(_mm256_cvtps_ph(" << v.getName() << ", "<<SET_ROUND<<"), " << pos << ");" << endl;
         }
 
         return buf.str();
