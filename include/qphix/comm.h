@@ -168,8 +168,8 @@ namespace QPhiX
     }
     inline int numNonLocalDir() { return numNonLocalDir_; }
     inline int nonLocalDir(int d)  { return nonLocalDir_[d]; }
-    inline bool testSendToDir(int d){}
-    inline bool testRecvFromDir(int d){}
+    inline bool testSendToDir(int d){ return true; }
+    inline bool testRecvFromDir(int d){return true; }
 
 
   private:
