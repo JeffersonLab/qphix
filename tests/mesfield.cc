@@ -1,4 +1,3 @@
-#include "qdp.h"
 #include "mesfield.h"
 
 namespace QPhiX {

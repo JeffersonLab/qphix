@@ -2,6 +2,8 @@
 #ifndef __mesfield_h__
 #define __mesfield_h__
 
+#include "qdp.h"
+
 namespace QPhiX { 
   //! Calculates the antihermitian field strength tensor  iF(mu,nu)
   /* 

@@ -294,9 +294,9 @@ etc in the files:
 
 - Solvers are currently implemnented in
 
-- `invcg.h` -- Conjugate Gradients:   solves `M^\dagger M x = b`
-- `invbicgstab.h` -- BICGStab :       solves `M x = b` 
-- `inv_richardson_multiprec.h` -- Solves `M x = b` using iterative refinement (aka defect correction).
+    - `invcg.h` -- Conjugate Gradients:   solves `M^\dagger M x = b`
+    - `invbicgstab.h` -- BICGStab :       solves `M x = b` 
+    - `inv_richardson_multiprec.h` -- Solves `M x = b` using iterative refinement (aka defect correction).
 
 Please see the source code in the tests/ directory on how to set these up:
 
