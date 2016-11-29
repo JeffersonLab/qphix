@@ -3,8 +3,12 @@
 \#*\#
 *~
 # Makefile.in-s -- use autoreconf to create these
+aclocal.m4
 configure
 Makefile.in
+Makefile
+
+
 # Compiled source #
 ###################
 *.com
@@ -40,6 +44,16 @@ Makefile.in
 ehthumbs.db
 Thumbs.db
 ######################
-autom4te.cache*
-aclocal.m4
-doc/
+*autom4te.cache*
+config.status
+config/compile
+include/qphix/qphix_config_internal.h
+include/qphix/qphix_config_internal.h.in
+include/qphix/stamp-h1
+.deps/
+lib/libqphix_solver.a
+tests/ipo_out.optrpt
+tests/t_dslash
+tests/t_minvcg
+tests/time_clov_noqdp
+tests/time_dslash_noqdp
