@@ -114,7 +114,7 @@ or for MIC:
              --host=x86_64-linux-gnu --build=none-none-none
 
 In addition it has been found that GCC and Clang don't like the restrict
-keyword in C++ source, but allow defining the `__restrict__` extension So you
+keyword in C++ source, but allow defining the `__restrict__` extension. So you
 may need to add `-Drestrict=__restrict__` to `CXXFLAGS`.
 
 ### Building And Installing
