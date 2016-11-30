@@ -110,7 +110,7 @@ namespace QPhiX {
 	else
 	  mask = mask_xodd[1-xodd];
       }
-      
+#if 0
       //      int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
       int pkt_next = pkt + 1 < hi ? pkt+1 : lo ;
       
@@ -135,15 +135,20 @@ namespace QPhiX {
       if(dir == 0 && ngy == 1) yi_next +=(fb == 0 ? 1-xodd_next : xodd_next);
       // printf("Pack %d %d %d %d\n", t, z, yi, xblock*soalen);
       
-      // Now we have x,y,z coordinates, we need the base address of the spinor
-      const FourSpinorBlock *xyBase = &psi[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
+
       // Offset to next spinor. T-values are the same.
       int off_next = (t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x+(xblock_next-xblock);
       
       // Convert to prefetch distance in floats
       int si_offset = off_next*sizeof(FourSpinorBlock)/sizeof(FT);
       int hsprefdist = (pkt_next - pkt)*sizeof(FourSpinorBlock)/sizeof(FT)/2;
+#else
+      int si_offset=0;
+      int hsprefdist=0;
       
+#endif
+      // Now we have x,y,z coordinates, we need the base address of the spinor
+      const FourSpinorBlock *xyBase = &psi[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
       // We are streaming out in sequence
       FT *outbuf = &res[12*pktsize*pkt];
       
@@ -577,7 +582,7 @@ namespace QPhiX {
 	  else
 	    mask = mask_xodd[xodd];
 	}
-	
+#if 0
 	// int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
 	int pkt_next = pkt + 1 < hi? pkt + 1 : lo;
 
@@ -603,7 +608,7 @@ namespace QPhiX {
 	
 	// Now we have x,y,z coordinates, we need the base address of the spinor
 	// Now we have x,y,z coordinates, we need the base address of the spinor
-	FourSpinorBlock *oBase = &res[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
+
 	// Offset to next spinor. T-values are the same.
 	int off_next = (t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x+(xblock_next-xblock);
 	
@@ -612,13 +617,20 @@ namespace QPhiX {
 	int goff_next  = ((t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x)/ngy + (xblock_next-xblock);
 	int gprefdist = goff_next*sizeof(SU3MatrixBlock)/sizeof(FT);
 	
-	const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
-	
-	const CloverBlock *clBase = &invclov[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
+
 	const int clov_line_in_floats = sizeof(CloverBlock)/sizeof(FT); // One gauge scanline, in floats
 	int clprefdist =goff_next * clov_line_in_floats;
+#else
+	int hsprefdist=0;
+	int gprefdist=0;
+	int soprefdist=0;
+	int clprefdist =0;
+#endif
 	
 	// We are streaming out in sequence
+	FourSpinorBlock *oBase = &res[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
+	const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
+	const CloverBlock *clBase = &invclov[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
 	const FT *inbuf = &psi[12*pktsize*pkt];
 	// OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
 	FT beta_T = rep<FT,double>(beta);
@@ -901,7 +913,8 @@ namespace QPhiX {
 	  else
 	    mask = mask_xodd[xodd];
 	}
-	
+
+#if 0
 	//	int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
 	int pkt_next = pkt + 1 < hi? pkt + 1 : lo;
 
@@ -927,7 +940,7 @@ namespace QPhiX {
 	
 	// Now we have x,y,z coordinates, we need the base address of the spinor
 	// Now we have x,y,z coordinates, we need the base address of the spinor
-	FourSpinorBlock *oBase = &res[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
+
 	// Offset to next spinor. T-values are the same.
 	int off_next = (t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x+(xblock_next-xblock);
 	
@@ -935,7 +948,14 @@ namespace QPhiX {
 	int hsprefdist = (pkt_next - pkt)*sizeof(FourSpinorBlock)/sizeof(FT)/2;
 	int goff_next  = ((t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x)/ngy + (xblock_next-xblock);
 	int gprefdist = goff_next*sizeof(SU3MatrixBlock)/sizeof(FT);
+#else
+	int soprefdist= 0;
+	int hsprefdist=0;
+	int clprefdist=0;
+	int gprefdist=0;
+#endif
 	
+	FourSpinorBlock *oBase = &res[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
 	const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
 	// We are streaming out in sequence
 	const FT *inbuf = &psi[12*pktsize*pkt];
