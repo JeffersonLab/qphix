@@ -156,6 +156,14 @@ namespace QPhiX
 		     FT *res,
 		     int cb, int dir, int fb, int isPlus);
 
+    // Devel
+    void packFaceDir2(int gtid,
+		      int tid,
+		      int teamsize,
+		     const FourSpinorBlock *psi,
+		     FT *res,
+		     int cb, int dir, int fb, int isPlus);
+
     //  RECEIVE AND COMPLETE FACE 
     void completeFaceDir(int tid,
 			 const FT* psi,
@@ -163,6 +171,16 @@ namespace QPhiX
 			 const SU3MatrixBlock* u,
 			 const double beta, 
 			 int cb, int dir, int fb, int isPlus);
+
+    void completeFaceDir2(int gtid,
+			 int tid,
+			 int teamsize,
+			 const FT* psi,
+			 FourSpinorBlock* res,
+			 const SU3MatrixBlock* u,
+			 const double beta, 
+			 int cb, int dir, int fb, int isPlus);
+
 #endif
 
 
