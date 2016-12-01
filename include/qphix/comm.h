@@ -43,9 +43,9 @@ namespace QPhiX
   };
 
   namespace CommsUtils {
-    void sumDouble(double* d) {}
-    void sumDoubleArray(double *d, int n){}
-    int numNodes() { return (int)1; }
+    inline void sumDouble(double* d) {}
+    inline void sumDoubleArray(double *d, int n){}
+    inline int numNodes() { return (int)1; }
   }
 #else
 
@@ -188,9 +188,9 @@ namespace QPhiX
   };
   
   namespace CommsUtils {
-    void sumDouble(double* d) {}
-    void sumDoubleArray(double *d, int n){}
-    int numNodes() { return (int)1; }
+    inline void sumDouble(double* d) {}
+    inline void sumDoubleArray(double *d, int n){}
+    inline int numNodes() { return (int)1; }
   };
 #endif  // QPHIX FAKE COMMS 
 
@@ -526,9 +526,9 @@ namespace QPhiX
   };
 
   namespace CommsUtils {
-    void sumDouble(double* d) { QMP_sum_double(d); };
-    void sumDoubleArray(double *d, int n) { QMP_sum_double_array(d,n); }
-    int numNodes() { return QMP_get_number_of_nodes(); }
+    inline void sumDouble(double* d) { QMP_sum_double(d); };
+    inline void sumDoubleArray(double *d, int n) { QMP_sum_double_array(d,n); }
+    inline int numNodes() { return QMP_get_number_of_nodes(); }
   };
 
 #endif // QPHIX_QMP_COMMS 
