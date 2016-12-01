@@ -49,6 +49,13 @@ namespace QPhiX
   }
 #else
 
+// I see a multiple definition error of `sumDouble` when compiling Chroma. I
+// suspect that somehow both flags are passed. Therefore check that only one of
+// the mutually exclusive flags is given. Perhaps it would be even better to
+// use a `#else` here.
+#if defined(QPHIX_FAKE_COMMS) && defined(QPHIX_QMP_COMMS)
+#error "You must specify QPHIX_FAKE_COMMS xor QPHIX_QMP_COMMS when specifying QPHIX_DO_COMMS."
+#endif
 
 #ifdef  QPHIX_FAKE_COMMS
 #warning using fake comms
