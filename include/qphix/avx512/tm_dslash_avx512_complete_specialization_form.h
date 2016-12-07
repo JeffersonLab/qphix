@@ -90,9 +90,9 @@ inline void tm_dslash_plus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
     const unsigned int accumulate[8],
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
-    const FT coeff_t_b,
-		const FT mu,
-		const FT muinv
+    const FPTYPE coeff_t_b,
+		const FPTYPE mu,
+		const FPTYPE muinv
     )
 {
 #include INCLUDE_FILE_VAR(qphix/avx512/generated/tmf_dslash_plus_body_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
@@ -183,9 +183,9 @@ inline void tm_dslash_minus_vec<FPTYPE,VEC,SOA,COMPRESS12>(
     const unsigned int accumulate[8],
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
-    const FT coeff_t_b,
-		const FT mu,
-		const FT muinv
+    const FPTYPE coeff_t_b,
+		const FPTYPE mu,
+		const FPTYPE muinv
     )
 {
 #include INCLUDE_FILE_VAR(qphix/avx512/generated/tmf_dslash_minus_body_,FPTYPE,VEC,SOA,COMPRESS_SUFFIX)
@@ -532,8 +532,8 @@ inline void tm_face_finish_dir_plus<FPTYPE,VEC,SOA,COMPRESS12>(
     const int gprefdist,
     const int soprefdist,
     const FPTYPE beta,
-    const FT mu,
-    const FT muinv,
+    const FPTYPE mu,
+    const FPTYPE muinv,
     unsigned int mask,
     int dir)
 {
