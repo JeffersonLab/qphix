@@ -184,7 +184,9 @@ testDslashFull::run(void)
       if( soalen == 4 ) { 
 #if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE) ||defined (QPHIX_SSE_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
-	testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+
+	testCarleton<float,VECLEN_SP,4,UF,PhiF>();
+	//testDslashWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 
 	// Comment out to speed building.
 #if 0
@@ -313,11 +315,13 @@ testDslashFull::run(void)
       if( soalen == 4 ) { 
 #if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined (QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
-	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+	testCarleton<double,VECLEN_DP,4,UD,PhiD>();
+
+//	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+//	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+//	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+//	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+//	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
 
 #elif defined (QPHIX_QPX_SOURCE) 
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
@@ -1272,3 +1276,185 @@ testDslashFull::testRichardson(const U& u, int t_bc)
 
 }
 
+template<typename T, int V, int S, typename U, typename Phi>
+void
+testDslashFull::testCarleton(void)
+{
+  QDPIO::cout << "RNG seeed = " << rng_seed << std::endl;
+  RNG::setrn(rng_seed);
+
+#if 1
+  typedef typename Geometry<T,V,S,false>::SU3MatrixBlock Gauge;
+  typedef typename Geometry<T,V,S,false>::FourSpinorBlock Spinor;
+#endif
+
+  QDPIO::cout << "In testCarleton" << endl;
+  double aniso_fac_s = ((double)1);
+  double aniso_fac_t = ((double)1);
+  double t_boundary = ((double)1);
+
+  Phi chi;
+  Phi psi;
+
+  QDPIO::cout << "Filling psi with zero: " << endl;
+  psi=zero;
+
+  QDPIO::cout << "Poking 1 into site (0,Ly-1,0,0) spin=0, color=0 real_part" << std::endl;
+  multi1d<int> coord(Nd);
+  for(int mu=0; mu < Nd; ++mu) {
+	  coord[mu]=0;
+  }
+  coord[1] = Layout::subgridLattSize()[1]-1;
+  int qdpsite=Layout::linearSiteIndex(coord);
+
+  psi.elem(qdpsite).elem(0).elem(0).real() = (T)1;
+
+
+
+  Geometry<T,V,S,false> geom(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+  Dslash<T,V,S,false> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
+
+  Gauge* packed_gauge_cb0 = ( Gauge *)geom.allocCBGauge();
+  Gauge* packed_gauge_cb1 = ( Gauge *)geom.allocCBGauge();
+  Spinor* psi_even=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* psi_odd=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_even=( Spinor*)geom.allocCBFourSpinor();
+  Spinor* chi_odd=( Spinor*)geom.allocCBFourSpinor();
+
+
+  QDPIO::cout << "Fields allocated" << std::endl;
+
+  QDPIO::cout << "Zeroing Gauge Field" << std::endl;
+  U u(Nd);
+  for(int mu=0; mu < Nd; ++mu) {
+	  u[mu]=zero;
+  }
+
+  // Pack the gauge field
+  QDPIO::cout << "Packing gauge field..." ;
+
+  qdp_pack_gauge<>(u, packed_gauge_cb0,packed_gauge_cb1, geom);
+
+
+  QDPIO::cout << "done" << endl;
+
+  QDPIO::cout << "Poking 1 into the gauge field (site=0, link_dir=2 (Y-minus), (row,col)=(0,0)" << std::endl;
+  int block=0; // Block=0
+  int xx=0;    // Inner site =0
+  int dir=2;   // y-backwards
+  packed_gauge_cb0[block][dir][0][0][0][xx]=(T)1;
+
+
+
+  Gauge* u_packed[2];
+  u_packed[0] = packed_gauge_cb0;
+  u_packed[1] = packed_gauge_cb1;
+
+  Spinor *psi_s[2] = { psi_even, psi_odd };
+  Spinor *chi_s[2] = { chi_even, chi_odd };
+
+  QDPIO::cout << " Packing fermions..." ;
+  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
+
+  QDPIO::cout << "done" << endl;
+  // Go through the test cases -- apply SSE dslash versus, QDP Dslash
+  int isign=1;
+  for(int isign=1; isign >= -1; isign -=2) {
+    for(int cb=0; cb < 2; cb++) {
+      int source_cb = 1 - cb;
+      int target_cb = cb;
+
+      chi = zero;
+
+      QDPIO::cout << "Fields before optimized Dslash" <<std::endl;
+      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
+      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+
+      QDPIO::cout << "Packing Chi, Psi already packed" << std::endl;
+      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+
+      // Apply Optimized Dslash
+      QDPIO::cout << "Applying Optimized Dslash" << std::endl;
+      D32.dslash(chi_s[target_cb], psi_s[source_cb], u_packed[target_cb],
+    		  isign, target_cb);
+
+			//      qdp_unpack_spinor<T,V,S,compress, Phi >(chi_even,chi_odd, chi, geom);
+      QDPIO::cout << "Unpacking result chi" << std::endl;
+      qdp_unpack_spinor<>(chi_even, chi_odd, chi, geom);
+
+
+      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
+      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi,rb[0]) << std::endl;
+      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+
+      Double norm_chi=norm2(chi,all);
+      Double expected = ((cb==0) ? Double(2) : Double(0));
+      QDPIO::cout << "|| chi ||^2=" << norm_chi << "  It should be " << expected <<std::endl;
+      double diff_norm=fabs( toDouble(norm_chi)- toDouble(expected));
+      QDPIO::cout << "Diff Norm=" << diff_norm << std::endl;
+
+      assertion( fabs( toDouble(norm_chi)- toDouble(expected)) < 1.0e-6 );
+
+      // Check Chi
+      for(int spin=0; spin < 4; ++spin) {
+    	  for(int col=0; col < 3; ++col) {
+    		  T re_part = chi.elem(0).elem(spin).elem(col).real();
+    		  T im_part = chi.elem(0).elem(spin).elem(col).imag();
+
+    		  QDPIO::cout << "chi[site=0][spin=" << spin <<"][color="<<col<<"]=("
+    				  << re_part << " , "
+					  << im_part << " ) " << std::endl;
+
+    		  double expected_re = (double) 0;
+    		  double expected_im = (double) 0;
+
+    		  if ( isign == 1 ) {
+    			  if ( cb == 0 ) {
+    				  if ( spin==0 && col==0 ) {
+    					  expected_re = (double)1;
+    				  }
+    				  if ( spin==3 && col==0) {
+    					  expected_re = (double)(-1);
+    				  }
+    			  }
+    			  // else stay 0
+    		  }
+    		  else {
+
+    			  if ( cb == 0 ) {
+    				  if ( spin==0 && col==0 ) {
+    					  expected_re = (double)1;
+    				  }
+    				  if ( spin==3 && col==0 ) {
+    					  expected_re = (double)(1); // because dagger
+    				  }
+    			  }
+    			  // else stay 0
+    		  }
+
+    		  re_part -= expected_re;
+    		  im_part -= expected_im;
+    		  assertion( fabs( re_part ) < 1.0e-6 );
+    		  assertion( fabs( im_part ) < 1.0e-6 );
+
+    	  } // col
+      }  // spin
+
+
+
+    } // cb
+  } // isign
+
+
+#if 1
+  geom.free(packed_gauge_cb0);
+  geom.free(packed_gauge_cb1);
+  geom.free(psi_even);
+  geom.free(psi_odd);
+  geom.free(chi_even);
+  geom.free(chi_odd);
+#endif
+}

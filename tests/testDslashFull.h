@@ -94,6 +94,10 @@ public:
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testDslash(const U& u, int t_bc);
 
+  template<typename T, int V, int S, typename U, typename Phi>
+      void testCarleton(void);
+
+
   template<typename T, int V, int S, bool compress, typename U, typename Phi>
     void testDslashAChiMBDPsi(const U& u, int t_bc);
 
