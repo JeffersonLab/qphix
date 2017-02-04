@@ -590,7 +590,7 @@ void loadSOAFVec(InstVector& ivector, const FVec& ret, const Address *a, int soa
         ivector.push_back( new LoadHalfFVec(ret, a, soanum));
     }
     else {
-        printf("SOALEN = %d not supported\n", soalen);
+        printf("SOALEN = %d not supported at %s:%d\n", soalen, __FILE__, __LINE__);
         exit(1);
     }
 }
@@ -604,7 +604,7 @@ void storeSOAFVec(InstVector& ivector, const FVec& ret, const Address *a, int so
         ivector.push_back( new StoreHalfFVec(ret, a, soanum));
     }
     else {
-        printf("SOALEN = %d not supported\n", soalen);
+        printf("SOALEN = %d not supported at %s:%d\n", soalen, __FILE__, __LINE__);
         exit(1);
     }
 }
@@ -693,7 +693,7 @@ void transpose(InstVector& ivector, const FVec r[], const FVec f[], int soalen)
         break;
 
     default:
-        printf("SOALEN = %d Not Supported (only SOALEN = 4, 8 supported)\n", soalen);
+        printf("SOALEN = %d Not Supported at %s:%d (only SOALEN = 4, 8 supported)\n", soalen, __FILE__, __LINE__);
     }
 }
 
