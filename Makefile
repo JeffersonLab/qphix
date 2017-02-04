@@ -107,14 +107,14 @@ cgen: mic avx avx2 avx512 sse scalar
 
 mic:
 	mkdir -p ./mic
-	@make clean && make PRECISION=2 SOALEN=8 && ./codegen
-	@make clean && make PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=16 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=4 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && make mode=mic PRECISION=2 SOALEN=8 && ./codegen
+	@make clean && make mode=mic PRECISION=2 SOALEN=4 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=16 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=8 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=4 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && make mode=mic PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 avx512:
 	mkdir -p ./avx512
