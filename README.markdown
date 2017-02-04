@@ -16,34 +16,35 @@ are experimental and incomplete. You have been warned.
 
 ## Building the Code
 
-1. Edit the `Makefile`
-2. Replace the first line (`mode`) to whichever target you are trying to
-   generate code for. E.g. for MIC set `mode=mic`.
+Available targets are:
 
-    Available targets are:
-    
-    | Name | Target |
-    | --- | --- |
-    | `mic` | Xeon Phi |
-    | `avx` | Regular AVX |
-    | `avx2` | AVX2 (e.g. for Haswell) -- untested |
-    | `sse`  | For SSE -- untested |
-    | `scalar` | C, scalar code (SOALEN=1) |
+| Target | Description |
+| --- | --- |
+| `mic` | Intel MIC (Knight's Corner) |
+| `avx` | Regular AVX (Sandy Bridge, Ivy Bridge) |
+| `avx2` | AVX2 (Haswell, Broadwell) -- untested |
+| `avx512` | AVX512 (Skylake, Knight's Landing) |
+| `sse`  | For SSE -- untested |
+| `scalar` | C, scalar code (`SOALEN=1`) |
 
-3. Run the code with `make <target>` this will build the code generator and
-   generate the code for the target.  The target specific code will be placed
-   in the subdirectory corresponding to the target (i.e. MIC code goes to
-   `mic/`, AVX code goes to `avx/` etc).
+Run the code with `make TARGET` this will build the code generator
+and generate the code for the target.  The target specific code will be placed
+in the subdirectory corresponding to the target (i.e. MIC code goes to `mic/`,
+AVX code goes to `avx/` etc).
 
-    e.g. `set mode=mic`  
-    followed by: `make mic`
+To build for Intel Sandy Bridge and Intel Ivy Bridge processors, use the
+following:
 
-    The generated files will be dropped in the target directory, i.e.:
+    make avx
 
-        ./mic
-        ./avx 
-     
-    etc. which will be created in the root directory if they don't yet exist.
+The generated files will be dropped in the target directory, i.e.
+
+    ./mic
+    ./avx 
+ 
+etc. which will be created in the root directory if they don't yet exist.
+
+In case you forget the `
 
 ## How is the target configured?
 

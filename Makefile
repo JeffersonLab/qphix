@@ -1,5 +1,4 @@
-
-mode=mic
+mode ?= sentinel
 
 mode:=$(strip $(mode))
 
@@ -98,6 +97,7 @@ HEADERS = address_types.h  data_types.h  dslash.h  instructions.h Makefile $(CON
 all: codegen
 
 codegen: $(SOURCES) $(HEADERS) 
+	@if [ "$(mode)" = sentinel ]; then echo 'Fatal error: You have neither specified a mode nor a target. Omitting the target compile the code generator, but that needs a `mode`. If you just want to generate code for some architecture (say avx2), then call `make avx2`.'; exit 1; fi
 	$(CXXHOST) $(DEFS) $(SOURCES) -o ./codegen
 
 .PHONY: cgen mic avx avx2 avx512 sse scalar
