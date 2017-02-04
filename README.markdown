@@ -18,14 +18,14 @@ are experimental and incomplete. You have been warned.
 
 Available targets are:
 
-| Target | Description |
-| --- | --- |
-| `mic` | Intel MIC (Knight's Corner) |
-| `avx` | Regular AVX (Sandy Bridge, Ivy Bridge) |
-| `avx2` | AVX2 (Haswell, Broadwell) -- untested |
-| `avx512` | AVX512 (Skylake, Knight's Landing) |
-| `sse`  | For SSE -- untested |
-| `scalar` | C, scalar code (`SOALEN=1`) |
+| Target | Description | Example Products |
+| --- | --- | --- |
+| `mic` | Intel MIC | Intel Xeon Phi Knight's Corner) |
+| `avx` | Regular AVX | Intel Xeon Sandy Bridge, Ivy Bridge |
+| `avx2` | AVX2 -- untested | Intel Xeon Haswell, Broadwell |
+| `avx512` | AVX512 | Intel Xeon Skylake, Kaby Lake; Intel Xeon Phi Knight's Landing |
+| `sse`  | For SSE -- untested | Intel Pentium 4, Intel Core, Intel Xeon Nehalem |
+| `scalar` | C, scalar code (`SOALEN=1`) | |
 
 Run the code with `make TARGET` this will build the code generator
 and generate the code for the target.  The target specific code will be placed
