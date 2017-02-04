@@ -1,3 +1,13 @@
+// XXX The include guards should not start with an underscore. Single
+// underscore and a following captical letter is reserved. Perhaps using
+// `#pragma once` would make it easier? It is supported by GCC, LLVM and Intel
+// C++, though it is not standard C++.
+
+// XXX This header file is not standalone. It uses `std::string` without
+// including the `<string>` header file. This project only compiles because the
+// inclusion of this header file in other files is made in the specific order
+// such that `<string>` is included before this header. This is brittle and may
+// lead to breakage down the road.
 
 #ifndef _ADDRESS_TYPES_H_
 #define _ADDRESS_TYPES_H_
