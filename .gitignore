@@ -1,0 +1,8 @@
+*.o
+avx
+avx2
+avx512
+codegen
+mic
+scalar
+sse
