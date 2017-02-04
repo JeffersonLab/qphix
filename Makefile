@@ -6,10 +6,9 @@ mode:=$(strip $(mode))
 CONFFILE=customMake.$(mode)
 include $(CONFFILE)
 
-CXXHOST  = icpc -O3 -g
+CXXHOST = icpc -O3 -g
 
 ifeq ($(mode),mic)
-
 ifeq ($(PRECISION),1)
 override VECLEN=16
 else
