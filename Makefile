@@ -105,11 +105,16 @@ DEFS += $(strip $(foreach var, $(deflist), $(if $($(var)), -D$(var)=$($(var)))))
 SOURCES = codegen.cc data_types.cc dslash.cc dslash_common.cc inst_dp_vec8.cc inst_sp_vec16.cc inst_dp_vec4.cc inst_sp_vec8.cc inst_sp_vec4.cc inst_dp_vec2.cc inst_scalar.cc
 HEADERS = address_types.h  data_types.h  dslash.h  instructions.h Makefile $(CONFFILE)
 
+OBJECTS := $(SOURCES:.cc=.o)
+
 all: codegen
 
-codegen: $(SOURCES) $(HEADERS) 
+codegen: $(SOURCES) $(HEADERS) $(OBJECTS)
 	@if [ "$(mode)" = sentinel ]; then echo 'Fatal error: You have neither specified a mode nor a target. Omitting the target compile the code generator, but that needs a `mode`. If you just want to generate code for some architecture (say avx2), then call `make avx2`.'; exit 1; fi
-	$(CXXHOST) $(DEFS) $(SOURCES) -o ./codegen
+	$(CXXHOST) $(DEFS) $(OBJECTS) -o $@
+
+%.o: %.cc $(HEADERS)
+	$(CXXHOST) -c $(DEFS) $< -o $@
 
 .PHONY: cgen mic avx avx2 avx512 sse scalar
 
@@ -117,52 +122,52 @@ cgen: mic avx avx2 avx512 sse scalar
 
 mic:
 	mkdir -p ./mic
-	@make clean && make mode=mic PRECISION=2 SOALEN=8 && ./codegen
-	@make clean && make mode=mic PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=16 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=4 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=mic PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=2 SOALEN=8 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=2 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=16 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=8 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 avx512:
 	mkdir -p ./avx512
-	@make clean && make mode=avx AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=avx AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 
 avx:
 	mkdir -p ./avx
-	@make clean && make mode=avx PRECISION=2 SOALEN=2 && ./codegen
-	@make clean && make mode=avx PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=2 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=4 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=8 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=4 && ./codegen
 
 avx2:
 	mkdir -p ./avx2
-	@make clean && make mode=avx PRECISION=2 SOALEN=2 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=2 SOALEN=4 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=2 AVX2=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=4 AVX2=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=8 AVX2=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=4 AVX2=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=8 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
 
 sse:
 	mkdir -p ./sse
-	@make clean && make mode=sse PRECISION=2 && ./codegen
-	@make clean && make mode=sse PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=sse PRECISION=2 && ./codegen
+	@make clean && $(MAKE) mode=sse PRECISION=1 && ./codegen
 
 scalar:
 	mkdir -p ./scalar
-	@make clean && make mode=scalar PRECISION=2 && ./codegen
-	@make clean && make mode=scalar PRECISION=1 && ./codegen
+	@make clean && $(MAKE) mode=scalar PRECISION=2 && ./codegen
+	@make clean && $(MAKE) mode=scalar PRECISION=1 && ./codegen
 
 clean: 
 	rm -rf *.o ./codegen 
