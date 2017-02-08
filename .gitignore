@@ -57,3 +57,7 @@ tests/t_dslash
 tests/t_minvcg
 tests/time_clov_noqdp
 tests/time_dslash_noqdp
+
+doc
+include4git
+lib4git
