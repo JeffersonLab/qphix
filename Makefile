@@ -133,14 +133,14 @@ mic:
 
 avx512:
 	mkdir -p ./avx512
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	make clean && $(MAKE) mode=avx AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
+	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 
 avx:
