@@ -1,5 +1,5 @@
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmdslash_plus_vec(
+inline void tm_dslash_plus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -44,7 +44,7 @@ inline void tmdslash_plus_vec(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmdslash_minus_vec(
+inline void tm_dslash_minus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -89,7 +89,7 @@ inline void tmdslash_minus_vec(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmdslash_achimbdpsi_plus_vec(
+inline void tm_dslash_achimbdpsi_plus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -139,7 +139,7 @@ inline void tmdslash_achimbdpsi_plus_vec(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmdslash_achimbdpsi_minus_vec(
+inline void tm_dslash_achimbdpsi_minus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
