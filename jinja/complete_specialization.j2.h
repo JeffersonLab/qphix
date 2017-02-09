@@ -2,9 +2,6 @@
 
 {% import 'jinja/common.j2.h' as common %}
 
-#include "qphix/geometry.h"
-#include "qphix/avx/avx_utils.h"
-
 {{ common.head() }}
 {{ common.general(kernel_base) }}
 

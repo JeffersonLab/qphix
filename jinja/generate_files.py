@@ -48,6 +48,10 @@ def main():
                 defines=defines,
             )
 
+            filename = '{}_{}_complete_specialization.h'.format(kernel, isa)
+            with open(filename, 'w') as f:
+                f.write(rendered)
+
 
 def _parse_args():
     '''
