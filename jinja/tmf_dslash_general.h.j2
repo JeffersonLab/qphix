@@ -207,7 +207,7 @@ inline void face_proj_dir_plus(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmface_finish_dir_plus(
+inline void tm_face_finish_dir_plus(
     const FT *inbuf,
     const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
@@ -229,7 +229,7 @@ inline void tmface_finish_dir_plus(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tmface_finish_dir_minus(
+inline void tm_face_finish_dir_minus(
     const FT *inbuf,
     const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
