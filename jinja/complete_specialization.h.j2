@@ -23,9 +23,12 @@ includes with the Jinja2 include.
 
 #include "immintrin.h"
 #include "qphix/geometry.h"
-#include "qphix/avx/avx_utils.h"
 
-{% include 'jinja/%s_general.j2.h'|format(kernel_base) %}
+{% for extra_include in extra_includes %}
+#include "{{ extra_include }}"
+{% endfor %}
+
+{% include 'jinja/%s_general.h.j2'|format(kernel_base) %}
 
 {% for FPTYPE, VEC, soalens in defines %}
 {% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
@@ -35,7 +38,7 @@ includes with the Jinja2 include.
 #define VEC {{ VEC }}
 #define SOA {{ SOA }}
 #define COMPRESS12 {{ COMPRESS12 }}
-{% include 'jinja/%s_specialization.j2.h'|format(kernel_base) %}
+{% include 'jinja/%s_specialization.h.j2'|format(kernel_base) %}
 #undef FPTYPE
 #undef VEC
 #undef SOA

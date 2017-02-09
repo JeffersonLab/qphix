@@ -25,9 +25,9 @@ def main():
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('..')
     )
-    complete_specialization = env.get_template('jinja/complete_specialization.j2.h')
+    complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
 
-    for isa, isa_data in isas.items():
+    for isa, isa_data in sorted(isas.items()):
         if not os.path.isdir(os.path.join('..', isa)):
             print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
             continue
@@ -36,7 +36,7 @@ def main():
             print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
             defines = [
                 (fptype, fptype_data['veclen'], fptype_data['soalens'])
-                for fptype, fptype_data in isa_data['fptypes'].items()]
+                for fptype, fptype_data in sorted(isa_data['fptypes'].items())]
 
             rendered = complete_specialization.render(
                 ISA=isa,
