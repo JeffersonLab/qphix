@@ -29,7 +29,7 @@ inline void tm_clov_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b) {
     // clang-format off
-{{ include_generated_kernel(ISA, kernel, "plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+    {{ include_generated_kernel(ISA, kernel, "plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
 }
 
@@ -64,7 +64,7 @@ inline void tm_clov_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b) {
     // clang-format off
-{{ include_generated_kernel(ISA, kernel, "minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+    {{ include_generated_kernel(ISA, kernel, "minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
 }
 
@@ -102,7 +102,7 @@ inline void tm_clov_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_t_b,
     const unsigned int accumulate[8]) {
     // clang-format off
-{{ include_generated_kernel(ISA, kernel, "achimbdpsi_plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+    {{ include_generated_kernel(ISA, kernel, "achimbdpsi_plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
 }
 
@@ -140,7 +140,7 @@ inline void tm_clov_dslash_achimbdpsi_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_t_b,
     const unsigned int accumulate[8]) {
     // clang-format off
-{{ include_generated_kernel(ISA, kernel, "achimbdpsi_minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+    {{ include_generated_kernel(ISA, kernel, "achimbdpsi_minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
 }
 
@@ -164,35 +164,35 @@ inline void tm_clov_face_finish_dir_plus<FPTYPE, VEC, SOA, COMPRESS12>(
     int dir) {
     if (dir == 0) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 1) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 2) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 3) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 4) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 5) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 6) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 7) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_plus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else {
         printf("Invalid dir for unpack boundary\n");
@@ -218,35 +218,35 @@ inline void tm_clov_face_finish_dir_minus<FPTYPE, VEC, SOA, COMPRESS12>(
     int dir) {
     if (dir == 0) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 1) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 2) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 3) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 4) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 5) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 6) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else if (dir == 7) {
         // clang-format off
-{{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_minus", FPTYPE, VEC, SOA, COMPRESS12) }}
         // clang-format on
     } else {
         printf("Invalid dir for unpack boundary\n");
