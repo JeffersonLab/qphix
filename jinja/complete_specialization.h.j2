@@ -28,6 +28,11 @@ includes with the Jinja2 include.
 #include "{{ extra_include }}"
 {% endfor %}
 
+{% if ISA == 'scalar' %}
+/* Disgusting hack to get rid of _mm_prefetches left in the generated scalar code */
+#define _mm_prefetch(a,b) {}
+{% endif %}
+
 {% include 'jinja/%s_general.h.j2'|format(kernel_base) %}
 
 {% for FPTYPE, VEC, soalens in defines %}
