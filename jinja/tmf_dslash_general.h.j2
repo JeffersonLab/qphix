@@ -191,6 +191,22 @@ inline void tm_dslash_achimbdpsi_minus_vec(
 #ifdef QPHIX_QMP_COMMS
 
 template <typename FT, int veclen, int soalen, bool compress12>
+inline void face_proj_dir_plus(
+    const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+        *xyBase,
+    const int offs[veclen],
+    const int si_prefdist,
+    FT *outbuf,
+    const int hsprefdist,
+    unsigned int mask,
+    int dir) {
+    // BASE CASE TEMPLATE. Do nothing for now. Define this in
+    // dslash_generated_c.h later
+    fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
+    abort();
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
 inline void tmface_finish_dir_plus(
     const FT *inbuf,
     const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
