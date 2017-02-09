@@ -41,13 +41,15 @@ def main():
 
             print(defines)
 
+            print('Rendering template ...')
             rendered = complete_specialization.render(
-                isa=isa,
+                ISA=isa,
                 kernel_base=kernel,
                 kernel_pattern=kernel_pattern,
                 defines=defines,
             )
 
+            print('Writing to disk ...')
             filename = '{}_{}_complete_specialization.h'.format(kernel, isa)
             with open(filename, 'w') as f:
                 f.write(rendered)
