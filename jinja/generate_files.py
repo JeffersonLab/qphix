@@ -13,7 +13,12 @@ def main():
     isas = configparser.ConfigParser()
     isas.read('isa.ini')
 
-    kernels = ['clov_dslash', 'dslash', 'tm_clov_dslash', 'tm_dslash']
+    kernels = [
+        #'clov_dslash',
+        #'dslash',
+        ('tmf_dslash', 'tmf_dslash'),
+        ('tmf_clov_dslash', 'tmf_clov_%(fptype)s_dslash'),
+    ]
 
     # Setting up Jinja
     env = jinja2.Environment(
@@ -21,7 +26,7 @@ def main():
     )
     complete_specialization = env.get_template('jinja/complete_specialization.j2.h')
 
-    for kernel in kernels:
+    for kernel, kernel_pattern in kernels:
         for isa in isas.sections():
 
             defines = []
@@ -38,7 +43,8 @@ def main():
 
             rendered = complete_specialization.render(
                 isa=isa,
-                kernel=kernel,
+                kernel_base=kernel,
+                kernel_pattern=kernel_pattern,
                 defines=defines,
             )
 

@@ -1,8 +1,8 @@
 {# Copyright © 2017 Martin Ueding <dev@martin-ueding.de> #}
 
-{% macro include_generated_kernel(isa, operator, fptype, vec, soa, compress12) %}
+{% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) %}
 {% set suffix = '_12' if compress12 == 'true' else '_18' %}
-{% set filename = '%s/%s%s_%s_v%d_s%d%s'|format(isa, operator, fptype, fptype, vec, soa, suffix) %}
+{% set filename = '%s/%s_%s_%s_%s_v%d_s%d%s'|format(isa, kernel, operator, fptype, fptype, vec, soa, suffix) %}
 {% include filename %}
 {% endmacro %}
 
@@ -31,11 +31,12 @@ includes with the Jinja2 include.
 {% include 'jinja/%s_general.j2.h'|format(kernel) %}
 {% endmacro %}
 
-{% macro specialization(kernel, ISA, FPTYPE, VEC, SOA_LIST) %}
+{% macro specialization(kernel_base, kernel_pattern, ISA, FPTYPE, VEC, SOA_LIST) %}
+{% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
 {% for SOA in SOA_LIST %}
 {% for COMPRESS12 in ['true', 'false'] %}
 {{ define_constants(FPTYPE, VEC, SOA, COMPRESS12) }}
-{% include 'jinja/%s_specialization.j2.h'|format(kernel) %}
+{% include 'jinja/%s_specialization.j2.h'|format(kernel_base) %}
 {{ undef_constants() }}
 {% endfor %}
 {% endfor %}
