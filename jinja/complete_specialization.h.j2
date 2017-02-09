@@ -11,7 +11,7 @@
 {% endif %}
 
 {% set filename = 'qphix/%s/generated/%s_%s_%s_%s_v%d_s%d%s'|format(isa, kernel, operator, fptype, fptype, vec, soa, suffix) %}
-#include {{ filename }}
+#include "{{ filename }}"
 {% endmacro %}
 
 {#
