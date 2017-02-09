@@ -45,7 +45,7 @@ def main():
         rendered = kernel_generated_h.render(
             generated_warning=generated_warning,
             kernel=kernel,
-            isas=isas.keys(),
+            isas=sorted(isas.keys()),
         )
         filename = '{}_generated.h'.format(kernel)
         with open(filename, 'w') as f:
