@@ -27,8 +27,12 @@ def main():
     )
     complete_specialization = env.get_template('jinja/complete_specialization.j2.h')
 
-    for kernel, kernel_pattern in kernels:
-        for isa in isas.sections():
+    for isa in isas.sections():
+        if not os.path.isdir(os.path.join('..', isa)):
+            print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
+            continue
+
+        for kernel, kernel_pattern in kernels:
             print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
             defines = []
             for fptype in isas[isa]:
