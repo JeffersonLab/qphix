@@ -37,6 +37,17 @@ def main():
     )
     complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
     makefile_am = env.get_template('jinja/Makefile.am.j2')
+    kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
+
+    for kernel, kernel_pattern in kernels:
+        rendered = kernel_generated_h.render(
+            generated_warning=generated_warning,
+            kernel=kernel,
+            isas=isas.keys(),
+        )
+        filename = '{}_generated.h'.format(kernel)
+        with open(filename, 'w') as f:
+            f.write(rendered)
 
     for isa, isa_data in sorted(isas.items()):
         if not os.path.isdir(os.path.join('..', isa)):
