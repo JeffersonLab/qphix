@@ -4,15 +4,15 @@
 # Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
 
 import argparse
-import configparser
+import json
 import os
 
 import jinja2
 
 
 def main():
-    isas = configparser.ConfigParser()
-    isas.read('isa.ini')
+    with open('isa.js') as f:
+        isas = json.load(f)
 
     kernels = [
         ('clov_dslash', 'clov_%(fptype)s_dslash'),
@@ -27,22 +27,16 @@ def main():
     )
     complete_specialization = env.get_template('jinja/complete_specialization.j2.h')
 
-    for isa in isas.sections():
+    for isa, isa_data in isas.items():
         if not os.path.isdir(os.path.join('..', isa)):
             print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
             continue
 
         for kernel, kernel_pattern in kernels:
             print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
-            defines = []
-            for fptype in isas[isa]:
-                val = isas[isa][fptype]
-
-                veclen_str, soalen_str = [x.strip() for x in val.split(';')]
-                veclen = int(veclen_str)
-                soalens = [int(x.strip()) for x in soalen_str.split()]
-
-                defines.append((fptype, veclen, soalens))
+            defines = [
+                (fptype, fptype_data['veclen'], fptype_data['soalens'])
+                for fptype, fptype_data in isa_data['fptypes'].items()]
 
             rendered = complete_specialization.render(
                 ISA=isa,
