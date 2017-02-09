@@ -1,5 +1,7 @@
 {# Copyright © 2017 Martin Ueding <dev@martin-ueding.de> #}
 
+// {{ generated_warning }}
+
 {% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) %}
 
 {% if compress12 == '' %}
@@ -24,8 +26,12 @@ includes with the Jinja2 include.
 #include "immintrin.h"
 #include "qphix/geometry.h"
 
-{% for extra_include in extra_includes %}
+{% for extra_include in extra_includes_local %}
 #include "{{ extra_include }}"
+{% endfor %}
+
+{% for extra_include in extra_includes_global %}
+#include <{{ extra_include }}>
 {% endfor %}
 
 {% if ISA == 'scalar' %}
