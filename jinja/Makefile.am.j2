@@ -1,24 +1,34 @@
 # {{ generated_warning }}
 
+{% macro prefix_dependencies(prefix) -%}
+{% for include in generated_for_prefix[prefix] -%}
+        ./generated/{{ include }} \
+{% endfor -%}
+{% endmacro -%}
+
 {{ isa }}_includedir = $(includedir)/qphix/{{ isa }}
 
 nobase_{{ isa }}_include_HEADERS = \
         {% for extra_include in extra_includes -%}
         {{ extra_include }} \
         {% endfor -%}
+        {{ prefix_dependencies('dslash') -}}
         ./dslash_{{ isa }}_complete_specialization.h
 
 if QPHIX_BUILD_CLOVER
 nobase_{{ isa }}_include_HEADERS += \
+        {{ prefix_dependencies('clov') -}}
         ./clov_dslash_{{ isa }}_complete_specialization.h
 endif
 
 if QPHIX_BUILD_TWISTED_MASS
 nobase_{{ isa }}_include_HEADERS += \
+        {{ prefix_dependencies('tmf_dslash') -}}
         ./tmf_dslash_{{ isa }}_complete_specialization.h
 endif
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 nobase_{{ isa }}_include_HEADERS += \
+        {{ prefix_dependencies('tmf_clov') -}}
         ./tmf_clov_dslash_{{ isa }}_complete_specialization.h
 endif

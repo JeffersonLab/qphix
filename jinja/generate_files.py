@@ -61,6 +61,24 @@ def main():
 
         os.makedirs(isa, exist_ok=True)
 
+        # Generate a `Makefile.am`.
+        generated_files = os.listdir(os.path.join('..', isa))
+        generated_for_prefix = {}
+        for prefix in ['dslash', 'clov', 'tmf_dslash', 'tmf_clov']:
+            generated_for_prefix[prefix] = filter(lambda x: x.startswith(prefix), generated_files)
+
+        rendered = makefile_am.render(
+            generated_warning=generated_warning,
+            isa=isa,
+            extra_includes=[
+                os.path.relpath(extra_include, os.path.join('qphix', isa))
+                for extra_include in isa_data['extra_includes_local']],
+            generated_for_prefix=generated_for_prefix,
+        )
+        filename = os.path.join(isa, 'Makefile.am')
+        with open(filename, 'w') as f:
+            f.write(rendered)
+
         for kernel, kernel_pattern in kernels:
             print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
             defines = [
@@ -80,18 +98,6 @@ def main():
             filename = os.path.join(isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
             with open(filename, 'w') as f:
                 f.write(rendered)
-
-        # Generate a `Makefile.am`.
-        rendered = makefile_am.render(
-            generated_warning=generated_warning,
-            isa=isa,
-            extra_includes=[
-                os.path.relpath(extra_include, os.path.join('qphix', isa))
-                for extra_include in isa_data['extra_includes_local']]
-        )
-        filename = os.path.join(isa, 'Makefile.am')
-        with open(filename, 'w') as f:
-            f.write(rendered)
 
 
 def _parse_args():
