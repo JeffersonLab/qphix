@@ -1,7 +1,13 @@
 {# Copyright © 2017 Martin Ueding <dev@martin-ueding.de> #}
 
 {% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) %}
+
+{% if compress12 == '' %}
+{% set suffix = '' %}
+{% else %}
 {% set suffix = '_12' if compress12 == 'true' else '_18' %}
+{% endif %}
+
 {% set filename = '%s/%s_%s_%s_%s_v%d_s%d%s'|format(isa, kernel, operator, fptype, fptype, vec, soa, suffix) %}
 {% include filename %}
 {% endmacro %}

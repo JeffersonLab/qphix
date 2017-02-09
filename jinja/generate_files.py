@@ -5,6 +5,7 @@
 
 import argparse
 import configparser
+import os
 
 import jinja2
 
@@ -14,8 +15,8 @@ def main():
     isas.read('isa.ini')
 
     kernels = [
-        #'clov_dslash',
-        #'dslash',
+        ('clov_dslash', 'clov_%(fptype)s_dslash'),
+        ('dslash', 'dslash'),
         ('tmf_dslash', 'tmf_dslash'),
         ('tmf_clov_dslash', 'tmf_clov_%(fptype)s_dslash'),
     ]
@@ -28,7 +29,7 @@ def main():
 
     for kernel, kernel_pattern in kernels:
         for isa in isas.sections():
-
+            print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
             defines = []
             for fptype in isas[isa]:
                 val = isas[isa][fptype]
@@ -39,9 +40,6 @@ def main():
 
                 defines.append((fptype, veclen, soalens))
 
-            print(defines)
-
-            print('Rendering template ...')
             rendered = complete_specialization.render(
                 ISA=isa,
                 kernel_base=kernel,
@@ -49,8 +47,8 @@ def main():
                 defines=defines,
             )
 
-            print('Writing to disk ...')
-            filename = '{}_{}_complete_specialization.h'.format(kernel, isa)
+            os.makedirs(isa, exist_ok=True)
+            filename = os.path.join(isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
             with open(filename, 'w') as f:
                 f.write(rendered)
 
