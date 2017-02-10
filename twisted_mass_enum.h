@@ -6,11 +6,11 @@
 /**
   Versions of twisted mass.
 
-  Previously, there was a simple bool value `twisted_mass` that would switch
+  Previously, there was a simple `bool` value `twisted_mass` that would switch
   twisted mass on or off. Now with the non-degenerate case, there are three
-  options that need to be represented. Having a second bool `non_degenerate`
-  would not suffice as the combination of non-degernate non-twisted mass does
-  not make sense.
+  options that need to be represented. Having a second `bool` named
+  `non_degenerate` would not suffice as the combination of non-degernate
+  non-twisted mass does not make sense.
   */
 enum class TwistedMassVariant {
     none, ///< Plain Wilson fermions
