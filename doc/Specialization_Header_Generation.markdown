@@ -138,6 +138,8 @@ before to generate the code. The most important feature are loops. Also it
 allows injection of additional variables from a Python script. All blocks with
 `{{ ... }}` and `{% ... %}` will be interpreted by the Jinja template library.
 
+### Function declarations and definitions
+
 The large chunks of C++ code that contain the function declarations are now
 template files. For the basic Wilson Dslash, this file is
 `jinja/dslash_general.h.j2`. The `.j2` file extension shows that it is a
@@ -173,6 +175,8 @@ of this macro is the following:
 This allows to generate the template specialization files for every
 architecture automatically, therefore consolidating all the code. Instead of
 having seven (or more) copies, there is only now now.
+
+### Specialization file
 
 The main advantage is the generation of the explicit instantiations of the
 template parameters. These files are the same for each ISA, except that the
@@ -210,6 +214,25 @@ Also the generated files would be in the order of 20 MB, which is a burden on
 the version control system and on text editors. Compilation time seems to be
 largely independent of that and needs around 8 minutes on JURECA either way.
 
+### Automake file
+
+Each architecture has its `Makefile.am` which specifies which files are needed
+in the compilation. Such a file is generated for each ISA.
+
+### ISA include file
+
+For each family of kernels, there is a `KERNEL_generated.h` file in
+`include/qphix/` of the QPhiX repository. These files are also automatically
+generated. These files contain blocks that include the appropriate files for
+the chosen ISA:
+
+```{.cpp}
+#if defined (QPHIX_AVX2_SOURCE)
+#warning "including qphix/avx2/dslash_avx2_complete_specialization.h"
+#include "qphix/avx2/dslash_avx2_complete_specialization.h"
+#endif
+```
+
 ## Adding a new architecture
 
 The main burden when adding a new architecture is to write the appropriate
@@ -242,30 +265,56 @@ where `NEW_ISA` is the ISA you have added.
 ## Adding a new kernel family
 
 When a new family of kernels is implemented, the kernel has to be added to the
-two data structures in `jinja/generate_files.py`. The first structure contains
-the name of the kernel used in header filenames. The second is the prefix used
-by the generated kernels, this contains `double`, `float`, or `half` for the
-clover term as well.
+list of kernels in `jinja/kernels.js`. This list looks like this:
 
-```{.py}
-kernels = [
-    ('clov_dslash', 'clov_%(fptype)s_dslash'),
-    ('dslash', 'dslash'),
-    ('tmf_dslash', 'tmf_dslash'),
-    ('tmf_clov_dslash', 'tmf_clov_%(fptype)s_dslash'),
+```{.js}
+[
+    "clov_%(fptype_underscore)sdslash",
+    "dslash",
+    "tmf_clov_%(fptype_underscore)sdslash",
+    "tmf_dslash"
 ]
 ```
 
-Then in the second data structure, the prefix of the generated filenames has to
-be added such that the `Makefile.am` can be generated properly.
+The syntax with `%(fptype_underscore)s` must be used if the filenames of the
+generated kernels contain the name of the floating point type. This part of the
+string will be expanded to `double_` for `double`. This is needed in the clover
+operators because the clover term itself has an independent floating point
+type.
 
-```{.py}
-prefixes = ['dslash', 'clov', 'tmf_dslash', 'tmf_clov']:
-```
+The two files `KERNEL_general.h.j2` and `KERNEL_specialization.h.j2` need to be
+written. The changes there depend on the new implementation.
 
-\todo This should be a bit easier to use. Perhaps one can move all this into
-some INI style configuration file. Then the user would not have to alter the
-code any more. Even better would be to unify those names to make these
-work-around unnecessary.
+## Copying files to QPhiX
+
+After the new code has been generated, it needs to be copied to the QPhiX
+repository and be checked in there. The following bunches of files need to be
+transferred, where `ISA` stands for some ISA:
+
+| Destination in `qphix-codegen` | Target in `qphix` |
+| --- | --- |
+| `ISA/*` | `include/qphix/ISA/generated/` |
+| `jinja/*_generated.h` | `include/qphix/` |
+| `jinja/ISA/*` | `include/qphix/ISA/` |
+
+## Closing remark
+
+One says that every problem in computer science can be solved with another
+indirection. Except the problem of too many indirections. Hopefully this
+additional layer will make it easier to work with this code generator and
+extend it.
+
+The layers within the QPhiX Code Generator are:
+
+- C++ Code generator generates C++ code
+- Python program generates “glue code” and Automake files
+
+And then in QPhiX the steps are:
+
+- Automake generates the `Makefile.in` that is then used in the compilation
+- C++ preprocessor know about the chosen parameters (like `FT` and `VECLEN`)
+  and only leaves the parts of the glue code that is relevant.
+- Then the generated kernels are included by the preprocessor and everything
+  gets compiled.
 
 <!-- vim: set spell tw=79 :-->
