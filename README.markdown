@@ -2,7 +2,7 @@
 
 ## Licensing Copying and Distribution
 
-Please see the `LICENSE.markdown` file for the License.
+Please see the [LICENSE](LICENSE.markdown) file for the License.
 
 ## Disclaimers
 
