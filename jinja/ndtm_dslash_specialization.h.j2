@@ -7,7 +7,7 @@
 #endif
 
 template <>
-inline void tm_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
@@ -42,7 +42,7 @@ inline void tm_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template <>
-inline void tm_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
@@ -77,7 +77,7 @@ inline void tm_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template <>
-inline void tm_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
@@ -115,7 +115,7 @@ inline void tm_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template <>
-inline void tm_dslash_achimbdpsi_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_achimbdpsi_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
@@ -155,7 +155,7 @@ inline void tm_dslash_achimbdpsi_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
 #ifdef QPHIX_QMP_COMMS
 
 template <>
-inline void tm_face_finish_dir_plus<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_face_finish_dir_plus<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
@@ -208,7 +208,7 @@ inline void tm_face_finish_dir_plus<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template <>
-inline void tm_face_finish_dir_minus<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_face_finish_dir_minus<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
