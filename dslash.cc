@@ -437,70 +437,83 @@ void generate_code(void)
                 } // plus/minus
             } // kernel
         } // clover
-		} // twisted_mass
+    } // twisted_mass
 
+    // FACE UNPACK ROUTINES
+    // ====================
+    for (auto twisted_mass :
+         {TwistedMassVariant::none, TwistedMassVariant::degenerate,
+          TwistedMassVariant::non_degenerate}) {
+        for (auto clover : {true, false}) {
+            for (int dir = 0; dir < 2; dir++) {
+                for (int dim = 0; dim < 4; dim++) {
+                    for (auto isPlus : {true, false}) {
+                        for (auto compress12 : {true, false}) {
 
-		// FACE UNPACK ROUTINES
-		// ====================
-		for(auto twisted_mass : {true, false}) {
-			for(auto clover : {true, false}) {
-				for(int dir = 0; dir < 2; dir++) {
-					for(int dim = 0; dim < 4; dim++) {
-						for(auto isPlus : {true, false}) {
-							for(auto compress12 : {true, false}) {
+                            InstVector ivector;
+                            InstVector l2prefs;
+                            std::ostringstream filename;
 
-								InstVector ivector;
-								InstVector l2prefs;
-								std::ostringstream filename;
+                            std::string tmf_prefix =
+                                twisted_mass_prefixes[twisted_mass];
+                            std::string clov_prefix =
+                                clover ? "clov_" + CloverTypeName + "_" : "";
+                            std::string plusminus = isPlus ? "plus" : "minus";
+                            int num_components = compress12 ? 12 : 18;
 
-								std::string tmf_prefix  = twisted_mass ? "tmf_" : "";
-								std::string clov_prefix = clover ? "clov_"+CloverTypeName+"_" : "";
-								std::string plusminus   = isPlus ? "plus" : "minus";
-								int num_components = compress12 ? 12 : 18;
+                            filename
+                                << "./" << ARCH_NAME << "/" << tmf_prefix
+                                << clov_prefix << "dslash_face_unpack_from_"
+                                << dirname[dir] << "_" << dimchar[dim] << "_"
+                                << plusminus << "_" << SpinorTypeName << "_"
+                                << GaugeTypeName << "_v" << VECLEN << "_s"
+                                << SOALEN << "_" << num_components;
 
-								filename << "./" << ARCH_NAME << "/" << tmf_prefix << clov_prefix << "dslash_face_unpack_from_"
-									<< dirname[dir] << "_" << dimchar[dim] << "_" << plusminus << "_"
-									<< SpinorTypeName << "_" << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN << "_" << num_components;
+                            cout << "GENERATING face unpack file "
+                                 << filename.str() << endl;
 
-								cout << "GENERATING face unpack file " << filename.str() << endl;
+                            // Generate instructions
+                            generateFaceUnpackL2Prefetches(
+                                l2prefs, 2 * dim + dir, compress12, clover,
+                                twisted_mass != TwistedMassVariant::none);
+                            recons_add_face_from_dir_dim_vec(
+                                ivector, compress12, isPlus, dir, dim, clover,
+                                twisted_mass != TwistedMassVariant::none);
+                            mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                            dumpIVector(ivector, filename.str());
 
-								// Generate instructions
-								generateFaceUnpackL2Prefetches(l2prefs, 2*dim+dir, compress12, clover, twisted_mass);
-								recons_add_face_from_dir_dim_vec(ivector, compress12, isPlus, dir, dim, clover, twisted_mass);
-								mergeIvectorWithL2Prefetches(ivector, l2prefs);
-								dumpIVector(ivector, filename.str());
+                        } // gauge compression
+                    } // plus/minus
+                } // dimension
+            } // direction
+        } // clover
+    } // twisted_mass
 
-							} // gauge compression
-						} // plus/minus
-					} // dimension
-				} // direction
-			} // clover
-		} // twisted_mass
+    // FACE PACK ROUTINES
+    // ==================
+    for (auto isPlus : {true, false}) {
+        for (int dir = 0; dir < 2; dir++) {
+            for (int dim = 0; dim < 4; dim++) {
+                InstVector ivector;
+                InstVector l2prefs;
+                std::ostringstream filename;
 
+                string plusminus = isPlus ? "plus" : "minus";
 
-		// FACE PACK ROUTINES
-		// ==================
-		for(auto isPlus : {true, false}) {
-			for(int dir = 0; dir < 2; dir++) {
-				for(int dim = 0; dim < 4; dim++) {
-					InstVector ivector;
-					InstVector l2prefs;
-					std::ostringstream filename;
+                filename << "./" << ARCH_NAME << "/dslash_face_pack_to_"
+                         << dirname[dir] << "_" << dimchar[dim] << "_"
+                         << plusminus << "_" << SpinorTypeName << "_"
+                         << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
 
-					string plusminus = isPlus ? "plus" : "minus";
+                cout << "GENERATING face pack file " << filename.str() << endl;
 
-					filename << "./" << ARCH_NAME << "/dslash_face_pack_to_" << dirname[dir] << "_" << dimchar[dim] << "_"
-						<< plusminus << "_" << SpinorTypeName << "_" << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
-
-					cout << "GENERATING face pack file " << filename.str() << endl;
-
-					// Generate instructions
-					generateFacePackL2Prefetches(l2prefs, 2*dim+dir);
-					pack_face_to_dir_dim_vec(ivector, isPlus, dir, dim);
-					mergeIvectorWithL2Prefetches(ivector, l2prefs);
-					dumpIVector(ivector, filename.str());
-				}
-			}
+                // Generate instructions
+                generateFacePackL2Prefetches(l2prefs, 2 * dim + dir);
+                pack_face_to_dir_dim_vec(ivector, isPlus, dir, dim);
+                mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                dumpIVector(ivector, filename.str());
+            }
+        }
 		}
 
     data_types<float,VECLEN,SOALEN,true>::Gauge cmped;
