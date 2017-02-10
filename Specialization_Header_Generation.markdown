@@ -213,14 +213,16 @@ article and it is assumed that this has already been done.
 In the file `jinja/isa.js`, which is a simple [JSON](http://json.org/) file,
 another block has to bee added. For AVX, the block looks like this:
 
-    "avx": {
-        "fptypes": {
-            "double": {"veclen": 4, "soalens": [2, 4]},
-            "float": {"veclen": 8, "soalens": [4, 8]}
-        },
-        "extra_includes_global": ["immintrin.h"],
-        "extra_includes_local": ["qphix/avx/avx_utils.h"]
+```{.js}
+"avx": {
+    "fptypes": {
+        "double": {"veclen": 4, "soalens": [2, 4]},
+        "float": {"veclen": 8, "soalens": [4, 8]}
     },
+    "extra_includes_global": ["immintrin.h"],
+    "extra_includes_local": ["qphix/avx/avx_utils.h"]
+},
+```
 
 It just specifies the parameters used for the different floating point types as
 well as auxiliary files that might need to be included.
