@@ -279,8 +279,12 @@ list of kernels in `jinja/kernels.js`. This list looks like this:
 The syntax with `%(fptype_underscore)s` must be used if the filenames of the
 generated kernels contain the name of the floating point type. This part of the
 string will be expanded to `double_` for `double`. This is needed in the clover
-operators because the clover term itself has an independent floating point
-type.
+operators because the clover term itself has a separate floating point type.
+The other references to the kernel family is independent of the floating point
+type, so it does not contain that in the name.
+
+The trailing “s” is unfortunate to read, but this is the `%(...)s` Python
+syntax used in Jinja to replace patterns in a string.
 
 The two files `KERNEL_general.h.j2` and `KERNEL_specialization.h.j2` need to be
 written. The changes there depend on the new implementation.
@@ -316,5 +320,20 @@ And then in QPhiX the steps are:
   and only leaves the parts of the glue code that is relevant.
 - Then the generated kernels are included by the preprocessor and everything
   gets compiled.
+
+The user of QPhiX does not have to bother with all this, QPhiX will just appear
+as a regular library with GNU Autotools.
+
+----
+
+\todo This information should be somewhere in the main C++ code generator as
+well, it must know which kernels to generate. Also the various values of
+`VECLEN` and `SOALEN` are contained in the main `Makefile`. It should be
+possible to have this information in one place only. Either the Python script
+parses the information from other sources or the code generator and the Python
+script share some configuration file. Parsing the filenames of the
+generated kernels would give the whole `SOALEN`, `VECLEN`, and
+`FPTYPE` values, the directory names would give the name of the ISA. This
+should be the next iteration of the script.
 
 <!-- vim: set spell tw=79 :-->
