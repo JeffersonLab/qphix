@@ -1,4 +1,4 @@
-# README for QPhiX Code Generator
+# QPhiX Code Generator
 
 ## Licensing Copying and Distribution
 
@@ -15,6 +15,17 @@ as is disclaimed in the `COPYRIGHT` and `LICENSE` files. Further, some targets
 are experimental and incomplete. You have been warned.
 
 ## Building the Code
+
+### Build requirements
+
+- In order to build the code, you need a **C++ compiler capable of C++11**. This
+  code generator itself does not use any proprietary C++ features and builds
+  with GCC and Intel's compiler.
+
+- For the generation of specialization headers, you need **Python 3** as well
+  as the [Jinja 2](http://jinja.pocoo.org/) library for Python 3.
+
+### Building a target
 
 Available targets are:
 
@@ -43,8 +54,6 @@ The generated files will be dropped in the target directory, i.e.
     ./avx 
  
 etc. which will be created in the root directory if they don't yet exist.
-
-In case you forget the `
 
 ## How is the target configured?
 
