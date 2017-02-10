@@ -367,23 +367,22 @@ string getTypeName(size_t s)
 
 void generate_code(void)
 {
-    if(SOALEN == VECLEN) {
+    if (SOALEN == VECLEN) {
         requireAllOneCheck[1] = false;
     }
 
 #ifdef NO_MASKS
-    for(int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         requireAllOneCheck[i] = false;
     }
 #endif
 
     const std::string SpinorTypeName = getTypeName(sizeof(SpinorBaseType));
-    const std::string GaugeTypeName  = getTypeName(sizeof(GaugeBaseType));
+    const std::string GaugeTypeName = getTypeName(sizeof(GaugeBaseType));
     const std::string CloverTypeName = getTypeName(sizeof(CloverBaseType));
 
-
-		// DSLASH and DSLASH_ACHIMBDPSI ROUTINES
-		// =====================================
+    // DSLASH and DSLASH_ACHIMBDPSI ROUTINES
+    // =====================================
     for (auto twisted_mass :
          {TwistedMassVariant::none, TwistedMassVariant::degenerate,
           TwistedMassVariant::non_degenerate}) {
@@ -514,10 +513,10 @@ void generate_code(void)
                 dumpIVector(ivector, filename.str());
             }
         }
-		}
+    }
 
-    data_types<float,VECLEN,SOALEN,true>::Gauge cmped;
-    data_types<float,VECLEN,SOALEN,false>::Gauge uncmped;
+    data_types<float, VECLEN, SOALEN, true>::Gauge cmped;
+    data_types<float, VECLEN, SOALEN, false>::Gauge uncmped;
 
     cout << "Compressed Gauge size is " << sizeof(cmped) << endl;
     cout << "Uncompressed Gauge size is " << sizeof(uncmped) << endl;
