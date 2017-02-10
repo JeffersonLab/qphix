@@ -1,8 +1,8 @@
 # QPhiX Code Generator
 
-## Licensing Copying and Distribution
+## Licensing, Copying, and Distribution
 
-Please see the [LICENSE](LICENSE.markdown) file for the License.
+Please see the [LICENSE](LICENSE.markdown) file for the license.
 
 ## Disclaimers
 
