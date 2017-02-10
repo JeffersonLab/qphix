@@ -42,7 +42,7 @@ includes with the Jinja2 include.
 {% include 'jinja/%s_general.h.j2'|format(kernel_base) %}
 
 {% for FPTYPE, VEC, soalens in defines %}
-{% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
+{% set kernel = kernel_pattern|format(fptype_underscore=FPTYPE+'_') %}
 {% for SOA in soalens %}
 {% for COMPRESS12 in ['true', 'false'] %}
 #define FPTYPE {{ FPTYPE }}

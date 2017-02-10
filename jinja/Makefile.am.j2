@@ -17,7 +17,7 @@ nobase_{{ isa }}_include_HEADERS = \
 
 if QPHIX_BUILD_CLOVER
 nobase_{{ isa }}_include_HEADERS += \
-        {{ prefix_dependencies('clov') -}}
+        {{ prefix_dependencies('clov_dslash') -}}
         ./clov_dslash_{{ isa }}_complete_specialization.h
 endif
 
@@ -29,6 +29,6 @@ endif
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 nobase_{{ isa }}_include_HEADERS += \
-        {{ prefix_dependencies('tmf_clov') -}}
+        {{ prefix_dependencies('tmf_clov_dslash') -}}
         ./tmf_clov_dslash_{{ isa }}_complete_specialization.h
 endif
