@@ -13,9 +13,13 @@
   non-twisted mass does not make sense.
   */
 enum class TwistedMassVariant {
-    none, ///< Plain Wilson fermions
-    degenerate, ///< Degenerate, \f$ N_\mathrm f = 2 \f$, Wilson twisted mass fermions
-    non_degenerate, ///< Non-degernate, \f$ N_\mathrm f = 1 + 1 \f$, Wilson twisted mass fermions
+    /// Plain Wilson fermions.
+    none,
+    /// Degenerate, \f$ N_\mathrm f = 2 \f$, Wilson twisted mass fermions.
+    degenerate,
+    /// Non-degernate, \f$ N_\mathrm f = 1 + 1 \f$, Wilson twisted mass
+    /// fermions.
+    non_degenerate,
 };
 
 /// Prefixes for the generated kernels.
