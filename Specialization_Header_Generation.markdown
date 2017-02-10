@@ -147,24 +147,28 @@ with the include command for the kernel body. Instead of using the C++
 preprocessor `INCLUDE_FILE_VAR` macro, it uses the Jinja macro
 `include_generated_kernel` like so:
 
-    {{ include_generated_kernel(ISA, kernel, "achimbdpsi_plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+```{.jinja}
+{{ include_generated_kernel(ISA, kernel, "achimbdpsi_plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
+```
 
 The macro emits a `#include` but can build the filename depending on the
 current ISA and the kernel, making it a bit more intelligent. Also it can
 figure out the suffix for the gauge compression automatically. The definition
 of this macro is the following:
 
-    {% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) %}
+```{.jinja}
+{% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) %}
 
-    {% if compress12 == '' %}
-    {% set suffix = '' %}
-    {% else %}
-    {% set suffix = '_12' if compress12 == 'true' else '_18' %}
-    {% endif %}
+{% if compress12 == '' %}
+{% set suffix = '' %}
+{% else %}
+{% set suffix = '_12' if compress12 == 'true' else '_18' %}
+{% endif %}
 
-    {% set filename = 'qphix/%s/generated/%s_%s_%s_%s_v%d_s%d%s'|format(isa, kernel, operator, fptype, fptype, vec, soa, suffix) %}
-    #include "{{ filename }}"
-    {% endmacro %}
+{% set filename = 'qphix/%s/generated/%s_%s_%s_%s_v%d_s%d%s'|format(isa, kernel, operator, fptype, fptype, vec, soa, suffix) %}
+#include "{{ filename }}"
+{% endmacro %}
+```
 
 This allows to generate the template specialization files for every
 architecture automatically, therefore consolidating all the code. Instead of
@@ -176,7 +180,7 @@ name of the kernel family is exchanged. Adding a kernel family had previously
 meant to duplicate two files for each ISA and make some trivial changes. Now
 there is the following code that emits the needed C++ code:
 
-```{.j2}
+```{.jinja}
 {% for FPTYPE, VEC, soalens in defines %}
 {% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
 {% for SOA in soalens %}
