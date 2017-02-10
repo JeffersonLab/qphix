@@ -129,7 +129,7 @@ The concrete bodies of the instructions, are implemented in the source files:
 | --- | --- |
 | `data_types.h` | defines data_types for Gauge fields, Spinors, and CloverTerm parts along with associated load, store, prefetch, stream etc functions (which use the `Instruction` objects) |
 | `dslash.h` |  defines the code generator functions used to construct a dslash (projections, etc) |
-| `dslash_common.h` | defines the main generator routines for things like projections, mat mults, face packs etc. |
+| `dslash_common.cc` | defines the main generator routines for things like projections, mat mults, face packs etc. |
 | `dslash.cc` | implements the main kernels using `dslash_common.h` |
 | `codegen.cc` | is the driver, that just calls `generate_code()` from `dslash.cc` |
 
