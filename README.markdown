@@ -18,9 +18,9 @@ are experimental and incomplete. You have been warned.
 
 ### Build requirements
 
-- In order to build the code, you need a **C++ compiler capable of C++11**. This
-  code generator itself does not use any proprietary C++ features and builds
-  with GCC and Intel's compiler.
+- In order to build the code, you need a **C++ compiler capable of C++11**.
+  This code generator itself does not use any proprietary C++ features and
+  builds with GCC and Intel's compiler.
 
 - For the generation of specialization headers, you need **Python 3** as well
   as the [Jinja 2](http://jinja.pocoo.org/) library for Python 3.
@@ -38,10 +38,10 @@ Available targets are:
 | `sse`  | For SSE -- untested | Intel Pentium 4, Intel Core, Intel Xeon Nehalem |
 | `scalar` | C, scalar code (`SOALEN=1`) | |
 
-Run the code with `make TARGET` this will build the code generator
-and generate the code for the target.  The target specific code will be placed
-in the subdirectory corresponding to the target (i.e. MIC code goes to `mic/`,
-AVX code goes to `avx/` etc).
+Run the code with `make TARGET` this will build the code generator and generate
+the code for the target.  The target specific code will be placed in the
+subdirectory corresponding to the target (i.e. MIC code goes to `mic/`, AVX
+code goes to `avx/` etc).
 
 To build for Intel Sandy Bridge and Intel Ivy Bridge processors, use the
 following:
@@ -59,8 +59,8 @@ etc. which will be created in the root directory if they don't yet exist.
 
 For each target there is a separate `customMake.<target>` which sets Makefile
 variables for the target. In addition some of these variables can be
-over-ridden on the command line to `make` (such as `PRECISION`, `SOALEN`, `AVX2`,
-`ENABLE_LOW_PRECISION`) as is done in the Makefile
+over-ridden on the command line to `make` (such as `PRECISION`, `SOALEN`,
+`AVX2`, `ENABLE_LOW_PRECISION`) as is done in the Makefile
 
 Some env variables which affect the code generation are: 
 
@@ -94,22 +94,22 @@ There is two parts to the code:
 This works with addresses, registers and instructions. Addresses are defined in
 `address_types.h`. Instructions are defined in `instructions.h`.
 
-NB: Each instruction is an object, belonging to a class. 
-There are two kinds of instructions: those that have memory references and those that do not.
-Each instruction has a `serialize()` method which will print the code (potentially an intrinsic) 
-for that code.
+NB: Each instruction is an object, belonging to a class. There are two kinds of
+instructions: those that have memory references and those that do not. Each
+instruction has a `serialize()` method which will print the code (potentially
+an intrinsic) for that code.
 
 Then there are simple functions, which usually look like e.g.
 
     void loadFVec(InstVector& ivector, const FVec& ret, const Address *s, etc...)  {}
 
 These functions typically create an instruction object (in this case a load
-instruction), or several instruction objects, potentially making use of
-input references to vectors and vectors. The created objects are inserted
-into the `InstVector`, which is just a `std::vector` of `Instruction*`s.
+instruction), or several instruction objects, potentially making use of input
+references to vectors and vectors. The created objects are inserted into the
+`InstVector`, which is just a `std::vector` of `Instruction*`s.
 
-By using functions like `loadFVec`, `gatherFVec`, `scatterFVec` etc, one
-can build linear streams of instructions. 
+By using functions like `loadFVec`, `gatherFVec`, `scatterFVec` etc, one can
+build linear streams of instructions. 
 
 The concrete bodies of the instructions, are implemented in the source files:
 
