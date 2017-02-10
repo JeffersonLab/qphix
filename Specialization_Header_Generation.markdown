@@ -176,22 +176,24 @@ name of the kernel family is exchanged. Adding a kernel family had previously
 meant to duplicate two files for each ISA and make some trivial changes. Now
 there is the following code that emits the needed C++ code:
 
-    {% for FPTYPE, VEC, soalens in defines %}
-    {% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
-    {% for SOA in soalens %}
-    {% for COMPRESS12 in ['true', 'false'] %}
-    #define FPTYPE {{ FPTYPE }}
-    #define VEC {{ VEC }}
-    #define SOA {{ SOA }}
-    #define COMPRESS12 {{ COMPRESS12 }}
-    {% include 'jinja/%s_specialization.h.j2'|format(kernel_base) %}
-    #undef FPTYPE
-    #undef VEC
-    #undef SOA
-    #undef COMPRESS12
-    {% endfor %}
-    {% endfor %}
-    {% endfor %}
+```{.j2}
+{% for FPTYPE, VEC, soalens in defines %}
+{% set kernel = kernel_pattern|format(fptype=FPTYPE) %}
+{% for SOA in soalens %}
+{% for COMPRESS12 in ['true', 'false'] %}
+#define FPTYPE {{ FPTYPE }}
+#define VEC {{ VEC }}
+#define SOA {{ SOA }}
+#define COMPRESS12 {{ COMPRESS12 }}
+{% include 'jinja/%s_specialization.h.j2'|format(kernel_base) %}
+#undef FPTYPE
+#undef VEC
+#undef SOA
+#undef COMPRESS12
+{% endfor %}
+{% endfor %}
+{% endfor %}
+```
 
 What it does is to iterate through all the floating point types (`FPTYPE`), the
 associated vector length for that platform. Then it iterates through the
