@@ -7,3 +7,7 @@ html
 mic
 scalar
 sse
+jinja/clov_dslash_generated.h
+jinja/dslash_generated.h
+jinja/tmf_clov_dslash_generated.h
+jinja/tmf_dslash_generated.h
