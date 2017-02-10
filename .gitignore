@@ -3,6 +3,7 @@ avx
 avx2
 avx512
 codegen
+html
 mic
 scalar
 sse
