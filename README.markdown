@@ -1,4 +1,4 @@
-# QPhiX Code Generator
+# README for QPhiX Code Generator
 
 ## Licensing Copying and Distribution:
 
@@ -80,50 +80,49 @@ Some env variables which affect the code generation are:
 
 There is two parts to the code: 
 
-1. The code generation framework. This works with addresses, registers and
-   instructions. Addresses are defined in `address_types.h`. Instructions are
-   defined in `instructions.h`.
+### The code generation framework
 
-    NB: Each instruction is an object, belonging to a class. 
-    There are two kinds of instructions: those that have memory references and those that do not.
-    Each instruction has a `serialize()` method which will print the code (potentially an intrinsic) 
-    for that code.
+This works with addresses, registers and instructions. Addresses are defined in
+`address_types.h`. Instructions are defined in `instructions.h`.
 
-    Then there are simple functions, which usually look like e.g.
+NB: Each instruction is an object, belonging to a class. 
+There are two kinds of instructions: those that have memory references and those that do not.
+Each instruction has a `serialize()` method which will print the code (potentially an intrinsic) 
+for that code.
 
-    ```cpp
+Then there are simple functions, which usually look like e.g.
+
     void loadFVec(InstVector& ivector, const FVec& ret, const Address *s, etc...)  {}
-    ```
 
-    These functions typically create an instruction object (in this case a load
-    instruction), or several instruction objects, potentially making use of
-    input references to vectors and vectors. The created objects are inserted
-    into the `InstVector`, which is just a `std::vector` of `Instruction*`s.
+These functions typically create an instruction object (in this case a load
+instruction), or several instruction objects, potentially making use of
+input references to vectors and vectors. The created objects are inserted
+into the `InstVector`, which is just a `std::vector` of `Instruction*`s.
 
-    By using functions like `loadFVec`, `gatherFVec`, `scatterFVec` etc, one
-    can build linear streams of instructions. 
+By using functions like `loadFVec`, `gatherFVec`, `scatterFVec` etc, one
+can build linear streams of instructions. 
 
-    The concrete bodies of the instructions, are implemented in the source files:
+The concrete bodies of the instructions, are implemented in the source files:
 
-    | File | Purpose |
-    | --- | --- |
-    | `inst_scalar.cc` | Scalar C-code (`VECLEN=1`)
-    | `inst_dp_vec2.cc` | SSE Double Precision (`VECLEN=2`)
-    | `inst_dp_vec4.cc` | AVX Double Precision (`VECLEN=4`)
-    | `inst_dp_vec8.cc` | MIC (KNC/AVX512) Double Precision (`VECLEN=8`)
-    | `inst_sp_vec4.cc` | SSE Single Precision (`VECLEN=4`)
-    | `inst_sp_vec8.cc` | AVX Single Precision (`VECLEN=8`)
-    | `inst_sp_vec16.cc` | MIC (KNC/AVX512) Single Precision  (`VECLEN=16`)
+| File | Purpose |
+| --- | --- |
+| `inst_scalar.cc` | Scalar C-code (`VECLEN=1`)
+| `inst_dp_vec2.cc` | SSE Double Precision (`VECLEN=2`)
+| `inst_dp_vec4.cc` | AVX Double Precision (`VECLEN=4`)
+| `inst_dp_vec8.cc` | MIC (KNC/AVX512) Double Precision (`VECLEN=8`)
+| `inst_sp_vec4.cc` | SSE Single Precision (`VECLEN=4`)
+| `inst_sp_vec8.cc` | AVX Single Precision (`VECLEN=8`)
+| `inst_sp_vec16.cc` | MIC (KNC/AVX512) Single Precision  (`VECLEN=16`)
 
-2. The generators for the Kernels: 
+### The generators for the Kernels
   
-    | File | Purpose |
-    | --- | --- |
-    | `data_types.h` | defines data_types for Gauge fields, Spinors, and CloverTerm parts along with associated load, store, prefetch, stream etc functions (which use the `Instruction` objects) |
-    | `dslash.h` |  defines the code generator functions used to construct a dslash (projections, etc) |
-    | `dslash_common.h` | defines the main generator routines for things like projections, mat mults, face packs etc. |
-    | `dslash.cc` | implements the main kernels using `dslash_common.h` |
-    | `codegen.cc` | is the driver, that just calls `generate_code()` from `dslash.cc` |
+| File | Purpose |
+| --- | --- |
+| `data_types.h` | defines data_types for Gauge fields, Spinors, and CloverTerm parts along with associated load, store, prefetch, stream etc functions (which use the `Instruction` objects) |
+| `dslash.h` |  defines the code generator functions used to construct a dslash (projections, etc) |
+| `dslash_common.h` | defines the main generator routines for things like projections, mat mults, face packs etc. |
+| `dslash.cc` | implements the main kernels using `dslash_common.h` |
+| `codegen.cc` | is the driver, that just calls `generate_code()` from `dslash.cc` |
 
 The various code-generation options in the `inst_xx_vecX.cc` files, the headers
 etc are controlled by compiler `#define`s defined in the `Makefile`s, and
