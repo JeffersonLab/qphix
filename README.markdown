@@ -31,7 +31,7 @@ Available targets are:
 
 | Target | Description | Example Products |
 | --- | --- | --- |
-| `mic` | Intel MIC | Intel Xeon Phi Knight's Corner) |
+| `mic` | Intel MIC | Intel Xeon Phi Knight's Corner |
 | `avx` | Regular AVX | Intel Xeon Sandy Bridge, Ivy Bridge |
 | `avx2` | AVX2 -- untested | Intel Xeon Haswell, Broadwell |
 | `avx512` | AVX512 | Intel Xeon Skylake, Kaby Lake; Intel Xeon Phi Knight's Landing |
