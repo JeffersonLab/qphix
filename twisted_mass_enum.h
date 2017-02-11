@@ -23,8 +23,9 @@ enum class TwistedMassVariant {
 };
 
 /// Prefixes for the generated kernels.
-std::map<TwistedMassVariant, std::string> twisted_mass_prefixes = {
-    {TwistedMassVariant::none, std::string("")},
-    {TwistedMassVariant::degenerate, std::string("tmf_")},
-    {TwistedMassVariant::non_degenerate, std::string("ndtm_")},
+std::map<TwistedMassVariant const, std::string const> const
+    twisted_mass_prefixes = {
+        {TwistedMassVariant::none, std::string("")},
+        {TwistedMassVariant::degenerate, std::string("tmf_")},
+        {TwistedMassVariant::non_degenerate, std::string("ndtm_")},
 };

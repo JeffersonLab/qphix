@@ -1,3 +1,7 @@
+#pragma once
+
+#include "twisted_mass_enum.h"
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -36,15 +40,25 @@ void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string
 void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
 void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask="");
 //void achiResult(InstVector& ivector, bool clover);
-void achiResult(InstVector& ivector, bool clover, bool twisted_mass, bool isPlus);
+
+void achiResult(InstVector &ivector, bool const clover,
+                TwistedMassVariant const twisted_mass, bool const isPlus);
+
 void loadGaugeDir(InstVector& ivector, int dir, bool compress12);
 void matMultVec(InstVector& ivector, bool adjMul, int s);
 void matMultVec(InstVector& ivector, bool adjMul);
-//void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus);
+
+void dslash_plain_body(InstVector &ivector, bool const compress12,
+                       bool const clover, TwistedMassVariant const twisted_mass,
+                       bool const isPlus);
+
 // ***** ------- a chi - b D psi versions
-//void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus);
+
+void dslash_achimbdpsi_body(InstVector &ivector, bool const compress12,
+                            bool const clover,
+                            TwistedMassVariant const twisted_mass,
+                            bool const isPlus);
+
 void pack_face_to_dir_dim_vec(InstVector& ivector, bool isPlus, int dir, int dim);
 void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover, bool twisted_mass);
 

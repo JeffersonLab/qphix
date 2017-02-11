@@ -4,6 +4,8 @@ using namespace std;
 
 #include "dslash.h"
 
+#include "unsupported_values.h"
+
 extern string beta_names[8];
 extern string alpha_name;
 extern string outBase;
@@ -972,71 +974,136 @@ void achiResult(InstVector& ivector, bool clover)
 }
 #endif
 
-void achiResult(InstVector& ivector, bool clover, bool twisted_mass, bool isPlus)
+void achiResult(InstVector &ivector, bool const clover,
+                TwistedMassVariant const twisted_mass, bool const isPlus)
 {
-	PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
+    PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
 
-	// CLOVER W/ OR W/O TWISTED MASS
-	if (clover) {
-		for(int col=0; col < 3; col++) {
-			for(int spin=0; spin < 4; spin++){
-				LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase, chiOffs, spin, col, RE, false, "");
-				LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase, chiOffs, spin, col, IM, false, "");
-			}
-		}
-		// Apply clover term, and store result in out spinor.
-		// This is only on the AChi - bDPsi op (achimbdpsi = true)
-		// This is only in body kernel (face = false)
-		if(!twisted_mass) clover_term(ivector, chi_spinor, false);
-		else if(twisted_mass) full_clover_term(ivector, chi_spinor, false);
-	}
+    // CLOVER W/ OR W/O TWISTED MASS
+    if (clover) {
+        for (int col = 0; col < 3; col++) {
+            for (int spin = 0; spin < 4; spin++) {
+                LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase,
+                                  chiOffs, spin, col, RE, false, "");
+                LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase,
+                                  chiOffs, spin, col, IM, false, "");
+            }
+        }
 
-	// TWISTED MASS ONLY
-	else if (!clover && twisted_mass) {
-		for(int col=0; col < 3; col++) {
-			for(int spin=0; spin < 2; spin++){
-				LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
-				LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
-				if(isPlus){
-					fnmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_im, tmp_1_re, "");
-					fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_re, tmp_1_im, "");
-				}
-				else{
-					fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_im, tmp_1_re, "");
-					fnmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_re, tmp_1_im, "");
-				}
-			}
+        // Apply clover term, and store result in out spinor.
+        // This is only on the AChi - bDPsi op (achimbdpsi = true)
+        // This is only in body kernel (face = false)
+        if (twisted_mass == TwistedMassVariant::none) {
+            clover_term(ivector, chi_spinor, false);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            full_clover_term(ivector, chi_spinor, false);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            full_clover_term(ivector, chi_spinor, false);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    } else {
+        // No clover.
+        if (twisted_mass == TwistedMassVariant::none) {
+            for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 4; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
+                    mulFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                            tmp_1_re);
+                    mulFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                            tmp_1_im);
+                }
+            }
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 2; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
+                    if (isPlus) {
+                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
+                                   alpha_vec, tmp_1_im, tmp_1_re, "");
+                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                                  tmp_1_re, tmp_1_im, "");
+                    } else {
+                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                                  tmp_1_im, tmp_1_re, "");
+                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
+                                   alpha_vec, tmp_1_re, tmp_1_im, "");
+                    }
+                }
 
-			for(int spin=2; spin < 4; spin++){
-				LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
-				LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
+                for (int spin = 2; spin < 4; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
 
-				if(isPlus){
-					fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_im, tmp_1_re, "");
-					fnmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_re, tmp_1_im, "");
-				}
-				else{
-					fnmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_im, tmp_1_re, "");
-					fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_re, tmp_1_im, "");
-				}
-			}
-		}
-	}
+                    if (isPlus) {
+                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                                  tmp_1_im, tmp_1_re, "");
+                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
+                                   alpha_vec, tmp_1_re, tmp_1_im, "");
+                    } else {
+                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
+                                   alpha_vec, tmp_1_im, tmp_1_re, "");
+                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                                  tmp_1_re, tmp_1_im, "");
+                    }
+                }
+            }
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 2; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
+                    if (isPlus) {
+                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
+                                   alpha_vec, tmp_1_im, tmp_1_re, "");
+                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                                  tmp_1_re, tmp_1_im, "");
+                    } else {
+                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                                  tmp_1_im, tmp_1_re, "");
+                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
+                                   alpha_vec, tmp_1_re, tmp_1_im, "");
+                    }
+                }
 
-	// NO CLOVER / NO TWISTED MASS
-	else if (!clover && !twisted_mass) {
-		for(int col=0; col < 3; col++) {
-			for(int spin=0; spin < 4; spin++){
-				LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin, col, RE, false, "");
-				LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin, col, IM, false, "");
-				mulFVec(ivector, out_spinor[spin][col][RE], alpha_vec, tmp_1_re);
-				mulFVec(ivector, out_spinor[spin][col][IM], alpha_vec, tmp_1_im);
-			}
-		}
-	}
+                for (int spin = 2; spin < 4; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
 
+                    if (isPlus) {
+                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                                  tmp_1_im, tmp_1_re, "");
+                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
+                                   alpha_vec, tmp_1_re, tmp_1_im, "");
+                    } else {
+                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
+                                   alpha_vec, tmp_1_im, tmp_1_re, "");
+                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                                  tmp_1_re, tmp_1_im, "");
+                    }
+                }
+            }
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    }
 }
-
 
 void loadGaugeDir(InstVector& ivector, int dir, bool compress12)
 {
@@ -1077,8 +1144,9 @@ void matMultVec(InstVector& ivector, bool adjMul)
     matMultVec(ivector, adjMul, 1);
 }
 
-
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus)
+void dslash_plain_body(InstVector &ivector, bool const compress12,
+                       bool const clover, TwistedMassVariant const twisted_mass,
+                       bool const isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -1094,12 +1162,19 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool t
         declare_douts(ivector);
     }
 
-    if(clover && !twisted_mass) {
-        declare_clover(ivector);
-		}
-		else if(clover && twisted_mass) {
-        declare_full_clover(ivector);
-		}
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            declare_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            declare_full_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            declare_full_clover(ivector);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    }
 
     FVec (*outspinor)[4][3][2];
 
@@ -1129,17 +1204,43 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool t
 
     dslash_body(ivector, compress12, p_ops, rec_ops_bw, rec_ops_fw, *outspinor);
 
-    if(clover && !twisted_mass) clover_term(ivector, *outspinor, false);
-		else if(clover && twisted_mass) full_clover_term(ivector, *outspinor, false);
-    else if(!clover && twisted_mass) twisted_term(ivector, *outspinor, false, isPlus);
-    else if(!clover && !twisted_mass) {};
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            clover_term(ivector, *outspinor, false);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            full_clover_term(ivector, *outspinor, false);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            full_clover_term(ivector, *outspinor, false);
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    } else {
+        if (twisted_mass == TwistedMassVariant::none) {
+            // Nothing to do.
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            twisted_term(ivector, *outspinor, false, isPlus);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            twisted_term(ivector, *outspinor, false, isPlus);
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            declare_full_clover(ivector);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    }
 
     // Store
     StreamFullSpinor(ivector, out_spinor, outBase, outOffs);
 }
 
 // ***** ------- a chi - b D psi versions
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool twisted_mass, bool isPlus)
+
+void dslash_achimbdpsi_body(InstVector &ivector, bool const compress12,
+                            bool const clover,
+                            TwistedMassVariant const twisted_mass,
+                            bool const isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -1160,12 +1261,19 @@ void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, b
 				loadBroadcastScalar(ivector, alpha_vec, alpha_name, SpinorType);
     }
 
-    if(clover && !twisted_mass) {
-        declare_clover(ivector);
-		}
-		else if(clover && twisted_mass) {
-        declare_full_clover(ivector);
-		}
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            declare_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            declare_full_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            declare_full_clover(ivector);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    }
 
     // Fill result with a*chi
     achiResult(ivector, clover, twisted_mass, isPlus);

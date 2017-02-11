@@ -1,4 +1,5 @@
 #include "twisted_mass_enum.h"
+#include "unsupported_values.h"
 
 #include <fstream>
 #include <iostream>
@@ -131,13 +132,12 @@ void generateL2Prefetches(InstVector &ivector, bool const compress12,
                                        "clprefdist");
         }
         else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-            // TODO Here something new for the ND case has to be
-            // implemented.
+            // TODO Here something new for the ND case has to be implemented.
             // Currently this is just copied from the degenerate case.
             PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs",
                                        "clprefdist");
         } else {
-            throw std::domain_error("Unsupported variant of twisted mass");
+            unsupported_twisted_mass_variant();
         }
     }
 
@@ -415,7 +415,7 @@ void generate_code(void)
                         std::ostringstream filename;
 
                         std::string tmf_prefix =
-                            twisted_mass_prefixes[twisted_mass];
+                            twisted_mass_prefixes.at(twisted_mass);
                         std::string clov_prefix =
                             clover ? "clov_" + CloverTypeName + "_" : "";
                         std::string plusminus = isPlus ? "plus" : "minus";
@@ -441,14 +441,10 @@ void generate_code(void)
                                              twisted_mass);
                         if (kernel == "dslash")
                             dslash_plain_body(ivector, compress12, clover,
-                                              twisted_mass !=
-                                                  TwistedMassVariant::none,
-                                              isPlus);
+                                              twisted_mass, isPlus);
                         else if (kernel == "dslash_achimbdpsi")
                             dslash_achimbdpsi_body(ivector, compress12, clover,
-                                                   twisted_mass !=
-                                                       TwistedMassVariant::none,
-                                                   isPlus);
+                                                   twisted_mass, isPlus);
                         mergeIvectorWithL2Prefetches(ivector, l2prefs);
                         dumpIVector(ivector, filename.str());
 
@@ -474,7 +470,7 @@ void generate_code(void)
                             std::ostringstream filename;
 
                             std::string tmf_prefix =
-                                twisted_mass_prefixes[twisted_mass];
+                                twisted_mass_prefixes.at(twisted_mass);
                             std::string clov_prefix =
                                 clover ? "clov_" + CloverTypeName + "_" : "";
                             std::string plusminus = isPlus ? "plus" : "minus";

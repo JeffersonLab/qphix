@@ -17,11 +17,15 @@
   @param[in] file Filename where this function was called, usually __FILE__
   @param[in] line Line number where this function was called, usually __LINE__
   */
-void unsupported_soalen(int const soalen,
+static void unsupported_soalen(int const soalen,
                         std::string const &file,
                         int const line) {
     std::ostringstream oss;
     oss << "SOALEN = " << soalen << " is not supported at " << file << ":"
         << line << ".";
     throw std::domain_error(oss.str());
+}
+
+inline void unsupported_twisted_mass_variant() {
+    throw std::domain_error("Unsupported variant of twisted mass");
 }
