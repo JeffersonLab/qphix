@@ -32,3 +32,15 @@ nobase_{{ isa }}_include_HEADERS += \
         {{ prefix_dependencies('tmf_clov_dslash') -}}
         ./tmf_clov_dslash_{{ isa }}_complete_specialization.h
 endif
+
+if QPHIX_BUILD_ND_TWISTED_MASS
+nobase_{{ isa }}_include_HEADERS += \
+        {{ prefix_dependencies('ndtm_dslash') -}}
+        ./tmf_dslash_{{ isa }}_complete_specialization.h
+endif
+
+if QPHIX_BUILD_ND_TWISTED_MASS_WITH_CLOVER
+nobase_{{ isa }}_include_HEADERS += \
+        {{ prefix_dependencies('ndtm_clov_dslash') -}}
+        ./tmf_clov_dslash_{{ isa }}_complete_specialization.h
+endif
