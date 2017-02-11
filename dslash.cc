@@ -1,11 +1,12 @@
 #include "twisted_mass_enum.h"
 
-#include <sstream>
 #include <fstream>
 #include <iostream>
-#include <vector>
-#include <typeinfo>
+#include <sstream>
+#include <stdexcept>
 #include <string>
+#include <typeinfo>
+#include <vector>
 
 using namespace std;
 
@@ -102,7 +103,6 @@ void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress1
     PrefetchL2FullSpinorDirIn(ivector, outBase, "offs", "soprefdist");
 }
 
-
 /**
   Generate all L2 prefetches.
 
@@ -110,31 +110,44 @@ void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress1
   @param[in] compress12 Enable gauge compression
   @param[in] chi Generate prefetches of the spinor
   @param[in] clover Generate prefetches for the clover term
+  @param[in] twisted_mass Type of twisted mass used
   */
-void generateL2Prefetches(InstVector& ivector, bool compress12, bool chi, bool clover, bool twisted_mass)
+void generateL2Prefetches(InstVector &ivector, bool const compress12,
+                          bool const chi, bool const clover,
+                          TwistedMassVariant const twisted_mass)
 {
     PrefetchL2FullSpinorDirIn(ivector, "xyBase", "pfyOffs", "siprefdist1");
-    //PrefetchL2FullSpinorDirIn(ivector, "pfBase1", "offs", "siprefdist1");
+    // PrefetchL2FullSpinorDirIn(ivector, "pfBase1", "offs", "siprefdist1");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase2", "offs", "siprefdist2");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase3", "offs", "siprefdist3");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase4", "offs", "siprefdist4");
 
-    if(clover && !twisted_mass) {
-        PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
+        }
+        else if (twisted_mass == TwistedMassVariant::degenerate) {
+            PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs",
+                                       "clprefdist");
+        }
+        else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be
+            // implemented.
+            // Currently this is just copied from the degenerate case.
+            PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs",
+                                       "clprefdist");
+        } else {
+            throw std::domain_error("Unsupported variant of twisted mass");
+        }
     }
-		else if(clover && twisted_mass) {
-        PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs", "clprefdist");
-		}
 
-    if(chi) {
+    if (chi) {
         PrefetchL2FullSpinorDirIn(ivector, "pfBaseChi", "offs", "chiprefdist");
     }
 
     PrefetchL2FullGaugeIn(ivector, "gBase", "gOffs", "gprefdist", compress12);
     PrefetchL2FullSpinorOut(ivector, outBase, "offs", "siprefdist4");
 }
-
-
 
 #ifdef SERIAL_SPIN
 void dslash_body(InstVector& ivector, bool compress12, proj_ops *ops, recons_ops *rec_ops_bw, recons_ops *rec_ops_fw, FVec outspinor[4][3][2])
@@ -423,9 +436,9 @@ void generate_code(void)
                              << "vec body" << endl;
 
                         // Generate instructions
-                        generateL2Prefetches(
-                            l2prefs, compress12, chi_prefetches, clover,
-                            twisted_mass != TwistedMassVariant::none);
+                        generateL2Prefetches(l2prefs, compress12,
+                                             chi_prefetches, clover,
+                                             twisted_mass);
                         if (kernel == "dslash")
                             dslash_plain_body(ivector, compress12, clover,
                                               twisted_mass !=
