@@ -103,7 +103,14 @@ void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress1
 }
 
 
-// Generate all L2 prefetches
+/**
+  Generate all L2 prefetches.
+
+  @param[in,out] ivector Target vector of instructions
+  @param[in] compress12 Enable gauge compression
+  @param[in] chi Generate prefetches of the spinor
+  @param[in] clover Generate prefetches for the clover term
+  */
 void generateL2Prefetches(InstVector& ivector, bool compress12, bool chi, bool clover, bool twisted_mass)
 {
     PrefetchL2FullSpinorDirIn(ivector, "xyBase", "pfyOffs", "siprefdist1");
