@@ -1,6 +1,8 @@
 #ifndef QPHIX_COMM_H
 #define QPHIX_COMM_H
 
+#include "qphix/geometry.h"
+
 #ifdef QPHIX_DO_COMMS
 #ifdef QPHIX_QMP_COMMS
 #undef SEEK_SET
