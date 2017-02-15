@@ -345,10 +345,14 @@ namespace QPhiX {
 		const int PadXYZ;
 		int Pxy;
 		int Pxyz;
-		int MinCt; // Minimum no of cores in T dir
-		//  MinCt = 1 for single socket/Xeon Phi
-		//  MinCt = 2 for dual socket
-		//  MinCt = 4 for quad socket
+
+    /** Minimum number of cores in T dir.
+
+      - MinCt = 1 for single socket/Xeon Phi
+      - MinCt = 2 for dual socket
+      - MinCt = 4 for quad socket
+    */
+		int MinCt;
 
 		const int nsimt;
 		const int num_threads;
@@ -364,16 +368,11 @@ namespace QPhiX {
 		static const int MAX_PHASES=128;
 		CorePhase phase[MAX_PHASES];
 		int n_phases;
-		int minCt; // Minimum no of cores in T dir
 
 		size_t gauge_bytes;
 		size_t spinor_bytes;
 		size_t clover_bytes;
 		size_t full_clover_bytes;
-
-		//  minCt = 1 for single socket/Xeon Phi
-		//  minCt = 2 for dual socket
-		//  minCt = 4 for quad socket
 	};
 } // Namespace
 
