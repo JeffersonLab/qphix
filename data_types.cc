@@ -554,6 +554,7 @@ void PrefetchL2FullCloverIn(InstVector& ivector, const string& base, const strin
 
 void PrefetchL1HalfSpinorDir(InstVector& ivector, const string& base, int dir, bool isPrefforWrite, int type)
 {
+#ifdef PREF_L1_SPINOR_IN
     int nActiveLanes = VECLEN;
     int ind = 0;
 
@@ -576,10 +577,12 @@ void PrefetchL1HalfSpinorDir(InstVector& ivector, const string& base, int dir, b
     for(int i = 0; i < (12*nActiveLanes*sizeof(SpinorBaseType)+63)/64; i++) {
         prefetchL1(ivector, new AddressImm(new GenericAddress(base, SpinorType), i*(64/sizeof(SpinorBaseType))), type);
     }
+#endif
 }
 
 void PrefetchL2HalfSpinorDir(InstVector& ivector, const string& base, const string& pref_dist, int dir, bool isPrefforWrite, int type)
 {
+#ifdef PREF_L2_SPINOR_IN
     int nActiveLanes = VECLEN;
     int ind = 0;
 
@@ -602,5 +605,6 @@ void PrefetchL2HalfSpinorDir(InstVector& ivector, const string& base, const stri
     for(int i = 0; i < (12*nActiveLanes*sizeof(SpinorBaseType)+63)/64; i++) {
         prefetchL2(ivector, new AddressImm(new AddressOffset(new GenericAddress(base, SpinorType), pref_dist), i*(64/sizeof(SpinorBaseType))), type);
     }
+#endif
 }
 
