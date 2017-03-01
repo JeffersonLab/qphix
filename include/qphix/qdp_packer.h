@@ -44,7 +44,7 @@ namespace QPhiX {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
   // Downconvert an array of float-vecs to an array of float 16 vecs
-  void downconvert_array(const float *from, half *to, const unsigned int nvecs)
+  inline void downconvert_array(const float *from, half *to, const unsigned int nvecs)
   {
 #pragma omp parallel for shared(from,to)
     for(int i=0; i < nvecs; i++) { 
@@ -58,7 +58,7 @@ namespace QPhiX {
   }
 
   // Upconvert an array of float16 vecs to an array of float 32
-  void upconvert_array(const half* from, float *to, const unsigned int nvecs)
+  inline void upconvert_array(const half* from, float *to, const unsigned int nvecs)
   {
 #pragma omp parallel for shared(from, to)
     for(int i=0; i < nvecs; i++) { 

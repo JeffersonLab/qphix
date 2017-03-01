@@ -24,7 +24,7 @@ namespace QPhiX {
 	typedef unsigned short half;
   
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-  float cvtHalf2Float(half val) {
+  inline float cvtHalf2Float(half val) {
     float ret;
   #if defined(QPHIX_MIC_SOURCE)
     _mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
@@ -34,7 +34,7 @@ namespace QPhiX {
     return ret;
   }
   
-  half cvtFloat2Half(float val) {
+  inline half cvtFloat2Half(float val) {
     half ret;
   #if defined(QPHIX_MIC_SOURCE)
     _mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
