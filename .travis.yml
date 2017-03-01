@@ -2,3 +2,5 @@
 
 language: cpp
 script: ./travis-ci.sh
+dist: trusty
+sudo: false
