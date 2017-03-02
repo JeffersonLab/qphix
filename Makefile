@@ -16,7 +16,7 @@ else
     CXX = icpc
 endif
 
-CXXHOST = $(CXX) -O3 -g
+CXXHOST = $(CXX) -O3 -g --std=c++11
 
 ifeq ($(mode),mic)
 ifeq ($(PRECISION),1)
