@@ -557,6 +557,7 @@ void gatherPrefetchL2(InstVector& ivector, GatherAddress *a, int type = 0);
 void transpose(InstVector& ivector, const FVec r[], const FVec f[], int soalen);
 
 
+/// Copy, `ret = a`.
 inline void movFVec(InstVector& ivector, const FVec& ret, const FVec& a, string mask)
 {
     ivector.push_back(new MovFVec(ret, a, mask));
@@ -582,6 +583,7 @@ inline void elseStatement(InstVector& ivector)
     ivector.push_back( new ElseStatement());
 }
 
+/// `if ((condition & fullIntMask) == fullIntMask) {`
 inline void ifAllOneStatement(InstVector& ivector, string condition)
 {
     ivector.push_back( new IfAllOneCond(condition));
@@ -592,11 +594,13 @@ inline void inlineCode(InstVector& ivector, string code)
     ivector.push_back( new InlineCode(code));
 }
 
+/// Variable declaration, `type name = ZERO`.
 inline void declareFVecFromFVec(InstVector& ivector, const FVec& v)
 {
     ivector.push_back(new DeclareFVec(v));
 }
 
+/// Variable declaration, `type name = ZERO`.
 inline FVec declareFVec(InstVector& ivector, const std::string name)
 {
     FVec tmp(name);
@@ -604,46 +608,55 @@ inline FVec declareFVec(InstVector& ivector, const std::string name)
     return tmp;
 }
 
+/// Variable initialization, does nothing.
 inline void initFVec(InstVector& ivector, const FVec& ret)
 {
     ivector.push_back(new InitFVec(ret));
 }
 
+/// Set zero, `ret = 0`.
 inline void setZero(InstVector& ivector, const FVec& ret)
 {
     ivector.push_back(new SetZero(ret));
 }
 
+/// Multiplication, `ret = a * b`.
 inline void mulFVec(InstVector& ivector, const FVec& ret, const FVec& a, const FVec& b, string mask = "")
 {
     ivector.push_back(new Mul(ret, a, b, mask));
 }
 
+/// Addition, `ret = a + b`.
 inline void addFVec(InstVector& ivector, const FVec& ret, const FVec& a, const FVec& b, string mask = "")
 {
     ivector.push_back(new Add(ret, a, b, mask));
 }
 
+/// Subtraction, `ret = a - b`.
 inline void subFVec(InstVector& ivector, const FVec& ret, const FVec& a, const FVec& b, string mask = "")
 {
     ivector.push_back(new Sub(ret, a, b, mask));
 }
 
+/// Fused multiply add, `ret = a * b + c`.
 inline void fmaddFVec(InstVector& ivector, const FVec& ret, const FVec& a, const FVec& b, const FVec& c, string mask = "")
 {
     ivector.push_back(new FMAdd(ret, a, b, c, mask));
 }
 
+/// Fused negative multiply add, `ret = c - a * b`.
 inline void fnmaddFVec(InstVector& ivector, const FVec& ret, const FVec& a, const FVec& b, const FVec& c, string mask = "")
 {
     ivector.push_back(new FnMAdd(ret, a, b, c, mask));
 }
 
+/// Load data into a register, `ret = *a`.
 inline void loadFVec(InstVector& ivector, const FVec& ret, const Address *a, string mask)
 {
     ivector.push_back( new LoadFVec(ret, a, mask));
 }
 
+/// Store from a register, `*a = ret`.
 inline void storeFVec(InstVector& ivector, const FVec& ret, const Address *a, int isStreaming)
 {
     ivector.push_back( new StoreFVec(ret, a, isStreaming));

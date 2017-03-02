@@ -18,6 +18,11 @@ const string fullMask("0x1");
 
 FVec::FVec(const string& name_) : name(name_), type(FVECTYPE) {}
 
+// XXX The two following `#if` look like they are complementary to each other.
+// Perhaps it would be good to introduce a named preprocessor constant for
+// those, like `INITIALIZE_AT_DECLARATION`. Then one could change both `#if` at
+// the same time.
+
 string DeclareFVec::serialize() const
 {
 
