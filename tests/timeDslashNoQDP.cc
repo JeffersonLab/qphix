@@ -410,39 +410,81 @@ timeDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
  
   if ( do_dslash ) { 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
-  for(int isign=1; isign >= -1; isign -=2) {
-    for(int cb=0; cb < 2; cb++) { 
-      int source_cb = 1 - cb;
-      int target_cb = cb;
-      masterPrintf("Timing on cb=%d isign=%d\n", cb, isign);
-      masterPrintf("=============================\n");
-      
-      for(int repeat=0; repeat < 3; repeat++) { 
-	double start = omp_get_wtime();
-	
-	for(int i=0; i < iters; i++) {
-	  // Apply Optimized Dslash
-	  D32.dslash(chi_s[target_cb],	
-		     psi_s[source_cb],
-		     u_packed[target_cb],
-		     isign, 
-		     target_cb);
-	}
-	
-	double end = omp_get_wtime();
-	double time = end - start;
-	CommsUtils::sumDouble(&time);
-	time /= (double)CommsUtils::numNodes();
+	  for(int isign=1; isign >= -1; isign -=2) {
+		  for(int cb=0; cb < 2; cb++) {
+			  int source_cb = 1 - cb;
+			  int target_cb = cb;
+			  masterPrintf("Dslash Timing on cb=%d isign=%d\n", cb, isign);
+			  masterPrintf("===============================\n");
 
-	masterPrintf("\t timing %d of 3\n", repeat);
-	masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-	masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
-	double Gflops = 1320.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
-	double perf = Gflops/time;
-	masterPrintf("\t Performance: %g GFLOPS total\n", perf);
-      }
-    }
-  }
+			  for(int repeat=0; repeat < 3; repeat++) {
+				  double start = omp_get_wtime();
+
+				  for(int i=0; i < iters; i++) {
+					  // Apply Optimized Dslash
+					  D32.dslash(chi_s[target_cb],
+							  psi_s[source_cb],
+							  u_packed[target_cb],
+							  isign,
+							  target_cb);
+				  }
+
+				  double end = omp_get_wtime();
+				  double time = end - start;
+				  CommsUtils::sumDouble(&time);
+				  time /= (double)CommsUtils::numNodes();
+
+				  masterPrintf("\t timing %d of 3\n", repeat);
+				  masterPrintf("\t %d iterations in %e seconds\n", iters, time);
+				  masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
+				  double Gflops = 1320.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+				  double perf = Gflops/time;
+				  masterPrintf("\t Performance: %g GFLOPS total\n", perf);
+			  }
+		  }
+	  }
+
+	  double mass = (4.0+0.02);
+	  double beta = 1.0/mass;
+	  // Go through the test cases -- apply SSE dslash versus, QDP Dslash
+	 	  for(int isign=1; isign >= -1; isign -=2) {
+	 		  for(int cb=0; cb < 2; cb++) {
+	 			  int source_cb = 1 - cb;
+	 			  int target_cb = cb;
+	 			  masterPrintf("AChiMinusBDPsi Timing on cb=%d isign=%d\n", cb, isign);
+	 			  masterPrintf("=======================================\n");
+
+	 			  for(int repeat=0; repeat < 3; repeat++) {
+	 				  double start = omp_get_wtime();
+
+	 				  for(int i=0; i < iters; i++) {
+	 					  // Apply Optimized Dslash
+	 					  D32.dslashAChiMinusBDPsi(chi_s[target_cb],
+	 							  psi_s[source_cb],
+								  chi_s[source_cb],
+								  u_packed[target_cb],
+								  mass,
+								  beta,
+								  isign,
+								  target_cb
+								  );
+
+	 				  }
+
+	 				  double end = omp_get_wtime();
+	 				  double time = end - start;
+	 				  CommsUtils::sumDouble(&time);
+	 				  time /= (double)CommsUtils::numNodes();
+
+	 				  masterPrintf("\t timing %d of 3\n", repeat);
+	 				  masterPrintf("\t %d iterations in %e seconds\n", iters, time);
+	 				  masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
+	 				  double Gflops = ((3.0f*24.0f) + 1320.0f)*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+	 				  double perf = Gflops/time;
+	 				  masterPrintf("\t Performance: %g GFLOPS total\n", perf);
+	 			  }
+	 		  }
+	 	  }
  }
 
 
