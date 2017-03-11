@@ -5,6 +5,7 @@
 #include "qphix/print_utils.h"
 
 #include <cstdlib>
+#include <stdexcept>
 #include <iostream>
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
@@ -137,6 +138,12 @@ namespace QPhiX {
 			Nz_ = latt_size[2];
 			Nt_ = latt_size[3];
 			Nxh_ = Nx_/2;
+
+      // Ensure that blocking is possible.
+      if (Ny_ % By_ != 0 || Nz_ % Bz_ != 0) {
+        throw std::domain_error("Local lattice size Ny must be divisible by "
+                                "blocking length By. Same for Nz and Bz.");
+      }
       
 			nvecs_ = Nxh()/ S;
 			if (Nxh()% S != 0) nvecs_++;
