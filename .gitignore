@@ -61,3 +61,9 @@ tests/time_dslash_noqdp
 doc
 include4git
 lib4git
+autom4te.cache*
+aclocal.m4
+
+doc
+.deps
+stamp-h1
