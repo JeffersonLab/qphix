@@ -50,3 +50,7 @@ Thumbs.db
 ######################
 autom4te.cache*
 aclocal.m4
+
+doc
+.deps
+stamp-h1
