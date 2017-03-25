@@ -5,6 +5,7 @@
 #include "qphix/print_utils.h"
 
 #include <cstdlib>
+#include <stdexcept>
 #include <iostream>
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
