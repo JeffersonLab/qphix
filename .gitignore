@@ -67,3 +67,11 @@ aclocal.m4
 doc
 .deps
 stamp-h1
+
+config/compile
+config/config.guess
+config/config.sub
+config/depcomp
+config/install-sh
+config/missing
+INSTALL
