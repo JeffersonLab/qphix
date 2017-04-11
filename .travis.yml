@@ -4,3 +4,6 @@ language: cpp
 script: ./travis-ci.sh
 dist: trusty
 sudo: true
+
+notifications:
+  slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
