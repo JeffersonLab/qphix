@@ -4,8 +4,16 @@
 # Generates the code for a given ISA and then copies the generated code to the
 # QPhiX repository.
 
-if (( $# == 0 )); then
-    echo "Call it like this: $0 ISA"
+if (( $# != 2 )); then
+    cat <<EOF
+This program does all the work when generating kernels for QPhiX. 
+
+Call it like this: $0 ISA QPHIX-DIRECTORY
+
+- ISA is something like “avx” or “avx512”.
+
+- DIRECTORY is the base of the directory where the qphix repo is located.
+EOF
     exit 1
 fi
 
@@ -14,7 +22,7 @@ set -u
 set -x
 
 isa="$1"
-qphix="../qphix"
+qphix="$2"
 
 if ! [[ -d "$qphix/.git" ]]; then
     echo "The QPhiX Git repository could not be found at $qphix. Please make sure it is there or change the variable in this script."
@@ -30,9 +38,7 @@ pushd jinja
 popd
 
 # Copy the kernel files to QPhiX.
-mkdir -p "$qphix/include/qphix/$isa/generated"
-cp "$isa/"* "$qphix/include/qphix/$isa/generated/"
+cp -r "generated/$isa" "$qphix/include/qphix/$isa"
 
 # Copy the specialization files to QPhiX.
-cp "jinja/$isa/"* "$qphix/include/qphix/$isa/"
-cp "jinja/"*.h "$qphix/include/qphix/"
+cp "generated/"*.h "$qphix/include/qphix/"
