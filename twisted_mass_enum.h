@@ -26,6 +26,6 @@ enum class TwistedMassVariant {
 std::map<TwistedMassVariant const, std::string const> const
     twisted_mass_prefixes = {
         {TwistedMassVariant::none, std::string("")},
-        {TwistedMassVariant::degenerate, std::string("tmf_")},
+        {TwistedMassVariant::degenerate, std::string("tm_")},
         {TwistedMassVariant::non_degenerate, std::string("ndtm_")},
 };

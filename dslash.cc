@@ -414,7 +414,7 @@ void generate_code(void)
                         InstVector l2prefs;
                         std::ostringstream filename;
 
-                        std::string tmf_prefix =
+                        std::string tm_prefix =
                             twisted_mass_prefixes.at(twisted_mass);
                         std::string clov_prefix =
                             clover ? "clov_" + CloverTypeName + "_" : "";
@@ -424,14 +424,14 @@ void generate_code(void)
                             (kernel == "dslash_achimbdpsi") ? true : false;
 
                         filename
-                            << "generated/" << ARCH_NAME << "/generated/" << tmf_prefix
+                            << "generated/" << ARCH_NAME << "/generated/" << tm_prefix
                             << clov_prefix << kernel << "_" << plusminus << "_"
                             << "body"
                             << "_" << SpinorTypeName << "_" << GaugeTypeName
                             << "_v" << VECLEN << "_s" << SOALEN << "_"
                             << num_components;
 
-                        cout << "GENERATING " << tmf_prefix << kernel << "_"
+                        cout << "GENERATING " << tm_prefix << kernel << "_"
                              << plusminus << "_"
                              << "vec body" << endl;
 
@@ -469,7 +469,7 @@ void generate_code(void)
                             InstVector l2prefs;
                             std::ostringstream filename;
 
-                            std::string tmf_prefix =
+                            std::string tm_prefix =
                                 twisted_mass_prefixes.at(twisted_mass);
                             std::string clov_prefix =
                                 clover ? "clov_" + CloverTypeName + "_" : "";
@@ -477,7 +477,7 @@ void generate_code(void)
                             int num_components = compress12 ? 12 : 18;
 
                             filename
-                                << "./" << ARCH_NAME << "/" << tmf_prefix
+                                << "./" << ARCH_NAME << "/" << tm_prefix
                                 << clov_prefix << "dslash_face_unpack_from_"
                                 << dirname[dir] << "_" << dimchar[dim] << "_"
                                 << plusminus << "_" << SpinorTypeName << "_"

@@ -271,8 +271,8 @@ list of kernels in `jinja/kernels.js`. This list looks like this:
 [
     "clov_%(fptype_underscore)sdslash",
     "dslash",
-    "tmf_clov_%(fptype_underscore)sdslash",
-    "tmf_dslash"
+    "tm_clov_%(fptype_underscore)sdslash",
+    "tm_dslash"
 ]
 ```
 
