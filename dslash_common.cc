@@ -1222,10 +1222,9 @@ void dslash_plain_body(InstVector &ivector, bool const compress12,
         } else if (twisted_mass == TwistedMassVariant::degenerate) {
             twisted_term(ivector, *outspinor, false, isPlus);
         } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-            twisted_term(ivector, *outspinor, false, isPlus);
             // TODO Here something new for the ND case has to be implemented.
             // Currently this is just copied from the degenerate case.
-            declare_full_clover(ivector);
+            twisted_term(ivector, *outspinor, false, isPlus);
         } else {
             unsupported_twisted_mass_variant();
         }
