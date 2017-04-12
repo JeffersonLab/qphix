@@ -10,9 +10,7 @@ include $(CONFFILE)
 # Check if the Intel C++ compiler is available. If not, use the default CXX of
 # the system.
 has_icpc = $(shell command -v icpc 2> /dev/null)
-ifeq (,$(has_icpc))
-    $(warning There is no `icpc` in the `PATH`. If you do want to use the Intel C++ compiler, abort here and make sure that there is an `icpc` command found, perhaps by loading some modules.)
-else
+ifneq (,$(has_icpc))
     CXX = icpc
 endif
 
