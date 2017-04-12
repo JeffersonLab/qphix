@@ -38,7 +38,8 @@ pushd jinja
 popd
 
 # Copy the kernel files to QPhiX.
-cp -r "generated/$isa" "$qphix/include/qphix/$isa"
+mkdir -p "$qphix/include/qphix/$isa"
+cp -r "generated/$isa" "$qphix/include/qphix/"
 
 # Copy the specialization files to QPhiX.
 cp "generated/"*.h "$qphix/include/qphix/"
