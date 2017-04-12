@@ -119,7 +119,7 @@ codegen: $(SOURCES) $(HEADERS) $(OBJECTS)
 cgen: mic avx avx2 avx512 sse scalar
 
 mic:
-	mkdir -p ./mic
+	mkdir -p generated/mic/generated
 	@make clean && $(MAKE) mode=mic PRECISION=2 SOALEN=8 && ./codegen
 	@make clean && $(MAKE) mode=mic PRECISION=2 SOALEN=4 && ./codegen
 	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=16 && ./codegen
@@ -130,7 +130,7 @@ mic:
 	@make clean && $(MAKE) mode=mic PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
 
 avx512:
-	mkdir -p ./avx512
+	mkdir -p generated/avx512/generated
 	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
 	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
 	make clean && $(MAKE) mode=mic AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
@@ -142,14 +142,14 @@ avx512:
 
 
 avx:
-	mkdir -p ./avx
+	mkdir -p generated/avx/generated
 	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=2 && ./codegen
 	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=4 && ./codegen
 	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=8 && ./codegen
 	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=4 && ./codegen
 
 avx2:
-	mkdir -p ./avx2
+	mkdir -p generated/avx2/generated
 	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=2 AVX2=1 && ./codegen
 	@make clean && $(MAKE) mode=avx PRECISION=2 SOALEN=4 AVX2=1 && ./codegen
 	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=8 AVX2=1 && ./codegen
@@ -158,12 +158,12 @@ avx2:
 	@make clean && $(MAKE) mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
 
 sse:
-	mkdir -p ./sse
+	mkdir -p generated/sse/generated
 	@make clean && $(MAKE) mode=sse PRECISION=2 && ./codegen
 	@make clean && $(MAKE) mode=sse PRECISION=1 && ./codegen
 
 scalar:
-	mkdir -p ./scalar
+	mkdir -p generated/scalar/generated
 	@make clean && $(MAKE) mode=scalar PRECISION=2 && ./codegen
 	@make clean && $(MAKE) mode=scalar PRECISION=1 && ./codegen
 
@@ -172,9 +172,4 @@ clean:
 
 cleanall: 
 	rm -rf *.o ./codegen
-	rm -rf ./avx 
-	rm -rf ./avx2
-	rm -rf ./avx512
-	rm -rf ./mic
-	rm -rf ./sse
-	rm -rf ./scalar
+	rm -rf generated

@@ -424,7 +424,7 @@ void generate_code(void)
                             (kernel == "dslash_achimbdpsi") ? true : false;
 
                         filename
-                            << "./" << ARCH_NAME << "/" << tmf_prefix
+                            << "generated/" << ARCH_NAME << "/generated/" << tmf_prefix
                             << clov_prefix << kernel << "_" << plusminus << "_"
                             << "body"
                             << "_" << SpinorTypeName << "_" << GaugeTypeName
