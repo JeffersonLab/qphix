@@ -14,7 +14,8 @@ import jinja2
 
 
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
-    generated_files = os.listdir(os.path.join('..', isa))
+    generated_files = os.listdir(os.path.join('..', 'generated', isa,
+                                              'generated'))
     files = []
     for fptype in fptypes:
         prefix = kernel_pattern % {'fptype_underscore': fptype + '_'}
@@ -55,7 +56,7 @@ def main():
             kernel=kernel,
             isas=sorted(isas.keys()),
         )
-        filename = '{}_generated.h'.format(kernel)
+        filename = '../generated/{}_generated.h'.format(kernel)
         with open(filename, 'w') as f:
             f.write(rendered)
 
@@ -63,14 +64,14 @@ def main():
         if len(options.isa) > 0 and not isa in options.isa:
             continue
 
-        if not os.path.isdir(os.path.join('..', isa)):
+        if not os.path.isdir(os.path.join('..', 'generated', isa)):
             print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
             continue
 
-        os.makedirs(isa, exist_ok=True)
+        os.makedirs(os.path.join('..', 'generated', isa), exist_ok=True)
 
         # Generate a `Makefile.am`.
-        generated_files = os.listdir(os.path.join('..', isa))
+        generated_files = os.listdir(os.path.join('..', 'generated', isa, 'generated'))
         generated_for_prefix = {}
         for kernel_pattern in kernel_patterns:
             prefix = kernel_pattern % {'fptype_underscore': ''}
@@ -84,7 +85,7 @@ def main():
                 for extra_include in isa_data['extra_includes_local']],
             generated_for_prefix=generated_for_prefix,
         )
-        filename = os.path.join(isa, 'Makefile.am')
+        filename = os.path.join('../generated', isa, 'Makefile.am')
         with open(filename, 'w') as f:
             f.write(rendered)
 
@@ -105,7 +106,7 @@ def main():
                 extra_includes_local=isa_data['extra_includes_local'],
                 extra_includes_global=isa_data['extra_includes_global'],
             )
-            filename = os.path.join(isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
+            filename = os.path.join('../generated', isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
             with open(filename, 'w') as f:
                 f.write(rendered)
 
