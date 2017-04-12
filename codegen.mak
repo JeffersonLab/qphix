@@ -120,3 +120,5 @@ $(buildroot)/%.o: %.cc $(headers) | $(buildroot)
 
 $(buildroot):
 	mkdir -p $@
+
+yyP0df=:s/ /_/g:s/=/_€kb-/gA:O
