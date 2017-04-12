@@ -28,6 +28,6 @@ sudo apt-get update
 
 sudo apt-get install -y python3-jinja2
 
-mkdir qphix-output
+mkdir -p qphix-output/.git
 
 ./generate-and-copy-to-qphix scalar qphix-output
