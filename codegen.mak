@@ -102,14 +102,21 @@ deflist += PRECISION
 DEFS += $(strip $(foreach var, $(yesnolist), $(if $(filter 1, $($(var))), -D$(var))))
 DEFS += $(strip $(foreach var, $(deflist), $(if $($(var)), -D$(var)=$($(var)))))
 
-SOURCES = codegen.cc data_types.cc dslash.cc dslash_common.cc inst_dp_vec8.cc inst_sp_vec16.cc inst_dp_vec4.cc inst_sp_vec8.cc inst_sp_vec4.cc inst_dp_vec2.cc inst_scalar.cc
-HEADERS = address_types.h  data_types.h  dslash.h  instructions.h Makefile $(CONFFILE)
+sources = codegen.cc data_types.cc dslash.cc dslash_common.cc inst_dp_vec8.cc inst_sp_vec16.cc inst_dp_vec4.cc inst_sp_vec8.cc inst_sp_vec4.cc inst_dp_vec2.cc inst_scalar.cc
+headers = address_types.h data_types.h dslash.h instructions.h Makefile $(CONFFILE)
 
-OBJECTS := $(SOURCES:.cc=.o)
+buildroot := build/codegen-precision$(PRECISION)-soalen$(SOALEN)-low$(ENABLE_LOW_PRECISION)
 
-codegen: $(SOURCES) $(HEADERS) $(OBJECTS)
+objects := $(sources:%.cc=$(buildroot)/%.o)
+
+$(buildroot)/codegen: $(sources) $(headers) $(objects) | $(buildroot)
 	@if [ "$(mode)" = sentinel ]; then echo 'Fatal error: You have neither specified a mode nor a target. Omitting the target compile the code generator, but that needs a `mode`. If you just want to generate code for some architecture (say avx2), then call `make avx2`.'; exit 1; fi
-	$(CXXHOST) $(DEFS) $(OBJECTS) -o $@
+	$(CXXHOST) $(DEFS) $(objects) -o $@
+	# Generate the kernels.
+	./$@
 
-%.o: %.cc $(HEADERS)
+$(buildroot)/%.o: %.cc $(headers) | $(buildroot)
 	$(CXXHOST) -c $(DEFS) $< -o $@
+
+$(buildroot):
+	mkdir -p $@
