@@ -14,3 +14,7 @@
 
 - **Mario Schroeck** – INFN, Rome 3, Italy, mario.schroeck AT roma3.infn.it for
   work on Twisted Mass fermions 
+
+- **Peter Labus**, SISSA and also University of Bonn
+
+- **Martin Ueding**, University of Bonn
