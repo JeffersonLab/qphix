@@ -26,7 +26,7 @@ set -x
 sudo apt-get update
 #sudo apt-get install -y gcc-4.9 g++-4.9
 
-sudo apt-get install -y python3-jinja
+sudo apt-get install -y python3-jinja2
 
 mkdir qphix-output
 
