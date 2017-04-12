@@ -38,10 +38,25 @@ Available targets are:
 | `sse`  | For SSE -- untested | Intel Pentium 4, Intel Core, Intel Xeon Nehalem |
 | `scalar` | C, scalar code (`SOALEN=1`) | |
 
+#### Kernels and Specialization Headers
+
+For maximum comfort, generate it with the `generate-and-copy-to-qphix` script.
+If the architecture is AVX2 and the QPhiX repository is at `../qphix`, call it
+like so:
+
+    ./generate-and-copy-to-qphix avx2 ../qphix
+
+It will generate all kernels for the architecture utilizing all cores in your
+machine. Then it will generate the specialization headers and copy everything
+into the right positions in the QPhiX repository. All you need to do is
+re-compile QPhiX and check the new kernels into Git.
+
+#### Just the Kernels
+
 Run the code with `make TARGET` this will build the code generator and generate
 the code for the target.  The target specific code will be placed in the
-subdirectory corresponding to the target (i.e. MIC code goes to `mic/`, AVX
-code goes to `avx/` etc).
+subdirectory corresponding to the target (i.e. MIC code goes to
+`generated/mic/`, AVX code goes to `generated/avx/` etc).
 
 To build for Intel Sandy Bridge and Intel Ivy Bridge processors, use the
 following:
@@ -50,8 +65,8 @@ following:
 
 The generated files will be dropped in the target directory, i.e.
 
-    ./mic
-    ./avx 
+    generated/mic
+    generated/avx 
  
 etc. which will be created in the root directory if they don't yet exist.
 
