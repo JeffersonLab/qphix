@@ -1,15 +1,4 @@
 *.o
-avx
-avx2
-avx512
 codegen
+generated
 html
-mic
-scalar
-sse
-jinja/clov_dslash_generated.h
-jinja/dslash_generated.h
-jinja/tmf_clov_dslash_generated.h
-jinja/tmf_dslash_generated.h
-jinja/ndtm_clov_dslash_generated.h
-jinja/ndtm_dslash_generated.h
