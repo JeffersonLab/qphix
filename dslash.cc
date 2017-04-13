@@ -361,7 +361,7 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     if(clover && !twisted_mass) clover_term(ivector, *outspinor, true);
 		else if(clover && twisted_mass) full_clover_term(ivector, *outspinor, true);
-    else if(!clover && twisted_mass) twisted_term(ivector, *outspinor, true, isPlus);
+    else if(!clover && twisted_mass) inverse_twisted_term(ivector, *outspinor, true, isPlus);
 		else if(!clover && !twisted_mass) {};
 
     // scatter it out
