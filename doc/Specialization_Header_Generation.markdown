@@ -138,6 +138,8 @@ before to generate the code. The most important feature are loops. Also it
 allows injection of additional variables from a Python script. All blocks with
 `{{ ... }}` and `{% ... %}` will be interpreted by the Jinja template library.
 
+\dotfile jinja-dependencies.dot
+
 ### Function declarations and definitions
 
 The large chunks of C++ code that contain the function declarations are now
