@@ -19,7 +19,7 @@ digraph {
     }
 
     {"generated/ISA/DSLASH_KERNEL_FPTYPE_FPTYPE_VECLEN_SOALEN_COMPRESS" [shape=box]}
-        -> "jinja/DSLASH_specialization.h.j2"
+        -> "jinja/DSLASH_specialization.h.j2" [style="dotted"]
 
     {
         "jinja/DSLASH_general.h.j2" [shape=box]
