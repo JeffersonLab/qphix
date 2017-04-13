@@ -38,7 +38,8 @@ void recons_add(InstVector& ivector, recons_ops& ops, FVec outspinor[4][3][2], s
 void zeroResult(InstVector& ivector, FVec *outspinor);
 void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
 void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
-void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask="");
+void twisted_term(InstVector& ivector, bool isPlus);
+void inverse_twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask="");
 //void achiResult(InstVector& ivector, bool clover);
 
 void achiResult(InstVector &ivector, bool const clover,
