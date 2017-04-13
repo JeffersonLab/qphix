@@ -127,10 +127,10 @@ inline void tm_dslash_achimbdpsi_plus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBaseChi,
     const FT alpha,
-    //		 const FT mu,
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const FT mu,
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // dslash_generated_c.h later
@@ -177,10 +177,10 @@ inline void tm_dslash_achimbdpsi_minus_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBaseChi,
     const FT alpha,
-    //		 const FT mu,
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const FT mu,
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // dslash_generated_c.h later
