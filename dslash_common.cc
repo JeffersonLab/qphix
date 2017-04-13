@@ -878,7 +878,7 @@ void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, s
     } // block
 }
 
-void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
+void inverse_twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
 {
   /**
 
@@ -993,6 +993,10 @@ void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool 
 
 }
 
+void twisted_term(InstVector& ivector, bool isPlus)
+{
+}
+
 #if 0
 void achiResult(InstVector& ivector, bool clover)
 {
@@ -1024,13 +1028,15 @@ void achiResult(InstVector& ivector, bool clover)
 }
 #endif
 
+// TODO: Eliminate concrete implementations and use this function as
+// a case switcher only
 void achiResult(InstVector &ivector, bool const clover,
                 TwistedMassVariant const twisted_mass, bool const isPlus)
 {
     PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
 
-    // CLOVER W/ OR W/O TWISTED MASS
-    if (clover) {
+    if (clover) { // CLOVER [with or without twisted-mass]
+        // Load all relevant elements of the chi input spinor
         for (int col = 0; col < 3; col++) {
             for (int spin = 0; spin < 4; spin++) {
                 LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase,
@@ -1054,8 +1060,7 @@ void achiResult(InstVector &ivector, bool const clover,
         } else {
             unsupported_twisted_mass_variant();
         }
-    } else {
-        // No clover.
+    } else { // NO CLOVER
         if (twisted_mass == TwistedMassVariant::none) {
             for (int col = 0; col < 3; col++) {
                 for (int spin = 0; spin < 4; spin++) {
@@ -1070,85 +1075,16 @@ void achiResult(InstVector &ivector, bool const clover,
                 }
             }
         } else if (twisted_mass == TwistedMassVariant::degenerate) {
-            for (int col = 0; col < 3; col++) {
-                for (int spin = 0; spin < 2; spin++) {
-                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
-                                      col, RE, false, "");
-                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
-                                      col, IM, false, "");
-                    if (isPlus) {
-                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
-                                   alpha_vec, tmp_1_im, tmp_1_re, "");
-                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
-                                  tmp_1_re, tmp_1_im, "");
-                    } else {
-                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
-                                  tmp_1_im, tmp_1_re, "");
-                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
-                                   alpha_vec, tmp_1_re, tmp_1_im, "");
-                    }
-                }
-
-                for (int spin = 2; spin < 4; spin++) {
-                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
-                                      col, RE, false, "");
-                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
-                                      col, IM, false, "");
-
-                    if (isPlus) {
-                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
-                                  tmp_1_im, tmp_1_re, "");
-                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
-                                   alpha_vec, tmp_1_re, tmp_1_im, "");
-                    } else {
-                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
-                                   alpha_vec, tmp_1_im, tmp_1_re, "");
-                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
-                                  tmp_1_re, tmp_1_im, "");
-                    }
-                }
-            }
+            // Loads spinor elements from chiBase, multiplies with A
+            // for pure twisted mass and stores result in out_spinor
+            twisted_term(ivector, isPlus);
         } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
             // TODO Here something new for the ND case has to be implemented.
             // Currently this is just copied from the degenerate case.
-            for (int col = 0; col < 3; col++) {
-                for (int spin = 0; spin < 2; spin++) {
-                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
-                                      col, RE, false, "");
-                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
-                                      col, IM, false, "");
-                    if (isPlus) {
-                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
-                                   alpha_vec, tmp_1_im, tmp_1_re, "");
-                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
-                                  tmp_1_re, tmp_1_im, "");
-                    } else {
-                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
-                                  tmp_1_im, tmp_1_re, "");
-                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
-                                   alpha_vec, tmp_1_re, tmp_1_im, "");
-                    }
-                }
 
-                for (int spin = 2; spin < 4; spin++) {
-                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
-                                      col, RE, false, "");
-                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
-                                      col, IM, false, "");
-
-                    if (isPlus) {
-                        fmaddFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
-                                  tmp_1_im, tmp_1_re, "");
-                        fnmaddFVec(ivector, out_spinor[spin][col][IM],
-                                   alpha_vec, tmp_1_re, tmp_1_im, "");
-                    } else {
-                        fnmaddFVec(ivector, out_spinor[spin][col][RE],
-                                   alpha_vec, tmp_1_im, tmp_1_re, "");
-                        fmaddFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
-                                  tmp_1_re, tmp_1_im, "");
-                    }
-                }
-            }
+            // Loads spinor elements from chiBase, multiplies with A
+            // for pure twisted mass and stores result in out_spinor
+            twisted_term(ivector, isPlus);
         } else {
             unsupported_twisted_mass_variant();
         }
@@ -1270,11 +1206,11 @@ void dslash_plain_body(InstVector &ivector, bool const compress12,
         if (twisted_mass == TwistedMassVariant::none) {
             // Nothing to do.
         } else if (twisted_mass == TwistedMassVariant::degenerate) {
-            twisted_term(ivector, *outspinor, false, isPlus);
+            inverse_twisted_term(ivector, *outspinor, false, isPlus);
         } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
             // TODO Here something new for the ND case has to be implemented.
             // Currently this is just copied from the degenerate case.
-            twisted_term(ivector, *outspinor, false, isPlus);
+            inverse_twisted_term(ivector, *outspinor, false, isPlus);
         } else {
             unsupported_twisted_mass_variant();
         }
