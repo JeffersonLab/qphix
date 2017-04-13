@@ -993,8 +993,116 @@ void inverse_twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool fac
 
 }
 
+// TODO: REFACTOR: This function does the same as the hermitian
+// conjugate of inverse_twisted_term, where mu_inv is replaced by alpha.
 void twisted_term(InstVector& ivector, bool isPlus)
 {
+  /**
+
+    This routine generates the result spinor of the matrix multiplication
+
+      out_spinor = A \chi
+
+    for a tile of sites (which is of size of a SIMD vector). A denotes the
+    sum of the Wilson mass and the twisted mass term:
+
+      A = ( \alpha 1I + i \mu \gamma_5 ) 1I^{color} .
+
+    Here, \mu is the twisted mass and \alpha = 4 + M_0, the Wilson mass term.
+    Note that the TMDlash member function will pass the following parameters:
+
+      alpha <---| \alpha
+      beta  <---| \beta  [not needed here]
+      mu    <---| \mu / \alpha
+
+    This allows to write the matrix multiplication as a fused multiply add, and
+    a rescaling with mu_inv:
+
+     spin 0, 1:
+     ----------
+      Re out_spinor = alpha * ( Re \chi - mu * Im \chi )
+      Im out_spinor = alpha * ( mu * Re \chi + Im \chi )
+
+     spin 2, 3:
+     ----------
+      Re out_spinor = alpha * ( Re \chi + mu * Im \chi )
+      Im out_spinor = alpha * ( - mu * Re \chi + Im \chi )
+
+    For the hermitian-conjugate multiplication (isPlus==false) the case for
+    spins 0, 1 is interchanged with the case for spins 2, 3.
+
+
+    Input:
+      \chi read from the \chi spinor field passed to the kernel routine
+
+    Output:
+      out_spinor[spin][color][RE/IM]
+
+   */
+
+  // Declare vector variable mu and set it to the scalar value passed to the kernel.
+  // The variable alpha_vec has already been declared in dslash_achimbdpsi_body
+  declareFVecFromFVec(ivector, mu_vec);
+  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);
+
+  // Load all relevant elements of the chi input spinor
+  for (int col = 0; col < 3; col++) {
+    for (int spin = 0; spin < 4; spin++) {
+      LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase,
+                                  chiOffs, spin, col, RE, false, "");
+      LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase,
+                                  chiOffs, spin, col, IM, false, "");
+    }
+  }
+
+  // Carry out the matrix multiplication in two steps using
+  // the buffers tmp_1_re and tmp_1_im, and storing the final
+  // result in out_spinor
+  for(int col = 0; col < 3; col++)
+  {
+    // Upper half spinor
+    for(int spin = 0; spin < 2; spin++)
+    {
+      FVec *in  = chi_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+      else { // hermitian-conjugate case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+
+      // rescaling with alpha
+      mulFVec(ivector, out[RE], alpha_vec, tmp_1_re);
+      mulFVec(ivector, out[IM], alpha_vec, tmp_1_im);
+    }
+
+    // Lower half spinor
+    for(int spin = 2; spin < 4; spin++)
+    {
+      FVec *in  = chi_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+      	fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+      	fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+      else { // hermitian-conjugate case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+
+      // rescaling with alpha
+      mulFVec(ivector, out[RE], alpha_vec, tmp_1_re);
+      mulFVec(ivector, out[IM], alpha_vec, tmp_1_im);
+    }
+  } // color
+
 }
 
 #if 0
