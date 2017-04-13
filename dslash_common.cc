@@ -880,66 +880,116 @@ void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, s
 
 void twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
 {
+  /**
+
+    This routine generates the result spinor of the matrix multiplication
+
+      \chi = A^{-1} \psi
+
+    for a tile of sites (which is of size of a SIMD vector). A denotes the
+    sum of the Wilson mass and the twisted mass term. Its inverse is given by
+
+               \alpha 1I - i \mu \gamma_5
+      A^{-1} = --------------------------- 1I^{color} .
+                    \alpha^2 + \mu^2
+
+    Here, \mu is the twisted mass and \alpha = 4 + M_0, the Wilson mass term.
+    Note that the TMDlash member function will pass the following parameters:
+
+      mu     <---| \mu / \alpha
+      mu_inv <---| \alpha / (\alpha^2 + \mu^2)
+
+    This allows to write the matrix multiplication as a fused multiply add, and
+    a rescaling with mu_inv:
+
+     spin 0, 1:
+     ----------
+      Re \chi = mu_inv * ( Re \psi + mu * Im \psi )
+      Im \chi = mu_inv * ( - mu * Re \psi + Im \psi )
+
+     spin 2, 3:
+     ----------
+      Re \chi = mu_inv * ( Re \psi - mu * Im \psi )
+      Im \chi = mu_inv * ( mu * Re \psi + Im \psi )
+
+    For the hermitian-conjugate multiplication (isPlus==false) the case for
+    spins 0, 1 is interchanged with the case for spins 2, 3.
+
+
+    Input:
+      \psi = in_spinor[spin][color][RE/IM]
+
+    Output:
+      \chi = out_spinor[spin][color][RE/IM]
+
+   */
+
   bool acc = face;
 
+  // Declare vector variables and set them to the scalar value passed to the kernel
   declareFVecFromFVec(ivector, mu_vec);
-  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);//SpinorType -> data_types.h (use load instruction)
-
   declareFVecFromFVec(ivector, mu_inv_vec);
-  loadBroadcastScalar(ivector, mu_inv_vec, mu_inv_name, SpinorType);//SpinorType -> data_types.h (use load instruction)
+  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);
+  loadBroadcastScalar(ivector, mu_inv_vec, mu_inv_name, SpinorType);
 
   for(int col = 0; col < 3; col++)
   {
+
+    // Upper half spinor
     for(int spin = 0; spin < 2; spin++)
     {
-      FVec *sp = in_spinor[spin][col];
-      FVec *tmout = out_spinor[spin][col];
+      FVec *in = in_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
 
-      if(isPlus){
-        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
-        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
       }
-      else{
-        fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
-        fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
+      else { // hermitian-conjugate case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
       }
 
-      /*multiply by mu_inv_vec:*/
-      if( acc ) {
-        fmaddFVec( ivector, tmout[RE], mu_inv_vec, tmp_1_re, tmout[RE], _mask);
-        fmaddFVec( ivector, tmout[IM], mu_inv_vec, tmp_1_im, tmout[IM], _mask);
+      // rescaling with mu_inv
+      if(acc) { // face processing
+        fmaddFVec(ivector, out[RE], mu_inv_vec, tmp_1_re, out[RE], _mask);
+        fmaddFVec(ivector, out[IM], mu_inv_vec, tmp_1_im, out[IM], _mask);
       }
-      else {
-        mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, _mask);
-        mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, _mask);
+      else { // body processing
+        mulFVec(ivector, in[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, in[IM], mu_inv_vec, tmp_1_im, _mask);
       }
     }
 
+    // Lower half spinor
     for(int spin = 2; spin < 4; spin++)
     {
-      FVec *sp = in_spinor[spin][col];
-      FVec *tmout = out_spinor[spin][col];
+      FVec *in = in_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
 
-      if(isPlus){
-      	fnmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
-      	fmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+      	fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+      	fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
       }
-      else{
-        fmaddFVec(ivector, tmp_1_re, mu_vec, sp[IM], sp[RE], _mask);
-        fnmaddFVec(ivector, tmp_1_im, mu_vec, sp[RE], sp[IM], _mask);
+      else { // hermitian-conjugate case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
       }
 
-      /*multiply by mu_inv_vec:*/
-      if( acc ) {
-        fmaddFVec( ivector, tmout[RE], mu_inv_vec, tmp_1_re, tmout[RE], _mask);
-        fmaddFVec( ivector, tmout[IM], mu_inv_vec, tmp_1_im, tmout[IM], _mask);
+      // rescaling with mu_inv
+      if(acc) { // face processing
+        fmaddFVec(ivector, out[RE], mu_inv_vec, tmp_1_re, out[RE], _mask);
+        fmaddFVec(ivector, out[IM], mu_inv_vec, tmp_1_im, out[IM], _mask);
       }
-      else {
-        mulFVec(ivector, sp[RE], mu_inv_vec, tmp_1_re, _mask);
-        mulFVec(ivector, sp[IM], mu_inv_vec, tmp_1_im, _mask);
+      else { // body processing
+        mulFVec(ivector, in[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, in[IM], mu_inv_vec, tmp_1_im, _mask);
       }
     }
-  }
+
+  } // color
 
 }
 
