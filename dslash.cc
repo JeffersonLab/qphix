@@ -477,7 +477,7 @@ void generate_code(void)
                             int num_components = compress12 ? 12 : 18;
 
                             filename
-                                << "./" << ARCH_NAME << "/" << tm_prefix
+                                << "generated/" << ARCH_NAME << "/generated/" << tm_prefix
                                 << clov_prefix << "dslash_face_unpack_from_"
                                 << dirname[dir] << "_" << dimchar[dim] << "_"
                                 << plusminus << "_" << SpinorTypeName << "_"
@@ -515,7 +515,7 @@ void generate_code(void)
 
                 string plusminus = isPlus ? "plus" : "minus";
 
-                filename << "./" << ARCH_NAME << "/dslash_face_pack_to_"
+                filename << "generated/" << ARCH_NAME << "/generated/" << "/dslash_face_pack_to_"
                          << dirname[dir] << "_" << dimchar[dim] << "_"
                          << plusminus << "_" << SpinorTypeName << "_"
                          << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
