@@ -515,7 +515,7 @@ void generate_code(void)
 
                 string plusminus = isPlus ? "plus" : "minus";
 
-                filename << "generated/" << ARCH_NAME << "/generated/" << "/dslash_face_pack_to_"
+                filename << "generated/" << ARCH_NAME << "/generated/" << "dslash_face_pack_to_"
                          << dirname[dir] << "_" << dimchar[dim] << "_"
                          << plusminus << "_" << SpinorTypeName << "_"
                          << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
