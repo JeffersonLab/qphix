@@ -104,28 +104,25 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
   masterPrintf("Initializing TMDslash\n");
 
-  double t_boundary=(FT)(1);
-  double coeff_s = (FT)(1);
-  double coeff_t = (FT)(1);
+  const double t_boundary = 1.0;
+  const double coeff_s    = 1.0;
+  const double coeff_t    = 1.0;
   
-  double Mass    = 0.1;
-  double Mu_     = ((double)0.01);
-  bool mu_plus = true;
+  const double Mass        = 0.1;
+  const double TwistedMass = 0.1;
 
-
-  double Mu = -2.0*Mu_* (mu_plus ? +1.0 : -1.0) * (0.25)/ (4.0+Mass); //dangerous: mu_sign must be an enum type
-  double MuInv = 1.0 / (1.0+Mu*Mu);
+  const double alpha = 4.0 + Mass;
+  const double beta = 0.25;
+  const double Mu = TwistedMass / alpha;
+  const double MuInv = alpha / ( alpha*alpha + TwistedMass*TwistedMass );
 
   // Create Scalar Dslash Class
   Geometry<FT,V,S,compress> geom(subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
-  
-  TMDslash<FT,V,S,compress> D32(&geom, t_boundary, coeff_s,coeff_t);
-  
+  TMDslash<FT,V,S,compress> D32(&geom, t_boundary, coeff_s, coeff_t, Mass, TwistedMass);
   
   // Allocate data for the gauges
   Gauge* packed_gauge_cb0 = (Gauge*)geom.allocCBGauge();
   Gauge* packed_gauge_cb1 = (Gauge*)geom.allocCBGauge();
-  
   
   Gauge* u_packed[2];
   u_packed[0] = packed_gauge_cb0;
@@ -407,13 +404,12 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 	double start = omp_get_wtime();
 	
 	for(int i=0; i < iters; i++) {
-	  // Apply Optimized Dslash
-	  D32.tmdslash(chi_s[target_cb],
-		     psi_s[source_cb],
-		     u_packed[target_cb],
-		     Mu, MuInv,
-		     isign, 
-		     target_cb);
+    // Apply Optimized Dslash
+    D32.dslash(chi_s[target_cb],
+        psi_s[source_cb],
+        u_packed[target_cb],
+        isign, 
+        target_cb);
 	}
 	
 	double end = omp_get_wtime();
@@ -436,7 +432,7 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1
   masterPrintf("Creating Twisted Mass Wilson Op\n");
 //  double Mass=0.1;
-  EvenOddTMWilsonOperator<FT, V, S,compress> M(Mass, Mu_, u_packed, &geom, t_boundary, coeff_s, coeff_t, mu_plus);
+  EvenOddTMWilsonOperator<FT, V, S,compress> M(Mass, TwistedMass, u_packed, &geom, t_boundary, coeff_s, coeff_t);
 
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash 
   for(int isign=1; isign >= -1; isign -=2) {
@@ -448,10 +444,10 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       double start = omp_get_wtime();
       
       for(int i=0; i < iters; i++) {
-	// Apply Optimized Dslash
-	M(chi_s[0],	
-	  psi_s[0],
-	  isign);
+        // Apply Optimized Dslash
+        M(chi_s[0],	
+            psi_s[0],
+            isign);
       }
       
       double end = omp_get_wtime();

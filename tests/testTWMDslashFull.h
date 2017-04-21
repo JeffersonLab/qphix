@@ -126,7 +126,7 @@ public:
     void testTWMRichardson(const U& u, int t_bc);
 
   template<typename QDPSpinor>
-    void applyTwist(QDPSpinor& psi, double Mu, int isign, int target_cb );
+    void applyTwist(QDPSpinor& psi, double Mu, double Alpha, int isign, int target_cb );
 
   template<typename QDPSpinor>
     void applyInvTwist(QDPSpinor& psi, double Mu, double MuInv, int isign, int target_cb );

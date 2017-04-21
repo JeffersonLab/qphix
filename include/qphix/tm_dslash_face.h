@@ -163,8 +163,6 @@ namespace QPhiX {
 						FourSpinorBlock* res,
 						const SU3MatrixBlock* u,
 						const double beta,
-						double mu,
-						double mu_inv,
 						int cb, int dir, int fb, int isPlus)
   {
     // This is the total number of veclen in the face. 
@@ -312,9 +310,9 @@ namespace QPhiX {
 		FT beta_T = rep<FT,double>(beta);
 	  	
 	  if(isPlus)
-      tm_face_finish_dir_plus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mu, mu_inv, mask, dir*2+fb );
+      tm_face_finish_dir_plus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, derived_mu, derived_mu_inv, mask, dir*2+fb );
 	  else
-      tm_face_finish_dir_minus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mu, mu_inv, mask, dir*2+fb );
+      tm_face_finish_dir_minus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, derived_mu, derived_mu_inv, mask, dir*2+fb );
     }
   } // Function
 

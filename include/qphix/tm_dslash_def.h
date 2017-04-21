@@ -7,35 +7,32 @@
 
 namespace QPhiX
 {
-
-  /* Specialize - Dslash of float */
-  template<typename FT, int veclen, int soalen, bool compress12>  /* The teplate is the floating point type */
+  template<typename FT, int veclen, int soalen, bool compress12>
   class TMDslash {
+
   public:
-    // Pack gauges... 
+
     typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock  SU3MatrixBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
     typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock TwoSpinorBlock;
     
-
     TMDslash(Geometry<FT,veclen, soalen,compress12>* geom_,
 	   double t_boundary_,
 	   double aniso_coeff_S_,
-	   double aniso_coeff_T_);
+            double aniso_coeff_T_,
+            double Mass_,
+            double TwistedMass_);
 
-    /* Destructor */
     ~TMDslash();
     
     /* Apply the operator */
-    void tmdslash(FourSpinorBlock* res, 
+        void dslash(FourSpinorBlock* res,
 		  const FourSpinorBlock* psi, 
 		  const SU3MatrixBlock* u,
-                  double mu,
-                  double mu_inv, 
 		  int isign,
 		  int cb);
     
-    void tmdslashAChiMinusBDPsi (FourSpinorBlock* res, 
+        void dslashAChiMinusBDPsi(FourSpinorBlock* res,
 			         const FourSpinorBlock* psi, 
 			         const FourSpinorBlock* chi,
 			         const SU3MatrixBlock* u,
@@ -45,17 +42,17 @@ namespace QPhiX
 			         int isign,
 			         int cb);
 
+        Geometry<FT, veclen, soalen, compress12>& getGeometry(void) { return (*s); }
 
 
-    Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
   private:
+
     Geometry<FT,veclen,soalen,compress12>* s;
     Comms<FT,veclen,soalen,compress12>* comms;
 
     int log2veclen;
     int log2soalen;
     void init();
-
 
     const  int n_threads_per_core;
 
@@ -77,6 +74,13 @@ namespace QPhiX
     double aniso_coeff_S;
     double aniso_coeff_T;
 
+        // Wilson & Twisted Mass Parameters
+        double Mass;
+        double TwistedMass;
+
+        // Derived Twisted Mass Parameters
+        double derived_mu;     // = \mu / \alpha
+        double derived_mu_inv; // = \alpha / ( \mu^2 + \alpha^2 )
 
     Barrier* gBar;
     Barrier*** barriers;
@@ -90,24 +94,19 @@ namespace QPhiX
     unsigned int ybmask_y0;
     unsigned int yfmask_yn;
     
-    // Hide Free Constructor 
-    TMDslash();
+        TMDslash(); // Hide Free Constructor
+
     void TMDyzPlus(int tid,
 		 const FourSpinorBlock* psi, 
 		 FourSpinorBlock* res,
 		 const SU3MatrixBlock* u, 
-		 double mu,
-		 double mu_inv,
 		 int cb);
 
     void TMDyzMinus(int tid,
 		  const FourSpinorBlock* psi, 
 		  FourSpinorBlock* res,
 		  const SU3MatrixBlock* u,
-		  double mu,
-		  double mu_inv,
  		  int cb);
-
 
     void TMDyzPlusAChiMinusBDPsi(int tid,
 			       const FourSpinorBlock* psi, 
@@ -116,9 +115,7 @@ namespace QPhiX
 			       const SU3MatrixBlock* u, 
 			       double alpha, 
 			       double beta,
-//			       double mu,
 			       int cb);
-
 
     void TMDyzMinusAChiMinusBDPsi(int tid,
 				const FourSpinorBlock* psi, 
@@ -127,37 +124,33 @@ namespace QPhiX
 				const SU3MatrixBlock* u, 
 				double alpha, 
 				double  beta,
-//                                double mu,
 				int cb);
 
+        void TMDPsiPlus(const SU3MatrixBlock *u,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            int cb);
 
-
-
-    void TMDPsiPlus(const SU3MatrixBlock *u, const FourSpinorBlock *psi_in, FourSpinorBlock *res_out, double mu, double mu_inv, int cb);
-
-
-    void TMDPsiMinus(const SU3MatrixBlock *u, const FourSpinorBlock *psi_in, FourSpinorBlock *res_out, double mu, double mu_inv, int cb);
-
-
+        void TMDPsiMinus(const SU3MatrixBlock *u,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            int cb);
 
     void TMDPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u, 
 				const FourSpinorBlock *psi_in, 
 				const FourSpinorBlock *chi, 
 				FourSpinorBlock *res_out, 
-				double alpha, double beta,
-//                                double mu,
+            double alpha,
+            double beta,
 				int cb);
-
 
     void TMDPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u, 
 				 const FourSpinorBlock *psi_in, 
 				 const FourSpinorBlock *chi, 
 				 FourSpinorBlock *re_out, 
-				 double alpha, double beta, 
-//                                 double mu,
+            double alpha,
+            double beta,
 				 int cb);
-
-
 
 //packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS
@@ -173,8 +166,6 @@ namespace QPhiX
 			 FourSpinorBlock* res,
 			 const SU3MatrixBlock* u,
 			 const double beta,
-			 double mu,
-			 double mu_inv,
 			 int cb, int dir, int fb, int isPlus);
 
     //  RECEIVE AND COMPLETE FACE
@@ -185,9 +176,6 @@ namespace QPhiX
 				   const double beta ,
 				   int cb, int dir, int fb, int isPlus);
 #endif
-
-
-
   }; // Class
 
 

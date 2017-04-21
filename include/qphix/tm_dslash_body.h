@@ -276,12 +276,32 @@ namespace QPhiX
 
 
   template<typename FT, int veclen, int soalen, bool compress12>
-    TMDslash<FT, veclen, soalen, compress12>::TMDslash(Geometry<FT,veclen, soalen,compress12>* geom_,
+    TMDslash<FT, veclen, soalen, compress12>::TMDslash(
+        Geometry<FT,veclen, soalen,compress12>* geom_,
 						   double t_boundary_,
 						   double aniso_coeff_S_,
-						   double aniso_coeff_T_) : s(geom_), comms(new Comms<FT,veclen,soalen,compress12>(geom_)), By(geom_->getBy()),
-    Bz(geom_->getBz()), NCores(geom_->getNumCores()), Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()), 
-    PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()), n_threads_per_core(geom_->getSy()*geom_->getSz()), t_boundary(t_boundary_), aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
+        double aniso_coeff_T_,
+        double Mass_,
+        double TwistedMass_)
+    :
+      s(geom_),
+      comms(new Comms<FT,veclen,soalen,compress12>(geom_)),
+      By(geom_->getBy()),
+      Bz(geom_->getBz()),
+      NCores(geom_->getNumCores()),
+      Sy(geom_->getSy()),
+      Sz(geom_->getSz()),
+      PadXY(geom_->getPadXY()),
+      PadXYZ(geom_->getPadXYZ()),
+      MinCt(geom_->getMinCt()),
+      n_threads_per_core(geom_->getSy()*geom_->getSz()),
+      t_boundary(t_boundary_),
+      aniso_coeff_S(aniso_coeff_S_),
+      aniso_coeff_T(aniso_coeff_T_),
+      Mass(Mass_),
+      TwistedMass(TwistedMass_),
+      derived_mu( TwistedMass / (4.0+Mass) ),
+      derived_mu_inv( (4.0+Mass) / (TwistedMass*TwistedMass + (4.0+Mass)*(4.0+Mass)) )
   {
     init();
   }
@@ -320,21 +340,19 @@ namespace QPhiX
  
   // The operator() that the user sees
   template<typename FT, int veclen, int soalen, bool compress12>
-  void TMDslash<FT,veclen, soalen, compress12>::tmdslash(FourSpinorBlock* res, 
+    void TMDslash<FT,veclen, soalen, compress12>::dslash(FourSpinorBlock* res,
 						     const FourSpinorBlock* psi, 
 						     const SU3MatrixBlock* u, /* Gauge field suitably packed */
-                                                     double mu,
-                                                     double mu_inv,
 						     int isign,
 						     int cb) 
   {
     // Call the service functions
     if (isign == 1) {  
-      TMDPsiPlus(u,psi,res, mu, mu_inv, cb);
+        TMDPsiPlus(u, psi, res, cb);
     }
     
     if( isign == -1) {
-      TMDPsiMinus(u,psi,res, mu, mu_inv, cb);
+        TMDPsiMinus(u, psi, res, cb);
     }    
   }
   
@@ -342,24 +360,23 @@ namespace QPhiX
 
   
   template<typename FT, int veclen, int soalen, bool compress12>
-  void TMDslash<FT,veclen,soalen,compress12>::tmdslashAChiMinusBDPsi(FourSpinorBlock* res, 
+    void TMDslash<FT,veclen,soalen,compress12>::dslashAChiMinusBDPsi(FourSpinorBlock* res,
 								 const FourSpinorBlock* psi, 
 								 const FourSpinorBlock* chi, 
 								 const SU3MatrixBlock* u, /* Gauge field suitably packed */
 								 double alpha, 
 								 double beta, 
-//                                                                 double mu,
 								 int isign,
 								 int cb) 
   {
     
     // Call the service functions
     if (isign == 1) {  
-      TMDPsiPlusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,/*mu,*/cb);
+        TMDPsiPlusAChiMinusBDPsi(u, psi, chi, res, alpha, beta, cb);
     }
     
     if( isign == -1) {
-      TMDPsiMinusAChiMinusBDPsi(u,psi,chi,res,alpha,beta,/*mu,*/cb);
+        TMDPsiMinusAChiMinusBDPsi(u, psi, chi, res, alpha, beta, cb);
     }    
   }
   
@@ -371,7 +388,6 @@ namespace QPhiX
 						      const FourSpinorBlock* psi, 
 						      FourSpinorBlock* res,
 						      const SU3MatrixBlock* u,
-                                                      double mu, double mu_inv, 
 						      int cb)
   {
     
@@ -634,7 +650,9 @@ namespace QPhiX
 						  accumulate,
 						  aniso_coeff_s_T,
 						  forw_t_coeff_T,
-						  back_t_coeff_T, mu, mu_inv );
+                    back_t_coeff_T,
+                    derived_mu,
+                    derived_mu_inv);
 	      }
 	    } // End for over scanlines y
 	  } // End for over scalines z
@@ -651,7 +669,6 @@ namespace QPhiX
 						       const FourSpinorBlock* psi, 
 						       FourSpinorBlock* res,
 						       const SU3MatrixBlock* u, 
-						       double mu, double mu_inv,
 						       int cb)
     {
       
@@ -923,7 +940,9 @@ namespace QPhiX
 						  accumulate,
 						  aniso_coeff_s_T,
 						  forw_t_coeff_T,
-						  back_t_coeff_T, mu, mu_inv);
+                    back_t_coeff_T,
+                    derived_mu,
+                    derived_mu_inv);
 	      }
 	    } // End for over scanlines y
 	  } // End for over scalines z
@@ -948,7 +967,6 @@ namespace QPhiX
 								    const SU3MatrixBlock* u, 
 								    double alpha, 
 								    double beta,
-//                                                                    double mu,
 								    int cb)
     {
       
@@ -1211,7 +1229,7 @@ namespace QPhiX
 									beta_s_T,
 									beta_t_f_T,
 									beta_t_b_T,
-//                                                                        mu,
+                    derived_mu,
 									accumulate);
 		
 	      }
@@ -1233,7 +1251,6 @@ namespace QPhiX
 								     const SU3MatrixBlock* u, 
 								     double alpha, 
 								     double beta,
-//                                                                     double mu,
 								     int cb)
     {
       
@@ -1499,7 +1516,7 @@ namespace QPhiX
 									 beta_s_T,
 									 beta_t_f_T,
 									 beta_t_b_T,
-//                                                                         mu,
+                    derived_mu,
 									 accumulate);
 		
 	      }
@@ -1515,7 +1532,10 @@ namespace QPhiX
 //!!
 
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMDslash<FT,veclen,soalen,compress12>::TMDPsiPlus(const SU3MatrixBlock *u, const FourSpinorBlock *psi_in, FourSpinorBlock *res_out, double mu, double mu_inv, int cb)
+    void TMDslash<FT,veclen,soalen,compress12>::TMDPsiPlus(const SU3MatrixBlock *u,
+        const FourSpinorBlock *psi_in,
+        FourSpinorBlock *res_out,
+        int cb)
       {
 	double beta_s = -aniso_coeff_S;
 	double beta_t_f = -aniso_coeff_T;
@@ -1557,7 +1577,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();	      
-	  TMDyzPlus(tid, psi_in, res_out, u, mu, mu_inv, cb);
+        TMDyzPlus(tid, psi_in, res_out, u, cb);
 	}
 
 #ifdef  QPHIX_DO_COMMS
@@ -1571,8 +1591,8 @@ namespace QPhiX
 #pragma omp parallel 
 	    {
 	      int tid=omp_get_thread_num();
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), mu, mu_inv, cb, d, 0, 1);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), mu, mu_inv, cb, d, 1, 1);
+            completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 1);
+            completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 1);
 	    }
 	  }
 	}
@@ -1580,7 +1600,10 @@ namespace QPhiX
 	
       }  
   template<typename FT, int veclen,int soalen, bool compress12>
-    void TMDslash<FT,veclen,soalen,compress12>::TMDPsiMinus(const SU3MatrixBlock *u, const FourSpinorBlock *psi_in, FourSpinorBlock *res_out, double mu, double mu_inv, int cb)
+    void TMDslash<FT,veclen,soalen,compress12>::TMDPsiMinus(const SU3MatrixBlock *u,
+        const FourSpinorBlock *psi_in,
+        FourSpinorBlock *res_out,
+        int cb)
       {
       
 	double beta_s = -aniso_coeff_S;
@@ -1623,7 +1646,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();
-	  TMDyzMinus(tid, psi_in, res_out, u, mu, mu_inv, cb);
+        TMDyzMinus(tid, psi_in, res_out, u, cb);
 	}
 
 #ifdef  QPHIX_DO_COMMS
@@ -1638,8 +1661,8 @@ namespace QPhiX
 	    {
 	      int tid=omp_get_thread_num();
 	      
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), mu, mu_inv, cb, d, 0, 0);
-	      completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), mu, mu_inv, cb, d, 1, 0);
+            completeTMFaceDir(tid,comms->recvFromDir[2*d+0], res_out, u, (d==3?beta_t_b:beta_s), cb, d, 0, 0);
+            completeTMFaceDir(tid,comms->recvFromDir[2*d+1], res_out, u, (d==3?beta_t_f:beta_s), cb, d, 1, 0);
 	    }
 	  } // end if
 	} // end for
@@ -1654,7 +1677,7 @@ namespace QPhiX
 								      const FourSpinorBlock *psi_in, 
 								      const FourSpinorBlock* chi_in, 
 								      FourSpinorBlock *res_out, 
-								      double alpha, double beta, /*double mu,*/ int cb)
+        double alpha, double beta, int cb)
       {
 
 	double beta_s = beta*aniso_coeff_S;
@@ -1696,7 +1719,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();	      
-	  TMDyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, /*mu,*/ cb);
+        TMDyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
 	}
 
 #ifdef  QPHIX_DO_COMMS
@@ -1725,7 +1748,7 @@ namespace QPhiX
 								      const FourSpinorBlock *psi_in, 
 								      const FourSpinorBlock* chi_in, 
 								      FourSpinorBlock *res_out, 
-								      double alpha, double beta, /*double mu,*/ int cb)
+        double alpha, double beta, int cb)
       {
 	double beta_s = beta*aniso_coeff_S;
 	double beta_t_f = beta*aniso_coeff_T;
@@ -1766,7 +1789,7 @@ namespace QPhiX
 #pragma omp parallel 
 	{
 	  int tid = omp_get_thread_num();	      
-	  TMDyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, /*mu,*/ cb);
+        TMDyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
 	}
 
 #ifdef  QPHIX_DO_COMMS
@@ -1791,7 +1814,6 @@ namespace QPhiX
 
       }
 
-     
 } // Namespace 
 
 #endif
