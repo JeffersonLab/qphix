@@ -90,8 +90,20 @@ namespace QPhiX {
 
 
 		struct CloverBlock {
-			T diag1[6][V];         // Real Diagonal part of block 1
-			T off_diag1[15][2][V];  // Complex, off diagonal part of block 1
+      /**
+        Diagonal part of upper spin-block, real.
+
+        The indices are:
+
+        - Spin (slow) and spin (fast).
+        - SIMD length.
+        */
+			T diag1[6][V]; 
+
+      /**
+        Off-diagonal part of upper spin-block, complex.
+        */
+			T off_diag1[15][2][V];
 			T diag2[6][V];          // Real Diagonal part of block 2
 			T off_diag2[15][2][V];  // Complex, off diagonal part of block 2
 		};
@@ -115,7 +127,7 @@ namespace QPhiX {
 
       - Real and imaginary part, length 2.
 
-      - SIMD vector, iterates through the \$f x \f$ coordinate, length VECLEN.
+      - SIMD vector, iterates through the \$f x \f$ coordinate, length `V`.
       */
 		struct FullCloverBlock {
 			T block1[6][6][2][V];  // Full complex, non-hermitian clover block 1
