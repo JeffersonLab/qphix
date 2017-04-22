@@ -163,8 +163,10 @@ if test "x${qdpalloc}x" = "xyesx"; then
 	AC_DEFINE(QPHIX_USE_QDPXX_ALLOC, [1], [ Use QDP Allocator ])
 fi
 
+echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
+echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
 
-if test "X${QDPXX_GIVEN}X" = "XyesX"; then 
+if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
 
      dnl Find the QDP++ config program 
 

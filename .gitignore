@@ -7,6 +7,8 @@
 # Makefile.in-s -- use autoreconf to create these
 configure
 Makefile.in
+config
+INSTALL
 
 
 # Compiled source #
