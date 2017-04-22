@@ -166,7 +166,7 @@ fi
 echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
 
-if test "${QDP_GIVEN}" = "yes" -a "${QDPXX_HOME}" != "no"; then
+if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
 
      dnl Find the QDP++ config program 
 
