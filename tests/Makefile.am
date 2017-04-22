@@ -7,6 +7,7 @@ LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@
 check_PROGRAMS = time_dslash_noqdp
 if QPHIX_BUILD_WITH_QDP
 check_PROGRAMS += t_dslash t_minvcg
+check_PROGRAMS += test_blas
 endif
 
 if QPHIX_BUILD_CLOVER
