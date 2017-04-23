@@ -100,6 +100,8 @@ template<typename T, int V, int S, bool compress, typename U, typename Phi>
 void 
 MInvCGTester::testMInvCG(const U& u, int t_bc)
 {
+  for(int cb=0; cb < 2; ++cb) { 
+  int other_cb=1-cb;
   RNG::setrn(rng_seed);
   typedef typename Geometry<T,V,S,compress>::SU3MatrixBlock   Gauge;
   typedef typename Geometry<T,V,S,compress>::FourSpinorBlock  Spinor;
@@ -112,7 +114,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   QDPIO::cout << "Filling chi with gaussian noise" << endl;
   gaussian(chi);
   
-  QDPIO::cout << "Norm2 || psi || = " << norm2(chi,rb[0]) << endl;
+  QDPIO::cout << "Norm2 || psi || = " << norm2(chi,rb[cb]) << endl;
   QDPIO::cout << "Done" << endl;
   double aniso_fac_s = (double)(0.35);
   double aniso_fac_t = (double)(1.4);
@@ -155,7 +157,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   QDPIO::cout << "done" << endl;
 
   QDPIO::cout << " Packing chi" ;	
-  qdp_pack_cb_spinor<>(chi, chi_d, geom,0);
+  qdp_pack_cb_spinor<>(chi, chi_d, geom,cb);
 
   QDPIO::cout << " Zeroing the psis"; 
   for(int s=0; s < n_shift; s++) { 
@@ -203,37 +205,37 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
 
   start = omp_get_wtime();
   
-  solver(psi_d, chi_d, n_shift,shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
+  solver(psi_d, chi_d, n_shift,shifts, rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose,cb);
 
   
   end = omp_get_wtime();
   
-  QDPIO::cout << "Solver Completed. Iters = " << niters << " Wallclock = " << end -start << " sec." << endl;
+  QDPIO::cout << " cb= " << cb << " Solver Completed. Iters = " << niters << " Wallclock = " << end -start << " sec." << endl;
   }
   // check solutions
   Phi psi,psi2,psi3;
   for(int s=0; s < n_shift; s++) {
     Real shiftFactor = Real(shifts[s]);
     // Unpack solution s into 'psi'
-    qdp_unpack_cb_spinor<>(psi_d[s], psi, geom, 0);
+    qdp_unpack_cb_spinor<>(psi_d[s], psi, geom, cb);
  
 
     // psi2 = M psi
-    dslash(psi2,u_test,psi, isign, 1);
-    dslash(ltmp,u_test,psi2, isign, 0);
-    psi2[rb[0]] = massFactor*psi - betaFactor*ltmp;
+    dslash(psi2,u_test,psi, isign, other_cb );
+    dslash(ltmp,u_test,psi2, isign, cb);
+    psi2[rb[cb]] = massFactor*psi - betaFactor*ltmp;
     
     // psi3 = M^\dagger psi2
-    dslash(psi3,u_test,psi2, (-isign), 1);
-    dslash(ltmp,u_test,psi3, (-isign), 0);
-    psi3[rb[0]] = massFactor*psi2 - betaFactor*ltmp;
+    dslash(psi3,u_test,psi2, (-isign), other_cb);
+    dslash(ltmp,u_test,psi3, (-isign), cb);
+    psi3[rb[cb]] = massFactor*psi2 - betaFactor*ltmp;
 
     // psi2 = psi3 + shift * psi = M^\dagger M psi + shift psi;
-    psi2[rb[0]] = shiftFactor*psi + psi3;
+    psi2[rb[cb]] = shiftFactor*psi + psi3;
     
     Phi diff = chi - psi2;
-    Double true_norm = sqrt(norm2(diff, rb[0])/norm2(chi,rb[0]));
-    QDPIO::cout << "True norm for shift["<<s<<"]="<< shifts[s] << " is: " << true_norm << endl;
+    Double true_norm = sqrt(norm2(diff, rb[cb])/norm2(chi,rb[cb]));
+    QDPIO::cout << "cb = " << cb <<" True norm for shift["<<s<<"]="<< shifts[s] << " is: " << true_norm << endl;
     //    assertion( toBool( true_norm < (rsd_target + tolerance<T>::small) ) );
   }
 
@@ -242,7 +244,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   
   masterPrintf("GFLOPS=%e\n", 1.0e-9*(double)(total_flops)/(end -start));
 
-#if 0						\
+#if 1						\
   
   geom.free(packed_gauge_cb0);
   geom.free(packed_gauge_cb1);
@@ -252,7 +254,7 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   }
 
 #endif
-
+ }
 }
 
 void
@@ -324,7 +326,7 @@ MInvCGTester::run(void)
 
 #if 1
       if( soalen == 4 ) { 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
 	testMInvCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
 #endif
@@ -334,7 +336,7 @@ MInvCGTester::run(void)
       if( soalen == 8 ) {
 	QDPIO::cout << "In the SOALEN =8 branch" << endl;
 
-#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
 	testMInvCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
 #endif
@@ -406,7 +408,7 @@ MInvCGTester::run(void)
 
 
       if( soalen == 2) {
-#if defined (QPHIX_AVX_SOURCE)
+#if defined (QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
 	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
 	testMInvCGWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
 #endif

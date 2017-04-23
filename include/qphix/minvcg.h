@@ -164,7 +164,7 @@ namespace  QPhiX
 #endif
 
 
-      M(mmp,mp,-1);  
+      M(mmp,mp,-1,cb);  
 
 #ifdef DEBUG_MINVCG
       {
