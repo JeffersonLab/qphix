@@ -60,7 +60,8 @@ namespace  QPhiX
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verboseP) 
+		    bool verboseP,
+		    int cb=1)  const
     {
       
       mv_apps = 0;
@@ -151,7 +152,7 @@ namespace  QPhiX
       }
 #endif
 
-      M(mp,p_0,+1);
+      M(mp,p_0,+1,cb);
 
 
 #ifdef DEBUG_MINVCG
@@ -259,8 +260,8 @@ namespace  QPhiX
 	cp = c;
 	bp = b;
 
-	M(mp,p_0,+1);
-	M(mmp,mp,-1);  
+	M(mp,p_0,+1,cb);
+	M(mmp,mp,-1,cb);  
 	mv_apps += 2;
 
 	// d = norm2(Mp) = < M p | M p > =  <p | M^\dagger M p>
@@ -334,10 +335,6 @@ namespace  QPhiX
 
     
 
-    void tune()
-    {
-    }
-
     Geometry<FT,veclen,soalen,compress12>& getGeometry() {
       return geom;
     }
@@ -355,11 +352,11 @@ namespace  QPhiX
     Spinor *p_0;
     Spinor **p;
     Spinor *r;
-    std::vector<double> rsd_sq;
-    std::vector<double> beta;
-    std::vector<double> zeta_prev;
-    std::vector<double> zeta;
-    std::vector<bool> convsP;
+    mutable std::vector<double> rsd_sq;
+    mutable std::vector<double> beta;
+    mutable std::vector<double> zeta_prev;
+    mutable std::vector<double> zeta;
+    mutable std::vector<bool> convsP;
 
     int norm2_threads;
     int copy_threads;

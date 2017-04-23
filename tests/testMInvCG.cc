@@ -198,7 +198,6 @@ MInvCGTester::testMInvCG(const U& u, int t_bc)
   double end=0;
   { 
    MInvCG<T,V,S,compress> solver(M, max_iters, n_shift);
-  //  solver.tune();
   norm2Spinor<T,V,S,compress>(r2,chi_d,geom,threads_per_core);
   masterPrintf("chi has norm2 = %16.8e\n", r2);
 

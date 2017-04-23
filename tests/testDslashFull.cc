@@ -802,14 +802,16 @@ testDslashFull::testM(const U& u, int t_bc)
   Real betaFactor=Real(0.25)/massFactor;
    // Apply optimized
   for(int isign=1; isign >= -1; isign -=2) {
-    
+   for(int cb=0; cb < 2; ++cb) {
+      int other_cb = 1 - cb ; 
       chi=zero;
       //      qdp_pack_spinor< T,V,S, compress, Phi >(chi, chi_even, chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-      M( chi_s[0],
-	 psi_s[0],
-	 isign);
+      M( chi_s[cb],
+	 psi_s[cb],
+	 isign, 
+	 cb);
 
       //      qdp_unpack_spinor< T,V,S, compress,  Phi> (chi_s[0], chi_s[1], chi, geom);
       qdp_unpack_spinor<> (chi_s[0], chi_s[1], chi, geom);
@@ -817,27 +819,27 @@ testDslashFull::testM(const U& u, int t_bc)
 
       // Apply QDP Dslash
       chi2 = zero;
-      dslash(chi2,u_test,psi, isign, 1);
-      dslash(ltmp,u_test,chi2, isign, 0);
-      chi2[rb[0]] = massFactor*psi - betaFactor*ltmp;
+      dslash(chi2,u_test,psi, isign, other_cb);
+      dslash(ltmp,u_test,chi2, isign, cb);
+      chi2[rb[cb]] = massFactor*psi - betaFactor*ltmp;
 
       // Check the difference per number in chi vector
       Phi diff = zero;
-      diff[rb[0]]=chi2-chi;
+      diff[rb[cb]]=chi2-chi;
 
-      Double diff_norm = sqrt( norm2( diff , rb[0] ) ) 
+      Double diff_norm = sqrt( norm2( diff , rb[cb] ) ) 
 	/ ( Real(4*3*2*Layout::vol()) / Real(2));
 	
-      QDPIO::cout << "\t isign = " << isign << "  diff_norm = " << diff_norm << endl;      
+      QDPIO::cout << "\t cb= " << cb << " isign = " << isign << "  diff_norm = " << diff_norm << endl;      
      // Assert things are OK...
       if ( toBool( diff_norm >= tolerance<T>::small ) ) {
-	for(int i=0; i < rb[0].siteTable().size(); i++){ 
+	for(int i=0; i < rb[cb].siteTable().size(); i++){ 
 	  for(int s =0 ; s < Ns; s++) { 
 	    for(int c=0; c < Nc; c++) { 
-	      Double re=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).real());
-	      Double im=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).imag());
+	      Double re=  Double(diff.elem(rb[cb].start()+i).elem(s).elem(c).real());
+	      Double im=  Double(diff.elem(rb[cb].start()+i).elem(s).elem(c).imag());
 	      if( toBool ( fabs(re) > tolerance<T>::small) || toBool( fabs(im) > tolerance<T>::small ) ) { 
-		QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[0].start()+i).elem(s).elem(c) << endl;
+		QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[cb].start()+i).elem(s).elem(c) << endl;
 	      }
 
 	    }
@@ -846,9 +848,9 @@ testDslashFull::testM(const U& u, int t_bc)
       }
       assertion( toBool( diff_norm < tolerance<T>::small ) );
 
-    
-  }
-
+   } // cb loop    
+  } // isign loop
+ 
 
 
   geom.free(packed_gauge_cb0);
@@ -865,6 +867,8 @@ template<typename T, int V, int S, bool compress, typename U, typename Phi>
 void 
 testDslashFull::testCG(const U& u, int t_bc)
 {
+  for(int cb=0; cb < 2; ++cb) {
+  int other_cb =  1 - cb;
   RNG::setrn(rng_seed);
   typedef typename Geometry<T,V,S,compress>::SU3MatrixBlock   Gauge;
   typedef typename Geometry<T,V,S,compress>::FourSpinorBlock  Spinor;
@@ -875,7 +879,7 @@ testDslashFull::testCG(const U& u, int t_bc)
   QDPIO::cout << "Filling psi with gaussian noise" << endl;
 
   gaussian(psi);
-  QDPIO::cout << "Norm2 || psi || = " << norm2(psi,rb[0]) << endl;
+  QDPIO::cout << "Norm2 || psi || = " << norm2(psi,rb[cb]) << endl;
   QDPIO::cout << "Done" << endl;
   double aniso_fac_s = (double)(0.35);
   double aniso_fac_t = (double)(1.4);
@@ -941,7 +945,7 @@ testDslashFull::testCG(const U& u, int t_bc)
   {
     chi = zero;
     //    qdp_pack_spinor<T,V,S,compress, Phi >(chi, chi_even, chi_odd, geom);
-    qdp_pack_cb_spinor<>(chi, chi_even, geom,0);
+    qdp_pack_cb_spinor<>(chi, chi_even, geom,cb);
     
     double rsd_target=rsdTarget<T>::value;
     int max_iters=200;
@@ -951,33 +955,33 @@ testDslashFull::testCG(const U& u, int t_bc)
     unsigned long mv_apps;
 
     InvCG<T,V,S,compress> solver(M, max_iters);
-    solver.tune();
     double r2;
     norm2Spinor<T,V,S,compress>(r2,psi_even,geom,1);
     masterPrintf("psi has norm2 = %16.8e\n", r2);
     int isign=1;
     double start = omp_get_wtime();
-    solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose);
+    solver(chi_s[cb], psi_s[cb], rsd_target, niters, rsd_final, site_flops, mv_apps, isign, verbose,cb);
     double end = omp_get_wtime();
     
     
     
     //    qdp_unpack_spinor<T, V, S, compress,Phi >(chi_s[0], chi_s[1], chi, geom);
-    qdp_unpack_cb_spinor<>(chi_s[0], chi, geom, 0);
+    qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom, cb);
     
     // Multiply back 
     // chi2 = M chi
-    dslash(chi2,u_test,chi, isign, 1);
-    dslash(ltmp,u_test,chi2, isign, 0);
-    chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
+    int other_cb = 1 - cb ;
+    dslash(chi2,u_test,chi, isign, other_cb);
+    dslash(ltmp,u_test,chi2, isign, cb);
+    chi2[rb[cb]] = massFactor*chi - betaFactor*ltmp;
     
     // chi3 = M^\dagger chi2
-    dslash(chi3,u_test,chi2, (-isign), 1);
-    dslash(ltmp,u_test,chi3, (-isign), 0);
-    chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
+    dslash(chi3,u_test,chi2, (-isign), other_cb);
+    dslash(ltmp,u_test,chi3, (-isign), cb);
+    chi3[rb[cb]] = massFactor*chi2 - betaFactor*ltmp;
     
     Phi diff = chi3 - psi;
-    Double true_norm = sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
+    Double true_norm = sqrt(norm2(diff, rb[cb])/norm2(psi,rb[cb]));
     QDPIO::cout << "True norm is: " << true_norm << endl;
     assertion( toBool( true_norm < (rsd_target + tolerance<T>::small) ) );
 
@@ -996,7 +1000,7 @@ testDslashFull::testCG(const U& u, int t_bc)
   geom.free(psi_odd);
   geom.free(chi_even);
   geom.free(chi_odd);
-
+ } // cb loop
 }
 
 
@@ -1004,6 +1008,8 @@ template<typename T, int V, int S, bool compress, typename U, typename Phi>
 void 
 testDslashFull::testBiCGStab(const U& u, int t_bc)
 {
+  for(int cb=0; cb < 2; ++cb) { 
+     int other_cb = 1 -cb ;
   RNG::setrn(rng_seed);
   typedef typename Geometry<T,V,S,compress>::SU3MatrixBlock   Gauge;
   typedef typename Geometry<T,V,S,compress>::FourSpinorBlock  Spinor;
@@ -1082,28 +1088,27 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
     unsigned long mv_apps;
     
     InvBiCGStab<T,V,S,compress> solver(M, max_iters);
-    solver.tune();
 
     for(int isign=1; isign >= -1; isign -=2) {
       chi=zero;
-      qdp_pack_cb_spinor<>(chi, chi_even, geom,0);
+      qdp_pack_cb_spinor<>(chi, chi_even, geom,cb);
       masterPrintf("Entering solver\n");
       
       double start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
+      solver(chi_s[cb], psi_s[cb], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose, cb);
       double end = omp_get_wtime();
       
-      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom,0);
+      qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom,cb);
       
       // Multiply back 
       // chi2 = M chi
-      dslash(chi2,u_test,chi, isign, 1);
-      dslash(ltmp,u_test,chi2, isign, 0);
-      chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
+      dslash(chi2,u_test,chi, isign, other_cb);
+      dslash(ltmp,u_test,chi2, isign, cb);
+      chi2[rb[cb]] = massFactor*chi - betaFactor*ltmp;
       
     
       Phi diff = chi2 - psi;
-      Double true_norm =  sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
+      Double true_norm =  sqrt(norm2(diff, rb[cb])/norm2(psi,rb[cb]));
       QDPIO::cout << "BiCGStab Solve isign=" << isign << " True norm is: " << true_norm << endl;
       assertion( toBool( true_norm < (rsd_target + tolerance<T>::small) ) );
       int Nxh = Nx/2;
@@ -1121,7 +1126,7 @@ testDslashFull::testBiCGStab(const U& u, int t_bc)
   geom.free(psi_odd);
   geom.free(chi_even);
   geom.free(chi_odd);
-
+ } // cb loop
 }
 
 
@@ -1130,6 +1135,10 @@ template<typename T1, int VEC1, int SOA1, bool compress, typename T2, int VEC2, 
 void 
 testDslashFull::testRichardson(const U& u, int t_bc)
 {
+
+ for(int cb=0; cb < 2; ++cb) { 
+  int other_cb=1-cb;
+
   RNG::setrn(rng_seed);
   typedef typename Geometry<T1,VEC1,SOA1,compress>::SU3MatrixBlock   GaugeOuter;
   typedef typename Geometry<T1,VEC1,SOA1,compress>::FourSpinorBlock  SpinorOuter;
@@ -1233,21 +1242,21 @@ testDslashFull::testRichardson(const U& u, int t_bc)
       masterPrintf("Entering solver\n");
       
       double start = omp_get_wtime();
-      outer_solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,isign, verbose);
+      outer_solver(chi_s[cb], psi_s[cb], rsd_target, niters, rsd_final, site_flops, mv_apps,isign, verbose,cb);
       double end = omp_get_wtime();
       
       //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0], chi_s[1], chi, geom);
-      qdp_unpack_cb_spinor<>(chi_s[0], chi, geom_outer,0);
+      qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom_outer,cb);
       
       // Multiply back 
       // chi2 = M chi
-      dslash(chi2,u_test,chi, isign, 1);
-      dslash(ltmp,u_test,chi2, isign, 0);
-      chi2[rb[0]] = massFactor*chi - betaFactor*ltmp;
+      dslash(chi2,u_test,chi, isign, other_cb);
+      dslash(ltmp,u_test,chi2, isign, cb);
+      chi2[rb[cb]] = massFactor*chi - betaFactor*ltmp;
       
     
       Phi diff = chi2 - psi;
-      Double true_norm =  sqrt(norm2(diff, rb[0])/norm2(psi,rb[0]));
+      Double true_norm =  sqrt(norm2(diff, rb[cb])/norm2(psi,rb[cb]));
       QDPIO::cout << "RICHARDSON Solve isign=" << isign << " True norm is: " << true_norm << endl;
       assertion( toBool( true_norm < (rsd_target + tolerance<T1>::small) ) );
       unsigned long num_cb_sites=Layout::vol()/2;
@@ -1269,6 +1278,6 @@ testDslashFull::testRichardson(const U& u, int t_bc)
   geom_outer.free(psi_odd);
   geom_outer.free(chi_even);
   geom_outer.free(chi_odd);
-
+ } // cb loop.
 }
 

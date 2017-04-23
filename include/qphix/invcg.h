@@ -64,7 +64,8 @@ namespace  QPhiX
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verboseP) 
+		    bool verboseP,
+		    int cb = 1) const  
     {
 #ifdef QPHIX_TIMING_CG
       TSC_tick cg_start;
@@ -151,14 +152,14 @@ namespace  QPhiX
 #ifdef TIMING_CG
       CLOCK_NOW(lstart);
 #endif
-      M(mp,x,isign);
+      M(mp,x,isign,cb);
 
 #ifdef CGDEBUG
       norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mp,geom,norm2Threads);
       masterPrintf("M p = %lf \n", tmp_d);
 #endif
 
-      M(mmp,mp,-isign);
+      M(mmp,mp,-isign,cb);
 
 #ifdef CGDEBUG
       norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mmp,geom,norm2Threads);
@@ -229,8 +230,8 @@ namespace  QPhiX
 #ifdef TIMING_CG 
 	CLOCK_NOW(lstart);
 #endif
-	M(mp,p, isign);
-	M(mmp,mp,-isign);
+	M(mp,p, isign,cb);
+	M(mmp,mp,-isign,cb);
 
 #ifdef TIMING_CG
 	CLOCK_NOW(lend);
@@ -285,8 +286,8 @@ namespace  QPhiX
 
 #ifdef TIMING_CG
 	  CLOCK_NOW(lstart);
-	  M(mp,x,isign);
-	  M(mmp,mp,-isign);
+	  M(mp,x,isign,cb);
+	  M(mmp,mp,-isign,cb);
 	  CLOCK_NOW(lend);
 	  ltime += (lend -lstart);
 	  mv_apps += 2;
@@ -369,32 +370,10 @@ namespace  QPhiX
     int getNorm2Threads(void) { return norm2Threads; }
 
 
-    void tune()
-    {
-      int iters=100;
-#if 0
-      tuneCopyThreads(iters);
-      tuneAypxThreads(iters);
-      tuneNorm2Threads(iters);
-      tuneXMYNorm2Threads(iters);
-      tuneRXUpdateThreads(iters);
-
-      reportTuning();
-#endif
-    }
-
     Geometry<FT,veclen,soalen,compress12>& getGeometry() {
       return geom;
     }
 
-    void reportTuning() {
-	masterPrintf("TuningResults: \n");
-	masterPrintf("\t copyThreads=%d threads\n", copyThreads);
-	masterPrintf("\t aypxThreads=%d threads\n", aypxThreads);
-	masterPrintf("\t xmyNormThreads=%d threads\n", xmyNormThreads);
-	masterPrintf("\t rmammpNorm2rxpapThreads=%d threads\n", rmammpNorm2rxpapThreads);
-	masterPrintf("\t norm2Threads=%d threads\n", norm2Threads);
-    }
     private:
 
     EvenOddLinearOperator<FT, veclen,soalen,compress12>& M;

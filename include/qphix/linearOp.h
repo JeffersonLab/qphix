@@ -10,8 +10,7 @@ namespace QPhiX {
   class EvenOddLinearOperator {
   public:
     typedef typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock FourSpinorBlock;
-    virtual void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) = 0;
-
+    virtual void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const = 0;
     virtual Geometry<FT,veclen,soalen,compress>& getGeometry(void)=0;
 
   };

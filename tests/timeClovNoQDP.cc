@@ -541,7 +541,6 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   
       
       InvCG<FT,V,S,compress> solver(M, max_iters);
-      solver.tune();
       
       for( int solves = 0; solves < 5; solves++) { 
 	masterPrintf("Zeroing solution\n");
@@ -603,7 +602,6 @@ timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 if( do_bicgstab )  {
 
     InvBiCGStab<FT,V,S,compress> solver2(M, max_iters);
-    solver2.tune();
     
     for(int solver =0; solver < 5; solver++) { 
       unsigned long site_flops;

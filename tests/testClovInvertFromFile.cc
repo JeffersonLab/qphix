@@ -361,10 +361,8 @@ testClovInvertFromFile::runTest(double mass, double clov_coeff, const std::strin
   int isign=1;
 
   InvBiCGStab<FT,V,S,compress> solver(M, max_iters);
-  solver.tune();
 
   InvBiCGStab<FT2,V2,SOA2,compress> solver_inner(M_inner,max_iters);
-  solver_inner.tune();
 
   // Delta = 0.05 for half prec
   InvRichardsonMultiPrec<FT,V,S,compress,FT2,V2,SOA2,compress> mixed_solver(M,solver_inner, 0.1,5000);
