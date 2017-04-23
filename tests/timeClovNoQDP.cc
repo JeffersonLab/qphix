@@ -1,4 +1,3 @@
-
 #include "timeClovNoQDP.h"
 #include <omp.h>
 

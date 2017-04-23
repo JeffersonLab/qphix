@@ -1,4 +1,3 @@
-// $Id: dslashm_w.cc,v 1.16 2007-02-24 01:00:29 bjoo Exp $
 /*! \file
  *  \brief Wilson-Dirac operator
  */

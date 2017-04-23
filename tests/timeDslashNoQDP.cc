@@ -1,4 +1,3 @@
-
 #include "timeDslashNoQDP.h"
 #include <omp.h>
 #include "qphix/wilson.h"

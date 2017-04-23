@@ -3,8 +3,8 @@
  *  \brief Clover term linear operator
  */
 
-#ifndef __clover_term_llvm_w_h__
-#define __clover_term_llvm_w_h__
+#ifndef CLOVER_TERM_LLVM_W_H
+#define CLOVER_TERM_LLVM_W_H
 
 #warning "Using QPD-JIT/LLVM clover"
 #include "qdp.h"

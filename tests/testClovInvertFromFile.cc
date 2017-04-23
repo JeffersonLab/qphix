@@ -6,22 +6,15 @@
 #undef SEEK_CUR
 #undef SEEK_END
 
-
 #include "qphix/clover_dslash_def.h"
 #include "qphix/clover_dslash_body.h"
-
 
 #include "qdp.h"
 using namespace QDP;
 
-#ifndef DSLASH_M_W_H
 #include "dslashm_w.h"
-#endif
 
-#ifndef REUNIT_H
 #include "reunit.h"
-#endif
-
 
 #include "qphix/qdp_packer.h"
 #include "clover_term.h"

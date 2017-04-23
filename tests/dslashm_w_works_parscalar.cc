@@ -2,7 +2,6 @@
 
 using namespace QDP;
 
-
 template<typename T, typename H, typename U>
 void dslash_a(T& chi, 
 	    const multi1d<U>& u, 

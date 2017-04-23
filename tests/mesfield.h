@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef __mesfield_h__
-#define __mesfield_h__
+#ifndef MESFIELD_H
+#define MESFIELD_H
 
 namespace QPhiX { 
   //! Calculates the antihermitian field strength tensor  iF(mu,nu)
