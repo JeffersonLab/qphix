@@ -756,27 +756,33 @@ testClovDslashFull::runTest(void)
 #endif
 
   // Disabling testing the even odd operator until recoded with new vectorization
+  //
+
+   Phi ltmp=zero;
+  Real betaFactor=Real(0.25);
 #if 1
+  for(int cb=0; cb < 2; ++cb) { 
+   int other_cb = 1-cb;
+  // FIXME: cb is needed to make the even odd operator... This has effects down the line 
+ 
   QDPIO::cout << "Testing Even Odd Operator" << endl;
   t_boundary=(double)(-1);
   EvenOddCloverOperator<FT,V,S,compress> M(u_packed,  
-					   clov_packed[1], 
-					   invclov_packed[0],  
+					   clov_packed[cb], 
+					   invclov_packed[other_cb],  
 					   &geom,
 					   t_boundary,
 					   aniso_fac_s,
 					   aniso_fac_t);
-  Phi ltmp=zero;
-  Real betaFactor=Real(0.25);
    // Apply optimized
   for(int isign=1; isign >= -1; isign -=2) {
-    
       chi=zero;
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
-      M( chi_s[1],
-	 psi_s[1],
-	 isign);
+      M( chi_s[cb],
+	 psi_s[cb],
+	 isign, 
+ 	 cb);
 
       qdp_unpack_spinor<> (chi_s[0], chi_s[1], chi, geom);
 
@@ -784,32 +790,32 @@ testClovDslashFull::runTest(void)
       // Apply QDP Dslash
       chi2 = zero;
       
-      dslash(chi2,u_test,psi, isign, 0);
-      invclov_qdp_ap.apply(clov_chi2, chi2, isign, 0);
-      dslash(ltmp,u_test,clov_chi2, isign, 1);
+      dslash(chi2,u_test,psi, isign, other_cb);
+      invclov_qdp_ap.apply(clov_chi2, chi2, isign, other_cb);
+      dslash(ltmp,u_test,clov_chi2, isign, cb);
       
-      clov_qdp_ap.apply(chi2, psi, isign, 1);
+      clov_qdp_ap.apply(chi2, psi, isign, cb);
 
-      chi2[rb[1]] -= betaFactor*ltmp;
+      chi2[rb[cb]] -= betaFactor*ltmp;
 
       // Check the difference per number in chi vector
 
       Phi diff = zero;
-      diff[rb[1]]=chi2-chi;
+      diff[rb[cb]]=chi2-chi;
 
-      Double diff_norm = sqrt( norm2( diff , rb[1] ) ) 
+      Double diff_norm = sqrt( norm2( diff , rb[cb] ) ) 
 	/ ( Real(4*3*2*Layout::vol()) / Real(2));
 	
-      QDPIO::cout << "\t isign = " << isign << "  diff_norm = " << diff_norm << endl;      
+      QDPIO::cout << "\t cb = " << cb << " isign = " << isign << "  diff_norm = " << diff_norm << endl;      
      // Assert things are OK...
       if ( toBool( diff_norm > tolerance<FT>::small ) ) {
-	for(int i=0; i < rb[1].siteTable().size(); i++){ 
+	for(int i=0; i < rb[cb].siteTable().size(); i++){ 
 	  for(int s =0 ; s < Ns; s++) { 
 	    for(int c=0; c < Nc; c++) { 
-	      REAL re=  diff.elem(rb[1].start()+i).elem(s).elem(c).real();
-	      REAL im=  diff.elem(rb[1].start()+i).elem(s).elem(c).imag();
+	      REAL re=  diff.elem(rb[cb].start()+i).elem(s).elem(c).real();
+	      REAL im=  diff.elem(rb[cb].start()+i).elem(s).elem(c).imag();
 	      if( toBool ( fabs(re) > tolerance<FT>::small ) || toBool( fabs(im) > tolerance<FT>::small ) )  { 
-		QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[1].start()+i).elem(s).elem(c) << endl;
+		QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[cb].start()+i).elem(s).elem(c) << endl;
 	      }
 
 	    }
@@ -817,16 +823,26 @@ testClovDslashFull::runTest(void)
 	}
       }
       assertion( toBool( diff_norm < tolerance<FT>::small ) );
-
+    } // isign loop
     
-  }
+  } // cb loop
 
 #endif
 
 #if 1
   {
+   for(int cb=0; cb < 2; ++cb ) {
+   int other_cb = 1- cb;
+ EvenOddCloverOperator<FT,V,S,compress> M(u_packed,
+                                           clov_packed[cb],
+                                           invclov_packed[other_cb],
+                                           &geom,
+                                           t_boundary,
+                                           aniso_fac_s,
+                                           aniso_fac_t);
+
     chi = zero;
-    qdp_pack_cb_spinor<>(chi, chi_s[1], geom,1);
+    qdp_pack_cb_spinor<>(chi, chi_s[cb], geom,cb);
 
     double rsd_target=rsdTarget<FT>::value;
     int max_iters=500;
@@ -836,41 +852,40 @@ testClovDslashFull::runTest(void)
     unsigned long mv_apps;
     
     InvCG<FT,V,S,compress> solver(M, max_iters);
-    solver.tune();
 
     double start = omp_get_wtime();
-    solver(chi_s[1], psi_s[1],rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
+    solver(chi_s[cb], psi_s[cb],rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose,cb);
     double end = omp_get_wtime();
     
     
     
-    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
+    qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom,cb);
     
     // Multiply back 
     // chi2 = M chi
-    dslash(chi2,u_test,chi, 1, 0);
-    invclov_qdp_ap.apply(clov_chi2, chi2, 1, 0);
-    dslash(ltmp,u_test,clov_chi2, 1, 1);
+    dslash(chi2,u_test,chi, 1, other_cb);
+    invclov_qdp_ap.apply(clov_chi2, chi2, 1, other_cb);
+    dslash(ltmp,u_test,clov_chi2, 1, cb);
     
-    clov_qdp_ap.apply(chi2, chi, 1, 1);
-    chi2[rb[1]] -= betaFactor*ltmp;
+    clov_qdp_ap.apply(chi2, chi, 1, cb );
+    chi2[rb[cb]] -= betaFactor*ltmp;
     
     
     // chi3 = M^\dagger chi2
     Phi chi3 = zero;
-    dslash(chi3,u_test,chi2, -1, 0);
-    invclov_qdp_ap.apply(clov_chi2, chi3, -1, 0);
-    dslash(ltmp,u_test,clov_chi2, -1, 1);
+    dslash(chi3,u_test,chi2, -1, other_cb);
+    invclov_qdp_ap.apply(clov_chi2, chi3, -1, other_cb);
+    dslash(ltmp,u_test,clov_chi2, -1, cb);
     
-    clov_qdp_ap.apply(chi3, chi2, -1, 1);
-    chi3[rb[1]] -= betaFactor*ltmp;
+    clov_qdp_ap.apply(chi3, chi2, -1, cb);
+    chi3[rb[cb]] -= betaFactor*ltmp;
     
     //  dslash(chi3,u,chi2, (-1), 1);
     // dslash(ltmp,u,chi3, (-1), 0);
     // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
     
     Phi diff = chi3 - psi;
-    QDPIO::cout << "True norm is: " << sqrt(norm2(diff, rb[1])/norm2(psi,rb[1])) << endl;
+    QDPIO::cout << "cb=" << cb << " True norm is: " << sqrt(norm2(diff, rb[cb])/norm2(psi,rb[cb])) << endl;
     
     int Nxh = Nx/2;
     unsigned long num_cb_sites=Nxh * Ny * Nz * Nt;
@@ -878,11 +893,22 @@ testClovDslashFull::runTest(void)
     unsigned long total_flops = (site_flops + (1320+504+1320+504+48)*mv_apps)*num_cb_sites;
 
     masterPrintf("GFLOPS=%e\n", 1.0e-9*(double)(total_flops)/(end -start));
-  }
+   }  
+}
 #endif
 
 #if 1
   {
+    for(int cb =0; cb < 2; ++cb) {
+     int other_cb = 1-cb;
+ EvenOddCloverOperator<FT,V,S,compress> M(u_packed,
+                                           clov_packed[cb],
+                                           invclov_packed[other_cb],
+                                           &geom,
+                                           t_boundary,
+                                           aniso_fac_s,
+                                           aniso_fac_t);
+
     chi = zero;
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
     
@@ -894,35 +920,35 @@ testClovDslashFull::runTest(void)
     unsigned long mv_apps;
     
     InvBiCGStab<FT,V,S,compress> solver(M, max_iters);
-    solver.tune();
     const int isign=1;
     double start = omp_get_wtime();
-    solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
+    solver(chi_s[cb], psi_s[cb], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose,cb);
     double end = omp_get_wtime();
     
     
     
-    qdp_unpack_cb_spinor<>(chi_s[1], chi, geom,1);
+    qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom,cb);
     
     // Multiply back 
     // chi2 = M chi
-    dslash(chi2,u_test,chi, 1, 0);
-    invclov_qdp_ap.apply(clov_chi2, chi2, 1, 0);
-    dslash(ltmp,u_test,clov_chi2, 1, 1);
+    dslash(chi2,u_test,chi, 1, other_cb);
+    invclov_qdp_ap.apply(clov_chi2, chi2, 1, other_cb);
+    dslash(ltmp,u_test,clov_chi2, 1, cb);
     
-    clov_qdp_ap.apply(chi2, chi, 1, 1);
-    chi2[rb[1]] -= betaFactor*ltmp;
+    clov_qdp_ap.apply(chi2, chi, 1, cb);
+    chi2[rb[cb]] -= betaFactor*ltmp;
     
   
     Phi diff = chi2 - psi;
-    QDPIO::cout << "True norm is: " << sqrt(norm2(diff, rb[1])/norm2(psi,rb[1])) << endl;
+    QDPIO::cout << " cb = " << cb << " True norm is: " << sqrt(norm2(diff, rb[cb])/norm2(psi,rb[cb])) << endl;
     
     int Nxh = Nx/2;
     unsigned long num_cb_sites=Nxh * Ny * Nz * Nt;
     
     unsigned long total_flops = (site_flops + (1320+504+1320+504+48)*mv_apps)*num_cb_sites;
     masterPrintf("GFLOPS=%e\n", 1.0e-9*(double)(total_flops)/(end -start));
-  }
+  } // cb loop
+  } // scope
 #endif
 
   

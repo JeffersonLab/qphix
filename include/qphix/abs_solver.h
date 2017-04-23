@@ -17,9 +17,8 @@ namespace QPhiX {
 			    unsigned long& site_flops,
 			    unsigned long& mv_apps,
 			    int isign,
-			    bool verboseP) = 0;
+			    bool verboseP, int cb=1) const = 0;
 
-    virtual void tune() = 0;
     virtual  Geometry<FT,V,S,compress12>& getGeometry() =  0;
   };
 
@@ -37,9 +36,9 @@ namespace QPhiX {
 			    unsigned long& site_flops,
 			    unsigned long& mv_apps,
 			    int isign,
-			    bool verboseP) = 0;
+			    bool verboseP, int cb=1) const = 0;
 
-    virtual void tune() = 0;
+
     virtual  Geometry<FT,V,S,compress12>& getGeometry() =  0;
   };
 

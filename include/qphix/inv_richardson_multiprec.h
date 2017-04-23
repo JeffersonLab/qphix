@@ -27,7 +27,7 @@ namespace QPhiX
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verbose)
+		    bool verbose,int cb=1) const
     {
       int iter=0;
       int mv_apps_outer = 0;
@@ -43,7 +43,7 @@ namespace QPhiX
       // This is the target residuum
       double rsd_t = RsdTarget*RsdTarget*rhs_sq;
 
-      m_outer(tmp, x, isign);
+      m_outer(tmp, x, isign,cb);
       mv_apps_outer++;
 
       // r = rhs - M x
@@ -95,7 +95,7 @@ namespace QPhiX
 
 	
 	solver_inner(dx_inner, r_inner, delta_use, n_iters_inner,
-		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, isign, verbose);
+		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, isign, verbose,cb);
 	
 	mv_apps_inner_total += mv_apps_inner;
 	site_flops_inner_total += site_flops_inner;
@@ -103,7 +103,7 @@ namespace QPhiX
 	// Up convert and un-normalize (Again don't count the flops, since its not 'useful'?
 	convert<FT,V,S,Compress,FTInner,VInner,SInner,CompressInner>(delta_x,r_norm,dx_inner, geom, geom_inner, convertFromThreads);
 
-	m_outer(tmp,delta_x, isign);
+	m_outer(tmp,delta_x, isign,cb);
 	mv_apps_outer++;
 
 	richardson_rxupdateNormR<FT,V,S,Compress>(x,r,delta_x,tmp,r_norm_sq,geom,rxUpdateThreads);
@@ -112,7 +112,7 @@ namespace QPhiX
 
 	if ( r_norm_sq < rsd_t ) { 
 	  // Converged. Compute final residuum. 
-	  m_outer(tmp, x, isign);
+	  m_outer(tmp, x, isign,cb);
 	  mv_apps_outer++;
 
 	  xmyNorm2Spinor<FT,V,S,Compress>(r,rhs,tmp,r_norm_sq,geom,xmyNormThreads);
@@ -133,7 +133,7 @@ namespace QPhiX
 
 
       // Not Converged. Compute final residuum. 
-      m_outer(tmp, x, isign);
+      m_outer(tmp, x, isign,cb);
       mv_apps_outer++;
 
       xmyNorm2Spinor<FT,V,S,Compress>(r,rhs,tmp,r_norm_sq,geom,xmyNormThreads);
@@ -186,10 +186,6 @@ namespace QPhiX
     }
 
 
-    void tune(void) {
-      solver_inner.tune();
-    }
-    
 
     Geometry<FT,V,S,Compress>& getGeometry() {
       return geom;
