@@ -1,10 +1,7 @@
 #ifndef TEST_DSLASH_FULL
 #define TEST_DSLASH_FULL
 
-
-#ifndef UNITTEST_H
 #include "unittest.h"
-#endif
 
 enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
 

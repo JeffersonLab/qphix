@@ -1,5 +1,5 @@
-#ifndef __qphix__test_clover_term_h__
-#define __qphix__test_clover_term_h__
+#ifndef QPHIX_TEST_CLOVER_TERM_H
+#define QPHIX_TEST_CLOVER_TERM_H
 
 #include "qphix/qphix_config.h"
 

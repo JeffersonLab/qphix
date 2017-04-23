@@ -1,7 +1,6 @@
 #ifndef BICGSTAB_DEBUG_H
 #define BICGSTAB_DEBUG_H
 
-
 #undef DEBUG
 
 template<typename T, typename U>

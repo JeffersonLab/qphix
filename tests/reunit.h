@@ -1,4 +1,3 @@
-//  Include guard: Include this file only once
 #ifndef REUNIT_H
 #define REUNIT_H
 
@@ -13,5 +12,4 @@ void reunit(LatticeColorMatrixF& a);
 void reunit(LatticeColorMatrixD& a);
 
 
-// End of Include guard
 #endif

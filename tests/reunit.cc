@@ -1,5 +1,3 @@
-// $Id: reunit.cc,v 1.2 2009-04-17 19:28:34 bjoo Exp $
-
 /*! \file
  *  \brief Reunitarize (to a SU(N)) inplace the matrix A under some option
  */

@@ -1,10 +1,7 @@
 #ifndef TEST_CLOVDSLASH_FULL
 #define TEST_CLOVDSLASH_FULL
 
-
-#ifndef UNITTEST_H
 #include "unittest.h"
-#endif
 
 enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
 

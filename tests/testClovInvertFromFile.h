@@ -1,10 +1,7 @@
 #ifndef TEST_CLOV_INVERT_FROM_FILE
 #define TEST_CLOV_INVERT_FROM_FILE
 
-
-#ifndef UNITTEST_H
 #include "unittest.h"
-#endif
 
 enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
 

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
-#ifndef __clover_fermact_params_w_h__
-#define __clover_fermact_params_w_h__
+#ifndef CLOVER_FERMACT_PARAMS_W_H
+#define CLOVER_FERMACT_PARAMS_W_H
 
 // These are parameters for setting up a clover term
 // I nicked them from chroma, and cut out all the XML 

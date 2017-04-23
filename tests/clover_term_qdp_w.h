@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef __clover_term_qdp_w_h__
-#define __clover_term_qdp_w_h__
+#ifndef CLOVER_TERM_QDP_W_H
+#define CLOVER_TERM_QDP_W_H
 
 #include "./clover_fermact_params_w.h"
 #include "./mesfield.h"

@@ -9,13 +9,8 @@ using namespace std;
 #include "qdp.h"
 using namespace QDP;
 
-#ifndef DSLASH_M_W_H
 #include "dslashm_w.h"
-#endif
-
-#ifndef REUNIT_H
 #include "reunit.h"
-#endif
 
 #include "qphix/geometry.h"
 #include "qphix/qdp_packer.h"
