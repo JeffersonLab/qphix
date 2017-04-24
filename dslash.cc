@@ -361,7 +361,7 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     if(clover && !twisted_mass) clover_term(ivector, *outspinor, true);
 		else if(clover && twisted_mass) full_clover_term(ivector, *outspinor, true);
-    else if(!clover && twisted_mass) twisted_term(ivector, *outspinor, true, isPlus);
+    else if(!clover && twisted_mass) inverse_twisted_term(ivector, *outspinor, true, isPlus);
 		else if(!clover && !twisted_mass) {};
 
     // scatter it out
@@ -477,7 +477,7 @@ void generate_code(void)
                             int num_components = compress12 ? 12 : 18;
 
                             filename
-                                << "./" << ARCH_NAME << "/" << tm_prefix
+                                << "generated/" << ARCH_NAME << "/generated/" << tm_prefix
                                 << clov_prefix << "dslash_face_unpack_from_"
                                 << dirname[dir] << "_" << dimchar[dim] << "_"
                                 << plusminus << "_" << SpinorTypeName << "_"
@@ -515,7 +515,7 @@ void generate_code(void)
 
                 string plusminus = isPlus ? "plus" : "minus";
 
-                filename << "./" << ARCH_NAME << "/dslash_face_pack_to_"
+                filename << "generated/" << ARCH_NAME << "/generated/" << "dslash_face_pack_to_"
                          << dirname[dir] << "_" << dimchar[dim] << "_"
                          << plusminus << "_" << SpinorTypeName << "_"
                          << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
