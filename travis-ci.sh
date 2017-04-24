@@ -254,6 +254,8 @@ if ! [[ -f Makefile ]]; then
             --enable-proc=AVX \
             --enable-soalen=2 \
             --enable-clover \
+            --enable-twisted-mass \
+            --enable-tm-clover \
             --enable-openmp \
             --enable-mm-malloc \
             --enable-parallel-arch=scalar \
