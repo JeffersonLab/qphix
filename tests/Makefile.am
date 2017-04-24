@@ -18,16 +18,18 @@ endif
 endif
 
 if QPHIX_BUILD_TWISTED_MASS
+if QPHIX_BUILD_WITH_QDP
 check_PROGRAMS += t_twm_dslash
+endif
 check_PROGRAMS += time_twm_noqdp
 endif
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
+if QPHIX_BUILD_WITH_QDP
 check_PROGRAMS += t_twm_clover
+endif
 check_PROGRAMS += time_twm_clover
 endif
-
-check_PROGRAMS += test_blas
 
 bin_PROGRAMS = $(check_PROGRAMS)
 
