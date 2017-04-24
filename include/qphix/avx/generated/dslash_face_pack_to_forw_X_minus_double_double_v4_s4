@@ -23,16 +23,10 @@ __m256d tmp_3_im = _mm256_setzero_pd();
 __m256d tmp_4_re = _mm256_setzero_pd();
 __m256d tmp_4_im = _mm256_setzero_pd();
 __m256d zero = _mm256_setzero_pd();
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+0) ), _MM_HINT_T1);
-
 zero = _mm256_setzero_pd(); 
 __m256d accMask;
 
 accMask = _mm256_int2mask_pd(mask);
-
- _mm_prefetch((const char *)( ((outbuf)+0) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((outbuf)+8) ), _MM_HINT_T0);
 
 psi_S0_RE = _mm256_setzero_pd();
 psi_S0_RE =  _mm256_blend_pd(_mm256_loadu_pd(((*xyBase)[0][0][0] + offs[0])), _mm256_broadcast_sd(((*xyBase)[0][0][0] + offs[3])), 8);
@@ -80,8 +74,6 @@ psi_S0_RE = _mm256_setzero_pd();
 psi_S0_RE =  _mm256_blend_pd(_mm256_loadu_pd(((*xyBase)[0][1][0] + offs[0])), _mm256_broadcast_sd(((*xyBase)[0][1][0] + offs[3])), 8);
 
 psi_S0_IM = _mm256_setzero_pd();
- _mm_prefetch((const char *)( (((outbuf) + hsprefdist)+8) ), _MM_HINT_T1);
-
 psi_S0_IM =  _mm256_blend_pd(_mm256_loadu_pd(((*xyBase)[0][1][1] + offs[0])), _mm256_broadcast_sd(((*xyBase)[0][1][1] + offs[3])), 8);
 
 psi_S1_RE = _mm256_setzero_pd();

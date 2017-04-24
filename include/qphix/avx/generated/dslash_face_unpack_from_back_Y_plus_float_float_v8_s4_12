@@ -77,8 +77,6 @@ __m256 tmp_3_im = _mm256_setzero_ps();
 __m256 tmp_4_re = _mm256_setzero_ps();
 __m256 tmp_4_im = _mm256_setzero_ps();
 __m256 zero = _mm256_setzero_ps();
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+0) ), _MM_HINT_T1);
-
 zero = _mm256_setzero_ps(); 
 __m256 accMask;
 
@@ -86,8 +84,6 @@ accMask = _mm256_int2mask_ps(mask);
 
 __m256 beta_vec = _mm256_setzero_ps();
 beta_vec = _mm256_broadcast_ss((&beta));
-
- _mm_prefetch((const char *)( ((inbuf)+0) ), _MM_HINT_T0);
 
 out_S0_C0_RE = _mm256_setzero_ps();
 out_S0_C0_RE =  _mm256_insertf128_ps(out_S0_C0_RE, _mm_load_ps(((*oBase)[0][0][0] + offs[0])), 0);
@@ -233,8 +229,6 @@ b_S1_C2_RE =  _mm256_insertf128_ps(b_S1_C2_RE, _mm_load_ps(((inbuf)+40)), 0);
 
 b_S1_C2_IM =  _mm256_insertf128_ps(b_S1_C2_IM, _mm_load_ps(((inbuf)+44)), 0);
 
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+16) ), _MM_HINT_T1);
-
 u_00_re = _mm256_load_ps((*gBase)[2][0][0][0]);
 
 u_00_im = _mm256_load_ps((*gBase)[2][0][0][1]);
@@ -337,8 +331,6 @@ ub_S1_C1_IM = _mm256_mul_ps( u_10_re , b_S1_C0_IM );
 ub_S1_C1_IM = _mm256_sub_ps(ub_S1_C1_IM, _mm256_mul_ps(u_10_im , b_S1_C0_RE));
 ub_S1_C1_RE = _mm256_add_ps(_mm256_mul_ps(u_11_re, b_S1_C1_RE), ub_S1_C1_RE );
 ub_S1_C1_RE = _mm256_add_ps(_mm256_mul_ps(u_11_im, b_S1_C1_IM), ub_S1_C1_RE );
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+32) ), _MM_HINT_T1);
-
 ub_S1_C1_IM = _mm256_add_ps(_mm256_mul_ps(u_11_re, b_S1_C1_IM), ub_S1_C1_IM );
 ub_S1_C1_IM = _mm256_sub_ps(ub_S1_C1_IM, _mm256_mul_ps(u_11_im , b_S1_C1_RE));
 ub_S1_C1_RE = _mm256_add_ps(_mm256_mul_ps(u_12_re, b_S1_C2_RE), ub_S1_C1_RE );
