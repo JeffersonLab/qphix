@@ -279,6 +279,8 @@ args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t 
 tests=(
 t_clov_dslash
 t_dslash
+t_twm_dslash
+t_twm_clover
 )
 
 for runner in "${tests[@]}"
