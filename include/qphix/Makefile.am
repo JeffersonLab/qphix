@@ -4,8 +4,7 @@ qphix_includedir=$(includedir)/qphix
 
 qphix_include_HEADERS= \
 	./qphix_config.h \
-	./dslash_utils.h \
-	./arith_type.h
+	./dslash_utils.h
 
 qphix_include_HEADERS += \
 	./abs_solver.h \
