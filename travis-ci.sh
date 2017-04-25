@@ -29,15 +29,15 @@ cd ..
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-4.9 g++-4.9
+sudo apt-get install -y gcc-6 g++-6
 sudo apt-get install -y ccache
 
 ls -l /usr/lib/ccache
 
 basedir=$PWD
 
-cc_name=gcc-4.9
-cxx_name=g++-4.9
+cc_name=gcc-6
+cxx_name=g++-6
 color_flags=""
 openmp_flags="-fopenmp"
 base_flags="-O2 -finline-limit=50000 -fmax-errors=1 $color_flags"
