@@ -124,8 +124,8 @@ print-fancy-heading() {
 # make much sense. Perhaps one has to split up the `autoreconf` call into the
 # parts that make it up. Using this weird dance, it works somewhat reliably.
 autotools-dance() {
-    automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
-    autoreconf -f
+    #automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
+    autoreconf -vif
 }
 
 # Invokes the various commands that are needed to update the GNU Autotools
@@ -248,7 +248,7 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-for arch in "scalar '' 1" "avx AVX 2" "avx2 AVX2 2" "avx512 AVX512 4"; do
+for arch in "'' scalar 1" "avx AVX 2" "avx2 AVX2 2" "avx512 AVX512 4"; do
     arch_a=( $arch )
     archlower=${arch_a[0]}
     archupper=${arch_a[1]}
