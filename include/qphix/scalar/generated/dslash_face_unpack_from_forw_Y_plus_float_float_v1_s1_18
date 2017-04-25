@@ -77,13 +77,9 @@ float tmp_3_im = 0.0f;
 float tmp_4_re = 0.0f;
 float tmp_4_im = 0.0f;
 float zero = 0.0f;
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+0) ), _MM_HINT_T1);
-
 zero = 0.0f;
 float beta_vec = 0.0f;
 beta_vec = (*(&beta));
-
- _mm_prefetch((const char *)( ((inbuf)+0) ), _MM_HINT_T0);
 
 
 out_S0_C0_RE = *(((*oBase)[0][0][0] + offs[0]));
