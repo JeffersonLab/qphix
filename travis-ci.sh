@@ -257,7 +257,7 @@ for arch in 'none scalar 1' "-mavx AVX 2" "-mavx2 AVX2 2" "-mavx512 AVX512 4"; d
     if [[ $archlower = none ]]; then
         archflag=
     else
-        archflag=-m$archlower
+        archflag=$archlower
     fi
 
     mkdir -p "$build/$repo-$archupper"
