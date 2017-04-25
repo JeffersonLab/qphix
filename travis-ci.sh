@@ -254,10 +254,10 @@ for arch in "'' scalar 1" "avx AVX 2" "avx2 AVX2 2" "avx512 AVX512 4"; do
     archupper=${arch_a[1]}
     soalen=${arch_a[2]}
 
-    if [[ -n "$archlower" ]]; then
-        archflag=-m$archlower
-    else
+    if [[ "$archlower" = "" ]]; then
         archflag=
+    else
+        archflag=-m$archlower
     fi
 
     mkdir -p "$build/$repo"
