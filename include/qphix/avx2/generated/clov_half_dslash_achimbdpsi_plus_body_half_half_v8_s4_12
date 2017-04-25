@@ -4072,73 +4072,73 @@ out_S3_C2_IM = _mm256_fmadd_ps( beta_vec , ub_S1_C2_IM , out_S3_C2_IM );
 }
 tmp_1_re = _mm256_permute2f128_ps(out_S0_C0_RE, out_S0_C0_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S0_C0_RE, out_S0_C0_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+0), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+0), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+0), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+0), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S1_C0_RE, out_S1_C0_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S1_C0_RE, out_S1_C0_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+8), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+8), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+8), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+8), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S2_C0_RE, out_S2_C0_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S2_C0_RE, out_S2_C0_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+16), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+16), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+16), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+16), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S3_C0_RE, out_S3_C0_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S3_C0_RE, out_S3_C0_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+24), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+24), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+24), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+24), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S0_C1_RE, out_S0_C1_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S0_C1_RE, out_S0_C1_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+32), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+32), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+32), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+32), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S1_C1_RE, out_S1_C1_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S1_C1_RE, out_S1_C1_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+40), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+40), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+40), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+40), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S2_C1_RE, out_S2_C1_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S2_C1_RE, out_S2_C1_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+48), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+48), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+48), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+48), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S3_C1_RE, out_S3_C1_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S3_C1_RE, out_S3_C1_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+56), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+56), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+56), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+56), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S0_C2_RE, out_S0_C2_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S0_C2_RE, out_S0_C2_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+64), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+64), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+64), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+64), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S1_C2_RE, out_S1_C2_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S1_C2_RE, out_S1_C2_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+72), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+72), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+72), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+72), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S2_C2_RE, out_S2_C2_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S2_C2_RE, out_S2_C2_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+80), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+80), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+80), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+80), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
 tmp_1_re = _mm256_permute2f128_ps(out_S3_C2_RE, out_S3_C2_IM, 32);
 tmp_2_re = _mm256_permute2f128_ps(out_S3_C2_RE, out_S3_C2_IM, 49);
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+88), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[0])+88), _mm256_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+88), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)(((*oBase)[0][0][0] + offs[4])+88), _mm256_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
