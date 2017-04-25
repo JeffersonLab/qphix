@@ -371,4 +371,3 @@ nobase_scalar_include_HEADERS += \
 ./generated/tm_clov_float_dslash_plus_body_float_float_v1_s1_18 \
 ./tm_clov_dslash_scalar_complete_specialization.h
 endif
-endif
