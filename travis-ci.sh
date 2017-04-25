@@ -248,7 +248,7 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-for arch in 'none scalar 1' "-march=sandybridge AVX 2" "-march=haswell AVX2 2" "-march=skylake-avx512 AVX512 4"; do
+for arch in 'none scalar 1' "-march=sandybridge AVX 2" "-march=haswell AVX2 2"; do
     arch_a=( $arch )
     archlower=${arch_a[0]}
     archupper=${arch_a[1]}
