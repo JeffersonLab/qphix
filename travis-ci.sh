@@ -260,8 +260,8 @@ for arch in 'none scalar 1' "-mavx AVX 2" "-mavx2 AVX2 2" "-mavx512 AVX512 4"; d
         archflag=-m$archlower
     fi
 
-    mkdir -p "$build/$repo"
-    pushd "$build/$repo"
+    mkdir -p "$build/$repo-$archupper"
+    pushd "$build/$repo-$archupper"
     if ! [[ -f Makefile ]]; then
         if ! $sourcedir/$repo/configure $base_configure \
                 $qphix_configure \
@@ -289,7 +289,7 @@ done
 
 export OMP_NUM_THREADS=4
 
-pushd $build/qphix-avx/tests
+pushd $build/qphix-AVX/tests
 
 l=16
 args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
