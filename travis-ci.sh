@@ -37,7 +37,7 @@ cc_name=gcc-4.9
 cxx_name=g++-4.9
 color_flags=""
 openmp_flags="-fopenmp"
-base_flags="-O2 -finline-limit=50000 -fmax-errors=1 $color_flags -mavx"
+base_flags="-O2 -finline-limit=50000 -fmax-errors=1 $color_flags"
 cxx11_flags="--std=c++11"
 disable_warnings_flags="-Wno-all -Wno-pedantic"
 qphix_flags="-Drestrict=__restrict__"
@@ -245,35 +245,42 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-mkdir -p "$build/$repo"
-pushd "$build/$repo"
-if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            $qphix_configure \
-            --disable-testing \
-            --enable-proc=AVX \
-            --enable-soalen=2 \
-            --enable-clover \
-            --enable-twisted-mass \
-            --enable-tm-clover \
-            --enable-openmp \
-            --enable-mm-malloc \
-            --enable-parallel-arch=scalar \
-            --with-qdp="$prefix" \
-            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
-        cat config.log
-        exit 1
+for arch in "scalar scalar 1" "avx AVX 2" "avx2 AVX2 2" "avx512 AVX512 4"; do
+    arch_a=( $arch )
+    archflag=${arch_a[0]}
+    archupper=${arch_a[1]}
+    soalen=${arch_a[2]}
+
+    mkdir -p "$build/$repo"
+    pushd "$build/$repo"
+    if ! [[ -f Makefile ]]; then
+        if ! $sourcedir/$repo/configure $base_configure \
+                $qphix_configure \
+                --disable-testing \
+                --enable-proc=$archupper \
+                --enable-soalen=$soalen \
+                --enable-clover \
+                --enable-twisted-mass \
+                --enable-tm-clover \
+                --enable-openmp \
+                --enable-mm-malloc \
+                --enable-parallel-arch=scalar \
+                --with-qdp="$prefix" \
+                CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
+            cat config.log
+            exit 1
+        fi
     fi
-fi
-make-make-install
-popd
+    make-make-install
+    popd
+done
 
 
 ###############################################################################
 
 export OMP_NUM_THREADS=4
 
-pushd $build/qphix/tests
+pushd $build/qphix-avx/tests
 
 l=16
 args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
