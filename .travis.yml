@@ -7,3 +7,5 @@ sudo: true
 
 notifications:
   slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
+
+cache: ccache
