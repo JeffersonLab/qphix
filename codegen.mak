@@ -105,7 +105,7 @@ DEFS += $(strip $(foreach var, $(deflist), $(if $($(var)), -D$(var)=$($(var)))))
 sources = codegen.cc data_types.cc dslash.cc dslash_common.cc inst_dp_vec8.cc inst_sp_vec16.cc inst_dp_vec4.cc inst_sp_vec8.cc inst_sp_vec4.cc inst_dp_vec2.cc inst_scalar.cc
 headers = address_types.h data_types.h dslash.h instructions.h Makefile $(CONFFILE)
 
-buildroot := build/codegen_mode-$(mode)_avx2-$(AVX2)_avx512-$(AVX512)_precision-$(PRECISION)_soalen-$(SOALEN)_low-$(ENABLE-LOW-PRECISION)
+buildroot := build/codegen_mode-$(mode)_avx2-$(AVX2)_avx512-$(AVX512)_precision-$(PRECISION)_soalen-$(SOALEN)_low-$(ENABLE_LOW_PRECISION)
 
 objects := $(sources:%.cc=$(buildroot)/%.o)
 
