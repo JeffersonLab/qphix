@@ -248,11 +248,17 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-for arch in "'' scalar 1" "-mavx AVX 2" "-mavx2 AVX2 2" "-mavx512 AVX512 4"; do
+for arch in 'none scalar 1' "-mavx AVX 2" "-mavx2 AVX2 2" "-mavx512 AVX512 4"; do
     arch_a=( $arch )
-    archflag=${arch_a[0]}
+    archlower=${arch_a[0]}
     archupper=${arch_a[1]}
     soalen=${arch_a[2]}
+
+    if [[ $archlower = none ]]; then
+        archflag=
+    else
+        archflag=-m$archlower
+    fi
 
     mkdir -p "$build/$repo"
     pushd "$build/$repo"
