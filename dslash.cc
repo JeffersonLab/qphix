@@ -403,9 +403,7 @@ void generate_code(void)
 
     // DSLASH and DSLASH_ACHIMBDPSI ROUTINES
     // =====================================
-    for (auto twisted_mass :
-         {TwistedMassVariant::none, TwistedMassVariant::degenerate,
-          TwistedMassVariant::non_degenerate}) {
+    for (auto twisted_mass : selected_twisted_mass_variants) {
         for (auto clover : {true, false}) {
             for (auto kernel : {"dslash", "dslash_achimbdpsi"}) {
                 for (auto isPlus : {true, false}) {
@@ -456,9 +454,7 @@ void generate_code(void)
 
     // FACE UNPACK ROUTINES
     // ====================
-    for (auto twisted_mass :
-         {TwistedMassVariant::none, TwistedMassVariant::degenerate,
-          TwistedMassVariant::non_degenerate}) {
+    for (auto twisted_mass : selected_twisted_mass_variants) {
         for (auto clover : {true, false}) {
             for (int dir = 0; dir < 2; dir++) {
                 for (int dim = 0; dim < 4; dim++) {

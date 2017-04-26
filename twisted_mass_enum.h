@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 /**
   Versions of twisted mass.
@@ -21,6 +22,9 @@ enum class TwistedMassVariant {
     /// fermions.
     non_degenerate,
 };
+
+std::vector<TwistedMassVariant> const selected_twisted_mass_variants{
+    TwistedMassVariant::none, TwistedMassVariant::degenerate};
 
 /// Prefixes for the generated kernels.
 std::map<TwistedMassVariant const, std::string const> const
