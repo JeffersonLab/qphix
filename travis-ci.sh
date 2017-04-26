@@ -5,8 +5,8 @@ set -e
 set -u
 set -x
 
-sudo apt-get update
-sudo apt-get upgrade -y python3
+#sudo apt-get update
+#sudo apt-get upgrade -y python3
 sudo apt-get install -y python3-jinja2
 
 python3 --version
