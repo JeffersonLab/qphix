@@ -23,7 +23,7 @@ set -x
 # supported from GCC 4.9. In Ubuntu Trusty, which is used by Travis CI, there
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
 #sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-sudo apt-get update
+#sudo apt-get update
 #sudo apt-get install -y gcc-4.9 g++-4.9
 
 sudo apt-get install -y python3-jinja2
