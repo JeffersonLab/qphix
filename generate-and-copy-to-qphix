@@ -10,13 +10,13 @@
 
 if (( $# != 2 )); then
     cat <<EOF
-This program does all the work when generating kernels for QPhiX.
+Generate kernels and copy then to QPhiX.
 
-It will compile the code generator for the given architecture, once for each
-floating point type and vector length and soalen and compression. Then it will
-run generator to generate the code. Third, a Python script will generate the
-\`Makefile.am\` and all the specialization header files. Lastly, those files
-are copied into the right spots of the QPhiX repository.
+This script will compile the code generator for the given architecture, once
+for each floating point type and vector length and soalen and compression. Then
+it will run generator to generate the code. Third, a Python script will
+generate the \`Makefile.am\` and all the specialization header files. Lastly,
+those files are copied into the right spots of the QPhiX repository.
 
 Call it like this:
 
