@@ -4,6 +4,10 @@
 # Generates the code for a given ISA and then copies the generated code to the
 # QPhiX repository.
 
+###############################################################################
+#                                 Help Screen                                 #
+###############################################################################
+
 if (( $# != 2 )); then
     cat <<EOF
 This program does all the work when generating kernels for QPhiX. 
@@ -19,15 +23,54 @@ fi
 
 set -e
 set -u
-set -x
 
 isa="$1"
 qphix="$2"
+
+###############################################################################
+#                         Check for QPhiX Repository                          #
+###############################################################################
 
 if ! [[ -d "$qphix/.git" ]]; then
     echo "The QPhiX Git repository could not be found at $qphix. Please make sure it is there or change the variable in this script."
     exit 1
 fi
+
+###############################################################################
+#                        Check that Jinja is installed                        #
+###############################################################################
+
+if ! python3 -c ''; then
+    cat <<EOF
+There is no python3 executable in your PATH. Please make sure that you have
+Python 3, perhaps install a package or load a module.
+EOF
+    exit 1
+fi
+
+if ! python3 -c 'import jinja2'; then
+    cat <<EOF
+The required Python 3 library “Jinja 2” is not available on your system. This
+is easily fixed.
+
+If you have root/sudo access to your Linux distribution, just install the
+system package for it. On Fedora, Ubuntu, and Debian it is called
+\`python3-jinja2\`.
+
+If you are just a user (perhaps on a HPC frontend machine), you can install
+Jinja 2 locally with PIP. Run the following to install:
+
+    pip3 install jinja2 --user
+
+It might happen that \`pip3\` is not installed either. Perhaps it can be loaded
+with another module.
+EOF
+    exit 1
+fi
+
+###############################################################################
+#                               Generate & Copy                               #
+###############################################################################
 
 # Generate the kernel code.
 make -j "$(nproc)" "$isa"
