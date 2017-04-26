@@ -73,7 +73,7 @@ Jinja 2 locally with PIP. Run the following to install:
 It might happen that \`pip3\` is not installed either. Perhaps it can be loaded
 with another module.
 EOF
-    #exit 1
+    exit 1
 fi
 
 ###############################################################################
