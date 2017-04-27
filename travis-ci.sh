@@ -248,7 +248,29 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-arch_a=( $QPHIX_ARCH )
+case "$QPHIX_ARCH" in
+    scalar)
+        archlower=
+        archupper=scalar
+        soalen=1
+        ;;
+    AVX)
+        archlower=-march=sandybridge
+        archupper=AVX
+        soalen=2
+        ;;
+    AVX2)
+        archlower=-march=haswell
+        archupper=AVX2
+        soalen=2
+        ;;
+    AVX512)
+        archlower=-march=knl
+        archupper=AVX512
+        soalen=4
+        ;;
+esac
+
 archlower=${arch_a[0]}
 archupper=${arch_a[1]}
 soalen=${arch_a[2]}
@@ -285,7 +307,7 @@ popd
 ###############################################################################
 
 # Only run the tests on architectures that are supported by Travis CI.
-case "$archupper" in
+case "$QPHIX_ARCH" in
     scalar)
         ;;
     AVX)
