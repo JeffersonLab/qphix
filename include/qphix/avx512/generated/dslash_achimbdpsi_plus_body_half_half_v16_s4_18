@@ -4283,24 +4283,16 @@ out_S3_C1_IM = _mm512_fmadd_ps(beta_vec, ub_S1_C1_IM, out_S3_C1_IM);
 out_S3_C2_RE = _mm512_fmadd_ps(beta_vec, ub_S1_C2_RE, out_S3_C2_RE);
 out_S3_C2_IM = _mm512_fmadd_ps(beta_vec, ub_S1_C2_IM, out_S3_C2_IM);
 }
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S0_C0_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S0_C0_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S1_C0_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S1_C0_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S0_C0_RE, (_MM_PERM_ENUM)85);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S0_C0_RE, out_S1_C0_RE, 0);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S0_C0_IM, out_S1_C0_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S0_C0_RE, out_S1_C0_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S0_C0_IM, out_S1_C0_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S0_C0_RE, out_S1_C0_RE, 170);
  _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+192) ), _MM_HINT_T1);
 
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S0_C0_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S1_C0_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S1_C0_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S0_C0_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S0_C0_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S1_C0_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S1_C0_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S0_C0_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S0_C0_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S1_C0_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S1_C0_IM, (_MM_PERM_ENUM)255);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S0_C0_IM, out_S1_C0_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S0_C0_RE, out_S1_C0_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S0_C0_IM, out_S1_C0_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+0), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+0), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
@@ -4309,24 +4301,14 @@ _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[8])+0), _mm512_cvtps_ph
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[12])+0), _mm512_cvtps_ph(tmp_4_re, _MM_FROUND_TO_NEAREST_INT));
 
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S2_C0_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S2_C0_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S3_C0_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S3_C0_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S2_C0_RE, (_MM_PERM_ENUM)85);
- _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+224) ), _MM_HINT_T1);
-
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S2_C0_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S3_C0_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S3_C0_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S2_C0_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S2_C0_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S3_C0_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S3_C0_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S2_C0_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S2_C0_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S3_C0_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S3_C0_IM, (_MM_PERM_ENUM)255);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S2_C0_RE, out_S3_C0_RE, 0);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S2_C0_IM, out_S3_C0_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S2_C0_RE, out_S3_C0_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S2_C0_IM, out_S3_C0_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S2_C0_RE, out_S3_C0_RE, 170);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S2_C0_IM, out_S3_C0_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S2_C0_RE, out_S3_C0_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S2_C0_IM, out_S3_C0_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+16), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+16), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
@@ -4335,24 +4317,16 @@ _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[8])+16), _mm512_cvtps_p
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[12])+16), _mm512_cvtps_ph(tmp_4_re, _MM_FROUND_TO_NEAREST_INT));
 
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S0_C1_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S0_C1_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S1_C1_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S1_C1_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S0_C1_RE, (_MM_PERM_ENUM)85);
- _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+256) ), _MM_HINT_T1);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S0_C1_RE, out_S1_C1_RE, 0);
+ _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+224) ), _MM_HINT_T1);
 
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S0_C1_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S1_C1_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S1_C1_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S0_C1_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S0_C1_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S1_C1_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S1_C1_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S0_C1_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S0_C1_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S1_C1_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S1_C1_IM, (_MM_PERM_ENUM)255);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S0_C1_IM, out_S1_C1_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S0_C1_RE, out_S1_C1_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S0_C1_IM, out_S1_C1_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S0_C1_RE, out_S1_C1_RE, 170);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S0_C1_IM, out_S1_C1_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S0_C1_RE, out_S1_C1_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S0_C1_IM, out_S1_C1_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+32), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+32), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
@@ -4361,23 +4335,17 @@ _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[8])+32), _mm512_cvtps_p
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[12])+32), _mm512_cvtps_ph(tmp_4_re, _MM_FROUND_TO_NEAREST_INT));
 
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S2_C1_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S2_C1_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S3_C1_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S3_C1_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S2_C1_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S2_C1_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S3_C1_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S3_C1_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S2_C1_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S2_C1_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S3_C1_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S3_C1_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S2_C1_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S2_C1_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S3_C1_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S3_C1_IM, (_MM_PERM_ENUM)255);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S2_C1_RE, out_S3_C1_RE, 0);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S2_C1_IM, out_S3_C1_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S2_C1_RE, out_S3_C1_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S2_C1_IM, out_S3_C1_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S2_C1_RE, out_S3_C1_RE, 170);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S2_C1_IM, out_S3_C1_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S2_C1_RE, out_S3_C1_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S2_C1_IM, out_S3_C1_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+48), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
+
+ _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+256) ), _MM_HINT_T1);
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+48), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
 
@@ -4385,22 +4353,14 @@ _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[8])+48), _mm512_cvtps_p
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[12])+48), _mm512_cvtps_ph(tmp_4_re, _MM_FROUND_TO_NEAREST_INT));
 
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S0_C2_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S0_C2_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S1_C2_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S1_C2_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S0_C2_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S0_C2_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S1_C2_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S1_C2_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S0_C2_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S0_C2_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S1_C2_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S1_C2_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S0_C2_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S0_C2_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S1_C2_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S1_C2_IM, (_MM_PERM_ENUM)255);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S0_C2_RE, out_S1_C2_RE, 0);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S0_C2_IM, out_S1_C2_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S0_C2_RE, out_S1_C2_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S0_C2_IM, out_S1_C2_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S0_C2_RE, out_S1_C2_RE, 170);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S0_C2_IM, out_S1_C2_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S0_C2_RE, out_S1_C2_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S0_C2_IM, out_S1_C2_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+64), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+64), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
@@ -4409,22 +4369,14 @@ _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[8])+64), _mm512_cvtps_p
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[12])+64), _mm512_cvtps_ph(tmp_4_re, _MM_FROUND_TO_NEAREST_INT));
 
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf, out_S2_C2_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf0, out_S2_C2_IM, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf00, out_S3_C2_RE, (_MM_PERM_ENUM)0);
-tmp_1_re = _mm512_mask_permute4f128_ps(tmp_1_re, 0xf000, out_S3_C2_IM, (_MM_PERM_ENUM)0);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf, out_S2_C2_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf0, out_S2_C2_IM, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf00, out_S3_C2_RE, (_MM_PERM_ENUM)85);
-tmp_2_re = _mm512_mask_permute4f128_ps(tmp_2_re, 0xf000, out_S3_C2_IM, (_MM_PERM_ENUM)85);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf, out_S2_C2_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf0, out_S2_C2_IM, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf00, out_S3_C2_RE, (_MM_PERM_ENUM)170);
-tmp_3_re = _mm512_mask_permute4f128_ps(tmp_3_re, 0xf000, out_S3_C2_IM, (_MM_PERM_ENUM)170);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf, out_S2_C2_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf0, out_S2_C2_IM, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf00, out_S3_C2_RE, (_MM_PERM_ENUM)255);
-tmp_4_re = _mm512_mask_permute4f128_ps(tmp_4_re, 0xf000, out_S3_C2_IM, (_MM_PERM_ENUM)255);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f, out_S2_C2_RE, out_S3_C2_RE, 0);
+tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xf0f0, out_S2_C2_IM, out_S3_C2_IM, 0);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f, out_S2_C2_RE, out_S3_C2_RE, 85);
+tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xf0f0, out_S2_C2_IM, out_S3_C2_IM, 85);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f, out_S2_C2_RE, out_S3_C2_RE, 170);
+tmp_3_re = _mm512_mask_shuffle_f32x4(tmp_3_re, 0xf0f0, out_S2_C2_IM, out_S3_C2_IM, 170);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f, out_S2_C2_RE, out_S3_C2_RE, 255);
+tmp_4_re = _mm512_mask_shuffle_f32x4(tmp_4_re, 0xf0f0, out_S2_C2_IM, out_S3_C2_IM, 255);
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[0])+80), _mm512_cvtps_ph(tmp_1_re, _MM_FROUND_TO_NEAREST_INT));
 
 _mm256_store_si256((__m256i *)(((*oBase)[0][0][0] + offs[4])+80), _mm512_cvtps_ph(tmp_2_re, _MM_FROUND_TO_NEAREST_INT));
