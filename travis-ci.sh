@@ -249,24 +249,20 @@ autoreconf-if-needed
 popd
 
 case "$QPHIX_ARCH" in
-    scalar)
-        archlower=
-        archupper=scalar
+    NONE)
+        archflag=
         soalen=1
         ;;
     AVX)
-        archlower=-march=sandybridge
-        archupper=AVX
+        archflag=-march=sandybridge
         soalen=2
         ;;
     AVX2)
-        archlower=-march=haswell
-        archupper=AVX2
+        archflag=-march=haswell
         soalen=2
         ;;
     AVX512)
-        archlower=-march=knl
-        archupper=AVX512
+        archflag=-march=knl
         soalen=4
         ;;
 esac
@@ -287,7 +283,7 @@ if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             $qphix_configure \
             --disable-testing \
-            --enable-proc=$archupper \
+            --enable-proc=$QPHIX_ARCH \
             --enable-soalen=$soalen \
             --enable-clover \
             --enable-twisted-mass \
@@ -308,7 +304,7 @@ popd
 
 # Only run the tests on architectures that are supported by Travis CI.
 case "$QPHIX_ARCH" in
-    scalar)
+    NONE)
         ;;
     AVX)
         ;;
@@ -325,7 +321,7 @@ export OMP_NUM_THREADS=2
 pushd $build/qphix/tests
 
 l=16
-args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
+args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
 
 tests=(
 t_clov_dslash
