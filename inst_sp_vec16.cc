@@ -517,6 +517,35 @@ private:
     const int imm;
 };
 
+class Shuffle32x4 : public Instruction
+{
+public:
+    Shuffle32x4(const FVec &ret_, const string mk_, const FVec &a_,
+                const FVec &b_, const int imm_)
+        : ret(ret_), mk(mk_), a(a_), b(b_), imm(imm_)
+    {
+    }
+    string serialize() const
+    {
+        ostringstream stream;
+        stream << ret.getName() << " = _mm512_mask_shuffle_f32x4("
+               << ret.getName() << ", " << mk << ", " << a.getName() << ", "
+               << b.getName() << ", " << imm << ");";
+        return stream.str();
+    }
+    int numArithmeticInst() const
+    {
+        return 0;
+    }
+
+private:
+    const FVec ret;
+    const FVec a;
+    const FVec b;
+    const string mk;
+    const int imm;
+};
+
 void loadSOAFVec(InstVector& ivector, const FVec& ret, const Address *a, int soanum, int soalen, string mask)
 {
     int mskbits = (((1 << soalen)-1) << (soanum*soalen));
@@ -593,30 +622,54 @@ void fperm32x4(InstVector& ivector, const FVec& ret, const string mk, const FVec
     ivector.push_back(new Perm32x4(ret, mk, a, imm));
 }
 
-void transpose4x4(InstVector& ivector, const FVec r[4], const FVec f[4])
+void shuffle32x4(InstVector &ivector, const FVec &ret, const string mk,
+                 const FVec &a, const FVec &b, const int imm)
 {
-    for(int i = 0; i < 4; i++) {
-        for(int j = 0; j < 4; j++) {
-            int mskbits = (((1 << 4)-1) << (j*4));
-            stringstream mk;
-            mk << "0x" << hex << mskbits;
-            string localmask = mk.str();
-            fperm32x4(ivector, r[i], localmask, f[j], 0x55*i);
-        }
-    }
+    ivector.push_back(new Shuffle32x4(ret, mk, a, b, imm));
 }
 
-void transpose2x2(InstVector& ivector, const FVec r[2], const FVec f[2])
+void transpose4x4(InstVector &ivector, const FVec r[4], const FVec f[4])
 {
-    for(int i = 0; i < 2; i++) {
-        for(int j = 0; j < 2; j++) {
-            int mskbits = (((1 << 8)-1) << (j*8));
+#ifndef AVX512
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            int mskbits = (((1 << 4) - 1) << (j * 4));
             stringstream mk;
             mk << "0x" << hex << mskbits;
             string localmask = mk.str();
-            fperm32x4(ivector, r[i], localmask, f[j], 0x44+0xAA*i);
+            fperm32x4(ivector, r[i], localmask, f[j], 0x55 * i);
         }
     }
+#else
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 2; j++) {
+            int mskbits = ((0x0F0F) << (j * 4));
+            stringstream mk;
+            mk << "0x" << hex << mskbits;
+            string localmask = mk.str();
+            shuffle32x4(ivector, r[i], localmask, f[j], f[j + 2], 0x55 * i);
+        }
+    }
+#endif
+}
+
+void transpose2x2(InstVector &ivector, const FVec r[2], const FVec f[2])
+{
+#ifndef AVX512
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            int mskbits = (((1 << 8) - 1) << (j * 8));
+            stringstream mk;
+            mk << "0x" << hex << mskbits;
+            string localmask = mk.str();
+            fperm32x4(ivector, r[i], localmask, f[j], 0x44 + 0xAA * i);
+        }
+    }
+#else
+    for (int i = 0; i < 2; i++) {
+        shuffle32x4(ivector, r[i], fullMask, f[0], f[1], 0x44 + 0xAA * i);
+    }
+#endif
 }
 
 void transpose1x1(InstVector& ivector, const FVec r[1], const FVec f[1])
