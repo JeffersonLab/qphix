@@ -6,6 +6,11 @@ dist: trusty
 sudo: true
 
 notifications:
-  slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
+    slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
 
 cache: ccache
+
+env:
+    - QPHIX_ARCH=none scalar 1
+    - QPHIX_ARCH=-march=sandybridge AVX 2
+    - QPHIX_ARCH=-march=haswell AVX2 2

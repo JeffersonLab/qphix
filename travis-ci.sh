@@ -248,48 +248,59 @@ cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
 
-for arch in 'none scalar 1' "-march=sandybridge AVX 2" "-march=haswell AVX2 2"; do
-    arch_a=( $arch )
-    archlower=${arch_a[0]}
-    archupper=${arch_a[1]}
-    soalen=${arch_a[2]}
+arch_a=( $QPHIX_ARCH )
+archlower=${arch_a[0]}
+archupper=${arch_a[1]}
+soalen=${arch_a[2]}
 
-    if [[ $archlower = none ]]; then
-        archflag=
-    else
-        archflag=$archlower
+if [[ $archlower = none ]]; then
+    archflag=
+else
+    archflag=$archlower
+fi
+
+mkdir -p "$build/$repo"
+pushd "$build/$repo"
+if ! [[ -f Makefile ]]; then
+    if ! $sourcedir/$repo/configure $base_configure \
+            $qphix_configure \
+            --disable-testing \
+            --enable-proc=$archupper \
+            --enable-soalen=$soalen \
+            --enable-clover \
+            --enable-twisted-mass \
+            --enable-tm-clover \
+            --enable-openmp \
+            --enable-mm-malloc \
+            --enable-parallel-arch=scalar \
+            --with-qdp="$prefix" \
+            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
+        cat config.log
+        exit 1
     fi
-
-    mkdir -p "$build/$repo-$archupper"
-    pushd "$build/$repo-$archupper"
-    if ! [[ -f Makefile ]]; then
-        if ! $sourcedir/$repo/configure $base_configure \
-                $qphix_configure \
-                --disable-testing \
-                --enable-proc=$archupper \
-                --enable-soalen=$soalen \
-                --enable-clover \
-                --enable-twisted-mass \
-                --enable-tm-clover \
-                --enable-openmp \
-                --enable-mm-malloc \
-                --enable-parallel-arch=scalar \
-                --with-qdp="$prefix" \
-                CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
-            cat config.log
-            exit 1
-        fi
-    fi
-    make-make-install
-    popd
-done
-
+fi
+make-make-install
+popd
 
 ###############################################################################
 
-export OMP_NUM_THREADS=4
+# Only run the tests on architectures that are supported by Travis CI.
+case "$archupper" in
+    scalar)
+        ;;
+    AVX)
+        ;;
+    AVX2)
+        exit 0
+        ;;
+    AVX512)
+        exit 0
+        ;;
+esac
 
-pushd $build/qphix-AVX/tests
+export OMP_NUM_THREADS=2
+
+pushd $build/qphix/tests
 
 l=16
 args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
