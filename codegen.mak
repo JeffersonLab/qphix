@@ -111,9 +111,7 @@ objects := $(sources:%.cc=$(buildroot)/%.o)
 
 $(buildroot)/codegen: $(sources) $(headers) $(objects) | $(buildroot)
 	@if [ "$(mode)" = sentinel ]; then echo 'Fatal error: You have neither specified a mode nor a target. Omitting the target compile the code generator, but that needs a `mode`. If you just want to generate code for some architecture (say avx2), then call `make avx2`.'; exit 1; fi
-	$(CXXHOST) $(DEFS) $(objects) -o $@
-	# Generate the kernels.
-	./$@
+	$(CXXHOST) $(DEFS) $(objects) -o $@ && ./$@
 
 $(buildroot)/%.o: %.cc $(headers) | $(buildroot)
 	$(CXXHOST) -c $(DEFS) $< -o $@
