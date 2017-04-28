@@ -252,18 +252,22 @@ case "$QPHIX_ARCH" in
     NONE)
         archflag=
         soalen=1
+        proc=
         ;;
     AVX)
         archflag=-march=sandybridge
         soalen=2
+        proc=--enable-proc=$QPHIX_ARCH
         ;;
     AVX2)
         archflag=-march=haswell
         soalen=2
+        proc=--enable-proc=$QPHIX_ARCH
         ;;
     AVX512)
         archflag=-march=knl
         soalen=4
+        proc=--enable-proc=$QPHIX_ARCH
         ;;
 esac
 
@@ -283,7 +287,7 @@ if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             $qphix_configure \
             --disable-testing \
-            --enable-proc=$QPHIX_ARCH \
+            $proc \
             --enable-soalen=$soalen \
             --enable-clover \
             --enable-twisted-mass \
