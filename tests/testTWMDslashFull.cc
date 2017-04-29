@@ -625,11 +625,11 @@ void testTWMDslashFull::testTWMM(const U& u, int t_bc)
 
     // Apply QDP Dslash + TM term
     Phi chi2 = zero;
-    dslash(chi2,u_test,psi, isign, 1);
+    dslash(chi2,u_test,psi, isign, source_cb);
     applyInvTwist<>(chi2, Mu, MuInv, isign, source_cb);
 
     // apply achimdpsi incl.twist
-    dslash(ltmp,u_test,chi2, isign, 0);
+    dslash(ltmp,u_test,chi2, isign, target_cb);
     applyTwist<>(psi, Mu, alpha, isign, target_cb);
 
     chi2[rb[target_cb]] = psi - beta * ltmp;
