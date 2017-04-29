@@ -552,83 +552,83 @@ chi_S3_C2_IM = _mm512_mask_expandloadu_ps(chi_S3_C2_IM, 0xf000, ((*chiBase)[2][3
 
  _mm_prefetch((const char *)( ((*clBase).diag1[ 0 ] +560) ), _MM_HINT_T0);
 
-cl_diag_0 = _mm512_mask_extload_ps(cl_diag_0, 0xFFFF, (*clBase).diag1[ 0 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_0 = _mm512_mask_load_ps(cl_diag_0, 0xFFFF, (*clBase).diag1[ 0 ] );
 
-cl_diag_1 = _mm512_mask_extload_ps(cl_diag_1, 0xFFFF, (*clBase).diag1[ 1 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_1 = _mm512_mask_load_ps(cl_diag_1, 0xFFFF, (*clBase).diag1[ 1 ] );
 
-cl_diag_2 = _mm512_mask_extload_ps(cl_diag_2, 0xFFFF, (*clBase).diag1[ 2 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_2 = _mm512_mask_load_ps(cl_diag_2, 0xFFFF, (*clBase).diag1[ 2 ] );
 
-cl_diag_3 = _mm512_mask_extload_ps(cl_diag_3, 0xFFFF, (*clBase).diag1[ 3 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_3 = _mm512_mask_load_ps(cl_diag_3, 0xFFFF, (*clBase).diag1[ 3 ] );
 
-cl_diag_4 = _mm512_mask_extload_ps(cl_diag_4, 0xFFFF, (*clBase).diag1[ 4 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_4 = _mm512_mask_load_ps(cl_diag_4, 0xFFFF, (*clBase).diag1[ 4 ] );
 
-cl_diag_5 = _mm512_mask_extload_ps(cl_diag_5, 0xFFFF, (*clBase).diag1[ 5 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_5 = _mm512_mask_load_ps(cl_diag_5, 0xFFFF, (*clBase).diag1[ 5 ] );
 
-cl_offdiag_0_RE = _mm512_mask_extload_ps(cl_offdiag_0_RE, 0xFFFF, (*clBase).off_diag1[ 0 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_0_RE = _mm512_mask_load_ps(cl_offdiag_0_RE, 0xFFFF, (*clBase).off_diag1[ 0 ][ 0]);
 
-cl_offdiag_0_IM = _mm512_mask_extload_ps(cl_offdiag_0_IM, 0xFFFF, (*clBase).off_diag1[ 0 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_0_IM = _mm512_mask_load_ps(cl_offdiag_0_IM, 0xFFFF, (*clBase).off_diag1[ 0 ][ 1]);
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+0) + offs[12]) ), _MM_HINT_T1);
 
-cl_offdiag_1_RE = _mm512_mask_extload_ps(cl_offdiag_1_RE, 0xFFFF, (*clBase).off_diag1[ 1 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_1_RE = _mm512_mask_load_ps(cl_offdiag_1_RE, 0xFFFF, (*clBase).off_diag1[ 1 ][ 0]);
 
-cl_offdiag_1_IM = _mm512_mask_extload_ps(cl_offdiag_1_IM, 0xFFFF, (*clBase).off_diag1[ 1 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_1_IM = _mm512_mask_load_ps(cl_offdiag_1_IM, 0xFFFF, (*clBase).off_diag1[ 1 ][ 1]);
 
-cl_offdiag_2_RE = _mm512_mask_extload_ps(cl_offdiag_2_RE, 0xFFFF, (*clBase).off_diag1[ 2 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_2_RE = _mm512_mask_load_ps(cl_offdiag_2_RE, 0xFFFF, (*clBase).off_diag1[ 2 ][ 0]);
 
-cl_offdiag_2_IM = _mm512_mask_extload_ps(cl_offdiag_2_IM, 0xFFFF, (*clBase).off_diag1[ 2 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_2_IM = _mm512_mask_load_ps(cl_offdiag_2_IM, 0xFFFF, (*clBase).off_diag1[ 2 ][ 1]);
 
-cl_offdiag_3_RE = _mm512_mask_extload_ps(cl_offdiag_3_RE, 0xFFFF, (*clBase).off_diag1[ 3 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_3_RE = _mm512_mask_load_ps(cl_offdiag_3_RE, 0xFFFF, (*clBase).off_diag1[ 3 ][ 0]);
 
-cl_offdiag_3_IM = _mm512_mask_extload_ps(cl_offdiag_3_IM, 0xFFFF, (*clBase).off_diag1[ 3 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_3_IM = _mm512_mask_load_ps(cl_offdiag_3_IM, 0xFFFF, (*clBase).off_diag1[ 3 ][ 1]);
 
-cl_offdiag_4_RE = _mm512_mask_extload_ps(cl_offdiag_4_RE, 0xFFFF, (*clBase).off_diag1[ 4 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_4_RE = _mm512_mask_load_ps(cl_offdiag_4_RE, 0xFFFF, (*clBase).off_diag1[ 4 ][ 0]);
 
-cl_offdiag_4_IM = _mm512_mask_extload_ps(cl_offdiag_4_IM, 0xFFFF, (*clBase).off_diag1[ 4 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_4_IM = _mm512_mask_load_ps(cl_offdiag_4_IM, 0xFFFF, (*clBase).off_diag1[ 4 ][ 1]);
 
-cl_offdiag_5_RE = _mm512_mask_extload_ps(cl_offdiag_5_RE, 0xFFFF, (*clBase).off_diag1[ 5 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_5_RE = _mm512_mask_load_ps(cl_offdiag_5_RE, 0xFFFF, (*clBase).off_diag1[ 5 ][ 0]);
 
-cl_offdiag_5_IM = _mm512_mask_extload_ps(cl_offdiag_5_IM, 0xFFFF, (*clBase).off_diag1[ 5 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_5_IM = _mm512_mask_load_ps(cl_offdiag_5_IM, 0xFFFF, (*clBase).off_diag1[ 5 ][ 1]);
 
-cl_offdiag_6_RE = _mm512_mask_extload_ps(cl_offdiag_6_RE, 0xFFFF, (*clBase).off_diag1[ 6 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_6_RE = _mm512_mask_load_ps(cl_offdiag_6_RE, 0xFFFF, (*clBase).off_diag1[ 6 ][ 0]);
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+16) + offs[0]) ), _MM_HINT_T1);
 
-cl_offdiag_6_IM = _mm512_mask_extload_ps(cl_offdiag_6_IM, 0xFFFF, (*clBase).off_diag1[ 6 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_6_IM = _mm512_mask_load_ps(cl_offdiag_6_IM, 0xFFFF, (*clBase).off_diag1[ 6 ][ 1]);
 
-cl_offdiag_7_RE = _mm512_mask_extload_ps(cl_offdiag_7_RE, 0xFFFF, (*clBase).off_diag1[ 7 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_7_RE = _mm512_mask_load_ps(cl_offdiag_7_RE, 0xFFFF, (*clBase).off_diag1[ 7 ][ 0]);
 
-cl_offdiag_7_IM = _mm512_mask_extload_ps(cl_offdiag_7_IM, 0xFFFF, (*clBase).off_diag1[ 7 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_7_IM = _mm512_mask_load_ps(cl_offdiag_7_IM, 0xFFFF, (*clBase).off_diag1[ 7 ][ 1]);
 
-cl_offdiag_8_RE = _mm512_mask_extload_ps(cl_offdiag_8_RE, 0xFFFF, (*clBase).off_diag1[ 8 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_8_RE = _mm512_mask_load_ps(cl_offdiag_8_RE, 0xFFFF, (*clBase).off_diag1[ 8 ][ 0]);
 
-cl_offdiag_8_IM = _mm512_mask_extload_ps(cl_offdiag_8_IM, 0xFFFF, (*clBase).off_diag1[ 8 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_8_IM = _mm512_mask_load_ps(cl_offdiag_8_IM, 0xFFFF, (*clBase).off_diag1[ 8 ][ 1]);
 
-cl_offdiag_9_RE = _mm512_mask_extload_ps(cl_offdiag_9_RE, 0xFFFF, (*clBase).off_diag1[ 9 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_9_RE = _mm512_mask_load_ps(cl_offdiag_9_RE, 0xFFFF, (*clBase).off_diag1[ 9 ][ 0]);
 
-cl_offdiag_9_IM = _mm512_mask_extload_ps(cl_offdiag_9_IM, 0xFFFF, (*clBase).off_diag1[ 9 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_9_IM = _mm512_mask_load_ps(cl_offdiag_9_IM, 0xFFFF, (*clBase).off_diag1[ 9 ][ 1]);
 
-cl_offdiag_10_RE = _mm512_mask_extload_ps(cl_offdiag_10_RE, 0xFFFF, (*clBase).off_diag1[ 10 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_10_RE = _mm512_mask_load_ps(cl_offdiag_10_RE, 0xFFFF, (*clBase).off_diag1[ 10 ][ 0]);
 
-cl_offdiag_10_IM = _mm512_mask_extload_ps(cl_offdiag_10_IM, 0xFFFF, (*clBase).off_diag1[ 10 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_10_IM = _mm512_mask_load_ps(cl_offdiag_10_IM, 0xFFFF, (*clBase).off_diag1[ 10 ][ 1]);
 
-cl_offdiag_11_RE = _mm512_mask_extload_ps(cl_offdiag_11_RE, 0xFFFF, (*clBase).off_diag1[ 11 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_11_RE = _mm512_mask_load_ps(cl_offdiag_11_RE, 0xFFFF, (*clBase).off_diag1[ 11 ][ 0]);
 
-cl_offdiag_11_IM = _mm512_mask_extload_ps(cl_offdiag_11_IM, 0xFFFF, (*clBase).off_diag1[ 11 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_11_IM = _mm512_mask_load_ps(cl_offdiag_11_IM, 0xFFFF, (*clBase).off_diag1[ 11 ][ 1]);
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+16) + offs[4]) ), _MM_HINT_T1);
 
-cl_offdiag_12_RE = _mm512_mask_extload_ps(cl_offdiag_12_RE, 0xFFFF, (*clBase).off_diag1[ 12 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_12_RE = _mm512_mask_load_ps(cl_offdiag_12_RE, 0xFFFF, (*clBase).off_diag1[ 12 ][ 0]);
 
-cl_offdiag_12_IM = _mm512_mask_extload_ps(cl_offdiag_12_IM, 0xFFFF, (*clBase).off_diag1[ 12 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_12_IM = _mm512_mask_load_ps(cl_offdiag_12_IM, 0xFFFF, (*clBase).off_diag1[ 12 ][ 1]);
 
-cl_offdiag_13_RE = _mm512_mask_extload_ps(cl_offdiag_13_RE, 0xFFFF, (*clBase).off_diag1[ 13 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_13_RE = _mm512_mask_load_ps(cl_offdiag_13_RE, 0xFFFF, (*clBase).off_diag1[ 13 ][ 0]);
 
-cl_offdiag_13_IM = _mm512_mask_extload_ps(cl_offdiag_13_IM, 0xFFFF, (*clBase).off_diag1[ 13 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_13_IM = _mm512_mask_load_ps(cl_offdiag_13_IM, 0xFFFF, (*clBase).off_diag1[ 13 ][ 1]);
 
-cl_offdiag_14_RE = _mm512_mask_extload_ps(cl_offdiag_14_RE, 0xFFFF, (*clBase).off_diag1[ 14 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_14_RE = _mm512_mask_load_ps(cl_offdiag_14_RE, 0xFFFF, (*clBase).off_diag1[ 14 ][ 0]);
 
-cl_offdiag_14_IM = _mm512_mask_extload_ps(cl_offdiag_14_IM, 0xFFFF, (*clBase).off_diag1[ 14 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_14_IM = _mm512_mask_load_ps(cl_offdiag_14_IM, 0xFFFF, (*clBase).off_diag1[ 14 ][ 1]);
 
 out_S0_C0_RE = _mm512_mul_ps( cl_diag_0 , chi_S0_C0_RE );
 out_S0_C0_IM = _mm512_mul_ps( cl_diag_0 , chi_S0_C0_IM );
@@ -864,85 +864,85 @@ out_S1_C2_IM = _mm512_fmadd_ps(cl_offdiag_14_IM, chi_S1_C1_RE, out_S1_C2_IM);
 
  _mm_prefetch((const char *)( ((*clBase).diag2[ 0 ] +560) ), _MM_HINT_T0);
 
-cl_diag_0 = _mm512_mask_extload_ps(cl_diag_0, 0xFFFF, (*clBase).diag2[ 0 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_0 = _mm512_mask_load_ps(cl_diag_0, 0xFFFF, (*clBase).diag2[ 0 ] );
 
-cl_diag_1 = _mm512_mask_extload_ps(cl_diag_1, 0xFFFF, (*clBase).diag2[ 1 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_1 = _mm512_mask_load_ps(cl_diag_1, 0xFFFF, (*clBase).diag2[ 1 ] );
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+80) + offs[4]) ), _MM_HINT_T1);
 
-cl_diag_2 = _mm512_mask_extload_ps(cl_diag_2, 0xFFFF, (*clBase).diag2[ 2 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_2 = _mm512_mask_load_ps(cl_diag_2, 0xFFFF, (*clBase).diag2[ 2 ] );
 
-cl_diag_3 = _mm512_mask_extload_ps(cl_diag_3, 0xFFFF, (*clBase).diag2[ 3 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_3 = _mm512_mask_load_ps(cl_diag_3, 0xFFFF, (*clBase).diag2[ 3 ] );
 
-cl_diag_4 = _mm512_mask_extload_ps(cl_diag_4, 0xFFFF, (*clBase).diag2[ 4 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_4 = _mm512_mask_load_ps(cl_diag_4, 0xFFFF, (*clBase).diag2[ 4 ] );
 
-cl_diag_5 = _mm512_mask_extload_ps(cl_diag_5, 0xFFFF, (*clBase).diag2[ 5 ] , _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_diag_5 = _mm512_mask_load_ps(cl_diag_5, 0xFFFF, (*clBase).diag2[ 5 ] );
 
-cl_offdiag_0_RE = _mm512_mask_extload_ps(cl_offdiag_0_RE, 0xFFFF, (*clBase).off_diag2[ 0 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_0_RE = _mm512_mask_load_ps(cl_offdiag_0_RE, 0xFFFF, (*clBase).off_diag2[ 0 ][ 0]);
 
-cl_offdiag_0_IM = _mm512_mask_extload_ps(cl_offdiag_0_IM, 0xFFFF, (*clBase).off_diag2[ 0 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_0_IM = _mm512_mask_load_ps(cl_offdiag_0_IM, 0xFFFF, (*clBase).off_diag2[ 0 ][ 1]);
 
-cl_offdiag_1_RE = _mm512_mask_extload_ps(cl_offdiag_1_RE, 0xFFFF, (*clBase).off_diag2[ 1 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_1_RE = _mm512_mask_load_ps(cl_offdiag_1_RE, 0xFFFF, (*clBase).off_diag2[ 1 ][ 0]);
 
-cl_offdiag_1_IM = _mm512_mask_extload_ps(cl_offdiag_1_IM, 0xFFFF, (*clBase).off_diag2[ 1 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_1_IM = _mm512_mask_load_ps(cl_offdiag_1_IM, 0xFFFF, (*clBase).off_diag2[ 1 ][ 1]);
 
-cl_offdiag_2_RE = _mm512_mask_extload_ps(cl_offdiag_2_RE, 0xFFFF, (*clBase).off_diag2[ 2 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_2_RE = _mm512_mask_load_ps(cl_offdiag_2_RE, 0xFFFF, (*clBase).off_diag2[ 2 ][ 0]);
 
-cl_offdiag_2_IM = _mm512_mask_extload_ps(cl_offdiag_2_IM, 0xFFFF, (*clBase).off_diag2[ 2 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_2_IM = _mm512_mask_load_ps(cl_offdiag_2_IM, 0xFFFF, (*clBase).off_diag2[ 2 ][ 1]);
 
-cl_offdiag_3_RE = _mm512_mask_extload_ps(cl_offdiag_3_RE, 0xFFFF, (*clBase).off_diag2[ 3 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_3_RE = _mm512_mask_load_ps(cl_offdiag_3_RE, 0xFFFF, (*clBase).off_diag2[ 3 ][ 0]);
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+80) + offs[8]) ), _MM_HINT_T1);
 
-cl_offdiag_3_IM = _mm512_mask_extload_ps(cl_offdiag_3_IM, 0xFFFF, (*clBase).off_diag2[ 3 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_3_IM = _mm512_mask_load_ps(cl_offdiag_3_IM, 0xFFFF, (*clBase).off_diag2[ 3 ][ 1]);
 
-cl_offdiag_4_RE = _mm512_mask_extload_ps(cl_offdiag_4_RE, 0xFFFF, (*clBase).off_diag2[ 4 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_4_RE = _mm512_mask_load_ps(cl_offdiag_4_RE, 0xFFFF, (*clBase).off_diag2[ 4 ][ 0]);
 
-cl_offdiag_4_IM = _mm512_mask_extload_ps(cl_offdiag_4_IM, 0xFFFF, (*clBase).off_diag2[ 4 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_4_IM = _mm512_mask_load_ps(cl_offdiag_4_IM, 0xFFFF, (*clBase).off_diag2[ 4 ][ 1]);
 
-cl_offdiag_5_RE = _mm512_mask_extload_ps(cl_offdiag_5_RE, 0xFFFF, (*clBase).off_diag2[ 5 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_5_RE = _mm512_mask_load_ps(cl_offdiag_5_RE, 0xFFFF, (*clBase).off_diag2[ 5 ][ 0]);
 
-cl_offdiag_5_IM = _mm512_mask_extload_ps(cl_offdiag_5_IM, 0xFFFF, (*clBase).off_diag2[ 5 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_5_IM = _mm512_mask_load_ps(cl_offdiag_5_IM, 0xFFFF, (*clBase).off_diag2[ 5 ][ 1]);
 
-cl_offdiag_6_RE = _mm512_mask_extload_ps(cl_offdiag_6_RE, 0xFFFF, (*clBase).off_diag2[ 6 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_6_RE = _mm512_mask_load_ps(cl_offdiag_6_RE, 0xFFFF, (*clBase).off_diag2[ 6 ][ 0]);
 
-cl_offdiag_6_IM = _mm512_mask_extload_ps(cl_offdiag_6_IM, 0xFFFF, (*clBase).off_diag2[ 6 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_6_IM = _mm512_mask_load_ps(cl_offdiag_6_IM, 0xFFFF, (*clBase).off_diag2[ 6 ][ 1]);
 
-cl_offdiag_7_RE = _mm512_mask_extload_ps(cl_offdiag_7_RE, 0xFFFF, (*clBase).off_diag2[ 7 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_7_RE = _mm512_mask_load_ps(cl_offdiag_7_RE, 0xFFFF, (*clBase).off_diag2[ 7 ][ 0]);
 
-cl_offdiag_7_IM = _mm512_mask_extload_ps(cl_offdiag_7_IM, 0xFFFF, (*clBase).off_diag2[ 7 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_7_IM = _mm512_mask_load_ps(cl_offdiag_7_IM, 0xFFFF, (*clBase).off_diag2[ 7 ][ 1]);
 
-cl_offdiag_8_RE = _mm512_mask_extload_ps(cl_offdiag_8_RE, 0xFFFF, (*clBase).off_diag2[ 8 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_8_RE = _mm512_mask_load_ps(cl_offdiag_8_RE, 0xFFFF, (*clBase).off_diag2[ 8 ][ 0]);
 
-cl_offdiag_8_IM = _mm512_mask_extload_ps(cl_offdiag_8_IM, 0xFFFF, (*clBase).off_diag2[ 8 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_8_IM = _mm512_mask_load_ps(cl_offdiag_8_IM, 0xFFFF, (*clBase).off_diag2[ 8 ][ 1]);
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+80) + offs[12]) ), _MM_HINT_T1);
 
-cl_offdiag_9_RE = _mm512_mask_extload_ps(cl_offdiag_9_RE, 0xFFFF, (*clBase).off_diag2[ 9 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_9_RE = _mm512_mask_load_ps(cl_offdiag_9_RE, 0xFFFF, (*clBase).off_diag2[ 9 ][ 0]);
 
-cl_offdiag_9_IM = _mm512_mask_extload_ps(cl_offdiag_9_IM, 0xFFFF, (*clBase).off_diag2[ 9 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_9_IM = _mm512_mask_load_ps(cl_offdiag_9_IM, 0xFFFF, (*clBase).off_diag2[ 9 ][ 1]);
 
-cl_offdiag_10_RE = _mm512_mask_extload_ps(cl_offdiag_10_RE, 0xFFFF, (*clBase).off_diag2[ 10 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_10_RE = _mm512_mask_load_ps(cl_offdiag_10_RE, 0xFFFF, (*clBase).off_diag2[ 10 ][ 0]);
 
-cl_offdiag_10_IM = _mm512_mask_extload_ps(cl_offdiag_10_IM, 0xFFFF, (*clBase).off_diag2[ 10 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_10_IM = _mm512_mask_load_ps(cl_offdiag_10_IM, 0xFFFF, (*clBase).off_diag2[ 10 ][ 1]);
 
-cl_offdiag_11_RE = _mm512_mask_extload_ps(cl_offdiag_11_RE, 0xFFFF, (*clBase).off_diag2[ 11 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_11_RE = _mm512_mask_load_ps(cl_offdiag_11_RE, 0xFFFF, (*clBase).off_diag2[ 11 ][ 0]);
 
-cl_offdiag_11_IM = _mm512_mask_extload_ps(cl_offdiag_11_IM, 0xFFFF, (*clBase).off_diag2[ 11 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_11_IM = _mm512_mask_load_ps(cl_offdiag_11_IM, 0xFFFF, (*clBase).off_diag2[ 11 ][ 1]);
 
-cl_offdiag_12_RE = _mm512_mask_extload_ps(cl_offdiag_12_RE, 0xFFFF, (*clBase).off_diag2[ 12 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_12_RE = _mm512_mask_load_ps(cl_offdiag_12_RE, 0xFFFF, (*clBase).off_diag2[ 12 ][ 0]);
 
-cl_offdiag_12_IM = _mm512_mask_extload_ps(cl_offdiag_12_IM, 0xFFFF, (*clBase).off_diag2[ 12 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_12_IM = _mm512_mask_load_ps(cl_offdiag_12_IM, 0xFFFF, (*clBase).off_diag2[ 12 ][ 1]);
 
-cl_offdiag_13_RE = _mm512_mask_extload_ps(cl_offdiag_13_RE, 0xFFFF, (*clBase).off_diag2[ 13 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_13_RE = _mm512_mask_load_ps(cl_offdiag_13_RE, 0xFFFF, (*clBase).off_diag2[ 13 ][ 0]);
 
-cl_offdiag_13_IM = _mm512_mask_extload_ps(cl_offdiag_13_IM, 0xFFFF, (*clBase).off_diag2[ 13 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_13_IM = _mm512_mask_load_ps(cl_offdiag_13_IM, 0xFFFF, (*clBase).off_diag2[ 13 ][ 1]);
 
-cl_offdiag_14_RE = _mm512_mask_extload_ps(cl_offdiag_14_RE, 0xFFFF, (*clBase).off_diag2[ 14 ][ 0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_14_RE = _mm512_mask_load_ps(cl_offdiag_14_RE, 0xFFFF, (*clBase).off_diag2[ 14 ][ 0]);
 
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+0) + offs[0]) ), _MM_HINT_T1);
 
-cl_offdiag_14_IM = _mm512_mask_extload_ps(cl_offdiag_14_IM, 0xFFFF, (*clBase).off_diag2[ 14 ][ 1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+cl_offdiag_14_IM = _mm512_mask_load_ps(cl_offdiag_14_IM, 0xFFFF, (*clBase).off_diag2[ 14 ][ 1]);
 
 out_S2_C0_RE = _mm512_mul_ps( cl_diag_0 , chi_S2_C0_RE );
 out_S2_C0_IM = _mm512_mul_ps( cl_diag_0 , chi_S2_C0_IM );
@@ -1102,7 +1102,7 @@ out_S3_C2_IM = _mm512_fmadd_ps(cl_offdiag_14_RE, chi_S3_C1_IM, out_S3_C2_IM);
 out_S3_C2_IM = _mm512_fmadd_ps(cl_offdiag_14_IM, chi_S3_C1_RE, out_S3_C2_IM);
  if ( accumulate[0] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
 __mmask accMask;
 
@@ -1418,31 +1418,31 @@ b_S0_C2_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
 
  _mm_prefetch((const char *)( ((*gBase)[0][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[0][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[0][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[0][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[0][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[0][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[0][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[0][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[0][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[0][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[0][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[0][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[0][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[0][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[0][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[0][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[0][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[0][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[0][1][1][0]);
 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+0) + offs[12]) ), _MM_HINT_T1);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[0][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[0][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[0][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[0][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[0][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[0][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -1819,7 +1819,7 @@ out_S2_C2_IM = _mm512_mask_mov_ps(out_S2_C2_IM, accMask, _mm512_fnmadd_ps(beta_v
 }
  if ( accumulate[1] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
 __mmask accMask;
 
@@ -2135,31 +2135,31 @@ b_S0_C2_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
 
  _mm_prefetch((const char *)( ((*gBase)[1][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[1][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[1][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[1][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[1][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[1][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[1][0][1][0]);
 
  _mm_prefetch((const char *)( (((*clBase).diag1[ 0 ]  + clprefdist)+240) ), _MM_HINT_T1);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[1][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[1][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[1][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[1][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[1][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[1][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[1][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[1][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[1][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[1][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[1][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[1][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[1][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[1][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[1][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[1][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[1][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[1][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -2538,7 +2538,7 @@ out_S2_C2_IM = _mm512_mask_mov_ps(out_S2_C2_IM, accMask, _mm512_fmadd_ps(beta_ve
 }
  if ( accumulate[2] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
 __mmask accMask;
 
@@ -2748,31 +2748,31 @@ b_S0_C2_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
 
  _mm_prefetch((const char *)( ((*gBase)[2][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[2][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[2][0][0][0]);
 
  _mm_prefetch((const char *)( (((*clBase).diag1[ 0 ]  + clprefdist)+752) ), _MM_HINT_T1);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[2][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[2][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[2][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[2][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[2][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[2][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[2][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[2][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[2][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[2][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[2][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[2][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[2][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[2][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[2][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[2][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[2][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[2][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[2][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[2][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[2][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[2][1][2][1]);
 
  _mm_prefetch((const char *)( (((*clBase).diag1[ 0 ]  + clprefdist)+768) ), _MM_HINT_T1);
 
@@ -3047,7 +3047,7 @@ out_S2_C2_IM = _mm512_mask_mov_ps(out_S2_C2_IM, accMask, _mm512_fmadd_ps(beta_ve
 
  if ( accumulate[3] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
 __mmask accMask;
 
@@ -3257,31 +3257,31 @@ b_S0_C2_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
 
  _mm_prefetch((const char *)( ((*gBase)[3][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[3][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[3][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[3][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[3][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[3][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[3][0][1][0]);
 
  _mm_prefetch((const char *)( ((((*pfBaseChi)[0][0][0] + chiprefdist)+0) + offs[12]) ), _MM_HINT_T1);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[3][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[3][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[3][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[3][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[3][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[3][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[3][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[3][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[3][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[3][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[3][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[3][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[3][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[3][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[3][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[3][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[3][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[3][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -3556,7 +3556,7 @@ out_S2_C2_IM = _mm512_mask_mov_ps(out_S2_C2_IM, accMask, _mm512_fnmadd_ps(beta_v
 __m512 beta_vec = _mm512_setzero_ps(); 
  _mm_prefetch((const char *)( ((((*pfBaseChi)[0][0][0] + chiprefdist)+80) + offs[4]) ), _MM_HINT_T1);
 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
  _mm_prefetch((const char *)( (((*zbBase)[0][0][0]+0) + offs[0]) ), _MM_HINT_T0);
 
@@ -3762,31 +3762,31 @@ b_S0_C2_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
 
  _mm_prefetch((const char *)( ((*gBase)[4][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[4][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[4][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[4][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[4][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[4][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[4][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[4][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[4][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[4][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[4][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[4][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[4][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[4][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[4][1][0][0]);
 
  _mm_prefetch((const char *)( (((*gBase)[0][0][0][0] + gprefdist)+112) ), _MM_HINT_T1);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[4][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[4][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[4][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[4][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[4][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[4][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[4][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[4][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[4][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[4][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -4059,7 +4059,7 @@ out_S3_C2_IM = _mm512_fmadd_ps(beta_vec, ub_S1_C2_RE, out_S3_C2_IM);
 }
  if ( accumulate[5] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_s), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_s));
 
  _mm_prefetch((const char *)( (((*zfBase)[0][0][0]+0) + offs[0]) ), _MM_HINT_T0);
 
@@ -4267,31 +4267,31 @@ b_S0_C2_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+160) ), _MM_HINT_T1);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[5][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[5][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[5][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[5][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[5][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[5][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[5][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[5][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[5][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[5][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[5][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[5][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[5][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[5][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[5][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[5][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[5][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[5][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[5][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[5][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[5][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[5][1][2][0]);
 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+176) ), _MM_HINT_T1);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[5][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[5][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -4564,7 +4564,7 @@ out_S3_C2_IM = _mm512_fnmadd_ps(beta_vec, ub_S1_C2_RE, out_S3_C2_IM);
 }
  if ( accumulate[6] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_t_b), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_t_b));
 
  _mm_prefetch((const char *)( (((*tbBase)[0][0][0]+0) + offs[0]) ), _MM_HINT_T0);
 
@@ -4770,31 +4770,31 @@ b_S0_C2_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
 
  _mm_prefetch((const char *)( ((*gBase)[6][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[6][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[6][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[6][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[6][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[6][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[6][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[6][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[6][0][1][1]);
 
  _mm_prefetch((const char *)( (((*gBase)[5][0][0][0] + gprefdist)+32) ), _MM_HINT_T1);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[6][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[6][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[6][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[6][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[6][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[6][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[6][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[6][1][0][1]);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[6][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[6][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[6][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[6][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[6][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[6][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[6][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[6][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
@@ -5067,7 +5067,7 @@ out_S3_C2_IM = _mm512_fmadd_ps(beta_vec, ub_S1_C2_IM, out_S3_C2_IM);
 }
  if ( accumulate[7] ) { 
 __m512 beta_vec = _mm512_setzero_ps(); 
-beta_vec = _mm512_extload_ps((&coeff_t_f), _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+beta_vec = _mm512_set1_ps(*(&coeff_t_f));
 
  _mm_prefetch((const char *)( (((*gBase)[6][0][0][0] + gprefdist)+128) ), _MM_HINT_T1);
 
@@ -5275,31 +5275,31 @@ b_S0_C2_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
 
  _mm_prefetch((const char *)( ((*gBase)[7][0][0][0]+176) ), _MM_HINT_T0);
 
-u_00_re = _mm512_mask_extload_ps(u_00_re, 0xFFFF, (*gBase)[7][0][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_re = _mm512_mask_load_ps(u_00_re, 0xFFFF, (*gBase)[7][0][0][0]);
 
-u_00_im = _mm512_mask_extload_ps(u_00_im, 0xFFFF, (*gBase)[7][0][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_00_im = _mm512_mask_load_ps(u_00_im, 0xFFFF, (*gBase)[7][0][0][1]);
 
-u_01_re = _mm512_mask_extload_ps(u_01_re, 0xFFFF, (*gBase)[7][0][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_re = _mm512_mask_load_ps(u_01_re, 0xFFFF, (*gBase)[7][0][1][0]);
 
-u_01_im = _mm512_mask_extload_ps(u_01_im, 0xFFFF, (*gBase)[7][0][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_01_im = _mm512_mask_load_ps(u_01_im, 0xFFFF, (*gBase)[7][0][1][1]);
 
-u_02_re = _mm512_mask_extload_ps(u_02_re, 0xFFFF, (*gBase)[7][0][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_re = _mm512_mask_load_ps(u_02_re, 0xFFFF, (*gBase)[7][0][2][0]);
 
-u_02_im = _mm512_mask_extload_ps(u_02_im, 0xFFFF, (*gBase)[7][0][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_02_im = _mm512_mask_load_ps(u_02_im, 0xFFFF, (*gBase)[7][0][2][1]);
 
-u_10_re = _mm512_mask_extload_ps(u_10_re, 0xFFFF, (*gBase)[7][1][0][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_re = _mm512_mask_load_ps(u_10_re, 0xFFFF, (*gBase)[7][1][0][0]);
 
-u_10_im = _mm512_mask_extload_ps(u_10_im, 0xFFFF, (*gBase)[7][1][0][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_10_im = _mm512_mask_load_ps(u_10_im, 0xFFFF, (*gBase)[7][1][0][1]);
 
  _mm_prefetch((const char *)( (((*gBase)[7][0][0][0] + gprefdist)+96) ), _MM_HINT_T1);
 
-u_11_re = _mm512_mask_extload_ps(u_11_re, 0xFFFF, (*gBase)[7][1][1][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_re = _mm512_mask_load_ps(u_11_re, 0xFFFF, (*gBase)[7][1][1][0]);
 
-u_11_im = _mm512_mask_extload_ps(u_11_im, 0xFFFF, (*gBase)[7][1][1][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_11_im = _mm512_mask_load_ps(u_11_im, 0xFFFF, (*gBase)[7][1][1][1]);
 
-u_12_re = _mm512_mask_extload_ps(u_12_re, 0xFFFF, (*gBase)[7][1][2][0], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_re = _mm512_mask_load_ps(u_12_re, 0xFFFF, (*gBase)[7][1][2][0]);
 
-u_12_im = _mm512_mask_extload_ps(u_12_im, 0xFFFF, (*gBase)[7][1][2][1], _MM_UPCONV_PS_NONE, _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+u_12_im = _mm512_mask_load_ps(u_12_im, 0xFFFF, (*gBase)[7][1][2][1]);
 
 u_20_re = _mm512_mul_ps( u_01_re , u_12_re );
 u_20_re = _mm512_fnmadd_ps(u_01_im, u_12_im, u_20_re);
