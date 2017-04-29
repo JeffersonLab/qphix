@@ -83,13 +83,15 @@ string LoadFVec::serialize() const
     }
 
 #ifdef AVX512
-	if (upConv == "_MM_UPCONV_PS_FLOAT16") {
-		buf << v.getName() << " = _mm512_mask_cvtph_ps(" << v.getName() << ", " << lmask << ", "<< "_mm256_load_si256((__m256i*)" << a->serialize() << "));" <<endl;
-	}
-	else
+    if (upConv == "_MM_UPCONV_PS_FLOAT16") {
+        buf << v.getName() << " = _mm512_mask_cvtph_ps(" << v.getName() << ", " << lmask << ", "<< "_mm256_load_si256((__m256i*)" << a->serialize() << "));" <<endl;
+    }
+    else {
+        buf << v.getName() << " = _mm512_mask_load_ps(" << v.getName() << ", " << lmask << ", "  << a->serialize() << ");" <<endl;
+    }
 #else
-#endif
     buf << v.getName() << " = _mm512_mask_extload_ps(" << v.getName() << ", " << lmask << ", "  << a->serialize() << ", " << upConv << ", _MM_BROADCAST32_NONE, _MM_HINT_NONE);" <<endl;
+#endif
 
     return buf.str();
 
@@ -182,13 +184,15 @@ string LoadBroadcast::serialize() const
         upConv = "_MM_UPCONV_PS_FLOAT16";
     }
  #ifdef AVX512
-	if (upConv == "_MM_UPCONV_PS_FLOAT16") {
-		buf << v.getName() << " = _mm512_cvtph_ps(_mm256_set1_epi16(*" << a->serialize() << "));" << endl;
-	}
-	else
+    if (upConv == "_MM_UPCONV_PS_FLOAT16") {
+        buf << v.getName() << " = _mm512_cvtph_ps(_mm256_set1_epi16(*" << a->serialize() << "));" << endl;
+    }
+    else {
+        buf << v.getName() << " = _mm512_set1_ps(*" << a->serialize() << ");" << endl;
+    }
 #else
-#endif
     buf << v.getName() << " = _mm512_extload_ps(" << a->serialize() << ", " << upConv << ", _MM_BROADCAST_1X16, _MM_HINT_NONE);" << endl;
+#endif
 
     return buf.str();
 }
