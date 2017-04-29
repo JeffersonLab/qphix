@@ -38,7 +38,7 @@ namespace QPhiX
     }
 
     inline
-    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const {
+    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const override {
 
       int other_cb=1-target_cb;
       D->dslash(tmp, in, u[other_cb], isign, other_cb);

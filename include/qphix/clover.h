@@ -57,7 +57,7 @@ namespace QPhiX {
     
    
     inline 
-    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const {
+    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const override {
       double beta=(double)0.25;
       int other_cb = 1 - target_cb;
       D->dslash(tmp, in, u[other_cb], invclov,  isign, other_cb);

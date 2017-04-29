@@ -62,7 +62,7 @@ namespace QPhiX {
           invclov[1] = invclov_[1];
         }
 
-        void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb = 1)
+        void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb = 1) const override
         {
           int source_cb = 1 - target_cb;
           double beta = (double) 0.25;
