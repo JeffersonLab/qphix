@@ -271,16 +271,6 @@ case "$QPHIX_ARCH" in
         ;;
 esac
 
-archlower=${arch_a[0]}
-archupper=${arch_a[1]}
-soalen=${arch_a[2]}
-
-if [[ $archlower = none ]]; then
-    archflag=
-else
-    archflag=$archlower
-fi
-
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
