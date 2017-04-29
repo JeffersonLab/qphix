@@ -7,8 +7,18 @@ set -e
 set -u
 set -x
 
+fold_start() {
+echo -en 'travis_fold:start:'$1'\\r'
+}
+
+fold_end() {
+echo -en 'travis_fold:end:'$1'\\r'
+}
+
+fold_start more_cpu_info
 lscpu
 cat /proc/cpuinfo
+fold_end more_cpu_info
 
 # The submodules are downloaded via SSH. This means that there has to be some
 # SSH key registered with GitHub. The Travis CI virtual machine does not have
@@ -17,22 +27,26 @@ cat /proc/cpuinfo
 # this key to authenticate against GitHub. Only then it can download the public
 # readable submodules. Another approach would be to switch to HTTPS for the
 # submodules.
+fold_start get_ssh_key
 wget -O ~/.ssh/id_rsa https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy
 wget -O ~/.ssh/id_rsa.pub https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy.pub
 chmod 0600 ~/.ssh/id_rsa
 chmod 0600 ~/.ssh/id_rsa.pub
+fold_end get_ssh_key
 
 cd ..
 
 # There is `#pragma omp simd` in the code. That needs OpenMP 4.0. That is
 # supported from GCC 4.9. In Ubuntu Trusty, which is used by Travis CI, there
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
+fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install -y gcc-6 g++-6
 sudo apt-get install -y ccache
 
 ls -l /usr/lib/ccache
+fold_end update_gcc
 
 basedir=$PWD
 
@@ -94,8 +108,14 @@ make_smp_flags="${SMP-$make_smp_template}"
 # not invoked once it has correctly built.
 make-make-install() {
     if ! [[ -f build-succeeded ]]; then
-        nice make $make_smp_flags
+        fold_start $repo.make
+        make $make_smp_flags
+        fold_end $repo.make
+
+        fold_start $repo.make_install
         make install
+        fold_end $repo.make_install
+
         touch build-succeeded
         pushd $prefix/lib
         rm -f *.so *.so.*
@@ -157,10 +177,14 @@ cd "$sourcedir"
 #                                   libxml2                                   #
 ###############################################################################
 
+
 repo=libxml2
+fold_start $repo.download
 print-fancy-heading $repo
 clone-if-needed https://git.gnome.org/browse/libxml2 $repo v2.9.4
+fold_end $repo.download
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags"
 cxxflags="$base_cxxflags"
@@ -172,7 +196,9 @@ if ! [[ -f configure ]]; then
     NOCONFIGURE=yes ./autogen.sh
 fi
 popd
+fold_end $repo.autoreconf
 
+fold_start $repo.configure
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
@@ -201,6 +227,7 @@ if ! [[ -f Makefile ]]; then
         exit 1
     fi
 fi
+fold_end $repo.configure
 make-make-install
 popd
 
@@ -209,15 +236,20 @@ popd
 ###############################################################################
 
 repo=qdpxx
+fold_start $repo.download
 print-fancy-heading $repo
 clone-if-needed https://github.com/usqcd-software/qdpxx.git $repo devel
+fold_end $repo.download
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags $openmp_flags --std=c99"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
 autoreconf-if-needed
 popd
+fold_end $repo.autoreconf
 
+fold_start $repo.configure
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
@@ -232,6 +264,7 @@ if ! [[ -f Makefile ]]; then
         exit 1
     fi
 fi
+fold_end $repo.configure
 make-make-install
 popd
 
@@ -242,12 +275,15 @@ popd
 repo=qphix
 print-fancy-heading $repo
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags $openmp_flags $qphix_flags"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
+fold_end $repo.download
 
+fold_start $repo.configure
 case "$QPHIX_ARCH" in
     SCALAR)
         archflag=
@@ -270,7 +306,6 @@ case "$QPHIX_ARCH" in
         exit 1;
 esac
 
-
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
@@ -291,6 +326,7 @@ if ! [[ -f Makefile ]]; then
         exit 1
     fi
 fi
+fold_end $repo.configure
 make-make-install
 popd
 
@@ -326,6 +362,8 @@ t_twm_clover
 
 for runner in "${tests[@]}"
 do
+    fold_start testing.$runner
     ./$runner $args
+    fold_end testing.$runner
 done
 
