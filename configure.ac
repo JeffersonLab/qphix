@@ -137,7 +137,7 @@ AC_ARG_WITH(qdp,
 AC_ARG_ENABLE(proc,
    AC_HELP_STRING(
 	[--enable-proc=proc],
-	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,AVX512,MIC ]
+	[ Build code specializations for proc. proc=SCALAR,SSE,AVX,AVX2,AVX512,MIC ]
    ),
    [ proc="${enable_proc}" ],
    [ proc="NONE"]

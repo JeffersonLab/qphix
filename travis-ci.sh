@@ -249,27 +249,24 @@ autoreconf-if-needed
 popd
 
 case "$QPHIX_ARCH" in
-    NONE)
+    SCALAR)
         archflag=
         soalen=1
-        proc=
         ;;
     AVX)
         archflag=-march=sandybridge
         soalen=2
-        proc=--enable-proc=$QPHIX_ARCH
         ;;
     AVX2)
         archflag=-march=haswell
         soalen=2
-        proc=--enable-proc=$QPHIX_ARCH
         ;;
     AVX512)
         archflag=-march=knl
         soalen=4
-        proc=--enable-proc=$QPHIX_ARCH
         ;;
 esac
+
 
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
@@ -277,7 +274,7 @@ if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             $qphix_configure \
             --disable-testing \
-            $proc \
+            --enable-proc=$QPHIX_ARCH \
             --enable-soalen=$soalen \
             --enable-clover \
             --enable-twisted-mass \
@@ -298,7 +295,7 @@ popd
 
 # Only run the tests on architectures that are supported by Travis CI.
 case "$QPHIX_ARCH" in
-    NONE)
+    SCALAR)
         ;;
     AVX)
         ;;
