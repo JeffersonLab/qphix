@@ -265,6 +265,9 @@ case "$QPHIX_ARCH" in
         archflag=-march=knl
         soalen=4
         ;;
+    *)
+        echo "Unsupported QPHIX_ARCH"
+        exit 1;
 esac
 
 

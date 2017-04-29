@@ -11,6 +11,6 @@ notifications:
 cache: ccache
 
 env:
-    - QPHIX_ARCH=NONE
+    - QPHIX_ARCH=SCALAR
     - QPHIX_ARCH=AVX
     - QPHIX_ARCH=AVX2
