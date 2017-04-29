@@ -760,7 +760,6 @@ void testTWMDslashFull::testTWMCG(const U& u, int t_bc)
   unsigned long mv_apps = 0;
   int isign = 1;
   InvCG<T,V,S,compress> solver(M, max_iters);
-  solver.tune();
 
   // 1. QPhiX CG Solve
   // =================
@@ -893,7 +892,6 @@ testTWMDslashFull::testTWMBiCGStab(const U& u, int t_bc)
   unsigned long site_flops = 0;
   unsigned long mv_apps = 0;
   InvBiCGStab<T, V, S, compress> solver(M, max_iters);
-  solver.tune();
 
   for(auto isign : {1,-1}) {
 

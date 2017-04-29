@@ -677,7 +677,6 @@ void testTWMCloverFull::runTest(void)
     unsigned long mv_apps;
 
     InvCG<FT,V,S,compress> solver(M, max_iters);
-    solver.tune();
 
     double start = omp_get_wtime();
     solver(chi_s[1], psi_s[1],rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
@@ -736,7 +735,6 @@ void testTWMCloverFull::runTest(void)
     unsigned long mv_apps;
 
     InvBiCGStab<FT,V,S,compress> solver(M, max_iters);
-    solver.tune();
     const int isign=1;
     double start = omp_get_wtime();
     solver(chi_s[1], psi_s[1], rsd_target, niters, rsd_final, site_flops, mv_apps,isign,verbose);
