@@ -517,6 +517,27 @@ private:
     const int imm;
 };
 
+#ifdef AVX512
+class Shuffle64x2 : public Instruction {
+public:
+    Shuffle64x2(const FVec& ret_, const string mk_, const FVec& a_, const FVec& b_, const int imm_) : ret(ret_), mk(mk_), a(a_), b(b_), imm(imm_) {}
+    string serialize() const {
+        ostringstream stream;
+        stream << ret.getName() << " = _mm512_mask_shuffle_f64x2(" << ret.getName() << ", " << mk << ", " << a.getName() << ", " << b.getName() << ", " << imm << ");" ;
+        return stream.str();
+    }
+    int numArithmeticInst() const {
+        return 0;
+    }
+private:
+    const FVec ret;
+    const FVec a;
+    const FVec b;
+    const string mk;
+    const int imm;
+};
+#endif
+
 void loadSOAFVec(InstVector& ivector, const FVec& ret, const Address *a, int soanum, int soalen, string mask)
 {
     int mskbits = (((1 << soalen)-1) << (soanum*soalen));
@@ -593,8 +614,15 @@ void fperm64x2(InstVector& ivector, const FVec& ret, const string mk, const FVec
     ivector.push_back(new Perm64x2(ret, mk, a, imm));
 }
 
+#ifdef AVX512
+void shuffle64x2(InstVector& ivector, const FVec& ret, const string mk, const FVec& a, const FVec& b, const int imm) {
+    ivector.push_back(new Shuffle64x2(ret, mk, a, b, imm));
+}
+#endif
+
 void transpose4x4(InstVector& ivector, const FVec r[4], const FVec f[4])
 {
+#ifndef AVX512
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
             int mskbits = (((1 << 4)-1) << (j*4));
@@ -604,10 +632,22 @@ void transpose4x4(InstVector& ivector, const FVec r[4], const FVec f[4])
             fperm64x2(ivector, r[i], localmask, f[j], 0x55*i);
         }
     }
+#else
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 2; j++) {
+            int mskbits = ((0x33) << (j*2));
+            stringstream mk;
+            mk << "0x" << hex << mskbits;
+            string localmask = mk.str();
+            shuffle64x2(ivector, r[i], localmask, f[j], f[j+2], 0x55*i);
+        }
+    }
+#endif
 }
 
 void transpose2x2(InstVector& ivector, const FVec r[2], const FVec f[2])
 {
+#ifndef AVX512
     for(int i = 0; i < 2; i++) {
         for(int j = 0; j < 2; j++) {
             int mskbits = (((1 << 8)-1) << (j*8));
@@ -617,6 +657,11 @@ void transpose2x2(InstVector& ivector, const FVec r[2], const FVec f[2])
             fperm64x2(ivector, r[i], localmask, f[j], 0x44+0xAA*i);
         }
     }
+#else
+    for(int i = 0; i < 2; i++) {
+        shuffle64x2(ivector, r[i], fullMask, f[0], f[1], 0x44+0xAA*i);
+    }
+#endif
 }
 
 void transpose1x1(InstVector& ivector, const FVec r[1], const FVec f[1])
