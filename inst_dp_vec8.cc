@@ -97,9 +97,9 @@ string StoreFVec::serialize() const
 
     if(streaming) {
 #ifdef AVX512
-        buf << "_mm512_stream_pd((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
+        buf << "_mm512_stream_pd(" << a->serialize() << "," << v.getName() <<  ");" <<endl;
 #else
-        buf << "_mm512_storenrngo_pd((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
+        buf << "_mm512_storenrngo_pd(" << a->serialize() << "," << v.getName() <<  ");" <<endl;
 #endif
     }
     else {
@@ -126,14 +126,14 @@ string GatherFVec::serialize() const
 
     if(!a->isHalfType()) {
         buf << v.getName() << " = _mm512_mask_i32logather_pd(" << v.getName()
-            << ", " << lmask << ", " << a->getOffsets() << ", (void*)"
+            << ", " << lmask << ", " << a->getOffsets() << ", "
             << a->getBase()  << ", _MM_SCALE_8);" <<endl;
     }
     else {
         buf << v.getName() << " = _mm512_mask_cvtpslo_pd(" << v.getName()
             << ", " << lmask << ", "
             << "_mm512_mask_i32gather_ps(_mm512_undefined_ps(), " << ", "
-            << lmask << ", " <<  a->getOffsets() << ", (void*)"
+            << lmask << ", " <<  a->getOffsets() << ", "
             << a->getBase()  << ", _MM_SCALE_4));" <<endl;
     }
 
@@ -155,11 +155,11 @@ string ScatterFVec::serialize() const
 
 
     if(!a->isHalfType()) {
-        buf << "_mm512_i32loscatter_pd((void*)" << a->getBase() << ", "
+        buf << "_mm512_i32loscatter_pd(" << a->getBase() << ", "
             << a->getOffsets() << ", " << v.getName() << ", _MM_SCALE_4);" <<endl;
     }
     else {
-        buf << "_mm512_mask_i32scatter_ps((void*)" << a->getBase() << ", "
+        buf << "_mm512_mask_i32scatter_ps(" << a->getBase() << ", "
             << fullMask << ", " << a->getOffsets() << ", _mm512_cvtpd_pslo("
             << v.getName() << "), _MM_SCALE_4);" <<endl;
     }
@@ -265,11 +265,11 @@ public:
 #ifndef AVX512
 
         if(!a->isHalfType()) {
-            buf << "_mm512_mask_packstorelo_pd((void*)" << a->serialize() << ", "
+            buf << "_mm512_mask_packstorelo_pd(" << a->serialize() << ", "
                 << lmask << ", " << v.getName() << ");" << endl;
         }
         else {
-            buf << "_mm512_mask_packstorelo_ps((void*)" << a->serialize() << ", "
+            buf << "_mm512_mask_packstorelo_ps(" << a->serialize() << ", "
                 << lmask << ", _mm512_cvtpd_pslo(" << v.getName() << "));" << endl;
         }
 
@@ -378,7 +378,7 @@ string GatherPrefetchL1::serialize() const
     }
 
     buf << "_mm512_mask_prefetch_i32gather_ps(" << a->getOffsets() << ", "
-        << fullMask << ", (void*)" << a->getBase() << ", " << scale << ", "
+        << fullMask << ", " << a->getBase() << ", " << scale << ", "
         << hint << ");" <<endl;
 
     return buf.str();
@@ -417,7 +417,7 @@ string GatherPrefetchL2::serialize() const
     }
 
     buf << "_mm512_mask_prefetch_i32gather_ps(" << a->getOffsets() << ", "
-        << fullMask << ", (void*)" << a->getBase() << ", " << scale << ", "
+        << fullMask << ", " << a->getBase() << ", " << scale << ", "
         << hint << ");" <<endl;
 
     return buf.str();

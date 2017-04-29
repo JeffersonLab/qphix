@@ -108,9 +108,9 @@ string StoreFVec::serialize() const
 
     if(streaming) {
 #ifdef AVX512
-        buf << "_mm512_stream_ps((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
+        buf << "_mm512_stream_ps(" << a->serialize() << "," << v.getName() <<  ");" <<endl;
 #else
-        buf << "_mm512_storenrngo_ps((void*)" << a->serialize() << "," << v.getName() <<  ");" <<endl;
+        buf << "_mm512_storenrngo_ps(" << a->serialize() << "," << v.getName() <<  ");" <<endl;
 #endif
     }
     else {
@@ -147,7 +147,7 @@ string GatherFVec::serialize() const
 
     buf << v.getName() << " = _mm512_mask_i32extgather_ps("
         << v.getName() << ", " << lmask << ", " << a->getOffsets()
-        << ", (void*)" << a->getBase()  << ", " << upConv
+        << ", " << a->getBase()  << ", " << upConv
         << ", " << scale << ", _MM_HINT_NONE);" <<endl;
 
     return buf.str();
@@ -167,7 +167,7 @@ string ScatterFVec::serialize() const
     }
 
 
-    buf << "_mm512_i32extscatter_ps((void*)" << a->getBase() << ", " << a->getOffsets() << ", " << v.getName() << ", " << downConv << ", " << scale << ", _MM_HINT_NONE);" <<endl;
+    buf << "_mm512_i32extscatter_ps(" << a->getBase() << ", " << a->getOffsets() << ", " << v.getName() << ", " << downConv << ", " << scale << ", _MM_HINT_NONE);" <<endl;
 
     return buf.str();
 
@@ -270,7 +270,7 @@ public:
 
 #ifndef AVX512
 
-        buf << "_mm512_mask_extpackstorelo_ps((void*)"
+        buf << "_mm512_mask_extpackstorelo_ps("
             << a->serialize() << ", " << lmask << ", "
             << v.getName() << ", " << downConv
             << ", _MM_HINT_NONE);" << endl;
@@ -383,7 +383,7 @@ string GatherPrefetchL1::serialize() const
     }
 
     buf << "_mm512_prefetch_i32gather_ps(" << a->getOffsets()
-        << ", (void*)" << a->getBase() << ", " << scale << ", "
+        << ", " << a->getBase() << ", " << scale << ", "
         << hint << ");" <<endl;
 
     return buf.str();
@@ -421,7 +421,7 @@ string GatherPrefetchL2::serialize() const
     }
 
     buf << "_mm512_prefetch_i32gather_ps(" << a->getOffsets()
-        << ", (void*)" << a->getBase() << ", " << scale << ", "
+        << ", " << a->getBase() << ", " << scale << ", "
         << hint << ");"  <<endl;
 
     return buf.str();
