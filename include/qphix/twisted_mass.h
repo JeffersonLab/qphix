@@ -59,11 +59,13 @@ namespace QPhiX
         void operator()(
             FourSpinorBlock *res,      // result spinor field
             const FourSpinorBlock* in, // input spinor field
-            int isign                  // non-conjugate = 1, hermitian conjugate = -1
+            int isign,                 // non-conjugate = 1, hermitian conjugate = -1
+            int target_cb = 1)
         )
         {
-          D->dslash(tmp, in, u[1], isign, 1);
-          D->dslashAChiMinusBDPsi(res, tmp, in, u[0], mass_factor_alpha, mass_factor_beta, isign, 0);
+            int source_cb = 1 - target_cb;
+          D->dslash(tmp, in, u[source_cb], isign, 1);
+          D->dslashAChiMinusBDPsi(res, tmp, in, u[target_cb], mass_factor_alpha, mass_factor_beta, isign, 0);
         }
 
 
