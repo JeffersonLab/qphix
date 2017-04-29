@@ -641,6 +641,7 @@ void transpose(InstVector& ivector, const FVec r[], const FVec f[], int soalen)
 
     default:
         printf("SOALEN = %d Not Supported (only SOALEN = 2, 4 & 8 are supported)\n", soalen);
+        exit(1);
     }
 }
 

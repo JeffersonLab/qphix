@@ -1,167 +1,139 @@
+# User facing Makefile.
 
-mode=mic
+SHELL = /bin/bash
 
-mode:=$(strip $(mode))
+make_codegen = -f codegen.mak
 
-CONFFILE=customMake.$(mode)
-include $(CONFFILE)
+.PHONY: mic avx avx2 avx512 sse scalar
 
-CXXHOST  = icpc -O3 -g
+all: mic avx avx2 avx512 sse scalar
 
-ifeq ($(mode),mic)
+mic: mic_dir \
+	 	mic_PRECISION-2_SOALEN-8 mic_PRECISION-2_SOALEN-4 mic_PRECISION-1_SOALEN-16 mic_PRECISION-1_SOALEN-8 mic_PRECISION-1_SOALEN-4 mic_PRECISION-1_SOALEN-16_ENABLE_LOW_PRECISION-1 mic_PRECISION-1_SOALEN-8_ENABLE_LOW_PRECISION-1 mic_PRECISION-1_SOALEN-4_ENABLE_LOW_PRECISION-1
 
-ifeq ($(PRECISION),1)
-override VECLEN=16
-else
-override VECLEN=8
-endif
-yesnolist += AVX512
-endif
+mic_dir:
+	mkdir -p generated/mic/generated
 
-ifeq ($(mode),avx)
-ifeq ($(PRECISION),1)
-override VECLEN=8
-else
-override VECLEN=4
-endif
-DEFS += -DNO_HW_MASKING
-yesnolist += AVX2
-endif
+mic_PRECISION-2_SOALEN-8:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=2 SOALEN=8
 
-ifeq ($(mode),sse)
-ifeq ($(PRECISION),1)
-override VECLEN=4
-override SOALEN=4
-else
-override VECLEN=2
-override SOALEN=2
-endif
-DEFS += -DNO_HW_MASKING
-yesnolist += NO_MASKS
-endif
+mic_PRECISION-2_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=2 SOALEN=4
 
-ifeq ($(mode),scalar)
-override VECLEN=1
-override SOALEN=1
-DEFS += -DNO_HW_MASKING
-DEFS += -DNO_MASKS
-endif
+mic_PRECISION-1_SOALEN-16:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=16
 
+mic_PRECISION-1_SOALEN-8:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=8
 
-# If streaming stores are enabled we
-# should definitely disable prefetching 
-# of output spinors
-ifeq ($(ENABLE_STREAMING_STORES),1)
-PREF_L1_SPINOR_OUT=0
-PREF_L2_SPINOR_OUT=0
-endif
+mic_PRECISION-1_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=4
 
-ifeq ($(ENABLE_LOW_PRECISION),1)
-USE_LP_SPINOR=1
-USE_LP_GAUGE=1
-USE_LP_CLOVER=1
-endif
+mic_PRECISION-1_SOALEN-16_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1
 
+mic_PRECISION-1_SOALEN-8_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1
 
-yesnolist += PREF_L1_SPINOR_IN 
-yesnolist += PREF_L2_SPINOR_IN 
-yesnolist += PREF_L1_SPINOR_OUT 
-yesnolist += PREF_L2_SPINOR_OUT 
-yesnolist += PREF_L1_GAUGE
-yesnolist += PREF_L2_GAUGE
-yesnolist += PREF_L1_CLOVER
-yesnolist += PREF_L2_CLOVER
-yesnolist += USE_LDUNPK
-yesnolist += USE_PKST
-yesnolist += USE_PACKED_GAUGES
-yesnolist += USE_PACKED_CLOVER
-yesnolist += USE_SHUFFLES
-yesnolist += NO_GPREF_L1
-yesnolist += NO_GPREF_L2
-yesnolist += ENABLE_STREAMING_STORES
+mic_PRECISION-1_SOALEN-4_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1
 
-yesnolist += USE_LP_SPINOR
-yesnolist += USE_LP_GAUGE
-yesnolist += USE_LP_CLOVER
-yesnolist += SERIAL_SPIN
-yesnolist += TESTFLAG
+avx512: avx512_dir \
+		mic_AVX512-1_PRECISION-2_SOALEN-8 mic_AVX512-1_PRECISION-2_SOALEN-4 mic_AVX512-1_PRECISION-1_SOALEN-16 mic_AVX512-1_PRECISION-1_SOALEN-8 mic_AVX512-1_PRECISION-1_SOALEN-4 mic_AVX512-1_PRECISION-1_SOALEN-16_ENABLE_LOW_PRECISION-1 mic_AVX512-1_PRECISION-1_SOALEN-8_ENABLE_LOW_PRECISION-1 mic_AVX512-1_PRECISION-1_SOALEN-4_ENABLE_LOW_PRECISION-1
 
-deflist += SOALEN
-deflist += VECLEN
-deflist += PRECISION
+avx512_dir:
+	mkdir -p generated/avx512/generated
 
-DEFS += $(strip $(foreach var, $(yesnolist), $(if $(filter 1, $($(var))), -D$(var))))
-DEFS += $(strip $(foreach var, $(deflist), $(if $($(var)), -D$(var)=$($(var)))))
+mic_AVX512-1_PRECISION-2_SOALEN-8:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=2 SOALEN=8
 
-SOURCES = codegen.cc data_types.cc dslash.cc dslash_common.cc inst_dp_vec8.cc inst_sp_vec16.cc inst_dp_vec4.cc inst_sp_vec8.cc inst_sp_vec4.cc inst_dp_vec2.cc inst_scalar.cc
-HEADERS = address_types.h  data_types.h  dslash.h  instructions.h Makefile $(CONFFILE)
+mic_AVX512-1_PRECISION-2_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=2 SOALEN=4
 
-all: codegen
+mic_AVX512-1_PRECISION-1_SOALEN-16:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=16
 
-codegen: $(SOURCES) $(HEADERS) 
-	$(CXXHOST) $(DEFS) $(SOURCES) -o ./codegen
+mic_AVX512-1_PRECISION-1_SOALEN-8:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=8
 
-.PHONY: cgen mic avx avx2 avx512 sse scalar
+mic_AVX512-1_PRECISION-1_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=4
 
-cgen: mic avx avx2 avx512 sse scalar
+mic_AVX512-1_PRECISION-1_SOALEN-16_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1
 
-mic:
-	mkdir -p ./mic
-	@make clean && make PRECISION=2 SOALEN=8 && ./codegen
-	@make clean && make PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=16 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=4 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+mic_AVX512-1_PRECISION-1_SOALEN-8_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1
 
-avx512:
-	mkdir -p ./avx512
-	@make clean && make AVX512=1 PRECISION=2 SOALEN=8 && ./codegen
-	@make clean && make AVX512=1 PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=16 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=4 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=16 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=8 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1 && ./codegen
+mic_AVX512-1_PRECISION-1_SOALEN-4_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=mic AVX512=1 PRECISION=1 SOALEN=4 ENABLE_LOW_PRECISION=1
 
+avx: avx_dir \
+		avx_PRECISION-2_SOALEN-2 avx_PRECISION-2_SOALEN-4 avx_PRECISION-1_SOALEN-8 avx_PRECISION-1_SOALEN-4
 
-avx:
-	mkdir -p ./avx
-	@make clean && make mode=avx PRECISION=2 SOALEN=2 && ./codegen
-	@make clean && make mode=avx PRECISION=2 SOALEN=4 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 && ./codegen
+avx_dir:
+	mkdir -p generated/avx/generated
 
-avx2:
-	mkdir -p ./avx2
-	@make clean && make mode=avx PRECISION=2 SOALEN=2 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=2 SOALEN=4 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 AVX2=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=8 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
-	@make clean && make mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1 && ./codegen
+avx_PRECISION-2_SOALEN-2:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=2 SOALEN=2
 
-sse:
-	mkdir -p ./sse
-	@make clean && make mode=sse PRECISION=2 && ./codegen
-	@make clean && make mode=sse PRECISION=1 && ./codegen
+avx_PRECISION-2_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=2 SOALEN=4
 
-scalar:
-	mkdir -p ./scalar
-	@make clean && make mode=scalar PRECISION=2 && ./codegen
-	@make clean && make mode=scalar PRECISION=1 && ./codegen
+avx_PRECISION-1_SOALEN-8:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=8
+
+avx_PRECISION-1_SOALEN-4:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=4
+
+avx2: avx2_dir \
+		avx_PRECISION-2_SOALEN-2_AVX2-1 avx_PRECISION-2_SOALEN-4_AVX2-1 avx_PRECISION-1_SOALEN-8_AVX2-1 avx_PRECISION-1_SOALEN-4_AVX2-1 avx_PRECISION-1_SOALEN-8_AVX2-1_ENABLE_LOW_PRECISION-1 avx_PRECISION-1_SOALEN-4_AVX2-1_ENABLE_LOW_PRECISION-1
+
+avx2_dir:
+	mkdir -p generated/avx2/generated
+
+avx_PRECISION-2_SOALEN-2_AVX2-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=2 SOALEN=2 AVX2=1
+
+avx_PRECISION-2_SOALEN-4_AVX2-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=2 SOALEN=4 AVX2=1
+
+avx_PRECISION-1_SOALEN-8_AVX2-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=8 AVX2=1
+
+avx_PRECISION-1_SOALEN-4_AVX2-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=4 AVX2=1
+
+avx_PRECISION-1_SOALEN-8_AVX2-1_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=8 AVX2=1 ENABLE_LOW_PRECISION=1
+
+avx_PRECISION-1_SOALEN-4_AVX2-1_ENABLE_LOW_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=avx PRECISION=1 SOALEN=4 AVX2=1 ENABLE_LOW_PRECISION=1
+
+sse: sse_dir sse_PRECISION-2 sse_PRECISION-1
+
+sse_dir:
+	mkdir -p generated/sse/generated
+
+sse_PRECISION-2:
+	$(MAKE) $(make_codegen) mode=sse PRECISION=2
+
+sse_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=sse PRECISION=1
+
+scalar: scalar_dir scalar_PRECISION-2 scalar_PRECISION-1
+
+scalar_dir:
+	mkdir -p generated/scalar/generated
+
+scalar_PRECISION-2:
+	$(MAKE) $(make_codegen) mode=scalar PRECISION=2
+
+scalar_PRECISION-1:
+	$(MAKE) $(make_codegen) mode=scalar PRECISION=1
 
 clean: 
-	rm -rf *.o ./codegen 
+	rm -rf build
 
-cleanall: 
-	rm -rf *.o ./codegen
-	rm -rf ./avx 
-	rm -rf ./avx2
-	rm -rf ./avx512
-	rm -rf ./mic
-	rm -rf ./sse
-	rm -rf ./scalar
+cleanall: clean
+	rm -rf generated

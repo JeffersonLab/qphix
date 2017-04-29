@@ -1,9 +1,13 @@
-#include <sstream>
+#include "twisted_mass_enum.h"
+#include "unsupported_values.h"
+
 #include <fstream>
 #include <iostream>
-#include <vector>
-#include <typeinfo>
+#include <sstream>
+#include <stdexcept>
 #include <string>
+#include <typeinfo>
+#include <vector>
 
 using namespace std;
 
@@ -71,6 +75,9 @@ string chiOffs("offs");
 string clBase("clBase");
 string clOffs("gOffs");
 
+string mu_name("mu");
+string mu_inv_name("muinv");
+
 // Defines which dimensions are involved in SIMD blocking
 // Currently just X and Y
 bool requireAllOneCheck[4] = {true, true, false, false};
@@ -82,41 +89,65 @@ void generateFacePackL2Prefetches(InstVector& ivector, int dir)
     PrefetchL2FullSpinorDirIn(ivector, "xyBase", "offs", "si_prefdist");
 }
 
-void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress12, bool clover)
+void generateFaceUnpackL2Prefetches(InstVector& ivector, int dir, bool compress12, bool clover, bool twisted_mass)
 {
     PrefetchL2HalfSpinorDir(ivector, "inbuf", "hsprefdist", dir, false, 0 /* None*/);
     PrefetchL2FullGaugeDirIn(ivector, "gBase", "gOffs", dir, "gprefdist", compress12);
 
-    if(clover)	{
+    if(clover && !twisted_mass) {
         PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
     }
+		else if(clover && twisted_mass) {
+        PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs", "clprefdist");
+		}
 
     PrefetchL2FullSpinorDirIn(ivector, outBase, "offs", "soprefdist");
 }
 
+/**
+  Generate all L2 prefetches.
 
-// Generate all L2 prefetches
-void generateL2Prefetches(InstVector& ivector, bool compress12, bool chi, bool clover)
+  @param[in,out] ivector Target vector of instructions
+  @param[in] compress12 Enable gauge compression
+  @param[in] chi Generate prefetches of the spinor
+  @param[in] clover Generate prefetches for the clover term
+  @param[in] twisted_mass Type of twisted mass used
+  */
+void generateL2Prefetches(InstVector &ivector, bool const compress12,
+                          bool const chi, bool const clover,
+                          TwistedMassVariant const twisted_mass)
 {
     PrefetchL2FullSpinorDirIn(ivector, "xyBase", "pfyOffs", "siprefdist1");
-    //PrefetchL2FullSpinorDirIn(ivector, "pfBase1", "offs", "siprefdist1");
+    // PrefetchL2FullSpinorDirIn(ivector, "pfBase1", "offs", "siprefdist1");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase2", "offs", "siprefdist2");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase3", "offs", "siprefdist3");
     PrefetchL2FullSpinorDirIn(ivector, "pfBase4", "offs", "siprefdist4");
 
-    if(clover)	{
-        PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            PrefetchL2FullCloverIn(ivector, "clBase", "gOffs", "clprefdist");
+        }
+        else if (twisted_mass == TwistedMassVariant::degenerate) {
+            PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs",
+                                       "clprefdist");
+        }
+        else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            PrefetchL2FullCloverFullIn(ivector, "clBase", "gOffs",
+                                       "clprefdist");
+        } else {
+            unsupported_twisted_mass_variant();
+        }
     }
 
-    if(chi) {
+    if (chi) {
         PrefetchL2FullSpinorDirIn(ivector, "pfBaseChi", "offs", "chiprefdist");
     }
 
     PrefetchL2FullGaugeIn(ivector, "gBase", "gOffs", "gprefdist", compress12);
     PrefetchL2FullSpinorOut(ivector, outBase, "offs", "siprefdist4");
 }
-
-
 
 #ifdef SERIAL_SPIN
 void dslash_body(InstVector& ivector, bool compress12, proj_ops *ops, recons_ops *rec_ops_bw, recons_ops *rec_ops_fw, FVec outspinor[4][3][2])
@@ -283,7 +314,7 @@ void pack_face_vec(InstVector& ivector, FVec spinor[2][3][2], proj_ops proj[], i
 // need inbuf pointer to half spinor
 // need gBase and goffs to point to gauge
 // need obase and offs to point to spinor to scatter.
-void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover)
+void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover, bool twisted_mass, bool isPlus)
 {
 
     std::string in("inbuf");
@@ -308,7 +339,7 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
 
     FVec (*outspinor)[4][3][2];
 
-    if(clover) {
+    if(clover || twisted_mass) {
         outspinor = &dout_spinor;
         zeroResult(ivector, (*outspinor)[0][0]);
     }
@@ -328,9 +359,10 @@ void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, reco
     matMultVec(ivector, adjMul);
     recons_add(ivector, rops[dim], *outspinor, mask);
 
-    if(clover) {
-        clover_term(ivector, *outspinor, true);
-    }
+    if(clover && !twisted_mass) clover_term(ivector, *outspinor, true);
+		else if(clover && twisted_mass) full_clover_term(ivector, *outspinor, true);
+    else if(!clover && twisted_mass) inverse_twisted_term(ivector, *outspinor, true, isPlus);
+		else if(!clover && !twisted_mass) {};
 
     // scatter it out
     StoreFullSpinor(ivector, out_spinor, outBase, outOffs);
@@ -355,104 +387,149 @@ string getTypeName(size_t s)
 
 void generate_code(void)
 {
-    InstVector ivector;
-    InstVector l2prefs;
-    bool compress12;
-
-    const string SpinorTypeName = getTypeName(sizeof(SpinorBaseType));
-    const string GaugeTypeName = getTypeName(sizeof(GaugeBaseType));
-    const string CloverTypeName = getTypeName(sizeof(CloverBaseType));
-
-    if(SOALEN == VECLEN) {
+    if (SOALEN == VECLEN) {
         requireAllOneCheck[1] = false;
     }
 
 #ifdef NO_MASKS
-
-    for(int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
         requireAllOneCheck[i] = false;
     }
-
 #endif
 
-    for(int isign=-1; isign<=1; isign+=2) {
-        bool isPlus = (isign == 1 ? true : false);
-        string plusminus = (isPlus) ? "plus" : "minus";
+    const std::string SpinorTypeName = getTypeName(sizeof(SpinorBaseType));
+    const std::string GaugeTypeName = getTypeName(sizeof(GaugeBaseType));
+    const std::string CloverTypeName = getTypeName(sizeof(CloverBaseType));
 
-        for(int clov = 0; clov < 2; clov++) {
-            bool clover = (clov == 1 ? true : false);
-            string clov_prefix = (clover ? "clov_"+CloverTypeName+"_" : "");
-
-            for(int num_components=12; num_components <=18; num_components+=6) {
-                compress12 = ( num_components==12 );
-
-                std::ostringstream filename;
-                filename << "./"<<ARCH_NAME<<"/" << clov_prefix << "dslash_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
-                l2prefs.resize(0);
-                generateL2Prefetches(l2prefs,compress12, false, clover);
-                //dumpIVector(l2prefs, "prefetches.out");
-
-                // Dslash Plus
-                cout << "GENERATING dslash_"<<plusminus<<"_vec body" << endl;
-                // Flush instruction list
-                ivector.resize(0);
-
-                // Generate instructions
-                dslash_plain_body(ivector,compress12,clover,isPlus);
-                mergeIvectorWithL2Prefetches(ivector, l2prefs);
-                dumpIVector(ivector,filename.str());
-
-                filename.str("");
-                filename.clear();
-                filename << "./"<<ARCH_NAME<<"/" << clov_prefix << "dslash_achimbdpsi_"<<plusminus<<"_body_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<< num_components;
-
-                l2prefs.resize(0);
-                generateL2Prefetches(l2prefs,compress12, true, clover);
-                //dumpIVector(l2prefs, "prefetches.out");
-                cout << "GENERATING dslash_achimbdpsi_"<<plusminus<<"_vec body" << endl;
-                // Flush instruction list
-                ivector.resize(0);
-
-                // Generate instructions
-                dslash_achimbdpsi_body(ivector,compress12,clover,isPlus);
-                mergeIvectorWithL2Prefetches(ivector, l2prefs);
-                dumpIVector(ivector,filename.str());
-
-                for(int dir = 0; dir < 2; dir++) {
-                    for(int dim = 0; dim < 4; dim++) {
+    // DSLASH and DSLASH_ACHIMBDPSI ROUTINES
+    // =====================================
+    for (auto twisted_mass : selected_twisted_mass_variants) {
+        for (auto clover : {true, false}) {
+            for (auto kernel : {"dslash", "dslash_achimbdpsi"}) {
+                for (auto isPlus : {true, false}) {
+                    for (auto compress12 : {true, false}) {
+                        InstVector ivector;
+                        InstVector l2prefs;
                         std::ostringstream filename;
-                        filename << "./"<<ARCH_NAME<<"/" << clov_prefix << "dslash_face_unpack_from_"<<dirname[dir]<<"_"<<dimchar[dim]<<"_" << plusminus <<"_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN<<"_"<<num_components;
-                        cout << "GENERATING face unpack file " << filename.str() << endl;
-                        ivector.resize(0);
-                        recons_add_face_from_dir_dim_vec(ivector, compress12,isPlus, dir, dim, clover);
-                        l2prefs.resize(0);
-                        generateFaceUnpackL2Prefetches(l2prefs, 2*dim+dir, compress12, clover);
-                        mergeIvectorWithL2Prefetches(ivector, l2prefs);
-                        dumpIVector(ivector,filename.str());
-                    }
-                }
-            }
-        }
 
-        for(int dir = 0; dir < 2; dir++) {
-            for(int dim = 0; dim < 4; dim++) {
+                        std::string tm_prefix =
+                            twisted_mass_prefixes.at(twisted_mass);
+                        std::string clov_prefix =
+                            clover ? "clov_" + CloverTypeName + "_" : "";
+                        std::string plusminus = isPlus ? "plus" : "minus";
+                        int num_components = compress12 ? 12 : 18;
+                        bool chi_prefetches =
+                            (kernel == "dslash_achimbdpsi") ? true : false;
+
+                        filename
+                            << "generated/" << ARCH_NAME << "/generated/" << tm_prefix
+                            << clov_prefix << kernel << "_" << plusminus << "_"
+                            << "body"
+                            << "_" << SpinorTypeName << "_" << GaugeTypeName
+                            << "_v" << VECLEN << "_s" << SOALEN << "_"
+                            << num_components;
+
+                        cout << "GENERATING " << tm_prefix << kernel << "_"
+                             << plusminus << "_"
+                             << "vec body" << endl;
+
+                        // Generate instructions
+                        generateL2Prefetches(l2prefs, compress12,
+                                             chi_prefetches, clover,
+                                             twisted_mass);
+                        if (kernel == "dslash")
+                            dslash_plain_body(ivector, compress12, clover,
+                                              twisted_mass, isPlus);
+                        else if (kernel == "dslash_achimbdpsi")
+                            dslash_achimbdpsi_body(ivector, compress12, clover,
+                                                   twisted_mass, isPlus);
+                        mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                        dumpIVector(ivector, filename.str());
+
+                    } // gauge compression
+                } // plus/minus
+            } // kernel
+        } // clover
+    } // twisted_mass
+
+    // FACE UNPACK ROUTINES
+    // ====================
+    for (auto twisted_mass : selected_twisted_mass_variants) {
+        for (auto clover : {true, false}) {
+            for (int dir = 0; dir < 2; dir++) {
+                for (int dim = 0; dim < 4; dim++) {
+                    for (auto isPlus : {true, false}) {
+                        for (auto compress12 : {true, false}) {
+
+                            InstVector ivector;
+                            InstVector l2prefs;
+                            std::ostringstream filename;
+
+                            std::string tm_prefix =
+                                twisted_mass_prefixes.at(twisted_mass);
+                            std::string clov_prefix =
+                                clover ? "clov_" + CloverTypeName + "_" : "";
+                            std::string plusminus = isPlus ? "plus" : "minus";
+                            int num_components = compress12 ? 12 : 18;
+
+                            filename
+                                << "generated/" << ARCH_NAME << "/generated/" << tm_prefix
+                                << clov_prefix << "dslash_face_unpack_from_"
+                                << dirname[dir] << "_" << dimchar[dim] << "_"
+                                << plusminus << "_" << SpinorTypeName << "_"
+                                << GaugeTypeName << "_v" << VECLEN << "_s"
+                                << SOALEN << "_" << num_components;
+
+                            cout << "GENERATING face unpack file "
+                                 << filename.str() << endl;
+
+                            // Generate instructions
+                            generateFaceUnpackL2Prefetches(
+                                l2prefs, 2 * dim + dir, compress12, clover,
+                                twisted_mass != TwistedMassVariant::none);
+                            recons_add_face_from_dir_dim_vec(
+                                ivector, compress12, isPlus, dir, dim, clover,
+                                twisted_mass != TwistedMassVariant::none);
+                            mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                            dumpIVector(ivector, filename.str());
+
+                        } // gauge compression
+                    } // plus/minus
+                } // dimension
+            } // direction
+        } // clover
+    } // twisted_mass
+
+    // FACE PACK ROUTINES
+    // ==================
+    for (auto isPlus : {true, false}) {
+        for (int dir = 0; dir < 2; dir++) {
+            for (int dim = 0; dim < 4; dim++) {
+                InstVector ivector;
+                InstVector l2prefs;
                 std::ostringstream filename;
-                filename << "./"<<ARCH_NAME<<"/dslash_face_pack_to_"<<dirname[dir]<<"_"<<dimchar[dim]<<"_"<<plusminus<<"_" << SpinorTypeName << "_" << GaugeTypeName << "_v"<< VECLEN <<"_s"<<SOALEN;
+
+                string plusminus = isPlus ? "plus" : "minus";
+
+                filename << "generated/" << ARCH_NAME << "/generated/" << "dslash_face_pack_to_"
+                         << dirname[dir] << "_" << dimchar[dim] << "_"
+                         << plusminus << "_" << SpinorTypeName << "_"
+                         << GaugeTypeName << "_v" << VECLEN << "_s" << SOALEN;
+
                 cout << "GENERATING face pack file " << filename.str() << endl;
-                l2prefs.resize(0);
-                generateFacePackL2Prefetches(l2prefs, 2*dim+dir);
-                ivector.resize(0);
-                pack_face_to_dir_dim_vec(ivector,isPlus,dir,dim);
+
+                // Generate instructions
+                generateFacePackL2Prefetches(l2prefs, 2 * dim + dir);
+                pack_face_to_dir_dim_vec(ivector, isPlus, dir, dim);
                 mergeIvectorWithL2Prefetches(ivector, l2prefs);
-                dumpIVector(ivector,filename.str());
+                dumpIVector(ivector, filename.str());
             }
         }
     }
 
-    data_types<float,VECLEN,SOALEN,true>::Gauge cmped;
-    data_types<float,VECLEN,SOALEN,false>::Gauge uncmped;
+    data_types<float, VECLEN, SOALEN, true>::Gauge cmped;
+    data_types<float, VECLEN, SOALEN, false>::Gauge uncmped;
 
     cout << "Compressed Gauge size is " << sizeof(cmped) << endl;
     cout << "Uncompressed Gauge size is " << sizeof(uncmped) << endl;
-
 }

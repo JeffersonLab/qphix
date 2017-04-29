@@ -1,0 +1,5 @@
+*.o
+codegen
+generated
+html
+doc/jinja-dependencies.pdf

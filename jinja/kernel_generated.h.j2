@@ -1,0 +1,11 @@
+// {{ generated_warning }}
+
+#pragma once
+
+{% for isa in isas %}
+{% set filename = 'qphix/%s/%s_%s_complete_specialization.h'|format(isa, kernel, isa) %}
+#if defined (QPHIX_{{ isa|upper }}_SOURCE)
+#warning "including {{ filename }}"
+#include "{{ filename }}"
+#endif
+{% endfor %}

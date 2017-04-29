@@ -63,6 +63,17 @@ public:
         FT off_diag2[15][2][SL];
     } Clover;
 #endif
+#ifdef USE_PACKED_CLOVER
+    typedef struct {
+        FT block1[6][6][2][VL];
+        FT block2[6][6][2][VL];
+    } FullClover;
+#else
+    typedef struct {
+        FT block1[6][6][2][SL];
+        FT block2[6][6][2][SL];
+    } FullClover;
+#endif
 };
 
 void LoadSpinorElement(InstVector& ivector, const FVec& ret, string& base, string& offsets, int spin, int col, int reim, bool isFace, string mask, int dir = -1);
@@ -84,4 +95,8 @@ void PrefetchL1FullCloverBlockIn(InstVector& ivector, const string& base, const 
 void PrefetchL2FullCloverIn(InstVector& ivector, const string& base, const string& off, const string& pref_dist);
 void PrefetchL1HalfSpinorDir(InstVector& ivector, const string& base, int dir, bool isPrefforWrite, int type);
 void PrefetchL2HalfSpinorDir(InstVector& ivector, const string& base, const string& pref_dist, int dir, bool isPrefforWrite, int type);
+// twisted-mass + clover:
+void LoadFullCloverFullBlock(InstVector& ivector, const FVec cl_block[6][6][2], string& base, string& offsets, int block);
+void PrefetchL1FullCloverFullBlockIn(InstVector& ivector, const string& base, const string& off, int block);
+void PrefetchL2FullCloverFullIn(InstVector& ivector, const string& base, const string& off, const string& pref_dist);
 #endif // _DATA_TYPES_H_

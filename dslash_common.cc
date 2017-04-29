@@ -4,6 +4,8 @@ using namespace std;
 
 #include "dslash.h"
 
+#include "unsupported_values.h"
+
 extern string beta_names[8];
 extern string alpha_name;
 extern string outBase;
@@ -15,6 +17,8 @@ extern string chiOffs;
 extern string clBase;
 extern string clOffs;
 
+extern string mu_name;
+extern string mu_inv_name;
 
 FVec b_S0_C0_RE("b_S0_C0_RE");
 FVec b_S0_C0_IM("b_S0_C0_IM");
@@ -217,9 +221,100 @@ FVec clov_offdiag[15][2]= {
     { cl_offdiag_14_RE, cl_offdiag_14_IM }
 };
 
+FVec cl_full_00_RE("cl_full_00_RE");
+FVec cl_full_00_IM("cl_full_00_IM");
+FVec cl_full_01_RE("cl_full_01_RE");
+FVec cl_full_01_IM("cl_full_01_IM");
+FVec cl_full_02_RE("cl_full_02_RE");
+FVec cl_full_02_IM("cl_full_02_IM");
+FVec cl_full_03_RE("cl_full_03_RE");
+FVec cl_full_03_IM("cl_full_03_IM");
+FVec cl_full_04_RE("cl_full_04_RE");
+FVec cl_full_04_IM("cl_full_04_IM");
+FVec cl_full_05_RE("cl_full_05_RE");
+FVec cl_full_05_IM("cl_full_05_IM");
+FVec cl_full_10_RE("cl_full_10_RE");
+FVec cl_full_10_IM("cl_full_10_IM");
+FVec cl_full_11_RE("cl_full_11_RE");
+FVec cl_full_11_IM("cl_full_11_IM");
+FVec cl_full_12_RE("cl_full_12_RE");
+FVec cl_full_12_IM("cl_full_12_IM");
+FVec cl_full_13_RE("cl_full_13_RE");
+FVec cl_full_13_IM("cl_full_13_IM");
+FVec cl_full_14_RE("cl_full_14_RE");
+FVec cl_full_14_IM("cl_full_14_IM");
+FVec cl_full_15_RE("cl_full_15_RE");
+FVec cl_full_15_IM("cl_full_15_IM");
+FVec cl_full_20_RE("cl_full_20_RE");
+FVec cl_full_20_IM("cl_full_20_IM");
+FVec cl_full_21_RE("cl_full_21_RE");
+FVec cl_full_21_IM("cl_full_21_IM");
+FVec cl_full_22_RE("cl_full_22_RE");
+FVec cl_full_22_IM("cl_full_22_IM");
+FVec cl_full_23_RE("cl_full_23_RE");
+FVec cl_full_23_IM("cl_full_23_IM");
+FVec cl_full_24_RE("cl_full_24_RE");
+FVec cl_full_24_IM("cl_full_24_IM");
+FVec cl_full_25_RE("cl_full_25_RE");
+FVec cl_full_25_IM("cl_full_25_IM");
+FVec cl_full_30_RE("cl_full_30_RE");
+FVec cl_full_30_IM("cl_full_30_IM");
+FVec cl_full_31_RE("cl_full_31_RE");
+FVec cl_full_31_IM("cl_full_31_IM");
+FVec cl_full_32_RE("cl_full_32_RE");
+FVec cl_full_32_IM("cl_full_32_IM");
+FVec cl_full_33_RE("cl_full_33_RE");
+FVec cl_full_33_IM("cl_full_33_IM");
+FVec cl_full_34_RE("cl_full_34_RE");
+FVec cl_full_34_IM("cl_full_34_IM");
+FVec cl_full_35_RE("cl_full_35_RE");
+FVec cl_full_35_IM("cl_full_35_IM");
+FVec cl_full_40_RE("cl_full_40_RE");
+FVec cl_full_40_IM("cl_full_40_IM");
+FVec cl_full_41_RE("cl_full_41_RE");
+FVec cl_full_41_IM("cl_full_41_IM");
+FVec cl_full_42_RE("cl_full_42_RE");
+FVec cl_full_42_IM("cl_full_42_IM");
+FVec cl_full_43_RE("cl_full_43_RE");
+FVec cl_full_43_IM("cl_full_43_IM");
+FVec cl_full_44_RE("cl_full_44_RE");
+FVec cl_full_44_IM("cl_full_44_IM");
+FVec cl_full_45_RE("cl_full_45_RE");
+FVec cl_full_45_IM("cl_full_45_IM");
+FVec cl_full_50_RE("cl_full_50_RE");
+FVec cl_full_50_IM("cl_full_50_IM");
+FVec cl_full_51_RE("cl_full_51_RE");
+FVec cl_full_51_IM("cl_full_51_IM");
+FVec cl_full_52_RE("cl_full_52_RE");
+FVec cl_full_52_IM("cl_full_52_IM");
+FVec cl_full_53_RE("cl_full_53_RE");
+FVec cl_full_53_IM("cl_full_53_IM");
+FVec cl_full_54_RE("cl_full_54_RE");
+FVec cl_full_54_IM("cl_full_54_IM");
+FVec cl_full_55_RE("cl_full_55_RE");
+FVec cl_full_55_IM("cl_full_55_IM");
+
+FVec clov_full[6][6][2] = {
+  { { cl_full_00_RE, cl_full_00_IM }, { cl_full_01_RE, cl_full_01_IM }, { cl_full_02_RE, cl_full_02_IM },
+    { cl_full_03_RE, cl_full_03_IM }, { cl_full_04_RE, cl_full_04_IM }, { cl_full_05_RE, cl_full_05_IM }, },
+  { { cl_full_10_RE, cl_full_10_IM }, { cl_full_11_RE, cl_full_11_IM }, { cl_full_12_RE, cl_full_12_IM },
+    { cl_full_13_RE, cl_full_13_IM }, { cl_full_14_RE, cl_full_14_IM }, { cl_full_15_RE, cl_full_15_IM }, },
+  { { cl_full_20_RE, cl_full_20_IM }, { cl_full_21_RE, cl_full_21_IM }, { cl_full_22_RE, cl_full_22_IM },
+    { cl_full_23_RE, cl_full_23_IM }, { cl_full_24_RE, cl_full_24_IM }, { cl_full_25_RE, cl_full_25_IM }, },
+  { { cl_full_30_RE, cl_full_30_IM }, { cl_full_31_RE, cl_full_31_IM }, { cl_full_32_RE, cl_full_32_IM },
+    { cl_full_33_RE, cl_full_33_IM }, { cl_full_34_RE, cl_full_34_IM }, { cl_full_35_RE, cl_full_35_IM }, },
+  { { cl_full_40_RE, cl_full_40_IM }, { cl_full_41_RE, cl_full_41_IM }, { cl_full_42_RE, cl_full_42_IM },
+    { cl_full_43_RE, cl_full_43_IM }, { cl_full_44_RE, cl_full_44_IM }, { cl_full_45_RE, cl_full_45_IM }, },
+  { { cl_full_50_RE, cl_full_50_IM }, { cl_full_51_RE, cl_full_51_IM }, { cl_full_52_RE, cl_full_52_IM },
+    { cl_full_53_RE, cl_full_53_IM }, { cl_full_54_RE, cl_full_54_IM }, { cl_full_55_RE, cl_full_55_IM }, }
+};
+
 FVec zero("zero");
 FVec alpha_vec("alpha_vec");
 FVec beta_vec("beta_vec");
+
+FVec mu_vec("mu_vec");
+FVec mu_inv_vec("mu_inv_vec");
 
 FVec psi_S0_RE("psi_S0_RE");
 FVec psi_S0_IM("psi_S0_IM");
@@ -338,6 +433,16 @@ void declare_clover(InstVector& ivector)
     for(int s=0; s < 15; s++) {
         declareFVecFromFVec(ivector, clov_offdiag[s][RE]);
         declareFVecFromFVec(ivector, clov_offdiag[s][IM]);
+    }
+}
+
+void declare_full_clover(InstVector& ivector)
+{
+    for(int cs1=0; cs1<6; cs1++) {
+        for(int cs2=0; cs2<6; cs2++) {
+            declareFVecFromFVec(ivector, clov_full[cs1][cs2][RE]);
+            declareFVecFromFVec(ivector, clov_full[cs1][cs2][IM]);
+        }
     }
 }
 
@@ -737,6 +842,270 @@ void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string
     }
 }
 
+void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string mask)
+{
+    // FIXME: Function is never called with non-zero mask! Do we need this argument here?
+    if(mask != "") {
+        printf("full_clover_term:: ERROR: Non-empty mask is not implemented!\n");
+    }
+
+    for(int block=0; block<2; block++) {
+
+        PrefetchL1FullCloverFullBlockIn(ivector, clBase, clOffs, block);
+        LoadFullCloverFullBlock(ivector, clov_full, clBase, clOffs, block);
+
+        for(int sc1=0; sc1<6; sc1++) { // half-spin-colour row
+
+            int spin_out = 2*block + sc1/3;
+            int col_out  = sc1 % 3;
+            FVec *clout  = out_spinor[spin_out][col_out];
+
+            for(int sc2=0; sc2<6; sc2++) { // half-spin-colour column
+
+                int spin_in = 2*block + sc2/3;
+                int col_in  = sc2 % 3;
+                FVec *clin  = in_spinor[spin_in][col_in];
+
+                if(sc2 == 0 && !face) {
+                    mulCVec(ivector, clout, clov_full[sc1][sc2], clin, mask);
+                }
+                else {
+                    fmaddCVec(ivector, clout, clov_full[sc1][sc2], clin, clout, mask);
+                }
+
+            } // half-spin-colour column
+        } // half-spin-colour row
+    } // block
+}
+
+void inverse_twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask)
+{
+  /**
+
+    This routine generates the result spinor of the matrix multiplication
+
+      \chi = A^{-1} \psi
+
+    for a tile of sites (which is of size of a SIMD vector). A denotes the
+    sum of the Wilson mass and the twisted mass term. Its inverse is given by
+
+               \alpha 1I - i \mu \gamma_5
+      A^{-1} = --------------------------- 1I^{color} .
+                    \alpha^2 + \mu^2
+
+    Here, \mu is the twisted mass and \alpha = 4 + M_0, the Wilson mass term.
+    Note that the TMDlash member function will pass the following parameters:
+
+      mu     <---| \mu / \alpha
+      mu_inv <---| \alpha / (\alpha^2 + \mu^2)
+
+    This allows to write the matrix multiplication as a fused multiply add, and
+    a rescaling with mu_inv:
+
+     spin 0, 1:
+     ----------
+      Re \chi = mu_inv * ( Re \psi + mu * Im \psi )
+      Im \chi = mu_inv * ( - mu * Re \psi + Im \psi )
+
+     spin 2, 3:
+     ----------
+      Re \chi = mu_inv * ( Re \psi - mu * Im \psi )
+      Im \chi = mu_inv * ( mu * Re \psi + Im \psi )
+
+    For the hermitian-conjugate multiplication (isPlus==false) the case for
+    spins 0, 1 is interchanged with the case for spins 2, 3.
+
+
+    Input:
+      \psi = in_spinor[spin][color][RE/IM]
+
+    Output:
+      \chi = out_spinor[spin][color][RE/IM]
+
+   */
+
+  bool acc = face;
+
+  // Declare vector variables and set them to the scalar value passed to the kernel
+  declareFVecFromFVec(ivector, mu_vec);
+  declareFVecFromFVec(ivector, mu_inv_vec);
+  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);
+  loadBroadcastScalar(ivector, mu_inv_vec, mu_inv_name, SpinorType);
+
+  for(int col = 0; col < 3; col++)
+  {
+
+    // Upper half spinor
+    for(int spin = 0; spin < 2; spin++)
+    {
+      FVec *in = in_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
+      }
+      else { // hermitian-conjugate case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
+      }
+
+      // rescaling with mu_inv
+      if(acc) { // face processing
+        fmaddFVec(ivector, out[RE], mu_inv_vec, tmp_1_re, out[RE], _mask);
+        fmaddFVec(ivector, out[IM], mu_inv_vec, tmp_1_im, out[IM], _mask);
+      }
+      else { // body processing
+        mulFVec(ivector, in[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, in[IM], mu_inv_vec, tmp_1_im, _mask);
+      }
+    }
+
+    // Lower half spinor
+    for(int spin = 2; spin < 4; spin++)
+    {
+      FVec *in = in_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+      	fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+      	fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
+      }
+      else { // hermitian-conjugate case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE], _mask);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM], _mask);
+      }
+
+      // rescaling with mu_inv
+      if(acc) { // face processing
+        fmaddFVec(ivector, out[RE], mu_inv_vec, tmp_1_re, out[RE], _mask);
+        fmaddFVec(ivector, out[IM], mu_inv_vec, tmp_1_im, out[IM], _mask);
+      }
+      else { // body processing
+        mulFVec(ivector, in[RE], mu_inv_vec, tmp_1_re, _mask);
+        mulFVec(ivector, in[IM], mu_inv_vec, tmp_1_im, _mask);
+      }
+    }
+
+  } // color
+
+}
+
+// TODO: REFACTOR: This function does the same as the hermitian
+// conjugate of inverse_twisted_term, where mu_inv is replaced by alpha.
+void twisted_term(InstVector& ivector, bool isPlus)
+{
+  /**
+
+    This routine generates the result spinor of the matrix multiplication
+
+      out_spinor = A \chi
+
+    for a tile of sites (which is of size of a SIMD vector). A denotes the
+    sum of the Wilson mass and the twisted mass term:
+
+      A = ( \alpha 1I + i \mu \gamma_5 ) 1I^{color} .
+
+    Here, \mu is the twisted mass and \alpha = 4 + M_0, the Wilson mass term.
+    Note that the TMDlash member function will pass the following parameters:
+
+      alpha <---| \alpha
+      beta  <---| \beta  [not needed here]
+      mu    <---| \mu / \alpha
+
+    This allows to write the matrix multiplication as a fused multiply add, and
+    a rescaling with mu_inv:
+
+     spin 0, 1:
+     ----------
+      Re out_spinor = alpha * ( Re \chi - mu * Im \chi )
+      Im out_spinor = alpha * ( mu * Re \chi + Im \chi )
+
+     spin 2, 3:
+     ----------
+      Re out_spinor = alpha * ( Re \chi + mu * Im \chi )
+      Im out_spinor = alpha * ( - mu * Re \chi + Im \chi )
+
+    For the hermitian-conjugate multiplication (isPlus==false) the case for
+    spins 0, 1 is interchanged with the case for spins 2, 3.
+
+
+    Input:
+      \chi read from the \chi spinor field passed to the kernel routine
+
+    Output:
+      out_spinor[spin][color][RE/IM]
+
+   */
+
+  // Declare vector variable mu and set it to the scalar value passed to the kernel.
+  // The variable alpha_vec has already been declared in dslash_achimbdpsi_body
+  declareFVecFromFVec(ivector, mu_vec);
+  loadBroadcastScalar(ivector, mu_vec, mu_name, SpinorType);
+
+  // Load all relevant elements of the chi input spinor
+  for (int col = 0; col < 3; col++) {
+    for (int spin = 0; spin < 4; spin++) {
+      LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase,
+                                  chiOffs, spin, col, RE, false, "");
+      LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase,
+                                  chiOffs, spin, col, IM, false, "");
+    }
+  }
+
+  // Carry out the matrix multiplication in two steps using
+  // the buffers tmp_1_re and tmp_1_im, and storing the final
+  // result in out_spinor
+  for(int col = 0; col < 3; col++)
+  {
+    // Upper half spinor
+    for(int spin = 0; spin < 2; spin++)
+    {
+      FVec *in  = chi_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+      else { // hermitian-conjugate case
+        fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+
+      // rescaling with alpha
+      mulFVec(ivector, out[RE], alpha_vec, tmp_1_re);
+      mulFVec(ivector, out[IM], alpha_vec, tmp_1_im);
+    }
+
+    // Lower half spinor
+    for(int spin = 2; spin < 4; spin++)
+    {
+      FVec *in  = chi_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // fused multiply add using mu
+      if(isPlus) { // normal case
+      	fmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+      	fnmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+      else { // hermitian-conjugate case
+        fnmaddFVec(ivector, tmp_1_re, mu_vec, in[IM], in[RE]);
+        fmaddFVec(ivector, tmp_1_im, mu_vec, in[RE], in[IM]);
+      }
+
+      // rescaling with alpha
+      mulFVec(ivector, out[RE], alpha_vec, tmp_1_re);
+      mulFVec(ivector, out[IM], alpha_vec, tmp_1_im);
+    }
+  } // color
+
+}
+
+#if 0
 void achiResult(InstVector& ivector, bool clover)
 {
     PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
@@ -763,6 +1132,70 @@ void achiResult(InstVector& ivector, bool clover)
         // This is only on the AChi - bDPsi op (achimbdpsi = true)
         // This is only in body kernel (face = false)
         clover_term(ivector, chi_spinor, false);
+    }
+}
+#endif
+
+// TODO: Eliminate concrete implementations and use this function as
+// a case switcher only
+void achiResult(InstVector &ivector, bool const clover,
+                TwistedMassVariant const twisted_mass, bool const isPlus)
+{
+    PrefetchL1FullSpinorDirIn(ivector, chiBase, chiOffs, -1, 1 /*NTA*/);
+
+    if (clover) { // CLOVER [with or without twisted-mass]
+        // Load all relevant elements of the chi input spinor
+        for (int col = 0; col < 3; col++) {
+            for (int spin = 0; spin < 4; spin++) {
+                LoadSpinorElement(ivector, chi_spinor[spin][col][RE], chiBase,
+                                  chiOffs, spin, col, RE, false, "");
+                LoadSpinorElement(ivector, chi_spinor[spin][col][IM], chiBase,
+                                  chiOffs, spin, col, IM, false, "");
+            }
+        }
+
+        // Apply clover term, and store result in out spinor.
+        // This is only on the AChi - bDPsi op (achimbdpsi = true)
+        // This is only in body kernel (face = false)
+        if (twisted_mass == TwistedMassVariant::none) {
+            clover_term(ivector, chi_spinor, false);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            full_clover_term(ivector, chi_spinor, false);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            full_clover_term(ivector, chi_spinor, false);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    } else { // NO CLOVER
+        if (twisted_mass == TwistedMassVariant::none) {
+            for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 4; spin++) {
+                    LoadSpinorElement(ivector, tmp_1_re, chiBase, chiOffs, spin,
+                                      col, RE, false, "");
+                    LoadSpinorElement(ivector, tmp_1_im, chiBase, chiOffs, spin,
+                                      col, IM, false, "");
+                    mulFVec(ivector, out_spinor[spin][col][RE], alpha_vec,
+                            tmp_1_re);
+                    mulFVec(ivector, out_spinor[spin][col][IM], alpha_vec,
+                            tmp_1_im);
+                }
+            }
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            // Loads spinor elements from chiBase, multiplies with A
+            // for pure twisted mass and stores result in out_spinor
+            twisted_term(ivector, isPlus);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+
+            // Loads spinor elements from chiBase, multiplies with A
+            // for pure twisted mass and stores result in out_spinor
+            twisted_term(ivector, isPlus);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
     }
 }
 
@@ -805,8 +1238,9 @@ void matMultVec(InstVector& ivector, bool adjMul)
     matMultVec(ivector, adjMul, 1);
 }
 
-
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus)
+void dslash_plain_body(InstVector &ivector, bool const compress12,
+                       bool const clover, TwistedMassVariant const twisted_mass,
+                       bool const isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -816,8 +1250,24 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool i
     declare_outs(ivector);
 
     if(clover) {
+				// declare temporary spinor, s.t.
+				// dout = Dslash * psi
+				// out_spinor = clover * dout
         declare_douts(ivector);
-        declare_clover(ivector);
+    }
+
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            declare_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            declare_full_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            declare_full_clover(ivector);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
     }
 
     FVec (*outspinor)[4][3][2];
@@ -848,8 +1298,30 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool i
 
     dslash_body(ivector, compress12, p_ops, rec_ops_bw, rec_ops_fw, *outspinor);
 
-    if(clover) {
-        clover_term(ivector, *outspinor, false);
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            clover_term(ivector, *outspinor, false);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            full_clover_term(ivector, *outspinor, false);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            full_clover_term(ivector, *outspinor, false);
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+        } else {
+            unsupported_twisted_mass_variant();
+        }
+    } else {
+        if (twisted_mass == TwistedMassVariant::none) {
+            // Nothing to do.
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            inverse_twisted_term(ivector, *outspinor, false, isPlus);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            inverse_twisted_term(ivector, *outspinor, false, isPlus);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
     }
 
     // Store
@@ -857,7 +1329,11 @@ void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool i
 }
 
 // ***** ------- a chi - b D psi versions
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus)
+
+void dslash_achimbdpsi_body(InstVector &ivector, bool const compress12,
+                            bool const clover,
+                            TwistedMassVariant const twisted_mass,
+                            bool const isPlus)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -868,16 +1344,32 @@ void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, b
     declare_chi(ivector);
 
     if(clover) {
-        declare_douts(ivector);
-        declare_clover(ivector);
+				// declare temporary spinor, s.t.
+				// dout = Dslash * psi
+				// out_spinor = clover * dout
+				declare_douts(ivector);
     }
     else {
-        declareFVecFromFVec(ivector, alpha_vec);
-        loadBroadcastScalar(ivector, alpha_vec, alpha_name, SpinorType);
+				declareFVecFromFVec(ivector, alpha_vec);
+				loadBroadcastScalar(ivector, alpha_vec, alpha_name, SpinorType);
+    }
+
+    if (clover) {
+        if (twisted_mass == TwistedMassVariant::none) {
+            declare_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::degenerate) {
+            declare_full_clover(ivector);
+        } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+            // TODO Here something new for the ND case has to be implemented.
+            // Currently this is just copied from the degenerate case.
+            declare_full_clover(ivector);
+        } else {
+            unsupported_twisted_mass_variant();
+        }
     }
 
     // Fill result with a*chi
-    achiResult(ivector, clover);
+    achiResult(ivector, clover, twisted_mass, isPlus);
 
     proj_ops *p_ops;
     recons_ops *rec_ops_bw;
@@ -909,7 +1401,7 @@ void pack_face_to_dir_dim_vec(InstVector& ivector, bool isPlus, int dir, int dim
     pack_face_vec(ivector, b_spinor, p_ops, 2*dim+dir);
 }
 
-void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover)
+void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover, bool twisted_mass)
 {
     declare_b_Spins(ivector);
     declare_ub_Spins(ivector);
@@ -917,10 +1409,16 @@ void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool
     declare_u_gaus(ivector);
     declare_misc(ivector);
 
-    if(clover) {
+    if(clover || twisted_mass) {
         declare_douts(ivector);
-        declare_clover(ivector);
     }
+
+    if(clover && !twisted_mass) {
+        declare_clover(ivector);
+		}
+		else if(clover && twisted_mass) {
+        declare_full_clover(ivector);
+		}
 
     bool isBack = (dir == 0 ? true : false);
     recons_ops *rec_ops;
@@ -932,5 +1430,5 @@ void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool
         rec_ops = (isPlus == isBack ? rec_plus_mbeta_ops : rec_minus_mbeta_ops);
     }
 
-    recons_add_face_vec(ivector, compress12, isBack, rec_ops, dir, dim, clover);
+    recons_add_face_vec(ivector, compress12, isBack, rec_ops, dir, dim, clover, twisted_mass, isPlus);
 }

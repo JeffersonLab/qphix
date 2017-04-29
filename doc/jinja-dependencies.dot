@@ -1,0 +1,43 @@
+// Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
+
+
+digraph {
+    {
+        "jinja/kernel_generated.h.j2" [shape=box]
+    }
+    ->
+    {
+        "include/qphix/DSLASH_generated.h" [shape=box fillcolor="#EEEEEE" style=filled]
+    }
+
+    {
+        "jinja/Makefile.am.j2" [shape=box]
+    }
+    ->
+    {
+        "include/qphix/ISA/Makefile.am" [shape=box fillcolor="#EEEEEE" style=filled]
+    }
+
+    {"generated/ISA/DSLASH_KERNEL_FPTYPE_FPTYPE_VECLEN_SOALEN_COMPRESS" [shape=box]}
+        -> "jinja/DSLASH_specialization.h.j2" [style="dotted"]
+
+    {
+        "jinja/DSLASH_general.h.j2" [shape=box]
+        "jinja/DSLASH_specialization.h.j2" [shape=box]
+    }
+    ->
+    {
+        "jinja/complete_specialization.h.j2" [shape=box]
+    }
+    ->
+    {
+        "include/qphix/ISA/DSLASH_ISA_complete_specialization.h" [shape=box fillcolor="#EEEEEE" style=filled]
+    }
+
+
+
+        "include/qphix/ISA/DSLASH_ISA_complete_specialization.h"
+->
+        "include/qphix/DSLASH_generated.h"
+ [style="dotted", constraint=false]
+}

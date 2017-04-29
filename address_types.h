@@ -1,10 +1,20 @@
+// XXX The include guards should not start with an underscore. Single
+// underscore and a following captical letter is reserved. Perhaps using
+// `#pragma once` would make it easier? It is supported by GCC, LLVM and Intel
+// C++, though it is not standard C++.
+
+// XXX This header file is not standalone. It uses `std::string` without
+// including the `<string>` header file. This project only compiles because the
+// inclusion of this header file in other files is made in the specific order
+// such that `<string>` is included before this header. This is brittle and may
+// lead to breakage down the road.
 
 #ifndef _ADDRESS_TYPES_H_
 #define _ADDRESS_TYPES_H_
 
 using namespace std;
 
-enum AddressType { GAUGE, SPINOR, CLOVER_DIAG, CLOVER_OFFDIAG, ADDRESS_OF_SCALAR, GENERIC_ADDRESS};
+enum AddressType { GAUGE, SPINOR, CLOVER_DIAG, CLOVER_OFFDIAG, CLOVER_FULL, ADDRESS_OF_SCALAR, GENERIC_ADDRESS};
 
 class Address
 {
@@ -127,6 +137,30 @@ protected:
     const string base;
     const int block;
     const int component;
+    const int reim;
+};
+
+class FullClovAddress : public Address
+{
+public:
+    FullClovAddress(const string& base_, int block_, int row_, int column_, int reim_, int isHalfType) :
+			Address(isHalfType), base(base_), block(block_), row(row_), column(column_), reim(reim_) {};
+
+    string serialize(void) const
+    {
+        ostringstream outbuf;
+        outbuf << "(*" << base << ").block" << block+1 << "[" << row << "][" << column << "][" << reim << "]";
+        return outbuf.str();
+    }
+    AddressType getType(void) const
+    {
+        return CLOVER_FULL;
+    }
+protected:
+    const string base;
+    const int block;
+    const int row;
+    const int column;
     const int reim;
 };
 

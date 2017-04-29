@@ -1,3 +1,7 @@
+#pragma once
+
+#include "twisted_mass_enum.h"
+
 #include <cstdio>
 #include <cstdlib>
 
@@ -33,16 +37,32 @@ void recons_add(InstVector& ivector, recons_ops& ops, FVec outspinor[4][3][2], s
 void recons_add(InstVector& ivector, recons_ops& ops, FVec outspinor[4][3][2], string &mask, int s);
 void zeroResult(InstVector& ivector, FVec *outspinor);
 void clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
-void achiResult(InstVector& ivector, bool clover);
+void full_clover_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, string _mask="");
+void twisted_term(InstVector& ivector, bool isPlus);
+void inverse_twisted_term(InstVector& ivector, FVec in_spinor[4][3][2], bool face, bool isPlus, string _mask="");
+//void achiResult(InstVector& ivector, bool clover);
+
+void achiResult(InstVector &ivector, bool const clover,
+                TwistedMassVariant const twisted_mass, bool const isPlus);
+
 void loadGaugeDir(InstVector& ivector, int dir, bool compress12);
 void matMultVec(InstVector& ivector, bool adjMul, int s);
 void matMultVec(InstVector& ivector, bool adjMul);
-void dslash_plain_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+
+void dslash_plain_body(InstVector &ivector, bool const compress12,
+                       bool const clover, TwistedMassVariant const twisted_mass,
+                       bool const isPlus);
+
 // ***** ------- a chi - b D psi versions
-void dslash_achimbdpsi_body(InstVector& ivector, bool compress12, bool clover, bool isPlus);
+
+void dslash_achimbdpsi_body(InstVector &ivector, bool const compress12,
+                            bool const clover,
+                            TwistedMassVariant const twisted_mass,
+                            bool const isPlus);
+
 void pack_face_to_dir_dim_vec(InstVector& ivector, bool isPlus, int dir, int dim);
-void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover);
+void recons_add_face_from_dir_dim_vec(InstVector& ivector, bool compress12, bool isPlus, int dir, int dim, bool clover, bool twisted_mass);
 
 void dslash_body(InstVector& ivector, bool compress12, proj_ops *ops, recons_ops *rec_ops_bw, recons_ops *rec_ops_fw, FVec outspinor[4][3][2]);
 void pack_face_vec(InstVector& ivector, FVec spinor[2][3][2], proj_ops proj[], int dir);
-void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover);
+void recons_add_face_vec(InstVector& ivector, bool compress12, bool adjMul, recons_ops rops[], int dir, int dim, bool clover, bool twisted_mass, bool isPlus);
