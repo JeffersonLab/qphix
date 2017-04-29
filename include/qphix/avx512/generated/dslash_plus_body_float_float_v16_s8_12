@@ -3520,73 +3520,73 @@ out_S3_C2_IM = _mm512_fnmadd_ps(beta_vec, ub_S1_C2_IM, out_S3_C2_IM);
 }
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S0_C0_RE, out_S0_C0_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S0_C0_RE, out_S0_C0_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+0),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+0),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+0),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+0),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S1_C0_RE, out_S1_C0_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S1_C0_RE, out_S1_C0_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+16),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+16),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+16),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+16),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S2_C0_RE, out_S2_C0_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S2_C0_RE, out_S2_C0_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+32),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+32),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+32),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+32),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S3_C0_RE, out_S3_C0_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S3_C0_RE, out_S3_C0_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+48),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+48),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+48),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+48),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S0_C1_RE, out_S0_C1_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S0_C1_RE, out_S0_C1_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+64),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+64),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+64),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+64),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S1_C1_RE, out_S1_C1_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S1_C1_RE, out_S1_C1_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+80),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+80),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+80),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+80),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S2_C1_RE, out_S2_C1_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S2_C1_RE, out_S2_C1_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+96),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+96),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+96),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+96),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S3_C1_RE, out_S3_C1_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S3_C1_RE, out_S3_C1_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+112),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+112),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+112),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+112),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S0_C2_RE, out_S0_C2_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S0_C2_RE, out_S0_C2_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+128),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+128),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+128),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+128),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S1_C2_RE, out_S1_C2_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S1_C2_RE, out_S1_C2_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+144),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+144),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+144),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+144),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S2_C2_RE, out_S2_C2_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S2_C2_RE, out_S2_C2_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+160),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+160),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+160),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+160),tmp_2_re);
 
 tmp_1_re = _mm512_mask_shuffle_f32x4(tmp_1_re, 0xFFFF, out_S3_C2_RE, out_S3_C2_IM, 68);
 tmp_2_re = _mm512_mask_shuffle_f32x4(tmp_2_re, 0xFFFF, out_S3_C2_RE, out_S3_C2_IM, 238);
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[0])+176),tmp_1_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[0])+176),tmp_1_re);
 
-_mm512_stream_ps((void*)(((*oBase)[0][0][0] + offs[8])+176),tmp_2_re);
+_mm512_stream_ps((((*oBase)[0][0][0] + offs[8])+176),tmp_2_re);
 

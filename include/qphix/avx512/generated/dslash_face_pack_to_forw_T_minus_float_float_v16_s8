@@ -248,31 +248,31 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xff00, ((*xyBase)[2][3][1] + 
 
 b_S1_C2_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C2_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-_mm512_stream_ps((void*)((outbuf)+0),b_S0_C0_RE);
+_mm512_stream_ps(((outbuf)+0),b_S0_C0_RE);
 
  _mm_prefetch((const char *)( ((((*xyBase)[0][0][0] + si_prefdist)+176) + offs[0]) ), _MM_HINT_T1);
 
-_mm512_stream_ps((void*)((outbuf)+16),b_S0_C0_IM);
+_mm512_stream_ps(((outbuf)+16),b_S0_C0_IM);
 
-_mm512_stream_ps((void*)((outbuf)+32),b_S0_C1_RE);
+_mm512_stream_ps(((outbuf)+32),b_S0_C1_RE);
 
-_mm512_stream_ps((void*)((outbuf)+48),b_S0_C1_IM);
+_mm512_stream_ps(((outbuf)+48),b_S0_C1_IM);
 
-_mm512_stream_ps((void*)((outbuf)+64),b_S0_C2_RE);
+_mm512_stream_ps(((outbuf)+64),b_S0_C2_RE);
 
-_mm512_stream_ps((void*)((outbuf)+80),b_S0_C2_IM);
+_mm512_stream_ps(((outbuf)+80),b_S0_C2_IM);
 
  _mm_prefetch((const char *)( ((((*xyBase)[0][0][0] + si_prefdist)+176) + offs[8]) ), _MM_HINT_T1);
 
-_mm512_stream_ps((void*)((outbuf)+96),b_S1_C0_RE);
+_mm512_stream_ps(((outbuf)+96),b_S1_C0_RE);
 
-_mm512_stream_ps((void*)((outbuf)+112),b_S1_C0_IM);
+_mm512_stream_ps(((outbuf)+112),b_S1_C0_IM);
 
-_mm512_stream_ps((void*)((outbuf)+128),b_S1_C1_RE);
+_mm512_stream_ps(((outbuf)+128),b_S1_C1_RE);
 
-_mm512_stream_ps((void*)((outbuf)+144),b_S1_C1_IM);
+_mm512_stream_ps(((outbuf)+144),b_S1_C1_IM);
 
-_mm512_stream_ps((void*)((outbuf)+160),b_S1_C2_RE);
+_mm512_stream_ps(((outbuf)+160),b_S1_C2_RE);
 
-_mm512_stream_ps((void*)((outbuf)+176),b_S1_C2_IM);
+_mm512_stream_ps(((outbuf)+176),b_S1_C2_IM);
 
