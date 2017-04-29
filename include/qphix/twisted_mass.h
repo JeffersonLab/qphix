@@ -60,7 +60,7 @@ namespace QPhiX
             FourSpinorBlock *res,      // result spinor field
             const FourSpinorBlock* in, // input spinor field
             int isign,                 // non-conjugate = 1, hermitian conjugate = -1
-            int target_cb = 1)
+            int target_cb = 1
         ) const override
         {
             int source_cb = 1 - target_cb;
