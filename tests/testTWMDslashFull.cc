@@ -610,47 +610,50 @@ void testTWMDslashFull::testTWMM(const U& u, int t_bc)
   EvenOddTMWilsonOperator<T,V,S,compress> M(Mass, TwistedMass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   for(auto isign : {1,-1}) {
+      for (int target_cb : {0, 1}) {
+          int source_cb = 1 - target_cb;
+  QDPIO::cout << "Target CB = " << target_cb << endl;
 
     Phi chi = zero;
     Phi ltmp = zero;
 
     qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
     qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
-    M(chi_s[0], psi_s[0], isign);
+    M(chi_s[target_cb], psi_s[target_cb], isign);
     qdp_unpack_spinor<> (chi_s[0], chi_s[1], chi, geom);
 
 
     // Apply QDP Dslash + TM term
     Phi chi2 = zero;
     dslash(chi2,u_test,psi, isign, 1);
-    applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
+    applyInvTwist<>(chi2, Mu, MuInv, isign, source_cb);
 
     // apply achimdpsi incl.twist
     dslash(ltmp,u_test,chi2, isign, 0);
-    applyTwist<>(psi, Mu, alpha, isign, 0);
+    applyTwist<>(psi, Mu, alpha, isign, target_cb);
 
-    chi2[rb[0]] = psi - beta * ltmp;
+    chi2[rb[target_cb]] = psi - beta * ltmp;
 
     // Check the difference per number in chi vector
     Phi diff = zero;
-    diff[rb[0]] = chi2 - chi;
+    diff[rb[target_cb]] = chi2 - chi;
 
     double volume = 4.0 * 3.0 * 2.0 * Layout::vol();
-    Double diff_norm = sqrt( norm2( diff , rb[0] ) ) / volume;
+    Double diff_norm = sqrt( norm2( diff , rb[target_cb] ) ) / volume;
 
     QDPIO::cout << "\t isign = " << isign << "  diff_norm = " << diff_norm << endl;
     // Assert things are OK...
     int num_of_records = 0;
     if ( toBool( diff_norm >= tolerance<T>::small ) ) {
-      for(int i=0; i < rb[0].siteTable().size(); i++) {
+      for(int i=0; i < rb[target_cb].siteTable().size(); i++) {
         for(int s =0 ; s < Ns; s++) {
           for(int c=0; c < Nc; c++) {
             if(num_of_records < 16){
               num_of_records += 1;
-              Double re=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).real());
-              Double im=  Double(diff.elem(rb[0].start()+i).elem(s).elem(c).imag());
+              Double re=  Double(diff.elem(rb[target_cb].start()+i).elem(s).elem(c).real());
+              Double im=  Double(diff.elem(rb[target_cb].start()+i).elem(s).elem(c).imag());
               if( toBool ( fabs(re) > tolerance<T>::small) || toBool( fabs(im) > tolerance<T>::small ) ) {
-                QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[0].start()+i).elem(s).elem(c) << endl;
+                QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c << " Diff = " << diff.elem(rb[target_cb].start()+i).elem(s).elem(c) << endl;
               }
             }
 
@@ -660,6 +663,7 @@ void testTWMDslashFull::testTWMM(const U& u, int t_bc)
     }
     assertion( toBool( diff_norm < tolerance<T>::small ) );
 
+  } // target_cb
   } // isign
 
   geom.free(packed_gauge_cb0);
