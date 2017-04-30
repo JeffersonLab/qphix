@@ -39,10 +39,10 @@ string DeclareMask::serialize() const
     ostringstream outbuf;
 
     if(value.empty()) {
-        outbuf << "__mmask " << name << ";" << endl;
+        outbuf << "__mmask16 " << name << ";" << endl;
     }
     else {
-        outbuf << "__mmask " << name << " = " << value << ";" << endl;
+        outbuf << "__mmask16 " << name << " = " << value << ";" << endl;
     }
 
     return outbuf.str();
