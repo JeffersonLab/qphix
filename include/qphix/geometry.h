@@ -107,6 +107,11 @@ public:
     typedef T TwoSpinorBlock[3][2][2][V];
     typedef T SU3MatrixBlock[8][(compressP ? 2 : 3)][3][2][V];
 
+    typedef T FT;
+    int constexpr static veclen = V;
+    int constexpr static soalen = S;
+    bool constexpr static compress12 = compressP;
+
     struct CloverBlock {
         /**
           Diagonal part of upper spin-block, real.
