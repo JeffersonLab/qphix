@@ -427,6 +427,105 @@ private:
     size_t clover_bytes;
     size_t full_clover_bytes;
 };
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class FourSpinorHandle {
+public:
+    typedef Geometry<FT, veclen, soalen, compress12> Geom;
+    typedef typename Geom::FourSpinorBlock ValueType;
+
+    FourSpinorHandle(Geom &geom) : value(geom.allocCBFourSpinor()), geom(geom)
+    {
+    }
+
+    ~FourSpinorHandle() { geom.free(value); }
+
+    ValueType *get() const { return value; }
+
+private:
+    ValueType *value;
+    Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+FourSpinorHandle<FT, veclen, soalen, compress12>
+makeFourSpinorHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+    return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class GaugeHandle {
+public:
+    typedef Geometry<FT, veclen, soalen, compress12> Geom;
+    typedef typename Geom::SU3MatrixBlock ValueType;
+
+    GaugeHandle(Geom &geom) : value(geom.allocCBGauge()), geom(geom) {}
+
+    ~GaugeHandle() { geom.free(value); }
+
+    ValueType *get() const { return value; }
+
+private:
+    ValueType *value;
+    Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+GaugeHandle<FT, veclen, soalen, compress12>
+makeGaugeHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+    return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class CloverHandle {
+public:
+    typedef Geometry<FT, veclen, soalen, compress12> Geom;
+    typedef typename Geom::CloverBlock ValueType;
+
+    CloverHandle(Geom &geom) : value(geom.allocCBClov()), geom(geom) {}
+
+    ~CloverHandle() { geom.free(value); }
+
+    ValueType *get() const { return value; }
+
+private:
+    ValueType *value;
+    Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+CloverHandle<FT, veclen, soalen, compress12>
+makeCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+    return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class FullCloverHandle {
+public:
+    typedef Geometry<FT, veclen, soalen, compress12> Geom;
+    typedef typename Geom::FullCloverBlock ValueType;
+
+    FullCloverHandle(Geom &geom) : value(geom.allocCBFullClov()), geom(geom) {}
+
+    ~FullCloverHandle() { geom.free(value); }
+
+    ValueType *get() const { return value; }
+
+private:
+    ValueType *value;
+    Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+FullCloverHandle<FT, veclen, soalen, compress12>
+makeFullCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+    return {geom};
+}
+
 } // Namespace
 
 #endif
