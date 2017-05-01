@@ -19,7 +19,7 @@ FVec::FVec(const string& name_) : name(name_), type(FVECTYPE) {}
 string DeclareFVec::serialize() const
 {
 #if 0
-    return v.getType()+" "+v.getName()+ " = _mm512_undefined(); ";
+    return v.getType()+" "+v.getName()+ " = _mm512_undefined_ps(); ";
 #else
     return v.getType()+" "+v.getName()+ " = _mm512_setzero_ps(); ";
 #endif
@@ -28,7 +28,7 @@ string DeclareFVec::serialize() const
 string InitFVec::serialize() const
 {
 #if 1
-    return v.getName()+ " = _mm512_undefined(); ";
+    return v.getName()+ " = _mm512_undefined_ps(); ";
 #else
     return v.getName()+ " = _mm512_setzero_ps(); ";
 #endif
