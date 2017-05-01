@@ -55,14 +55,15 @@ namespace QPhiX {
       delete D;
     }
     
-    
-    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) {
+   
+    inline 
+    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const override {
       double beta=(double)0.25;
-      
-      D->dslash(tmp, in, u[0], invclov,  isign, 0);
-      D->dslashAChiMinusBDPsi(res, tmp, in, u[1], clov, beta, isign, 1);
+      int other_cb = 1 - target_cb;
+      D->dslash(tmp, in, u[other_cb], invclov,  isign, other_cb);
+      D->dslashAChiMinusBDPsi(res, tmp, in, u[target_cb], clov, beta, isign, target_cb);
     }
-    
+ 
     
     Geometry<FT,veclen, soalen, compress12>& getGeometry() { return D->getGeometry(); }
   private:

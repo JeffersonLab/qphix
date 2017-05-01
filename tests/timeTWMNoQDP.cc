@@ -483,7 +483,6 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     InvCG<FT,V,S, compress> solver(M, max_iters);
     
     masterPrintf("Tuning Solver\n");
-    solver.tune();
   
     for(int solve = 0; solve < 1; solve++ ) {
       masterPrintf("Starting solver\n");
@@ -547,7 +546,6 @@ timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     masterPrintf("Creating BiCGStab Solver\n");
     InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
     masterPrintf("Tuning BiCGStab Solver\n");
-    solver2.tune();
     
     for(int solve =0; solve < 5; solve++) { 
       unsigned long site_flops;

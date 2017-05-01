@@ -9,7 +9,7 @@ namespace QPhiX {
 		//  alpha is complex
 		template<typename FT, int S>
 		inline void 
-			cmadd(FT res[2][S], FT alpha[2], FT x[2][S], FT y[2][S]) 
+			cmadd(FT res[2][S], const FT alpha[2], const  FT x[2][S], const FT y[2][S])
 		{
 			//  (a[RE] x[RE] - a[IM] y[IM])  + res[RE]
 			//  (a[RE] y[IM] + a[IM] y[RE])  + res[IM]
@@ -25,7 +25,7 @@ namespace QPhiX {
 		// alpha is complex
 		template<typename FT, int S>
 		inline void 
-			cnmadd(FT res[2][S], FT alpha[2], FT x[2][S], FT y[2][S]) 
+			cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S]) 
 		{
 			//  res[RE] -(a[RE] x[RE] - a[IM] y[IM])
 			// =res[RE] - a[RE] x[RE] + a[IM] y[IM]
@@ -43,7 +43,7 @@ namespace QPhiX {
 		// Generic stream in
 		template<typename FT, int V>
 		inline void
-		streamInSpinor(FT* dst, const FT* src, int numvec) { 
+		streamInSpinor(FT* dst, const FT* src, int numvec)  { 
       
 #if defined(__MIC__)
 			//Intel MIC

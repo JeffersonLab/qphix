@@ -37,11 +37,12 @@ namespace QPhiX
       delete D;
     }
 
+    inline
+    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign, int target_cb=1) const override {
 
-    void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) {
-    
-      D->dslash(tmp, in, u[1], isign, 1);
-      D->dslashAChiMinusBDPsi(res, tmp, in, u[0], mass_factor_alpha, mass_factor_beta, isign, 0);
+      int other_cb=1-target_cb;
+      D->dslash(tmp, in, u[other_cb], isign, other_cb);
+      D->dslashAChiMinusBDPsi(res, tmp, in, u[target_cb], mass_factor_alpha, mass_factor_beta, isign, target_cb);
     }
 
     Geometry<FT,veclen, soalen, compress12>& getGeometry() { return D->getGeometry(); }

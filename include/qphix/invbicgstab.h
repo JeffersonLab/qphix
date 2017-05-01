@@ -59,7 +59,8 @@ namespace QPhiX
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verbose)
+		    bool verbose, 
+		    int cb=1) const
     {
       site_flops = 0;
       mv_apps = 0;
@@ -75,7 +76,7 @@ namespace QPhiX
 
       // Compute r=r0=rhs - A x
       // A(r0,psi,isign)
-      M(r0,x,isign);
+      M(r0,x,isign,cb);
       norm2Spinor<FT,V,S,compress12>(r_norm,r0,geom,norm2Threads);
       mv_apps++;
 
@@ -134,7 +135,7 @@ namespace QPhiX
 	site_flops += 16*12;
 
 	// v = Ap
-	M(v,p,isign);
+	M(v,p,isign,cb);
 	mv_apps++;
 
 	innerProduct<FT,V,S,compress12>(tmp_c,r0,v,geom, innerProductThreads);
@@ -163,7 +164,7 @@ namespace QPhiX
 	site_flops += 8*12;
 
 	// t = As
-	M(t,r,isign); 
+	M(t,r,isign,cb); 
 	mv_apps++;
 
 	double t_norm=0;
@@ -208,34 +209,6 @@ namespace QPhiX
     }
 
 
-    void tune(void) 
-    {
-      int iters=100;
-#if 0
-      tuneZeroThreads(iters); 
-      tuneNorm2Threads(iters);
-      tuneXMYThreads(iters);
-      tuneCopyThreads(iters);
-      tuneInnerProductThreads(iters);
-      tunePUpdateThreads(iters);
-      tuneSUpdateThreads(iters);
-      tuneRXUpdateThreads(iters);
-#endif
-      reportTuning();
-    }
-
-    void reportTuning()
-    {
-      masterPrintf("TuningResults: \n");
-      masterPrintf("\t zeroThreads=%d threads\n", zeroThreads);
-      masterPrintf("\t copyThreads=%d threads\n", copyThreads);
-      masterPrintf("\t xmyThreads=%d threads\n", xmyThreads);
-      masterPrintf("\t norm2Threads=%d threads\n", norm2Threads);
-      masterPrintf("\t innerProductThreads=%d threads\n", innerProductThreads);
-      masterPrintf("\t pUpdateThreads=%d threads\n", pUpdateThreads);
-      masterPrintf("\t sUpdateThreads=%d threads\n", sUpdateThreads);
-      masterPrintf("\t rxUpdateThreads=%d threads\n", rxUpdateThreads);
-    }
 
     Geometry<FT,V,S,compress12>& getGeometry(){
       return geom;
@@ -249,7 +222,7 @@ namespace QPhiX
     int MaxIters;
 
     inline
-    void complex_div(double res[2], double l[2], double r[2])
+    void complex_div(double res[2], const double l[2], const double r[2]) const
     {
       double tmp = (double)1/(r[0]*r[0] + r[1]*r[1]);
 
@@ -259,7 +232,7 @@ namespace QPhiX
     }
 
     inline
-    void complex_mul(double res[2], double mul1[2], double mul2[2]) 
+    void complex_mul(double res[2], const double mul1[2], const double mul2[2]) const
     {
       res[0]=mul1[0]*mul2[0] - mul1[1]*mul2[1];
       res[1]=mul1[0]*mul2[1] + mul1[1]*mul2[0];
