@@ -232,7 +232,7 @@ dout_S3_C2_IM = _mm512_setzero_ps();
 __m512 beta_vec = _mm512_setzero_ps(); 
 beta_vec = _mm512_set1_ps(*(&coeff_s));
 
-__mmask accMask;
+__mmask16 accMask;
 
 accMask = accumulate[0];
 
@@ -290,7 +290,7 @@ accMask = accumulate[0];
 
  _mm_prefetch((const char *)( (((*xyBase)[0][0][0]+80) + xbOffs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[0][0][0] + xbOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe, ((*xyBase)[0][0][0] + xbOffs[1]));
@@ -309,7 +309,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[0][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[0][0][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[0][0][1] + xbOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe, ((*xyBase)[0][0][1] + xbOffs[1]));
@@ -328,7 +328,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1000, ((*xyBase)[0][0][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[0][0][1] + xbOffs[13]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[0][3][0] + xbOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe, ((*xyBase)[0][3][0] + xbOffs[1]));
@@ -347,7 +347,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[0][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[0][3][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[0][3][1] + xbOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe, ((*xyBase)[0][3][1] + xbOffs[1]));
@@ -368,7 +368,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe000, ((*xyBase)[0][3][1] + 
 
 b_S0_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[1][0][0] + xbOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe, ((*xyBase)[1][0][0] + xbOffs[1]));
@@ -387,7 +387,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[1][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[1][0][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[1][0][1] + xbOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe, ((*xyBase)[1][0][1] + xbOffs[1]));
@@ -406,7 +406,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[1][0][1] + 
 
  _mm_prefetch((const char *)( ((((*xyBase)[0][0][0] + siprefdist1)+80) + pfyOffs[12]) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[1][3][0] + xbOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe, ((*xyBase)[1][3][0] + xbOffs[1]));
@@ -423,7 +423,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[1][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[1][3][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+0) + offs[0]) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[1][3][1] + xbOffs[0]));
@@ -446,7 +446,7 @@ b_S0_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+0) + offs[4]) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[2][0][0] + xbOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe, ((*xyBase)[2][0][0] + xbOffs[1]));
@@ -463,7 +463,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[2][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[2][0][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+0) + offs[8]) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[2][0][1] + xbOffs[0]));
@@ -482,7 +482,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1000, ((*xyBase)[2][0][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[2][0][1] + xbOffs[13]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[2][3][0] + xbOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+0) + offs[12]) ), _MM_HINT_T1);
@@ -501,7 +501,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[2][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[2][3][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[2][3][1] + xbOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe, ((*xyBase)[2][3][1] + xbOffs[1]));
@@ -660,7 +660,7 @@ dout_S3_C1_IM = _mm512_mask_mov_ps(dout_S3_C1_IM, accMask, _mm512_fnmadd_ps(beta
 
 dout_S3_C2_RE = _mm512_mask_mov_ps(dout_S3_C2_RE, accMask, _mm512_fmadd_ps(beta_vec, ub_S0_C2_IM, dout_S3_C2_RE));
 dout_S3_C2_IM = _mm512_mask_mov_ps(dout_S3_C2_IM, accMask, _mm512_fnmadd_ps(beta_vec, ub_S0_C2_RE, dout_S3_C2_IM));
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[0][1][0] + xbOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe, ((*xyBase)[0][1][0] + xbOffs[1]));
@@ -679,7 +679,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[0][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[0][1][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[0][1][1] + xbOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe, ((*xyBase)[0][1][1] + xbOffs[1]));
@@ -698,7 +698,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[0][1][1] + 
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+48) + offs[12]) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[0][2][0] + xbOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe, ((*xyBase)[0][2][0] + xbOffs[1]));
@@ -715,7 +715,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[0][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[0][2][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+64) + offs[0]) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[0][2][1] + xbOffs[0]));
@@ -738,7 +738,7 @@ b_S1_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+64) + offs[4]) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[1][1][0] + xbOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe, ((*xyBase)[1][1][0] + xbOffs[1]));
@@ -755,7 +755,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[1][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[1][1][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+64) + offs[8]) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[1][1][1] + xbOffs[0]));
@@ -774,7 +774,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1000, ((*xyBase)[1][1][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[1][1][1] + xbOffs[13]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[1][2][0] + xbOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+64) + offs[12]) ), _MM_HINT_T1);
@@ -793,7 +793,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[1][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[1][2][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[1][2][1] + xbOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe, ((*xyBase)[1][2][1] + xbOffs[1]));
@@ -814,7 +814,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe000, ((*xyBase)[1][2][1] + 
 
 b_S1_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1, ((*xyBase)[2][1][0] + xbOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase2)[0][0][0] + siprefdist2)+80) + offs[4]) ), _MM_HINT_T1);
@@ -833,7 +833,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x1000, ((*xyBase)[2][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xe000, ((*xyBase)[2][1][0] + xbOffs[13]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1, ((*xyBase)[2][1][1] + xbOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe, ((*xyBase)[2][1][1] + xbOffs[1]));
@@ -852,7 +852,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x1000, ((*xyBase)[2][1][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xe000, ((*xyBase)[2][1][1] + xbOffs[13]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1, ((*xyBase)[2][2][0] + xbOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe, ((*xyBase)[2][2][0] + xbOffs[1]));
@@ -871,7 +871,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x1000, ((*xyBase)[2][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xe000, ((*xyBase)[2][2][0] + xbOffs[13]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x1, ((*xyBase)[2][2][1] + xbOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xe, ((*xyBase)[2][2][1] + xbOffs[1]));
@@ -955,7 +955,7 @@ dout_S2_C2_IM = _mm512_mask_mov_ps(dout_S2_C2_IM, accMask, _mm512_fnmadd_ps(beta
 __m512 beta_vec = _mm512_setzero_ps(); 
 beta_vec = _mm512_set1_ps(*(&coeff_s));
 
-__mmask accMask;
+__mmask16 accMask;
 
 accMask = accumulate[1];
 
@@ -1013,7 +1013,7 @@ accMask = accumulate[1];
 
  _mm_prefetch((const char *)( (((*xyBase)[0][0][0]+80) + xfOffs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[0][0][0] + xfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8, ((*xyBase)[0][0][0] + xfOffs[3]));
@@ -1032,7 +1032,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[0][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[0][0][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[0][0][1] + xfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8, ((*xyBase)[0][0][1] + xfOffs[3]));
@@ -1051,7 +1051,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7000, ((*xyBase)[0][0][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[0][0][1] + xfOffs[15]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[0][3][0] + xfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8, ((*xyBase)[0][3][0] + xfOffs[3]));
@@ -1070,7 +1070,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[0][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[0][3][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[0][3][1] + xfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8, ((*xyBase)[0][3][1] + xfOffs[3]));
@@ -1091,7 +1091,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8000, ((*xyBase)[0][3][1] + 
 
 b_S0_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[1][0][0] + xfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8, ((*xyBase)[1][0][0] + xfOffs[3]));
@@ -1110,7 +1110,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[1][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[1][0][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[1][0][1] + xfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8, ((*xyBase)[1][0][1] + xfOffs[3]));
@@ -1129,7 +1129,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[1][0][1] + 
 
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+48) + offs[8]) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[1][3][0] + xfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8, ((*xyBase)[1][3][0] + xfOffs[3]));
@@ -1146,7 +1146,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[1][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[1][3][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+48) + offs[12]) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[1][3][1] + xfOffs[0]));
@@ -1169,7 +1169,7 @@ b_S0_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+64) + offs[0]) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[2][0][0] + xfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8, ((*xyBase)[2][0][0] + xfOffs[3]));
@@ -1186,7 +1186,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[2][0][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[2][0][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+64) + offs[4]) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[2][0][1] + xfOffs[0]));
@@ -1205,7 +1205,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7000, ((*xyBase)[2][0][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[2][0][1] + xfOffs[15]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[2][3][0] + xfOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase3)[0][0][0] + siprefdist3)+64) + offs[8]) ), _MM_HINT_T1);
@@ -1224,7 +1224,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[2][3][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[2][3][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[2][3][1] + xfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8, ((*xyBase)[2][3][1] + xfOffs[3]));
@@ -1383,7 +1383,7 @@ dout_S3_C1_IM = _mm512_mask_mov_ps(dout_S3_C1_IM, accMask, _mm512_fmadd_ps(beta_
 
 dout_S3_C2_RE = _mm512_mask_mov_ps(dout_S3_C2_RE, accMask, _mm512_fnmadd_ps(beta_vec, ub_S0_C2_IM, dout_S3_C2_RE));
 dout_S3_C2_IM = _mm512_mask_mov_ps(dout_S3_C2_IM, accMask, _mm512_fmadd_ps(beta_vec, ub_S0_C2_RE, dout_S3_C2_IM));
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[0][1][0] + xfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8, ((*xyBase)[0][1][0] + xfOffs[3]));
@@ -1402,7 +1402,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[0][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[0][1][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[0][1][1] + xfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8, ((*xyBase)[0][1][1] + xfOffs[3]));
@@ -1421,7 +1421,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[0][1][1] + 
 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+16) + offs[8]) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[0][2][0] + xfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8, ((*xyBase)[0][2][0] + xfOffs[3]));
@@ -1438,7 +1438,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[0][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[0][2][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+16) + offs[12]) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[0][2][1] + xfOffs[0]));
@@ -1461,7 +1461,7 @@ b_S1_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+32) + offs[0]) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[1][1][0] + xfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8, ((*xyBase)[1][1][0] + xfOffs[3]));
@@ -1478,7 +1478,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[1][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[1][1][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+32) + offs[4]) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[1][1][1] + xfOffs[0]));
@@ -1497,7 +1497,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7000, ((*xyBase)[1][1][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[1][1][1] + xfOffs[15]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[1][2][0] + xfOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+32) + offs[8]) ), _MM_HINT_T1);
@@ -1516,7 +1516,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[1][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[1][2][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[1][2][1] + xfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8, ((*xyBase)[1][2][1] + xfOffs[3]));
@@ -1537,7 +1537,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8000, ((*xyBase)[1][2][1] + 
 
 b_S1_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7, ((*xyBase)[2][1][0] + xfOffs[0]));
 
  _mm_prefetch((const char *)( ((((*pfBase4)[0][0][0] + siprefdist4)+48) + offs[0]) ), _MM_HINT_T1);
@@ -1556,7 +1556,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x7000, ((*xyBase)[2][1][0] + 
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0x8000, ((*xyBase)[2][1][0] + xfOffs[15]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7, ((*xyBase)[2][1][1] + xfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8, ((*xyBase)[2][1][1] + xfOffs[3]));
@@ -1575,7 +1575,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x7000, ((*xyBase)[2][1][1] + 
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0x8000, ((*xyBase)[2][1][1] + xfOffs[15]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7, ((*xyBase)[2][2][0] + xfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8, ((*xyBase)[2][2][0] + xfOffs[3]));
@@ -1594,7 +1594,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x7000, ((*xyBase)[2][2][0] + 
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0x8000, ((*xyBase)[2][2][0] + xfOffs[15]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x7, ((*xyBase)[2][2][1] + xfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0x8, ((*xyBase)[2][2][1] + xfOffs[3]));
@@ -1678,7 +1678,7 @@ dout_S2_C2_IM = _mm512_mask_mov_ps(dout_S2_C2_IM, accMask, _mm512_fmadd_ps(beta_
 __m512 beta_vec = _mm512_setzero_ps(); 
 beta_vec = _mm512_set1_ps(*(&coeff_s));
 
-__mmask accMask;
+__mmask16 accMask;
 
 accMask = accumulate[2];
 
@@ -1736,7 +1736,7 @@ accMask = accumulate[2];
 
  _mm_prefetch((const char *)( (((*xyBase)[0][0][0]+80) + ybOffs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[0][0][0] + ybOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[0][0][0] + ybOffs[4]));
@@ -1745,7 +1745,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[0][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[0][0][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+0) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[0][0][1] + ybOffs[0]));
@@ -1756,7 +1756,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[0][0][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[0][0][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[0][3][0] + ybOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[0][3][0] + ybOffs[4]));
@@ -1765,7 +1765,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[0][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[0][3][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+16) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[0][3][1] + ybOffs[0]));
@@ -1778,7 +1778,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[0][3][1] + 
 
 b_S0_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[1][0][0] + ybOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[1][0][0] + ybOffs[4]));
@@ -1789,7 +1789,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[1][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[1][0][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[1][0][1] + ybOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[1][0][1] + ybOffs[4]));
@@ -1798,7 +1798,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[1][0][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[1][0][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[1][3][0] + ybOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[1][3][0] + ybOffs[4]));
@@ -1809,7 +1809,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[1][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[1][3][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[1][3][1] + ybOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[1][3][1] + ybOffs[4]));
@@ -1820,7 +1820,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[1][3][1] + 
 
 b_S0_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[2][0][0] + ybOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+64) ), _MM_HINT_T1);
@@ -1831,7 +1831,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[2][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[2][0][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[2][0][1] + ybOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[2][0][1] + ybOffs[4]));
@@ -1840,7 +1840,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[2][0][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[2][0][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[2][3][0] + ybOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+80) ), _MM_HINT_T1);
@@ -1851,7 +1851,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[2][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[2][3][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[2][3][1] + ybOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[2][3][1] + ybOffs[4]));
@@ -2000,7 +2000,7 @@ dout_S3_C1_RE = _mm512_mask_mov_ps(dout_S3_C1_RE, accMask, _mm512_fnmadd_ps(beta
 dout_S3_C1_IM = _mm512_mask_mov_ps(dout_S3_C1_IM, accMask, _mm512_fnmadd_ps(beta_vec, ub_S0_C1_IM, dout_S3_C1_IM));
 dout_S3_C2_RE = _mm512_mask_mov_ps(dout_S3_C2_RE, accMask, _mm512_fnmadd_ps(beta_vec, ub_S0_C2_RE, dout_S3_C2_RE));
 dout_S3_C2_IM = _mm512_mask_mov_ps(dout_S3_C2_IM, accMask, _mm512_fnmadd_ps(beta_vec, ub_S0_C2_IM, dout_S3_C2_IM));
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[0][1][0] + ybOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[0][1][0] + ybOffs[4]));
@@ -2009,7 +2009,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[0][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[0][1][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+240) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[0][1][1] + ybOffs[0]));
@@ -2020,7 +2020,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[0][1][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[0][1][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[0][2][0] + ybOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[0][2][0] + ybOffs[4]));
@@ -2029,7 +2029,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[0][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[0][2][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+256) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[0][2][1] + ybOffs[0]));
@@ -2042,7 +2042,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[0][2][1] + 
 
 b_S1_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[1][1][0] + ybOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[1][1][0] + ybOffs[4]));
@@ -2053,7 +2053,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[1][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[1][1][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[1][1][1] + ybOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[1][1][1] + ybOffs[4]));
@@ -2062,7 +2062,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[1][1][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[1][1][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[1][2][0] + ybOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[1][2][0] + ybOffs[4]));
@@ -2073,7 +2073,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[1][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[1][2][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[1][2][1] + ybOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[1][2][1] + ybOffs[4]));
@@ -2084,7 +2084,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[1][2][1] + 
 
 b_S1_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[2][1][0] + ybOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+304) ), _MM_HINT_T1);
@@ -2095,7 +2095,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[2][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[2][1][0] + ybOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[2][1][1] + ybOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[2][1][1] + ybOffs[4]));
@@ -2104,7 +2104,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[2][1][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[2][1][1] + ybOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[2][2][0] + ybOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+320) ), _MM_HINT_T1);
@@ -2115,7 +2115,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[2][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[2][2][0] + ybOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[2][2][1] + ybOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[2][2][1] + ybOffs[4]));
@@ -2191,7 +2191,7 @@ dout_S2_C2_IM = _mm512_mask_mov_ps(dout_S2_C2_IM, accMask, _mm512_fmadd_ps(beta_
 __m512 beta_vec = _mm512_setzero_ps(); 
 beta_vec = _mm512_set1_ps(*(&coeff_s));
 
-__mmask accMask;
+__mmask16 accMask;
 
 accMask = accumulate[3];
 
@@ -2247,7 +2247,7 @@ accMask = accumulate[3];
 
  _mm_prefetch((const char *)( (((*xyBase)[0][0][0]+80) + yfOffs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[0][0][0] + yfOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+464) ), _MM_HINT_T1);
@@ -2258,7 +2258,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[0][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[0][0][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[0][0][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[0][0][1] + yfOffs[4]));
@@ -2267,7 +2267,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[0][0][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[0][0][1] + yfOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[0][3][0] + yfOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+480) ), _MM_HINT_T1);
@@ -2278,7 +2278,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[0][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[0][3][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[0][3][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[0][3][1] + yfOffs[4]));
@@ -2291,7 +2291,7 @@ b_S0_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+496) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[1][0][0] + yfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[1][0][0] + yfOffs[4]));
@@ -2300,7 +2300,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[1][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[1][0][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[1][0][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[1][0][1] + yfOffs[4]));
@@ -2311,7 +2311,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[1][0][1] + 
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+512) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[1][3][0] + yfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[1][3][0] + yfOffs[4]));
@@ -2320,7 +2320,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[1][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[1][3][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[1][3][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[1][3][1] + yfOffs[4]));
@@ -2333,7 +2333,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[1][3][1] + 
 
 b_S0_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[2][0][0] + yfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[2][0][0] + yfOffs[4]));
@@ -2342,7 +2342,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[2][0][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[2][0][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[2][0][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[2][0][1] + yfOffs[4]));
@@ -2353,7 +2353,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[2][0][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[2][0][1] + yfOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[2][3][0] + yfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[2][3][0] + yfOffs[4]));
@@ -2362,7 +2362,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[2][3][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[2][3][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[2][3][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[2][3][1] + yfOffs[4]));
@@ -2511,7 +2511,7 @@ dout_S3_C1_RE = _mm512_mask_mov_ps(dout_S3_C1_RE, accMask, _mm512_fmadd_ps(beta_
 dout_S3_C1_IM = _mm512_mask_mov_ps(dout_S3_C1_IM, accMask, _mm512_fmadd_ps(beta_vec, ub_S0_C1_IM, dout_S3_C1_IM));
 dout_S3_C2_RE = _mm512_mask_mov_ps(dout_S3_C2_RE, accMask, _mm512_fmadd_ps(beta_vec, ub_S0_C2_RE, dout_S3_C2_RE));
 dout_S3_C2_IM = _mm512_mask_mov_ps(dout_S3_C2_IM, accMask, _mm512_fmadd_ps(beta_vec, ub_S0_C2_IM, dout_S3_C2_IM));
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[0][1][0] + yfOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+704) ), _MM_HINT_T1);
@@ -2522,7 +2522,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[0][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[0][1][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[0][1][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[0][1][1] + yfOffs[4]));
@@ -2531,7 +2531,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[0][1][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[0][1][1] + yfOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[0][2][0] + yfOffs[0]));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+720) ), _MM_HINT_T1);
@@ -2542,7 +2542,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[0][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[0][2][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[0][2][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[0][2][1] + yfOffs[4]));
@@ -2555,7 +2555,7 @@ b_S1_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+736) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[1][1][0] + yfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[1][1][0] + yfOffs[4]));
@@ -2564,7 +2564,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[1][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[1][1][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[1][1][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[1][1][1] + yfOffs[4]));
@@ -2575,7 +2575,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[1][1][1] + 
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+752) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[1][2][0] + yfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[1][2][0] + yfOffs[4]));
@@ -2584,7 +2584,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[1][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[1][2][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[1][2][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[1][2][1] + yfOffs[4]));
@@ -2597,7 +2597,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*xyBase)[1][2][1] + 
 
 b_S1_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*xyBase)[2][1][0] + yfOffs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*xyBase)[2][1][0] + yfOffs[4]));
@@ -2606,7 +2606,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*xyBase)[2][1][0] + y
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*xyBase)[2][1][0] + yfOffs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*xyBase)[2][1][1] + yfOffs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*xyBase)[2][1][1] + yfOffs[4]));
@@ -2617,7 +2617,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*xyBase)[2][1][1] + y
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*xyBase)[2][1][1] + yfOffs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*xyBase)[2][2][0] + yfOffs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*xyBase)[2][2][0] + yfOffs[4]));
@@ -2626,7 +2626,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*xyBase)[2][2][0] + y
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*xyBase)[2][2][0] + yfOffs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*xyBase)[2][2][1] + yfOffs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*xyBase)[2][2][1] + yfOffs[4]));
@@ -2756,7 +2756,7 @@ beta_vec = _mm512_set1_ps(*(&coeff_s));
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+928) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[0][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[0][0][0] + offs[4]));
@@ -2765,7 +2765,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[0][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[0][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[0][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zbBase)[0][0][1] + offs[4]));
@@ -2776,7 +2776,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[0][0][1] + 
 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+944) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[0][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[0][2][0] + offs[4]));
@@ -2785,7 +2785,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[0][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[0][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[0][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zbBase)[0][2][1] + offs[4]));
@@ -2798,7 +2798,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zbBase)[0][2][1] + 
 
 b_S0_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[1][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[1][0][0] + offs[4]));
@@ -2807,7 +2807,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[1][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[1][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[1][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zbBase)[1][0][1] + offs[4]));
@@ -2818,7 +2818,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zbBase)[1][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[1][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[1][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[1][2][0] + offs[4]));
@@ -2827,7 +2827,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[1][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[1][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[1][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zbBase)[1][2][1] + offs[4]));
@@ -2840,7 +2840,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zbBase)[1][2][1] + 
 
 b_S0_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[2][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[2][0][0] + offs[4]));
@@ -2849,7 +2849,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[2][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[2][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+1008) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[2][0][1] + offs[0]));
@@ -2860,7 +2860,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zbBase)[2][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[2][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[2][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[2][2][0] + offs[4]));
@@ -2869,7 +2869,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[2][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[2][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*clBase).block1[0][0][0] + clprefdist)+1024) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[2][2][1] + offs[0]));
@@ -3020,7 +3020,7 @@ dout_S2_C2_RE = _mm512_fmadd_ps(beta_vec, ub_S0_C2_IM, dout_S2_C2_RE);
 dout_S2_C2_IM = _mm512_fnmadd_ps(beta_vec, ub_S0_C2_RE, dout_S2_C2_IM);
  _mm_prefetch((const char *)( (((*gBase)[0][0][0][0] + gprefdist)+16) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[0][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[0][1][0] + offs[4]));
@@ -3029,7 +3029,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[0][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[0][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[0][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zbBase)[0][1][1] + offs[4]));
@@ -3040,7 +3040,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[0][1][1] + 
 
  _mm_prefetch((const char *)( (((*gBase)[0][0][0][0] + gprefdist)+32) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[0][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[0][3][0] + offs[4]));
@@ -3049,7 +3049,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[0][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[0][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[0][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zbBase)[0][3][1] + offs[4]));
@@ -3062,7 +3062,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zbBase)[0][3][1] + 
 
 b_S1_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[1][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[1][1][0] + offs[4]));
@@ -3071,7 +3071,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[1][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[1][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[1][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zbBase)[1][1][1] + offs[4]));
@@ -3082,7 +3082,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zbBase)[1][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[1][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[1][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[1][3][0] + offs[4]));
@@ -3091,7 +3091,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[1][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[1][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[1][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zbBase)[1][3][1] + offs[4]));
@@ -3104,7 +3104,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zbBase)[1][3][1] + 
 
 b_S1_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zbBase)[2][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zbBase)[2][1][0] + offs[4]));
@@ -3113,7 +3113,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zbBase)[2][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zbBase)[2][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[0][0][0][0] + gprefdist)+96) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zbBase)[2][1][1] + offs[0]));
@@ -3124,7 +3124,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zbBase)[2][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zbBase)[2][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zbBase)[2][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zbBase)[2][3][0] + offs[4]));
@@ -3133,7 +3133,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zbBase)[2][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zbBase)[2][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[0][0][0][0] + gprefdist)+112) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zbBase)[2][3][1] + offs[0]));
@@ -3263,7 +3263,7 @@ beta_vec = _mm512_set1_ps(*(&coeff_s));
 
  _mm_prefetch((const char *)( (((*zfBase)[0][0][0]+80) + offs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[0][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[0][0][0] + offs[4]));
@@ -3272,7 +3272,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[0][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[0][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[0][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zfBase)[0][0][1] + offs[4]));
@@ -3283,7 +3283,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[0][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[0][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[0][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[0][2][0] + offs[4]));
@@ -3292,7 +3292,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[0][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[0][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[0][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zfBase)[0][2][1] + offs[4]));
@@ -3305,7 +3305,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zfBase)[0][2][1] + 
 
 b_S0_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[1][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[1][0][0] + offs[4]));
@@ -3314,7 +3314,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[1][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[1][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[1][0][0][0] + gprefdist)+0) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[1][0][1] + offs[0]));
@@ -3325,7 +3325,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[1][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[1][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[1][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[1][2][0] + offs[4]));
@@ -3334,7 +3334,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[1][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[1][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[1][0][0][0] + gprefdist)+16) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[1][2][1] + offs[0]));
@@ -3347,7 +3347,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zfBase)[1][2][1] + 
 
 b_S0_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_IM );
 b_S0_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[2][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[2][0][0] + offs[4]));
@@ -3358,7 +3358,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[2][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[2][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[2][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zfBase)[2][0][1] + offs[4]));
@@ -3367,7 +3367,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[2][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[2][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[2][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[2][2][0] + offs[4]));
@@ -3378,7 +3378,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[2][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[2][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[2][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zfBase)[2][2][1] + offs[4]));
@@ -3527,7 +3527,7 @@ dout_S2_C1_IM = _mm512_fmadd_ps(beta_vec, ub_S0_C1_RE, dout_S2_C1_IM);
 
 dout_S2_C2_RE = _mm512_fnmadd_ps(beta_vec, ub_S0_C2_IM, dout_S2_C2_RE);
 dout_S2_C2_IM = _mm512_fmadd_ps(beta_vec, ub_S0_C2_RE, dout_S2_C2_IM);
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[0][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[0][1][0] + offs[4]));
@@ -3536,7 +3536,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[0][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[0][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[0][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zfBase)[0][1][1] + offs[4]));
@@ -3547,7 +3547,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[0][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[0][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[0][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[0][3][0] + offs[4]));
@@ -3556,7 +3556,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[0][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[0][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[0][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zfBase)[0][3][1] + offs[4]));
@@ -3569,7 +3569,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zfBase)[0][3][1] + 
 
 b_S1_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[1][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[1][1][0] + offs[4]));
@@ -3578,7 +3578,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[1][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[1][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[1][0][0][0] + gprefdist)+240) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[1][1][1] + offs[0]));
@@ -3589,7 +3589,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[1][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[1][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[1][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[1][3][0] + offs[4]));
@@ -3598,7 +3598,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[1][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[1][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[1][0][0][0] + gprefdist)+256) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[1][3][1] + offs[0]));
@@ -3611,7 +3611,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*zfBase)[1][3][1] + 
 
 b_S1_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_RE );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*zfBase)[2][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*zfBase)[2][1][0] + offs[4]));
@@ -3622,7 +3622,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*zfBase)[2][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*zfBase)[2][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*zfBase)[2][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*zfBase)[2][1][1] + offs[4]));
@@ -3631,7 +3631,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*zfBase)[2][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*zfBase)[2][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*zfBase)[2][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*zfBase)[2][3][0] + offs[4]));
@@ -3642,7 +3642,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*zfBase)[2][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*zfBase)[2][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*zfBase)[2][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*zfBase)[2][3][1] + offs[4]));
@@ -3770,7 +3770,7 @@ beta_vec = _mm512_set1_ps(*(&coeff_t_b));
 
  _mm_prefetch((const char *)( (((*tbBase)[0][0][0]+80) + offs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[0][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tbBase)[0][0][0] + offs[4]));
@@ -3779,7 +3779,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[0][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[0][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+144) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[0][0][1] + offs[0]));
@@ -3790,7 +3790,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[0][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[0][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[0][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tbBase)[0][2][0] + offs[4]));
@@ -3799,7 +3799,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[0][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[0][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+160) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[0][2][1] + offs[0]));
@@ -3812,7 +3812,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tbBase)[0][2][1] + 
 
 b_S0_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[1][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tbBase)[1][0][0] + offs[4]));
@@ -3823,7 +3823,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[1][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[1][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[1][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tbBase)[1][0][1] + offs[4]));
@@ -3832,7 +3832,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[1][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[1][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[1][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tbBase)[1][2][0] + offs[4]));
@@ -3843,7 +3843,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[1][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[1][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[1][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tbBase)[1][2][1] + offs[4]));
@@ -3854,7 +3854,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tbBase)[1][2][1] + 
 
 b_S0_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[2][0][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+208) ), _MM_HINT_T1);
@@ -3865,7 +3865,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[2][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[2][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[2][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tbBase)[2][0][1] + offs[4]));
@@ -3874,7 +3874,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[2][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[2][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[2][2][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[2][0][0][0] + gprefdist)+224) ), _MM_HINT_T1);
@@ -3885,7 +3885,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[2][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[2][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[2][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tbBase)[2][2][1] + offs[4]));
@@ -4034,7 +4034,7 @@ dout_S2_C1_RE = _mm512_fmadd_ps(beta_vec, ub_S0_C1_RE, dout_S2_C1_RE);
 dout_S2_C1_IM = _mm512_fmadd_ps(beta_vec, ub_S0_C1_IM, dout_S2_C1_IM);
 dout_S2_C2_RE = _mm512_fmadd_ps(beta_vec, ub_S0_C2_RE, dout_S2_C2_RE);
 dout_S2_C2_IM = _mm512_fmadd_ps(beta_vec, ub_S0_C2_IM, dout_S2_C2_IM);
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[0][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tbBase)[0][1][0] + offs[4]));
@@ -4043,7 +4043,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[0][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[0][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[3][0][0][0] + gprefdist)+96) ), _MM_HINT_T1);
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[0][1][1] + offs[0]));
@@ -4054,7 +4054,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[0][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[0][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[0][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tbBase)[0][3][0] + offs[4]));
@@ -4063,7 +4063,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[0][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[0][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
  _mm_prefetch((const char *)( (((*gBase)[3][0][0][0] + gprefdist)+112) ), _MM_HINT_T1);
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[0][3][1] + offs[0]));
@@ -4076,7 +4076,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tbBase)[0][3][1] + 
 
 b_S1_C0_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C0_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[1][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tbBase)[1][1][0] + offs[4]));
@@ -4087,7 +4087,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[1][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[1][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[1][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tbBase)[1][1][1] + offs[4]));
@@ -4096,7 +4096,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[1][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[1][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[1][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tbBase)[1][3][0] + offs[4]));
@@ -4107,7 +4107,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[1][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[1][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[1][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tbBase)[1][3][1] + offs[4]));
@@ -4118,7 +4118,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tbBase)[1][3][1] + 
 
 b_S1_C1_RE = _mm512_add_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C1_IM = _mm512_add_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tbBase)[2][1][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[3][0][0][0] + gprefdist)+160) ), _MM_HINT_T1);
@@ -4129,7 +4129,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tbBase)[2][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tbBase)[2][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tbBase)[2][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tbBase)[2][1][1] + offs[4]));
@@ -4138,7 +4138,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tbBase)[2][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tbBase)[2][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tbBase)[2][3][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[3][0][0][0] + gprefdist)+176) ), _MM_HINT_T1);
@@ -4149,7 +4149,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tbBase)[2][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tbBase)[2][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tbBase)[2][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tbBase)[2][3][1] + offs[4]));
@@ -4277,7 +4277,7 @@ beta_vec = _mm512_set1_ps(*(&coeff_t_f));
 
  _mm_prefetch((const char *)( (((*tfBase)[0][0][0]+80) + offs[12]) ), _MM_HINT_T0);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[0][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tfBase)[0][0][0] + offs[4]));
@@ -4288,7 +4288,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[0][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[0][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[0][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[0][0][1] + offs[4]));
@@ -4297,7 +4297,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tfBase)[0][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[0][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[0][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tfBase)[0][2][0] + offs[4]));
@@ -4308,7 +4308,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[0][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[0][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[0][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[0][2][1] + offs[4]));
@@ -4319,7 +4319,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tfBase)[0][2][1] + 
 
 b_S0_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[1][0][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[4][0][0][0] + gprefdist)+64) ), _MM_HINT_T1);
@@ -4330,7 +4330,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[1][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[1][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[1][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[1][0][1] + offs[4]));
@@ -4339,7 +4339,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tfBase)[1][0][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[1][0][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[1][2][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[4][0][0][0] + gprefdist)+80) ), _MM_HINT_T1);
@@ -4350,7 +4350,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[1][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[1][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[1][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[1][2][1] + offs[4]));
@@ -4363,7 +4363,7 @@ b_S0_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S0_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
  _mm_prefetch((const char *)( (((*gBase)[4][0][0][0] + gprefdist)+96) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[2][0][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tfBase)[2][0][0] + offs[4]));
@@ -4372,7 +4372,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[2][0][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[2][0][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[2][0][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[2][0][1] + offs[4]));
@@ -4383,7 +4383,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[2][0][1] + 
 
  _mm_prefetch((const char *)( (((*gBase)[4][0][0][0] + gprefdist)+112) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[2][2][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tfBase)[2][2][0] + offs[4]));
@@ -4392,7 +4392,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[2][2][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[2][2][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[2][2][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[2][2][1] + offs[4]));
@@ -4541,7 +4541,7 @@ dout_S2_C1_RE = _mm512_fnmadd_ps(beta_vec, ub_S0_C1_RE, dout_S2_C1_RE);
 dout_S2_C1_IM = _mm512_fnmadd_ps(beta_vec, ub_S0_C1_IM, dout_S2_C1_IM);
 dout_S2_C2_RE = _mm512_fnmadd_ps(beta_vec, ub_S0_C2_RE, dout_S2_C2_RE);
 dout_S2_C2_IM = _mm512_fnmadd_ps(beta_vec, ub_S0_C2_IM, dout_S2_C2_IM);
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[0][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tfBase)[0][1][0] + offs[4]));
@@ -4552,7 +4552,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[0][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[0][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[0][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[0][1][1] + offs[4]));
@@ -4561,7 +4561,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tfBase)[0][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[0][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[0][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tfBase)[0][3][0] + offs[4]));
@@ -4572,7 +4572,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[0][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[0][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[0][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[0][3][1] + offs[4]));
@@ -4583,7 +4583,7 @@ psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf000, ((*tfBase)[0][3][1] + 
 
 b_S1_C0_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C0_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[1][1][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[5][0][0][0] + gprefdist)+16) ), _MM_HINT_T1);
@@ -4594,7 +4594,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[1][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[1][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[1][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[1][1][1] + offs[4]));
@@ -4603,7 +4603,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf00, ((*tfBase)[1][1][1] + o
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[1][1][1] + offs[12]));
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[1][3][0] + offs[0]));
 
  _mm_prefetch((const char *)( (((*gBase)[5][0][0][0] + gprefdist)+32) ), _MM_HINT_T1);
@@ -4614,7 +4614,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[1][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[1][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[1][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[1][3][1] + offs[4]));
@@ -4627,7 +4627,7 @@ b_S1_C1_RE = _mm512_sub_ps( psi_S0_RE , psi_S1_RE );
 b_S1_C1_IM = _mm512_sub_ps( psi_S0_IM , psi_S1_IM );
  _mm_prefetch((const char *)( (((*gBase)[5][0][0][0] + gprefdist)+48) ), _MM_HINT_T1);
 
-psi_S0_RE = _mm512_undefined(); 
+psi_S0_RE = _mm512_undefined_ps(); 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf, ((*tfBase)[2][1][0] + offs[0]));
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf0, ((*tfBase)[2][1][0] + offs[4]));
@@ -4636,7 +4636,7 @@ psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf00, ((*tfBase)[2][1][0] + o
 
 psi_S0_RE = _mm512_mask_expandloadu_ps(psi_S0_RE, 0xf000, ((*tfBase)[2][1][0] + offs[12]));
 
-psi_S0_IM = _mm512_undefined(); 
+psi_S0_IM = _mm512_undefined_ps(); 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf, ((*tfBase)[2][1][1] + offs[0]));
 
 psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf0, ((*tfBase)[2][1][1] + offs[4]));
@@ -4647,7 +4647,7 @@ psi_S0_IM = _mm512_mask_expandloadu_ps(psi_S0_IM, 0xf000, ((*tfBase)[2][1][1] + 
 
  _mm_prefetch((const char *)( (((*gBase)[5][0][0][0] + gprefdist)+64) ), _MM_HINT_T1);
 
-psi_S1_RE = _mm512_undefined(); 
+psi_S1_RE = _mm512_undefined_ps(); 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf, ((*tfBase)[2][3][0] + offs[0]));
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf0, ((*tfBase)[2][3][0] + offs[4]));
@@ -4656,7 +4656,7 @@ psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf00, ((*tfBase)[2][3][0] + o
 
 psi_S1_RE = _mm512_mask_expandloadu_ps(psi_S1_RE, 0xf000, ((*tfBase)[2][3][0] + offs[12]));
 
-psi_S1_IM = _mm512_undefined(); 
+psi_S1_IM = _mm512_undefined_ps(); 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf, ((*tfBase)[2][3][1] + offs[0]));
 
 psi_S1_IM = _mm512_mask_expandloadu_ps(psi_S1_IM, 0xf0, ((*tfBase)[2][3][1] + offs[4]));
