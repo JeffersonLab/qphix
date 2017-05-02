@@ -529,4 +529,6 @@ AC_CONFIG_FILES(include/qphix/sse/Makefile)
 AC_CONFIG_FILES(include/qphix/mic/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
+AC_CONFIG_FILES(tests-gtest/Makefile)
+AC_CONFIG_FILES(tests-gtest/gtest/Makefile)
 AC_OUTPUT
