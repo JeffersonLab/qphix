@@ -48,9 +48,9 @@ namespace QPhiX {
   {
 #pragma omp parallel for shared(from,to)
     for(int i=0; i < nvecs; i++) { 
-      __m512 in = _mm512_load_ps((void *)(from+16*i));
+      __m512 in = _mm512_load_ps((from+16*i));
   #if defined (QPHIX_MIC_SOURCE)
-      _mm512_extstore_ps((void *)(to+16*i),in,_MM_DOWNCONV_PS_FLOAT16,_MM_HINT_NT);
+      _mm512_extstore_ps((to+16*i),in,_MM_DOWNCONV_PS_FLOAT16,_MM_HINT_NT);
   #elif defined(QPHIX_AVX512_SOURCE)
     _mm256_store_si256((__m256i *)(to+16*i), _mm512_cvtps_ph(in, _MM_FROUND_TO_NEAREST_INT) );
   #endif
@@ -63,11 +63,11 @@ namespace QPhiX {
 #pragma omp parallel for shared(from, to)
     for(int i=0; i < nvecs; i++) { 
   #if defined (QPHIX_MIC_SOURCE)
-      __m512 in = _mm512_extload_ps((void *)(from+16*i),_MM_UPCONV_PS_FLOAT16, _MM_BROADCAST32_NONE, _MM_HINT_T0);
-      _mm512_storenrngo_ps((void *)(to+16*i),in);
+      __m512 in = _mm512_extload_ps((from+16*i),_MM_UPCONV_PS_FLOAT16, _MM_BROADCAST32_NONE, _MM_HINT_T0);
+      _mm512_storenrngo_ps((to+16*i),in);
   #elif defined(QPHIX_AVX512_SOURCE)
     __m512 in = _mm512_cvtph_ps(_mm256_load_si256((__m256i*)(from+16*i) ) );
-    _mm512_stream_ps((void *)(to+16*i),in);
+    _mm512_stream_ps((to+16*i),in);
   #endif
     }
   }
