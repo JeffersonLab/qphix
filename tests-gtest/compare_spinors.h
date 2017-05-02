@@ -16,8 +16,9 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
 
     Phi diff = spinor_b - spinor_a;
 
-    Double diff_norm = sqrt(norm2(diff, rb[target_cb])) /
-                       (QDP::Real(4 * 3 * 2 * Layout::vol()) / QDP::Real(2));
+    QDP::Double diff_norm =
+        sqrt(norm2(diff, rb[target_cb])) /
+        (QDP::Real(4 * 3 * 2 * Layout::vol()) / QDP::Real(2));
 
     if (toBool(diff_norm < abs_err)) {
         return;
