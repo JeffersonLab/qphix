@@ -1,6 +1,6 @@
 SUBDIRS = gtest
 
-INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include
+INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include -I@top_srcdir@/tests-gtest/gtest/include
 AM_CXXFLAGS=$(INCFLAGS) @QPHIX_AUX_CFLAGS@
 AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@ -L@top_builddir@/tests-gtest/gtest/lib
 
