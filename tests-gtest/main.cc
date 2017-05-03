@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
                         some_user_args.getSz());
 
-    QDP_initialize(&argc, &argv);
+    QDP::QDP_initialize(&argc, &argv);
     QDP::multi1d<int> nrow(Nd);
     nrow = static_cast<const int *>(nrow_in);
     QDP::Layout::setLattSize(nrow);
@@ -77,5 +77,5 @@ int main(int argc, char **argv) {
 
     return RUN_ALL_TESTS();
 
-    QDP_finalize();
+    QDP::QDP_finalize();
 }
