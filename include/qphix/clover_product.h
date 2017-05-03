@@ -118,6 +118,62 @@ struct InnerCloverProduct<
     }
 };
 
+template <typename FT, int veclen, int soalen, bool compress12>
+struct InnerCloverProduct<
+    FT,
+    veclen,
+    soalen,
+    compress12,
+    typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
+        FullCloverBlock> {
+    static void
+    multiply(typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
+                 FourSpinorBlock &spinor_out,
+             typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
+                 FourSpinorBlock const &spinor_in,
+             typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
+                 FullCloverBlock const &clov_block,
+             int const xi,
+             int const veclen_idx)
+    {
+        // The clover term is block-diagonal in spin. Therefore we need
+        // to iterate over the two blocks of spin.
+        for (auto s_block : {0, 1}) {
+            // Extract the diagonal and triangular parts.
+            auto const &block_in =
+                s_block == 0 ? clov_block.block1 : clov_block.block2;
+            // Input two-spinor component.
+            for (auto two_s_in : {0, 1}) {
+                // Reconstruct four spinor index.
+                auto const four_s_in = 2 * s_block + two_s_in;
+                // Output two-spinor component.
+                for (auto two_s_out : {0, 1}) {
+                    // Reconstruct four spinor index.
+                    auto const four_s_out = 2 * s_block + two_s_out;
+                    // Input color.
+                    for (auto c_in : {0, 1, 2}) {
+                        // Spin-color index (0, ..., 5).
+                        auto const sc_in = 3 * two_s_in + c_in;
+                        // Output color.
+                        for (auto c_out : {0, 1, 2}) {
+                            // Spin-color index (0, ..., 5).
+                            auto const sc_out = 3 * two_s_out + c_out;
+
+                            cplx_mul_acc(
+                                spinor_out[c_out][four_s_out][re][xi],
+                                spinor_out[c_out][four_s_out][im][xi],
+                                block_in[sc_out][sc_in][re][veclen_idx],
+                                block_in[sc_out][sc_in][im][veclen_idx],
+                                spinor_in[c_in][four_s_in][re][xi],
+                                spinor_in[c_in][four_s_in][im][xi]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
 template <typename FT, int veclen, int soalen, bool compress12, typename Clover>
 void clover_product(
     typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock *const out,

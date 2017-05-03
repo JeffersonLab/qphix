@@ -34,6 +34,7 @@ public:
     typedef typename Geom::FourSpinorBlock Spinor;
     typedef typename Geom::SU3MatrixBlock Gauge;
     typedef typename Geom::CloverBlock Clover;
+    typedef typename Geom::FullCloverBlock FullClover;
 
     typedef typename Geom::FT FT;
     static int constexpr veclen = Geom::veclen;
@@ -60,7 +61,8 @@ public:
           cD32(&geom, 1, aniso_fac_s, aniso_fac_t), packed_gauge_cb0(geom),
           packed_gauge_cb1(geom), psi_even(geom), psi_odd(geom), chi_even(geom),
           chi_odd(geom), tmp(geom), A_cb0(geom), A_cb1(geom), A_inv_cb0(geom),
-          A_inv_cb1(geom)
+          A_inv_cb1(geom), full_A_cb0(geom), full_A_cb1(geom),
+          full_A_inv_cb0(geom), full_A_inv_cb1(geom)
     {
         // Make a random gauge field
         // Start up the gauge field somehow
@@ -114,6 +116,11 @@ public:
         clov_packed[0] = A_cb0.get();
         clov_packed[1] = A_cb1.get();
 
+        full_invclov_packed[0] = full_A_inv_cb0.get();
+        full_invclov_packed[1] = full_A_inv_cb1.get();
+        full_clov_packed[0] = full_A_cb0.get();
+        full_clov_packed[1] = full_A_cb1.get();
+
         // Pack the gauge field
         QPhiX::qdp_pack_gauge<>(
             u, packed_gauge_cb0.get(), packed_gauge_cb1.get(), geom);
@@ -138,10 +145,12 @@ public:
 
         for (int cb = 0; cb < 2; cb++) {
             QPhiX::qdp_pack_clover<>(invclov_qdp, invclov_packed[cb], geom, cb);
+            QPhiX::qdp_pack_full_clover<>(invclov_qdp, full_invclov_packed[cb], geom, cb);
         }
 
         for (int cb = 0; cb < 2; cb++) {
             QPhiX::qdp_pack_clover<>(clov_qdp, clov_packed[cb], geom, cb);
+            QPhiX::qdp_pack_full_clover<>(clov_qdp, full_clov_packed[cb], geom, cb);
         }
 
         multi1d<U> u_test(4);
@@ -187,8 +196,16 @@ public:
     QPhiX::CloverHandle<FT, veclen, soalen, compress12> A_inv_cb0;
     QPhiX::CloverHandle<FT, veclen, soalen, compress12> A_inv_cb1;
 
+    QPhiX::FullCloverHandle<FT, veclen, soalen, compress12> full_A_cb0;
+    QPhiX::FullCloverHandle<FT, veclen, soalen, compress12> full_A_cb1;
+    QPhiX::FullCloverHandle<FT, veclen, soalen, compress12> full_A_inv_cb0;
+    QPhiX::FullCloverHandle<FT, veclen, soalen, compress12> full_A_inv_cb1;
+
     Clover *invclov_packed[2];
     Clover *clov_packed[2];
+    FullClover *full_invclov_packed[2];
+    FullClover *full_clov_packed[2];
+
     Gauge *u_packed[2];
 
     Spinor *psi_s[2];
@@ -258,6 +275,61 @@ TYPED_TEST(CloverProductTest, CombinedDslashVersusTwoParts)
     }
 }
 
+TYPED_TEST(CloverProductTest, CombinedDslashVersusTwoPartsFull)
+{
+    for (int isign = 1; isign >= -1; isign -= 2) {
+        for (int cb = 0; cb < 2; cb++) {
+            int source_cb = 1 - cb;
+            int target_cb = cb;
+
+
+            // Apply the Wilson Clover Dslash.
+            this->chi = zero;
+            QPhiX::qdp_pack_spinor<>(this->chi,
+                                     this->chi_even.get(),
+                                     this->chi_odd.get(),
+                                     this->geom);
+            this->D32.dslash(this->chi_s[target_cb],
+                             this->psi_s[source_cb],
+                             this->u_packed[target_cb],
+                             this->invclov_packed[target_cb],
+                             isign,
+                             target_cb);
+            QPhiX::qdp_unpack_spinor<>(this->chi_even.get(),
+                                       this->chi_odd.get(),
+                                       this->clov_chi,
+                                       this->geom);
+
+            // Apply the Wilson Dslash and then apply the new clover inverse
+            // multiplication..
+            this->chi = zero;
+            QPhiX::qdp_pack_spinor<>(this->chi,
+                                     this->chi_even.get(),
+                                     this->chi_odd.get(),
+                                     this->geom);
+            this->cD32.dslash(this->tmp.get(),
+                              this->psi_s[source_cb],
+                              this->u_packed[target_cb],
+                              isign,
+                              target_cb);
+            clover_product(this->chi_s[target_cb],
+                           this->tmp.get(),
+                           this->full_invclov_packed[target_cb],
+                           this->geom);
+            QPhiX::qdp_unpack_spinor<>(this->chi_even.get(),
+                                       this->chi_odd.get(),
+                                       this->clov_chi2,
+                                       this->geom);
+
+            expect_near(this->clov_chi,
+                        this->clov_chi2,
+                        tolerance<typename TestFixture::FT>::small,
+                        this->geom,
+                        target_cb);
+        }
+    }
+}
+
 TYPED_TEST(CloverProductTest, AinvA)
 {
     for (int isign = 1; isign >= -1; isign -= 2) {
@@ -278,6 +350,41 @@ TYPED_TEST(CloverProductTest, AinvA)
             clover_product(this->chi_s[target_cb],
                            this->tmp.get(),
                            this->invclov_packed[target_cb],
+                           this->geom);
+            QPhiX::qdp_unpack_spinor<>(this->chi_even.get(),
+                                       this->chi_odd.get(),
+                                       this->clov_chi2,
+                                       this->geom);
+
+            expect_near(this->psi,
+                        this->clov_chi2,
+                        tolerance<typename TestFixture::FT>::small,
+                        this->geom,
+                        target_cb);
+        }
+    }
+}
+
+TYPED_TEST(CloverProductTest, AinvAFull)
+{
+    for (int isign = 1; isign >= -1; isign -= 2) {
+        for (int cb = 0; cb < 2; cb++) {
+            int source_cb = 1 - cb;
+            int target_cb = cb;
+
+
+            this->chi = zero;
+            QPhiX::qdp_pack_spinor<>(this->chi,
+                                     this->chi_even.get(),
+                                     this->chi_odd.get(),
+                                     this->geom);
+            clover_product(this->tmp.get(),
+                           this->psi_s[target_cb],
+                           this->full_clov_packed[target_cb],
+                           this->geom);
+            clover_product(this->chi_s[target_cb],
+                           this->tmp.get(),
+                           this->full_invclov_packed[target_cb],
                            this->geom);
             QPhiX::qdp_unpack_spinor<>(this->chi_even.get(),
                                        this->chi_odd.get(),
