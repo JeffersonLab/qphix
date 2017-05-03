@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     QDP::Layout::setLattSize(nrow);
     QDP::Layout::create();
 
-    const multi1d<int>& localLattSize = Layout::subgridLattSize();
+    const QDP::multi1d<int>& localLattSize = Layout::subgridLattSize();
     for (int i = 0; i < 4; ++i) {
         std::cout << localLattSize[i] << std::endl;
     }
