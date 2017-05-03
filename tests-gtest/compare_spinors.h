@@ -17,7 +17,7 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
     Phi diff = spinor_b - spinor_a;
 
     QDP::Double diff_norm =
-        sqrt(norm2(diff, rb[target_cb])) /
+        sqrt(norm2(diff, QDP::rb[target_cb])) /
         (QDP::Real(4 * 3 * 2 * Layout::vol()) / QDP::Real(2));
 
     if (toBool(diff_norm < abs_err)) {
@@ -34,12 +34,14 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
                         x + geom.Nxh() * (y + geom.Ny() * (z + geom.Nz() * t));
                     for (int s = 0; s < Ns; s++) {
                         for (int c = 0; c < Nc; c++) {
-                            auto &a = spinor_a.elem(rb[target_cb].start() + ind)
-                                          .elem(s)
-                                          .elem(c);
-                            auto &b = spinor_b.elem(rb[target_cb].start() + ind)
-                                          .elem(s)
-                                          .elem(c);
+                            auto &a =
+                                spinor_a.elem(QDP::rb[target_cb].start() + ind)
+                                    .elem(s)
+                                    .elem(c);
+                            auto &b =
+                                spinor_b.elem(QDP::rb[target_cb].start() + ind)
+                                    .elem(s)
+                                    .elem(c);
 
                             EXPECT_NEAR(a.real(), b.real(), abs_err)
                                 << "(x,y,z,t)=(" << x << "," << y << "," << z
