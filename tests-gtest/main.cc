@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
                         some_user_args.getSz());
 
     QDP::QDP_initialize(&argc, &argv);
-    QDP::multi1d<int> nrow(Nd);
+    QDP::multi1d<int> nrow(QDP::Nd);
     nrow = static_cast<const int *>(nrow_in);
     QDP::Layout::setLattSize(nrow);
     QDP::Layout::create();
