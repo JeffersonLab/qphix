@@ -13,4 +13,4 @@ tests_g_SOURCES = main.cc \
 		  ../tests/mesfield.cc
 tests_g_CXXFLAGS = -fsanitize=address -g $(AM_CXXFLAGS)
 
-tests_g_LDADD = -lgtest -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@
+tests_g_LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@ -lgtest

@@ -9,7 +9,7 @@ AC_PROG_CXX
 AC_PROG_RANLIB
 
 dnl initialise automake
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 dnl put defines in include sse/config.h
 AC_CONFIG_HEADERS([include/qphix/qphix_config_internal.h])
