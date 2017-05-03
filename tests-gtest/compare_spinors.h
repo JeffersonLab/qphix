@@ -32,8 +32,8 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
                     // These are unpadded QDP++ indices...
                     int ind =
                         x + geom.Nxh() * (y + geom.Ny() * (z + geom.Nz() * t));
-                    for (int s = 0; s < Ns; s++) {
-                        for (int c = 0; c < Nc; c++) {
+                    for (int s = 0; s < QDP::Ns; s++) {
+                        for (int c = 0; c < QDP::Nc; c++) {
                             auto &a =
                                 spinor_a.elem(QDP::rb[target_cb].start() + ind)
                                     .elem(s)
