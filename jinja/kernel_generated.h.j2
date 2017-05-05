@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "qphix/diagnostics.h"
+
 {% for isa in isas %}
 {% set filename = 'qphix/%s/%s_%s_complete_specialization.h'|format(isa, kernel, isa) %}
 #if defined (QPHIX_{{ isa|upper }}_SOURCE)
-#warning "including {{ filename }}"
+QPHIX_MESSAGE("including {{ filename }}")
 #include "{{ filename }}"
 #endif
 {% endfor %}
