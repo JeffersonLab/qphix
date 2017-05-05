@@ -1,7 +1,9 @@
 #ifndef QPHIX_QDP_PACKER_PARSCALAR_H
 #define QPHIX_QDP_PACKER_PARSCALAR_H
 
-#warning "building with parscalar packers"
+#include "qphix/diagnostics.h"
+
+QPHIX_MESSAGE(""building with parscalar packers"")
 
 #include "qdp.h"
 #include "qphix/geometry.h"

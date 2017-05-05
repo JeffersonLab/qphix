@@ -112,6 +112,15 @@ AC_ARG_ENABLE(openmp,
    [ omp_enabled="no" ]
 )
 
+AC_ARG_ENABLE(extramessages,
+   AC_HELP_STRING(
+    [--enable-extra-messages],
+    [Emit extra messages during the compilation that indicate which preprocessor branches are used]
+   ),
+   [ extra_messages_enabled="yes" ],
+   [ extra_messages_enabled="no" ]
+)
+
 
 dnl with QDP -- QDP will override everything else
 dnl since a parallel QDP will know its architecture
@@ -177,6 +186,12 @@ if test "x${qdpalloc}x" = "xyesx"; then
 	AC_MSG_NOTICE([Will Use QDP++ Pool Allocator ])
 	AC_DEFINE(QPHIX_USE_QDPXX_ALLOC, [1], [ Use QDP Allocator ])
 fi
+
+if test "${extra_messages_enabled}" = "yes"; then
+	AC_MSG_NOTICE([Will emit pragma message ])
+	AC_DEFINE(QPHIX_EMIT_MESSAGES, [1], [ Emit compilation messages ])
+fi
+
 
 echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"

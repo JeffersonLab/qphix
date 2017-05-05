@@ -1,7 +1,9 @@
 #ifndef QPHIX_QDP_PACKER_QDPJIT_H
 #define QPHIX_QDP_PACKER_QDPJIT_H
 
-#warning "building with QDPJIT packers"
+#include "qphix/diagnostics.h"
+
+QPHIX_MESSAGE(""building with QDPJIT packers"")
 
 
 #include "qdp.h"

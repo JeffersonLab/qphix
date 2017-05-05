@@ -4,6 +4,7 @@
 
 
 #include <cerrno>
+#include "qphix/diagnostics.h"
 #include "qphix/qphix_config.h"
 
 #ifdef QPHIX_USE_QDPXX_ALLOC
@@ -218,7 +219,7 @@ ALIGNED_FREE(void *addr)
 #endif // __MIC__
 
 #if defined(QPHIX_MIC_SOURCE)
-#warning including barrier
+QPHIX_MESSAGE("including barrier")
 #include "qphix/Barrier_mic.h"
 #else
 #include "qphix/Barrier_stubs.h"

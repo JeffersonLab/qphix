@@ -1,6 +1,7 @@
 #ifndef QPHIX_DSLASH_DEF_H
 #define QPHIX_DSLASH_DEF_H
 
+#include "qphix/diagnostics.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/geometry.h"
 #include "qphix/comm.h"
@@ -149,7 +150,7 @@ namespace QPhiX
 
 
 #ifdef QPHIX_DO_COMMS
-#warning defining face packers
+QPHIX_MESSAGE("defining face packers")
      // PACK FACE FOR SENDING
     void packFaceDir(int tid,
 		     const FourSpinorBlock *psi,

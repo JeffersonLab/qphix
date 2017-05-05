@@ -2,9 +2,11 @@
 #define QPHIX_COMM_H
 
 #include "qphix/geometry.h"
+#include "qphix/diagnostics.h"
 
 #ifdef QPHIX_DO_COMMS
 #ifdef QPHIX_QMP_COMMS
+
 #undef SEEK_SET
 #undef SEEK_CUR
 #undef SEEK_END
@@ -24,7 +26,7 @@ namespace QPhiX
 
 
 #ifndef QPHIX_DO_COMMS
-#warning using scalar comms
+QPHIX_MESSAGE("using scalar comms")
   /*! Scalar version of the class. Everything is local.
     comms related functions commented out */
   template<typename T, int V, int S, const bool compressP>
@@ -60,7 +62,7 @@ namespace QPhiX
 #endif
 
 #ifdef  QPHIX_FAKE_COMMS
-#warning using fake comms
+QPHIX_MESSAGE("using fake comms")
 #include <cstdlib>
 #include <cstdio>
 #include <iostream> 
@@ -198,7 +200,7 @@ namespace QPhiX
 
 
 #ifdef  QPHIX_QMP_COMMS
-#warning Doing QMP Comms
+QPHIX_MESSAGE("Doing QMP Comms")
 
 #define QPHIX_MPI_COMMS_CALLS  
 #ifdef QPHIX_MPI_COMMS_CALLS
