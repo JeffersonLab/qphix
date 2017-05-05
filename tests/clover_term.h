@@ -1,11 +1,13 @@
 #ifndef QPHIX_TEST_CLOVER_TERM_H
 #define QPHIX_TEST_CLOVER_TERM_H
 
+#include "qphix/diagnostics.h"
+
 #include "qphix/qphix_config.h"
 
 #if defined(QPHIX_BUILD_CLOVER) || defined(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER)
 #ifdef QPHIX_BUILD_QDPJIT
-#warning using LLVM Clover Term
+QPHIX_MESSAGE("using LLVM Clover Term")
 
 #include "./clover_term_llvm_w.h"
 namespace QPhiX
@@ -15,7 +17,7 @@ using CloverTermT = LLVMCloverTermT<Phi,U>;
 };
 #else
 // Using regular cloverTerm
-#warning using QDP Clover Term
+QPHIX_MESSAGE("using QDP Clover Term")
 
 #include "./clover_term_qdp_w.h"
 
