@@ -32,7 +32,8 @@ qphix_include_HEADERS += \
 	./print_utils.h \
 	./threadbind.h \
 	./thread_limits.h \
-	./qphix_cli_args.h
+	./qphix_cli_args.h \
+	./diagnostics.h
 
 
 #
