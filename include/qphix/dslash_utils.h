@@ -14,9 +14,9 @@
 
 #include "qphix/tsc.h"
 
+#include <cstdlib>
 
 #ifndef QPHIX_USE_MM_MALLOC
-#include <cstdlib>
 #else 
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
