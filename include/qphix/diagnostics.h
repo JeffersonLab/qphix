@@ -13,6 +13,8 @@
   With help from http://stackoverflow.com/a/43796429/653152.
   */
 
+#include "qphix/qphix_config.h"
+
 #ifdef QPHIX_EMIT_MESSAGES
 #define QPHIX_MESSAGE_I(s) _Pragma(#s)
 #define QPHIX_MESSAGE(s) QPHIX_MESSAGE_I(message(s))
