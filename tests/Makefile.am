@@ -31,7 +31,9 @@ endif
 check_PROGRAMS += time_twm_clover
 endif
 
+if QPHIX_BUILD_TESTS
 bin_PROGRAMS = $(check_PROGRAMS)
+endif
 
 FRAMEWORK_SRCS =  unittest.h \
 	dslashm_w.h \

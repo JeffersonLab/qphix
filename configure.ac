@@ -26,7 +26,9 @@ AC_ARG_ENABLE(parallel-arch,
 
 AC_ARG_ENABLE(testing,
    AC_HELP_STRING([--enable-testing],
-   [Enable make check to automatically run tests, rather than just build them]),   [ do_tests="${enableval}" ]
+   [ Build the tests (takes quite some time) ]),
+   [ build_tests=yes ],
+   [ build_tests=no ]
 )
 
 AC_ARG_ENABLE(soalen,
@@ -521,6 +523,8 @@ yes|YES)
   AC_MSG_NOTICE([Building regular QDP Clover Term])
 ;;
 esac
+
+AM_CONDITIONAL(QPHIX_BUILD_TESTS, [ test "${build_tests}" = "yes" ])
 
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
 AM_CONDITIONAL(QPHIX_BUILD_QDPJIT_CLOVER, [ test "x${build_qdpjit_clover}x" = "xyesx" ])
