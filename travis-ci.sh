@@ -311,7 +311,7 @@ pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             $qphix_configure \
-            --disable-testing \
+            --enable-testing \
             --enable-proc=$QPHIX_ARCH \
             --enable-soalen=$soalen \
             --enable-clover \
