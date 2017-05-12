@@ -174,44 +174,42 @@ void testDslashFull::run(void)
         QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
         testDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
 
-// Comment out to speed building.
-#if 0
-	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-	testMWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-	testCGWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
-	testBiCGStabWrapper<float,VECLEN_SP,4,UF,PhiF>(u_in);
+#if 1
+        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
+        testMWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
+        testCGWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
+        testBiCGStabWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
 #endif
 #endif
       }
 
-#if 0
-      if( soalen == 8 ) {
+#if 1
+      if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8"  << endl;
-	testDslashWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-	testMWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-	testCGWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
-	testBiCGStabWrapper<float,VECLEN_SP,8,UF,PhiF>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8" << endl;
+        testDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
+        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
+        testMWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
+        testCGWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
+        testBiCGStabWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
 #endif
       }
 #endif
 
-#if 0
-      if ( soalen == 16 ) {
+#if 1
+      if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
-	testDslashWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-	testDslashAChiMBDPsiWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-	testMWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-	testCGWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-	testBiCGStabWrapper<float,VECLEN_SP,16,UF,PhiF>(u_in);
-#else 
-	masterPrintf("SOALEN=16 not available");
-	return;
+        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
+        testDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
+        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
+        testMWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
+        testCGWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
+        testBiCGStabWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
+#else
+        masterPrintf("SOALEN=16 not available");
+        return;
 #endif
-
       }
 #endif
     }
@@ -219,52 +217,53 @@ void testDslashFull::run(void)
 
 #endif // If 0
 
-#if 0
-  if (precision == HALF_PREC ) {
+#if 1
+  if (precision == HALF_PREC) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_AVX512_SOURCE)
     QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
-    for(int mu=0; mu < Nd; mu++) {
+    for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
     }
     {
-      if( soalen == 4 ) { 
-	QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=4 " << endl;
-	testDslashWrapper<half,VECLEN_HP,4,UF,PhiF>(u_in);
-	testDslashAChiMBDPsiWrapper<half,VECLEN_HP,4,UF,PhiF>(u_in);
-	testMWrapper<half,VECLEN_HP,4,UF,PhiF>(u_in);
-	testCGWrapper<half,VECLEN_HP,4,UF,PhiF>(u_in);
-	testBiCGStabWrapper<half,VECLEN_HP,4,UF,PhiF>(u_in);
+      if (soalen == 4) {
+        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=4 " << endl;
+        testDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
+        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
+        testMWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
+        testCGWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
+        testBiCGStabWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
       }
 
-      if (soalen == 8 ) {
-	QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=8 " << endl;
-	testDslashWrapper<half,VECLEN_HP,8,UF,PhiF>(u_in);
-	testDslashAChiMBDPsiWrapper<half,VECLEN_HP,8,UF,PhiF>(u_in);
-	testMWrapper<half,VECLEN_HP,8,UF,PhiF>(u_in);
-	testCGWrapper<half,VECLEN_HP,8,UF,PhiF>(u_in);
-	testBiCGStabWrapper<half,VECLEN_HP,8,UF,PhiF>(u_in);
+      if (soalen == 8) {
+        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=8 " << endl;
+        testDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
+        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
+        testMWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
+        testCGWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
+        testBiCGStabWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
       }
 
-      if( soalen == 16 ) {
+      if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=16 " << endl;
-	testDslashWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
-	testDslashAChiMBDPsiWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
-	testMWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
-	testCGWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
-	testBiCGStabWrapper<half,VECLEN_HP,16,UF,PhiF>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=16 " << endl;
+        testDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
+        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
+        testMWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
+        testCGWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
+        testBiCGStabWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
 #endif
       }
     }
 #else
-    QDPIO::cout << " Half Prec is only supported on MIC and AVX2 Targets just now " << endl;
+    QDPIO::cout << " Half Prec is only supported on MIC and AVX2 Targets just now "
+                << endl;
 #endif
   }
 #endif // If 0
 
-#if 0
+#if 1
   if( precision == DOUBLE_PREC ) { 
     QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);
@@ -335,7 +334,7 @@ void testDslashFull::run(void)
   }
 #endif // If 0
 
-#if 0
+#if 1
   {
     multi1d<LatticeColorMatrixD3> u_in(4);
     for(int mu=0; mu < Nd; mu++) {
