@@ -259,7 +259,7 @@ void testClovDslashFull::runTest(void)
   QDPIO::cout << "Copying into InvClover Term" << endl;
   CloverTermT<Phi, U> invclov_qdp(clov_qdp);
 
-#if 0
+#if 1
   // Test Clover Term has been copied properly
   // Test invclov_apply
   // fill clov_chi with noise
@@ -269,39 +269,42 @@ void testClovDslashFull::runTest(void)
   gaussian(chi2);
 
   // Apply clover
-  clov_qdp.apply(clov_chi,chi2,1,0);
+  clov_qdp.apply(clov_chi, chi2, 1, 0);
 
   // Apply copy
   invclov_qdp.apply(clov_chi2, chi2, 1, 0);
 
   chi2[rb[0]] = clov_chi2 - clov_chi;
-  QDPIO::cout << "Copy clov diff = " << sqrt( norm2(chi2,rb[0])) << std::endl;
+  QDPIO::cout << "Copy clov diff = " << sqrt(norm2(chi2, rb[0])) << std::endl;
 #endif
-#if 0
+#if 1
   {
-		int Nxh=Nx/2;
-		for(int t=0; t < Nt; t++){
-		  for(int z=0; z < Nz; z++) {
-		    for(int y=0; y < Ny; y++){
-		      for(int x=0; x < Nxh; x++){
+    int Nxh = Nx / 2;
+    for (int t = 0; t < Nt; t++) {
+      for (int z = 0; z < Nz; z++) {
+        for (int y = 0; y < Ny; y++) {
+          for (int x = 0; x < Nxh; x++) {
 
-			// These are unpadded QDP++ indices...
-			int ind = x + Nxh*(y + Ny*(z + Nz*t));
-			for(int s =0 ; s < Ns; s++) {
-			  for(int c=0; c < Nc; c++) {
-			    REAL dr = chi2.elem(rb[0].start()+ind).elem(s).elem(c).real();
-			    REAL di = chi2.elem(rb[0].start()+ind).elem(s).elem(c).imag();
-			    if( toBool( fabs(dr) > tolerance<FT>::small ) || toBool ( fabs(di) > tolerance<FT>::small) ) {
-			      QDPIO::cout <<"(x,y,z,t)=(" << x <<"," <<y<<","<<z<<","<<t<<") site=" << ind << " spin=" << s
-			    		  	  << " color=" << c << " Diff = " << chi2.elem(rb[0].start()+ind).elem(s).elem(c) << endl;
-
-			    }
-			  }
-			}
-		      } // x
-		    } // y
-		  } // z
-		} // t
+            // These are unpadded QDP++ indices...
+            int ind = x + Nxh * (y + Ny * (z + Nz * t));
+            for (int s = 0; s < Ns; s++) {
+              for (int c = 0; c < Nc; c++) {
+                REAL dr = chi2.elem(rb[0].start() + ind).elem(s).elem(c).real();
+                REAL di = chi2.elem(rb[0].start() + ind).elem(s).elem(c).imag();
+                if (toBool(fabs(dr) > tolerance<FT>::small) ||
+                    toBool(fabs(di) > tolerance<FT>::small)) {
+                  QDPIO::cout
+                      << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
+                      << ") site=" << ind << " spin=" << s << " color=" << c
+                      << " Diff = " << chi2.elem(rb[0].start() + ind).elem(s).elem(c)
+                      << endl;
+                }
+              }
+            }
+          } // x
+        } // y
+      } // z
+    } // t
   }
 #endif
 
@@ -313,47 +316,50 @@ void testClovDslashFull::runTest(void)
   }
   QDPIO::cout << "Done" << endl;
 
-#if 0
+#if 1
   // Test inverse
   gaussian(chi2);
 
-  for(int cb=0; cb < 2; ++cb ) {
-	  // Apply clover
-	  clov_qdp.apply(clov_chi, chi2, 1, cb);
+  for (int cb = 0; cb < 2; ++cb) {
+    // Apply clover
+    clov_qdp.apply(clov_chi, chi2, 1, cb);
 
-	  // Apply invclov onto the onto the last one.
-	  invclov_qdp.apply(clov_chi2, clov_chi, 1,cb);
+    // Apply invclov onto the onto the last one.
+    invclov_qdp.apply(clov_chi2, clov_chi, 1, cb);
   }
   // This should be  zero:    A^{-1} A chi2 - chi2 = chi2 - chi2;
   clov_chi2 -= chi2;
 
-  QDPIO::cout << "Invclov_diff = " << sqrt( norm2(clov_chi2) ) << std::endl;
+  QDPIO::cout << "Invclov_diff = " << sqrt(norm2(clov_chi2)) << std::endl;
 #endif
-#if 0
+#if 1
   {
-		int Nxh=Nx/2;
-		for(int t=0; t < Nt; t++){
-		  for(int z=0; z < Nz; z++) {
-		    for(int y=0; y < Ny; y++){
-		      for(int x=0; x < Nxh; x++){
+    int Nxh = Nx / 2;
+    for (int t = 0; t < Nt; t++) {
+      for (int z = 0; z < Nz; z++) {
+        for (int y = 0; y < Ny; y++) {
+          for (int x = 0; x < Nxh; x++) {
 
-			// These are unpadded QDP++ indices...
-			int ind = x + Nxh*(y + Ny*(z + Nz*t));
-			for(int s =0 ; s < Ns; s++) {
-			  for(int c=0; c < Nc; c++) {
-			    REAL dr = chi2.elem(rb[0].start()+ind).elem(s).elem(c).real();
-			    REAL di = chi2.elem(rb[0].start()+ind).elem(s).elem(c).imag();
-			    if( toBool( fabs(dr) > tolerance<FT>::small ) || toBool ( fabs(di) > tolerance<FT>::small) ) {
-			      QDPIO::cout <<"(x,y,z,t)=(" << x <<"," <<y<<","<<z<<","<<t<<") site=" << ind << " spin=" << s
-			    		  	  << " color=" << c << " Diff = " << clov_chi2.elem(rb[0].start()+ind).elem(s).elem(c) << endl;
-
-			    }
-			  }
-			}
-		      } // x
-		    } // y
-		  } // z
-		} // t
+            // These are unpadded QDP++ indices...
+            int ind = x + Nxh * (y + Ny * (z + Nz * t));
+            for (int s = 0; s < Ns; s++) {
+              for (int c = 0; c < Nc; c++) {
+                REAL dr = chi2.elem(rb[0].start() + ind).elem(s).elem(c).real();
+                REAL di = chi2.elem(rb[0].start() + ind).elem(s).elem(c).imag();
+                if (toBool(fabs(dr) > tolerance<FT>::small) ||
+                    toBool(fabs(di) > tolerance<FT>::small)) {
+                  QDPIO::cout << "(x,y,z,t)=(" << x << "," << y << "," << z << ","
+                              << t << ") site=" << ind << " spin=" << s
+                              << " color=" << c << " Diff = "
+                              << clov_chi2.elem(rb[0].start() + ind).elem(s).elem(c)
+                              << endl;
+                }
+              }
+            }
+          } // x
+        } // y
+      } // z
+    } // t
   }
 #endif
 
