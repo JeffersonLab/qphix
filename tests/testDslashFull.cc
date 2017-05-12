@@ -134,13 +134,13 @@ void testDslashFull::run(void)
   LatticeColorMatrix g;
   LatticeColorMatrix uf;
   for (int mu = 0; mu < 4; mu++) {
-#if 0
-	  uf = 1;   // Unit gauge
+#if 1
+    uf = 1; // Unit gauge
 
-	  Real factor=Real(0.09);
-	  gaussian(g);
-	  u[mu] = uf + factor*g;
-	  reunit(u[mu]);
+    Real factor = Real(0.09);
+    gaussian(g);
+    u[mu] = uf + factor * g;
+    reunit(u[mu]);
 #else
     u[mu] = 1;
 #endif
