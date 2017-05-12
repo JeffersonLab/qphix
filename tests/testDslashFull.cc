@@ -480,9 +480,6 @@ void testDslashFull::testDslash(const U &u, int t_bc)
       QDPIO::cout << "Applying Optimized Dslash" << std::endl;
       D32.dslash(
           chi_s[target_cb], psi_s[source_cb], u_packed[target_cb], isign, target_cb);
-
-      //      qdp_unpack_spinor<T,V,S,compress, Phi >(chi_even,chi_odd,
-      //      chi, geom);
       QDPIO::cout << "Unpacking result chi" << std::endl;
       qdp_unpack_spinor<>(chi_even, chi_odd, chi, geom);
       QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
