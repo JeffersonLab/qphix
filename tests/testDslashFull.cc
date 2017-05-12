@@ -264,72 +264,70 @@ void testDslashFull::run(void)
 #endif // If 0
 
 #if 1
-  if( precision == DOUBLE_PREC ) { 
+  if (precision == DOUBLE_PREC) {
     QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);
-    for(int mu=0; mu < Nd; mu++) {
+    for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
     }
-    
+
     {
 
-      if( soalen == 1) {
+      if (soalen == 1) {
 #if defined(QPHIX_SCALAR_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=1 " << endl;
-	testDslashWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,1,UD,PhiD>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=1 " << endl;
+        testDslashWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
+        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
+        testMWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
+        testCGWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
+        testBiCGStabWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
 
 #endif
       }
 
-
-      if( soalen == 2) {
+      if (soalen == 2) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
-	testDslashWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,2,UD,PhiD>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
+        testDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
+        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
+        testMWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
+        testCGWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
+        testBiCGStabWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
 
 #endif
       }
 
-      if( soalen == 4 ) {
+      if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
-	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
+        testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testMWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testCGWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
 
-#elif defined(QPHIX_QPX_SOURCE) 
-	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
-	testDslashWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testCGWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
+#elif defined(QPHIX_QPX_SOURCE)
+        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
+        testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testMWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testCGWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
 #endif
       }
 
-      if( soalen == 8 ) {
+      if (soalen == 8) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-	QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
-	testDslashWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-	testDslashAChiMBDPsiWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-	testMWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-	
-	testCGWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-	testBiCGStabWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
+        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
+        testDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+        testMWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+
+        testCGWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+        testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
 #endif
       }
-      
     }
   }
 #endif // If 0
@@ -337,44 +335,42 @@ void testDslashFull::run(void)
 #if 1
   {
     multi1d<LatticeColorMatrixD3> u_in(4);
-    for(int mu=0; mu < Nd; mu++) {
+    for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
     }
 
-    int t_bc=-1;
+    int t_bc = -1;
 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if ( Nx % 32 == 0 ){
-      testBiCGStabWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-      testRichardson<double,VECLEN_DP,8,true,half,VECLEN_HP,16,UD,PhiD>(u_in, t_bc);
-    }
-    else { 
-      if ( Nx % 16 == 0) {
-	testBiCGStabWrapper<double,VECLEN_DP,8,UD,PhiD>(u_in);
-	testRichardson<double,VECLEN_DP,8,true,half,VECLEN_HP,8,UD,PhiD>(u_in, t_bc);
+    if (Nx % 32 == 0) {
+      testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+      testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 16, UD, PhiD>(
+          u_in, t_bc);
+    } else {
+      if (Nx % 16 == 0) {
+        testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
+        testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 8, UD, PhiD>(
+            u_in, t_bc);
+      } else {
+        masterPrintf("I havent set up that mixed precision solver combination\n");
       }
-      else {
-	masterPrintf("I havent set up that mixed precision solver combination\n");
-      }
     }
-#else 
+#else
     // AVX: Double SOALEN = 4
-    if ( Nx % 16 == 0 ){
-      testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-      testRichardson<double,VECLEN_DP,4,true,float,VECLEN_SP,8,UD,PhiD>(u_in, t_bc);
-    }
-    else { 
-      if ( Nx % 8 == 0) {
-	testBiCGStabWrapper<double,VECLEN_DP,4,UD,PhiD>(u_in);
-	testRichardson<double,VECLEN_DP,4,true,float,VECLEN_SP,4,UD,PhiD>(u_in, t_bc);
-      }
-      else {
-	masterPrintf("I havent set up that mixed precision solver combination\n");
+    if (Nx % 16 == 0) {
+      testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+      testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 8, UD, PhiD>(
+          u_in, t_bc);
+    } else {
+      if (Nx % 8 == 0) {
+        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
+        testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 4, UD, PhiD>(
+            u_in, t_bc);
+      } else {
+        masterPrintf("I havent set up that mixed precision solver combination\n");
       }
     }
 #endif
-
-
   }
 #endif
 }
