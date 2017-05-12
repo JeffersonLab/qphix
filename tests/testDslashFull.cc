@@ -635,7 +635,6 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
   Spinor *chi_s[2] = {chi_even, chi_odd};
 
   QDPIO::cout << " Packing fermions...";
-  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
   qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
 
   QDPIO::cout << "done" << endl;
@@ -663,8 +662,6 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
       int source_cb = 1 - cb;
       int target_cb = cb;
       chi = zero;
-      //      qdp_pack_spinor< T,V,S,compress,Phi >(chi, chi_even,
-      //      chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
       double alpha = (double)(4.01); // Nd + M, M=0.01
@@ -680,8 +677,6 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
                                isign,
                                target_cb);
 
-      // qdp_unpack_spinor< T,V,S,compress,Phi>(chi_s[0], chi_s[1], chi,
-      // geom);
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
 
       // Apply QDP Dslash
@@ -764,8 +759,6 @@ void testDslashFull::testM(const U &u, int t_bc)
 
   // Pack the gauge field
   QDPIO::cout << "Packing gauge field...";
-  //  qdp_pack_gauge< T,V,S,compress, U >(u,
-  //  packed_gauge_cb0,packed_gauge_cb1, geom);
   qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
 
   QDPIO::cout << "done" << endl;
@@ -777,7 +770,6 @@ void testDslashFull::testM(const U &u, int t_bc)
   Spinor *chi_s[2] = {chi_even, chi_odd};
 
   QDPIO::cout << " Packing fermions...";
-  //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
   qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
 
   QDPIO::cout << "done" << endl;
@@ -811,14 +803,10 @@ void testDslashFull::testM(const U &u, int t_bc)
     for (int cb = 0; cb < 2; ++cb) {
       int other_cb = 1 - cb;
       chi = zero;
-      //      qdp_pack_spinor< T,V,S, compress, Phi >(chi, chi_even,
-      //      chi_odd, geom);
       qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
 
       M(chi_s[cb], psi_s[cb], isign, cb);
 
-      //      qdp_unpack_spinor< T,V,S, compress,  Phi> (chi_s[0],
-      //      chi_s[1], chi, geom);
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
 
       // Apply QDP Dslash
@@ -928,7 +916,6 @@ void testDslashFull::testCG(const U &u, int t_bc)
 
     QDPIO::cout << " Packing fermions...";
 
-    // qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd, geom);
     qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
 
     QDPIO::cout << "done" << endl;
@@ -958,8 +945,6 @@ void testDslashFull::testCG(const U &u, int t_bc)
 
     {
       chi = zero;
-      //    qdp_pack_spinor<T,V,S,compress, Phi >(chi, chi_even, chi_odd,
-      //    geom);
       qdp_pack_cb_spinor<>(chi, chi_even, geom, cb);
 
       double rsd_target = rsdTarget<T>::value;
@@ -987,8 +972,6 @@ void testDslashFull::testCG(const U &u, int t_bc)
              cb);
       double end = omp_get_wtime();
 
-      //    qdp_unpack_spinor<T, V, S, compress,Phi >(chi_s[0], chi_s[1],
-      //    chi, geom);
       qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom, cb);
 
       // Multiply back
@@ -1071,8 +1054,6 @@ void testDslashFull::testBiCGStab(const U &u, int t_bc)
 
     // Pack the gauge field
     QDPIO::cout << "Packing gauge field...";
-    //  qdp_pack_gauge< T,V,S,compress, U >(u,
-    //  packed_gauge_cb0,packed_gauge_cb1, geom);
     qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
 
     QDPIO::cout << "done" << endl;
@@ -1084,8 +1065,6 @@ void testDslashFull::testBiCGStab(const U &u, int t_bc)
     Spinor *chi_s[2] = {chi_even, chi_odd};
 
     QDPIO::cout << " Packing fermions...";
-    //  qdp_pack_spinor< T,V,S,compress, Phi >(psi, psi_even, psi_odd,
-    //  geom);
     qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
 
     QDPIO::cout << "done" << endl;
@@ -1308,8 +1287,6 @@ void testDslashFull::testRichardson(const U &u, int t_bc)
         // BiCGStab Inner SOlver
 
         chi = zero;
-        //      qdp_pack_spinor<T,V,S, compress,Phi >(chi, chi_even,
-        //      chi_odd, geom);
         qdp_pack_cb_spinor<>(chi, chi_even, geom_outer, 0);
         masterPrintf("Entering solver\n");
 
@@ -1326,8 +1303,6 @@ void testDslashFull::testRichardson(const U &u, int t_bc)
                      cb);
         double end = omp_get_wtime();
 
-        //      qdp_unpack_spinor<T,V,S, compress, Phi >(chi_s[0],
-        //      chi_s[1], chi, geom);
         qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom_outer, cb);
 
         // Multiply back
