@@ -30,65 +30,9 @@ using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_HP 8
-#define VECLEN_DP 4
-
-#elif defined(QPHIX_SSE_SOURCE)
-
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-
-#elif defined(QPHIX_SCALAR_SOURCE)
-#define VECLEN_DP 1
-#define VECLEN_SP 1
-#define QPHIX_SOALEN 1
-
-#elif defined(QPHIX_QPX_SOURCE)
-#define VECLEN_DP 4
-#define QPHIX_SOALEN 4
-
-#endif
-
-template <typename T>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-const Double tolerance<double>::small = Double(1.0e-13);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-3);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
+#include "RandomGauge.h"
+#include "veclen.h"
+#include "tolerance.h"
 
 template <typename FT, int V, int S, bool compress, typename U, typename Phi>
 void testClovDslashFull::runTest(void)
@@ -122,8 +66,17 @@ void testClovDslashFull::runTest(void)
   QDPIO::cout << "MinCt=" << MinCt << endl;
   QDPIO::cout << "Threads_per_core = " << N_simt << endl;
 
-  // What we consider to be small enough...
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
+  Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
+                                    By,
+                                    Bz,
+                                    NCores,
+                                    Sy,
+                                    Sz,
+                                    PadXY,
+                                    PadXYZ,
+                                    MinCt);
+
+  RandomGauge gauge(geom);
 
   // Make a random gauge field
   // Start up the gauge field somehow
@@ -190,16 +143,6 @@ void testClovDslashFull::runTest(void)
   double t_boundary = (double)(1);
   QDPIO::cout << "Instantiating ClovDslash<FT," << V << "," << S << ">"
               << " with t_boundary = " << t_boundary << endl;
-
-  Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                    By,
-                                    Bz,
-                                    NCores,
-                                    Sy,
-                                    Sz,
-                                    PadXY,
-                                    PadXYZ,
-                                    MinCt);
 
   ClovDslash<FT, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
