@@ -2,7 +2,6 @@
 
 #include <qphix/geometry.h>
 
-#include <gtest/gtest.h>
 #include <qdp.h>
 
 #include <iomanip>
@@ -25,6 +24,8 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
     return;
   }
 
+
+
   for (int t = 0; t < geom.Nt(); t++) {
     for (int z = 0; z < geom.Nz(); z++) {
       for (int y = 0; y < geom.Ny(); y++) {
@@ -41,19 +42,23 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
               double const diff_real = a.real() - b.real();
               double const diff_imag = a.imag() - b.imag();
 
-              if (std::fabs(diff_real) > tolerance<FT>::small || std::fabs(diff_imag) > tolerance<FT>::small) {
+              if (std::fabs(diff_real) > abs_err || std::fabs(diff_imag) > abs_err) {
                 QDPIO::cout << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                            << ") site=" << std::setw(5) ind << " spin=" << s
-                            << " color=" << c << "a=(" << std::scientific
-                            << std::setw(15) << std::showpos << a.real() << ","
-                            << std::scientific << std::setw(15) << std::showpos
-                            << a.imag() << ") b=(" << std::scientific
-                            << std::setw(15) << std::showpos << b.real() << ","
-                            << std::scientific << std::setw(15) << std::showpos
-                            << b.imag() << ") diff=(" << std::scientific
-                            << std::setw(15) << std::showpos << diff_real << ","
-                            << std::scientific << std::setw(15) << std::showpos
-                            << diff_imag ")" << std::endl;
+                            //<< ") site=" << std::setw(5) << ind << " spin=" << s
+                            //<< " color=" << c << "a=(" << std::scientific
+                            //<< std::setw(15) << std::showpos << a.real() << ","
+                            //<< std::scientific << std::setw(15) << std::showpos
+                            //<< a.imag() << ") b=(" << std::scientific
+                            //<< std::setw(15) << std::showpos << b.real() << ","
+                            //<< std::scientific << std::setw(15) << std::showpos
+                            //<< b.imag() << ") diff=(" << std::scientific
+                            //<< std::setw(15) << std::showpos << diff_real << ","
+                            //<< std::scientific << std::setw(15) << std::showpos
+                            //<< diff_imag << ")" << std::endl;
+                            << ") site=" << ind << " spin=" << s << " color=" << c
+                            << "a=(" << a.real() << "," << a.imag() << ") b=("
+                            << b.real() << "," << b.imag() << ") diff=(" << diff_real
+                            << "," << diff_imag << ")" << std::endl;
               }
             }
           }
@@ -61,4 +66,6 @@ void expect_near(QDP::LatticeDiracFermionD &spinor_a,
       } // y
     } // z
   } // t
+
+  assertion(false);
 }
