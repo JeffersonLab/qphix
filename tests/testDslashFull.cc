@@ -624,8 +624,6 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
 
   // Pack the gauge field
   QDPIO::cout << "Packing gauge field...";
-  //  qdp_pack_gauge< T,V,S,compress, U >(u,
-  //  packed_gauge_cb0,packed_gauge_cb1, geom);
   qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
 
   QDPIO::cout << "done" << endl;
