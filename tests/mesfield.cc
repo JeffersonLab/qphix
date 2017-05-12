@@ -24,54 +24,54 @@ namespace QPhiX
 template <typename U>
 void mesFieldT(QDP::multi1d<U> &f, const QDP::multi1d<U> &u)
 {
-    f.resize(QDP::Nd * (QDP::Nd - 1) / 2);
+  f.resize(QDP::Nd * (QDP::Nd - 1) / 2);
 
-    U tmp_0;
-    U tmp_1;
-    U tmp_2;
-    U tmp_3;
-    U tmp_4;
+  U tmp_0;
+  U tmp_1;
+  U tmp_2;
+  U tmp_3;
+  U tmp_4;
 
-    QDP::Real fact = 0.125;
+  QDP::Real fact = 0.125;
 
-    int offset = 0;
+  int offset = 0;
 
-    for (int mu = 0; mu < QDP::Nd - 1; ++mu) {
-        for (int nu = mu + 1; nu < QDP::Nd; ++nu) {
-            tmp_3 = QDP::shift(u[nu], FORWARD, mu);
-            tmp_4 = QDP::shift(u[mu], FORWARD, nu);
-            tmp_0 = u[nu] * tmp_4;
-            tmp_1 = u[mu] * tmp_3;
+  for (int mu = 0; mu < QDP::Nd - 1; ++mu) {
+    for (int nu = mu + 1; nu < QDP::Nd; ++nu) {
+      tmp_3 = QDP::shift(u[nu], FORWARD, mu);
+      tmp_4 = QDP::shift(u[mu], FORWARD, nu);
+      tmp_0 = u[nu] * tmp_4;
+      tmp_1 = u[mu] * tmp_3;
 
-            f[offset] = tmp_1 * QDP::adj(tmp_0);
+      f[offset] = tmp_1 * QDP::adj(tmp_0);
 
-            tmp_2 = QDP::adj(tmp_0) * tmp_1;
-            tmp_1 = QDP::shift(tmp_2, BACKWARD, nu);
-            f[offset] += QDP::shift(tmp_1, BACKWARD, mu);
-            tmp_1 = tmp_4 * QDP::adj(tmp_3);
-            tmp_0 = QDP::adj(u[nu]) * u[mu];
+      tmp_2 = QDP::adj(tmp_0) * tmp_1;
+      tmp_1 = QDP::shift(tmp_2, BACKWARD, nu);
+      f[offset] += QDP::shift(tmp_1, BACKWARD, mu);
+      tmp_1 = tmp_4 * QDP::adj(tmp_3);
+      tmp_0 = QDP::adj(u[nu]) * u[mu];
 
-            f[offset] += QDP::shift(tmp_0 * QDP::adj(tmp_1), BACKWARD, nu);
-            f[offset] += QDP::shift(QDP::adj(tmp_1) * tmp_0, BACKWARD, mu);
+      f[offset] += QDP::shift(tmp_0 * QDP::adj(tmp_1), BACKWARD, nu);
+      f[offset] += QDP::shift(QDP::adj(tmp_1) * tmp_0, BACKWARD, mu);
 
-            tmp_0 = QDP::adj(f[offset]);
-            f[offset] -= tmp_0;
-            f[offset] *= fact;
+      tmp_0 = QDP::adj(f[offset]);
+      f[offset] -= tmp_0;
+      f[offset] *= fact;
 
-            ++offset;
-        }
+      ++offset;
     }
+  }
 }
 
 void mesField(QDP::multi1d<QDP::LatticeColorMatrixF> &f,
               const QDP::multi1d<QDP::LatticeColorMatrixF> &u)
 {
-    mesFieldT(f, u);
+  mesFieldT(f, u);
 }
 
 void mesField(QDP::multi1d<QDP::LatticeColorMatrixD> &f,
               const QDP::multi1d<QDP::LatticeColorMatrixD> &u)
 {
-    mesFieldT(f, u);
+  mesFieldT(f, u);
 }
 }
