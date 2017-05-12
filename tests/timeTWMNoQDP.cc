@@ -574,7 +574,7 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 #if 1
   {
     masterPrintf("Creating BiCGStab Solver\n");
-    InvBiCGStab<FT, V, S, compress> solver2(M, max_iters, 1);
+    InvBiCGStab<FT, V, S, compress> solver2(M, max_iters);
     masterPrintf("Tuning BiCGStab Solver\n");
 
     for (int solve = 0; solve < 5; solve++) {
@@ -629,7 +629,9 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
               rsd_final,
               site_flops,
               mv_apps,
-              verbose);
+              1,
+              verbose,
+              1);
       end = omp_get_wtime();
 
       unsigned long num_cb_sites = X1h * Ny * Nz * Nt;
