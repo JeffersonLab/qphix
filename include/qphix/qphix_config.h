@@ -20,8 +20,7 @@
 #define QPHIX_PACKAGE_TARNAME PACKAGE_TARNAME
 #define QPHIX_PACKAGE_VERSION PACKAGE_VERSION
 #define QPHIX_VERSION VERSION
-                                                                                
-                                                                                
+
 /* Undef the unwanted */
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -30,6 +29,5 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef VERSION
-
 
 #endif
