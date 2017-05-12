@@ -214,229 +214,239 @@ void testBlas::run(const int lattSize[], const int qmp_geom[])
   float ar = 0.6;
   resetSpinors(x1, x2, y1, y2, z1, z2, t1, t2, w1, w2, geom);
 
-#if 0
- // =============== COPY ==================
+#if 1
+  // =============== COPY ==================
   {
-    
+
     // copy to x2,y2,z2,t2
-    copy(z1,x1,N_blocks);
-    copy(t1,y1, N_blocks);
-    copy(x1,x2, N_blocks);
-    copy(y1,y2, N_blocks);
-    
+    copy(z1, x1, N_blocks);
+    copy(t1, y1, N_blocks);
+    copy(x1, x2, N_blocks);
+    copy(y1, y2, N_blocks);
+
     masterPrintf("Testing copySpinor: ");
-    
+
     float *xf1 = (float *)x1;
     float *yf1 = (float *)y1;
 
     // BASIC COPY
-    for(int s=0; s < len; s++) { 
+    for (int s = 0; s < len; s++) {
       yf1[s] = xf1[s];
     }
     float *yf2 = (float *)y2;
-    copySpinor<float,VECLEN>((float *)yf2, (float *)xf1,len);
-    
-    try { 
-      for(int s=0; s < len; s++) { 
-	assertion( toBool( fabs(yf2[s]-yf1[s]) < 1.0e-6 ) );
+    copySpinor<float, VECLEN>((float *)yf2, (float *)xf1, len);
+
+    try {
+      for (int s = 0; s < len; s++) {
+        assertion(toBool(fabs(yf2[s] - yf1[s]) < 1.0e-6));
       }
       masterPrintf("OK\n");
-    }
-    catch(std::exception) { 
+    } catch (std::exception) {
       masterPrintf("FAILED \n");
     }
-    
   }
-  
+
   // ADVANCED COPY
   {
-     // Optimized (?) it
-    for( int bt=1; bt <=N_simt; bt++) { 
+    // Optimized (?) it
+    for (int bt = 1; bt <= N_simt; bt++) {
       masterPrintf("Testing copySpinor with %d threads per core: ", bt);
-      copy(z1,x2,N_blocks);
-      copy(t1,y2, N_blocks);
+      copy(z1, x2, N_blocks);
+      copy(t1, y2, N_blocks);
       float *yf2 = (float *)y2;
       float *yf1 = (float *)y1;
 
 #if 0
       copySpinor<float,VECLEN>((float *)yf2, (float *)x1, len, NCores, N_simt, bt);
 #else
-      copySpinor<float,VECLEN,QPHIX_SOALEN,true>(y2, x1, geom, bt);
+      copySpinor<float, VECLEN, QPHIX_SOALEN, true>(y2, x1, geom, bt);
 #endif
-      int NV=geom.nVecs();
+      int NV = geom.nVecs();
       try {
 
 #pragma omp parallel for collapse(6)
-	for(int t=0; t < Nt; t++) { 
-	  for(int z=0; z < Nz; z++) { 
-	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < NV; vec++) { 
-		for(int col=0; col < 3; col++) {
-		  for( int spin=0; spin < 4; spin++) { 
-		    for( int reim=0; reim < 2; reim++) { 
-		      for(int s=0; s < QPHIX_SOALEN; s++) { 
-			int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-			assertion( toBool( fabs(y2[block][col][spin][reim][s]
-						-y1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-      
+        for (int t = 0; t < Nt; t++) {
+          for (int z = 0; z < Nz; z++) {
+            for (int y = 0; y < Ny; y++) {
+              for (int vec = 0; vec < NV; vec++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int spin = 0; spin < 4; spin++) {
+                    for (int reim = 0; reim < 2; reim++) {
+                      for (int s = 0; s < QPHIX_SOALEN; s++) {
+                        int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                    y * geom.nVecs() + vec;
+                        assertion(
+                            toBool(fabs(y2[block][col][spin][reim][s] -
+                                        y1[block][col][spin][reim][s]) < 1.0e-6));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
         masterPrintf("OK\n");
-      }
-      catch(std::exception) { 
-	masterPrintf("FAILED \n");
+      } catch (std::exception) {
+        masterPrintf("FAILED \n");
       }
     }
     masterPrintf("Timing copySpinor\n");
-    int titers=1000;
-   
+    int titers = 1000;
+
     double tstart = omp_get_wtime();
-    for(int i=0; i < titers; i++) { 
-      copySpinor<float,VECLEN>((float *)y1, (float *)x1,len);
+    for (int i = 0; i < titers; i++) {
+      copySpinor<float, VECLEN>((float *)y1, (float *)x1, len);
     }
     double tstop = omp_get_wtime();
-    double ttime=tstop-tstart;
-    
-    double BW = (2.0*len*sizeof(float)*(double)titers)/ttime;
-    
-    masterPrintf("copySpinor: len=%d time=%g iters=%d BW=%g\n", 
-		 len, ttime, titers, BW*1.0e-9);
-    
-    for(int bt = 1; bt <=N_simt ; bt++) { 
+    double ttime = tstop - tstart;
+
+    double BW = (2.0 * len * sizeof(float) * (double)titers) / ttime;
+
+    masterPrintf("copySpinor: len=%d time=%g iters=%d BW=%g\n",
+                 len,
+                 ttime,
+                 titers,
+                 BW * 1.0e-9);
+
+    for (int bt = 1; bt <= N_simt; bt++) {
       masterPrintf("Timing copySpinor: blasThreads = %d\n", bt);
-      
-      int titers=1000;
+
+      int titers = 1000;
       double tstart = omp_get_wtime();
-      
-      for(int i=0; i < titers; i++) {
+
+      for (int i = 0; i < titers; i++) {
 #if 0
 	copySpinor<float,VECLEN>((float *)y2, (float *)x1,len,NCores, N_simt, bt);
-#else 
-	copySpinor<float,VECLEN, QPHIX_SOALEN,true>(y2, x1, geom, bt);
+#else
+        copySpinor<float, VECLEN, QPHIX_SOALEN, true>(y2, x1, geom, bt);
 #endif
       }
       double tstop = omp_get_wtime();
-      double ttime=tstop-tstart;
+      double ttime = tstop - tstart;
 #if 0
       double real_len = len*sizeof(float);
 #else
-      double real_len=(double)(Nxh*Ny*Nz*Nt*4*3*2*sizeof(float));
+      double real_len = (double)(Nxh * Ny * Nz * Nt * 4 * 3 * 2 * sizeof(float));
 #endif
 
-      double BW = (2.0*real_len*(double)titers)/ttime;
-      masterPrintf("copySpinor: blasThreads=%d len=%g time=%g iters=%d BW=%g\n", 
-		   bt, real_len, ttime, titers, BW*1.0e-9);
+      double BW = (2.0 * real_len * (double)titers) / ttime;
+      masterPrintf("copySpinor: blasThreads=%d len=%g time=%g iters=%d BW=%g\n",
+                   bt,
+                   real_len,
+                   ttime,
+                   titers,
+                   BW * 1.0e-9);
     }
   }
 #endif
 //  ================== END COPY =======================
 
-#if 0
- //   ====================   AYPX ========================
+#if 1
+  //   ====================   AYPX ========================
   {
-   resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);  
+    resetSpinors(x1, x2, y1, y2, z1, z2, t1, t2, w1, w2, geom);
     // copy to x2,y2,z2,t2
-    copy(z1,x1,N_blocks);
-    copy(t1,y1, N_blocks);
-    copy(x1,x2, N_blocks);
-    copy(y1,y2, N_blocks);
+    copy(z1, x1, N_blocks);
+    copy(t1, y1, N_blocks);
+    copy(x1, x2, N_blocks);
+    copy(y1, y2, N_blocks);
     masterPrintf("Testing aypx: ");
-    
+
     float *xf1 = (float *)x1;
     float *yf1 = (float *)y1;
-    
+
     // BASIC AYPX
-    for(int s=0; s < len; s++) { 
-      yf1[s] = ar*yf1[s] + xf1[s];
+    for (int s = 0; s < len; s++) {
+      yf1[s] = ar * yf1[s] + xf1[s];
     }
     float *xf2 = (float *)x2;
     float *yf2 = (float *)y2;
-    
-    aypx<float,VECLEN>(ar, (float *)xf2, (float *)yf2, len);
-    
-    try { 
-      for(int s=0; s < len; s++) { 
-	assertion( toBool( fabs(yf2[s]-yf1[s]) < 1.0e-6 ) );
+
+    aypx<float, VECLEN>(ar, (float *)xf2, (float *)yf2, len);
+
+    try {
+      for (int s = 0; s < len; s++) {
+        assertion(toBool(fabs(yf2[s] - yf1[s]) < 1.0e-6));
       }
       masterPrintf("OK\n");
-    }
-    catch(std::exception) { 
+    } catch (std::exception) {
       masterPrintf("FAILED \n");
     }
-    
-    int NV=geom.nVecs(); 
-   
+
+    int NV = geom.nVecs();
+
     // Optimized (?) it
-    for( int bt=1; bt <=N_simt; bt++) { 
+    for (int bt = 1; bt <= N_simt; bt++) {
       masterPrintf("Testing aypx with %d threads per core: ", bt);
-      copy(z1,x2,N_blocks);
-      copy(t1,y2, N_blocks);
+      copy(z1, x2, N_blocks);
+      copy(t1, y2, N_blocks);
       float *xf2 = (float *)x2;
       float *yf2 = (float *)y2;
-      aypx<float,VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
+      aypx<float, VECLEN, QPHIX_SOALEN, true>(ar, x2, y2, geom, bt);
       try {
 #pragma omp parallel for collapse(6)
-	for(int t=0; t < Nt; t++) { 
-	  for(int z=0; z < Nz; z++) { 
-	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < NV; vec++) { 
-		for(int col=0; col < 3; col++) {
-		  for( int spin=0; spin < 4; spin++) { 
-		    for( int reim=0; reim < 2; reim++) { 
-		      for(int s=0; s < QPHIX_SOALEN; s++) { 
-			int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-			assertion( toBool( fabs(y2[block][col][spin][reim][s]
-						-y1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-	masterPrintf("OK\n");
-      }
-      catch(std::exception) { 
-	masterPrintf("FAILED \n");
+        for (int t = 0; t < Nt; t++) {
+          for (int z = 0; z < Nz; z++) {
+            for (int y = 0; y < Ny; y++) {
+              for (int vec = 0; vec < NV; vec++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int spin = 0; spin < 4; spin++) {
+                    for (int reim = 0; reim < 2; reim++) {
+                      for (int s = 0; s < QPHIX_SOALEN; s++) {
+                        int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                    y * geom.nVecs() + vec;
+                        assertion(
+                            toBool(fabs(y2[block][col][spin][reim][s] -
+                                        y1[block][col][spin][reim][s]) < 1.0e-6));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        masterPrintf("OK\n");
+      } catch (std::exception) {
+        masterPrintf("FAILED \n");
       }
     }
-    
+
     masterPrintf("Timing aypx\n");
-    int titers=1000;
-    
+    int titers = 1000;
+
     double tstart = omp_get_wtime();
-    for(int i=0; i < titers; i++) { 
-      aypx<float,VECLEN>(ar, (float *)xf1, (float *)yf1,len);
+    for (int i = 0; i < titers; i++) {
+      aypx<float, VECLEN>(ar, (float *)xf1, (float *)yf1, len);
     }
     double tstop = omp_get_wtime();
-    double ttime=tstop-tstart;
-    double BW = (3.0*len*sizeof(float)*(double)titers)/ttime;
-    
-    masterPrintf("aypx: len=%d time=%g iters=%d BW=%g\n", 
-		 len, ttime, titers, BW*1.0e-9);
+    double ttime = tstop - tstart;
+    double BW = (3.0 * len * sizeof(float) * (double)titers) / ttime;
 
-    for(int bt = 1; bt <=N_simt ; bt++) { 
+    masterPrintf(
+        "aypx: len=%d time=%g iters=%d BW=%g\n", len, ttime, titers, BW * 1.0e-9);
+
+    for (int bt = 1; bt <= N_simt; bt++) {
       masterPrintf("Timing aypx: blasThreads = %d\n", bt);
-      
-      int titers=1000;
+
+      int titers = 1000;
       double tstart = omp_get_wtime();
-      
-      for(int i=0; i < titers; i++) { 
-	aypx<float,VECLEN,QPHIX_SOALEN,true>(ar, x2, y2, geom, bt);
+
+      for (int i = 0; i < titers; i++) {
+        aypx<float, VECLEN, QPHIX_SOALEN, true>(ar, x2, y2, geom, bt);
       }
       double tstop = omp_get_wtime();
-      double ttime=tstop-tstart;
-      double real_len=(double)(Nxh*Ny*Nz*Nt*4*3*2*sizeof(float));
-      double BW = (3.0*real_len*(double)titers)/ttime;
-      masterPrintf("aypx: blasThreads=%d len=%g time=%g iters=%d BW=%g\n", 
-	       bt, real_len, ttime, titers, BW*1.0e-9);
+      double ttime = tstop - tstart;
+      double real_len = (double)(Nxh * Ny * Nz * Nt * 4 * 3 * 2 * sizeof(float));
+      double BW = (3.0 * real_len * (double)titers) / ttime;
+      masterPrintf("aypx: blasThreads=%d len=%g time=%g iters=%d BW=%g\n",
+                   bt,
+                   real_len,
+                   ttime,
+                   titers,
+                   BW * 1.0e-9);
     }
   }
 
@@ -620,225 +630,245 @@ void testBlas::run(const int lattSize[], const int qmp_geom[])
 
 #endif
 
-#if 0
-// RMAMMPNORM2RXPAP
+#if 1
+  // RMAMMPNORM2RXPAP
   {
     double norm;
     double norm2;
-    resetSpinors(x1,x2,y1,y2,z1,z2,t1,t2, w1,w2, geom);
+    resetSpinors(x1, x2, y1, y2, z1, z2, t1, t2, w1, w2, geom);
 
-    copy(w1,x1,N_blocks);
-    copy(w2,z1, N_blocks);
+    copy(w1, x1, N_blocks);
+    copy(w2, z1, N_blocks);
 
     float *x1f = (float *)x1;
     float *p1f = (float *)y1;
-    float *r1f  = (float *)z1;
+    float *r1f = (float *)z1;
     float *mmp1f = (float *)t1;
 
     masterPrintf("Testing rmammpNorm2rxpap\n");
-   
-int NV = geom.nVecs();
- 
-    float ar=0.6;
+
+    int NV = geom.nVecs();
+
+    float ar = 0.6;
     norm = 0;
-    for(int t=0; t < Nt; t++) { 
-      for(int z=0; z < Nz; z++) { 
-	for(int y=0; y < Ny; y++) { 
-	  for(int vec=0; vec < NV; vec++) { 
-	    for(int col=0; col < 3; col++) {
-	      for( int spin=0; spin < 4; spin++) { 
-		for( int reim=0; reim < 2; reim++) { 
-		  for(int s=0; s < QPHIX_SOALEN; s++) { 
-		    int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-		    x1[block][col][spin][reim][s] += ar*y1[block][col][spin][reim][s];
-		    z1[block][col][spin][reim][s] -= ar*t1[block][col][spin][reim][s];
-		    double tmpd=(double)z1[block][col][spin][reim][s];
-		    norm += tmpd * tmpd;
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+    for (int t = 0; t < Nt; t++) {
+      for (int z = 0; z < Nz; z++) {
+        for (int y = 0; y < Ny; y++) {
+          for (int vec = 0; vec < NV; vec++) {
+            for (int col = 0; col < 3; col++) {
+              for (int spin = 0; spin < 4; spin++) {
+                for (int reim = 0; reim < 2; reim++) {
+                  for (int s = 0; s < QPHIX_SOALEN; s++) {
+                    int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                y * geom.nVecs() + vec;
+                    x1[block][col][spin][reim][s] +=
+                        ar * y1[block][col][spin][reim][s];
+                    z1[block][col][spin][reim][s] -=
+                        ar * t1[block][col][spin][reim][s];
+                    double tmpd = (double)z1[block][col][spin][reim][s];
+                    norm += tmpd * tmpd;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
     CommsUtils::sumDouble(&norm);
 
-    copy(w1,x2, N_blocks);
-    copy(w2,z2, N_blocks);
+    copy(w1, x2, N_blocks);
+    copy(w2, z2, N_blocks);
 
     float *x2f = (float *)x2;
     float *p2f = (float *)p1f; // Unchanged
-    float *r2f  = (float *)z2;
+    float *r2f = (float *)z2;
     float *mmp2f = (float *)mmp1f; // Unchanged
     norm2 = 0;
-    rmammpNorm2rxpap<float,VECLEN>(r2f, ar, mmp2f, norm2, x2f, p2f, len);
-    try { 
-      for(int t=0; t < Nt; t++) { 
-	for(int z=0; z < Nz; z++) { 
-	  for(int y=0; y < Ny; y++) { 
-	    for(int vec=0; vec < NV; vec++) { 
-	      for(int col=0; col < 3; col++) {
-		for( int spin=0; spin < 4; spin++) { 
-		  for( int reim=0; reim < 2; reim++) { 
-		    for(int s=0; s < QPHIX_SOALEN; s++) { 
-		      int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-		      assertion( toBool( fabs(x1[block][col][spin][reim][s]-x1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+    rmammpNorm2rxpap<float, VECLEN>(r2f, ar, mmp2f, norm2, x2f, p2f, len);
+    try {
+      for (int t = 0; t < Nt; t++) {
+        for (int z = 0; z < Nz; z++) {
+          for (int y = 0; y < Ny; y++) {
+            for (int vec = 0; vec < NV; vec++) {
+              for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 4; spin++) {
+                  for (int reim = 0; reim < 2; reim++) {
+                    for (int s = 0; s < QPHIX_SOALEN; s++) {
+                      int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                  y * geom.nVecs() + vec;
+                      assertion(
+                          toBool(fabs(x1[block][col][spin][reim][s] -
+                                      x1[block][col][spin][reim][s]) < 1.0e-6));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       masterPrintf("Vector x is OK\n");
-    }
-    catch( std::exception ) { 
+    } catch (std::exception) {
       masterPrintf("Vector x is broken\n");
     }
-  
-    try { 
-      for(int t=0; t < Nt; t++) { 
-	for(int z=0; z < Nz; z++) { 
-	  for(int y=0; y < Ny; y++) { 
-	    for(int vec=0; vec < NV; vec++) { 
-	      for(int col=0; col < 3; col++) {
-		for( int spin=0; spin < 4; spin++) { 
-		  for( int reim=0; reim < 2; reim++) { 
-		    for(int s=0; s < QPHIX_SOALEN; s++) { 
-		      int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-		      assertion( toBool( fabs(z2[block][col][spin][reim][s]-z1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+
+    try {
+      for (int t = 0; t < Nt; t++) {
+        for (int z = 0; z < Nz; z++) {
+          for (int y = 0; y < Ny; y++) {
+            for (int vec = 0; vec < NV; vec++) {
+              for (int col = 0; col < 3; col++) {
+                for (int spin = 0; spin < 4; spin++) {
+                  for (int reim = 0; reim < 2; reim++) {
+                    for (int s = 0; s < QPHIX_SOALEN; s++) {
+                      int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                  y * geom.nVecs() + vec;
+                      assertion(
+                          toBool(fabs(z2[block][col][spin][reim][s] -
+                                      z1[block][col][spin][reim][s]) < 1.0e-6));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       masterPrintf("Vector z is OK\n");
-    }
-    catch( std::exception ) { 
+    } catch (std::exception) {
       masterPrintf("Vector z is broken\n");
     }
-  
-    
-    try { 
-      assertion( toBool( fabs(norm2 - norm)/ norm < 2.0e-12 ));
+
+    try {
+      assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
+    } catch (std::exception) {
+      masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n",
+                   norm,
+                   norm2,
+                   fabs(norm2 - norm) / norm);
     }
-    catch(std::exception) { 
-      masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n", norm, norm2, fabs(norm2-norm)/norm); 
-    }
-  
+
     // Threaded versions
-    for(int bt=1; bt <= N_simt; bt++) { 
+    for (int bt = 1; bt <= N_simt; bt++) {
       masterPrintf("Testing rmammpNorm2rxpap with %d threads\n", bt);
-      copy(w1,x2, N_blocks);
-      copy(w2,z2, N_blocks);
+      copy(w1, x2, N_blocks);
+      copy(w2, z2, N_blocks);
 
       float *x2f = (float *)x2;
       float *p2f = (float *)p1f; // Unchanged
-      float *r2f  = (float *)z2;
+      float *r2f = (float *)z2;
       float *mmp2f = (float *)mmp1f; // Unchanged
       norm2 = 0;
-      rmammpNorm2rxpap<float,VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
+      rmammpNorm2rxpap<float, VECLEN, QPHIX_SOALEN, true>(
+          z2, ar, t1, norm2, x2, y1, geom, bt);
 
       try {
 #pragma omp parallel for collapse(6)
-	for(int t=0; t < Nt; t++) { 
-	  for(int z=0; z < Nz; z++) { 
-	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < NV; vec++) { 
-		for(int col=0; col < 3; col++) {
-		  for( int spin=0; spin < 4; spin++) { 
-		    for( int reim=0; reim < 2; reim++) { 
-		      for(int s=0; s < QPHIX_SOALEN; s++) { 
-			int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-			assertion( toBool( fabs(x2[block][col][spin][reim][s]
-						-x1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-	masterPrintf("Vector X is OK\n");
+        for (int t = 0; t < Nt; t++) {
+          for (int z = 0; z < Nz; z++) {
+            for (int y = 0; y < Ny; y++) {
+              for (int vec = 0; vec < NV; vec++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int spin = 0; spin < 4; spin++) {
+                    for (int reim = 0; reim < 2; reim++) {
+                      for (int s = 0; s < QPHIX_SOALEN; s++) {
+                        int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                    y * geom.nVecs() + vec;
+                        assertion(
+                            toBool(fabs(x2[block][col][spin][reim][s] -
+                                        x1[block][col][spin][reim][s]) < 1.0e-6));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        masterPrintf("Vector X is OK\n");
 
-      }
-      catch( std::exception ) { 
-	masterPrintf("FAIL x is bad\n");
+      } catch (std::exception) {
+        masterPrintf("FAIL x is bad\n");
       }
 
       try {
 #pragma omp parallel for collapse(6)
-	for(int t=0; t < Nt; t++) { 
-	  for(int z=0; z < Nz; z++) { 
-	    for(int y=0; y < Ny; y++) { 
-	      for(int vec=0; vec < NV; vec++) { 
-		for(int col=0; col < 3; col++) {
-		  for( int spin=0; spin < 4; spin++) { 
-		    for( int reim=0; reim < 2; reim++) { 
-		      for(int s=0; s < QPHIX_SOALEN; s++) { 
-			int block = t*geom.getPxyz() + z*geom.getPxy() + y*geom.nVecs()+vec;
-			assertion( toBool( fabs(z2[block][col][spin][reim][s]
-						-z1[block][col][spin][reim][s]) < 1.0e-6 ) );
-		      }
-		    }
-		  }
-		}
-	      }
-	    }
-	  }
-	}
-	masterPrintf("Vector R is OK\n");
+        for (int t = 0; t < Nt; t++) {
+          for (int z = 0; z < Nz; z++) {
+            for (int y = 0; y < Ny; y++) {
+              for (int vec = 0; vec < NV; vec++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int spin = 0; spin < 4; spin++) {
+                    for (int reim = 0; reim < 2; reim++) {
+                      for (int s = 0; s < QPHIX_SOALEN; s++) {
+                        int block = t * geom.getPxyz() + z * geom.getPxy() +
+                                    y * geom.nVecs() + vec;
+                        assertion(
+                            toBool(fabs(z2[block][col][spin][reim][s] -
+                                        z1[block][col][spin][reim][s]) < 1.0e-6));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        masterPrintf("Vector R is OK\n");
+      } catch (std::exception) {
+        masterPrintf("FAIL: r is bad \n");
       }
-      catch( std::exception ) { 
-	masterPrintf("FAIL: r is bad \n");
-      }
-      
-      try { 
-	assertion( toBool( fabs(norm2 - norm)/ norm < 2.0e-12 ));
-	masterPrintf("Sum is OK\n");
-      }
-      catch(std::exception) { 
-	masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n", norm, norm2, fabs(norm2-norm)/norm); 
+
+      try {
+        assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
+        masterPrintf("Sum is OK\n");
+      } catch (std::exception) {
+        masterPrintf(
+            "FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n",
+            norm,
+            norm2,
+            fabs(norm2 - norm) / norm);
       }
     }
-  
-    int titers=1000;
+
+    int titers = 1000;
     double cp;
     double tstart = omp_get_wtime();
-    
-    for(int i=0; i < titers; i++) { 
-      rmammpNorm2rxpap<float,VECLEN>(x2f, ar, p2f, norm2, r2f, mmp2f, len);
+
+    for (int i = 0; i < titers; i++) {
+      rmammpNorm2rxpap<float, VECLEN>(x2f, ar, p2f, norm2, r2f, mmp2f, len);
     }
     double tstop = omp_get_wtime();
-    double ttime=tstop-tstart;
-    double BW = (6.0*len*sizeof(float)*(double)titers)/ttime;
-    
-    masterPrintf("rmammpNorm2rxpap: len=%d time=%g iters=%d BW=%g\n", 
-		 len, ttime, titers, BW*1.0e-9);
+    double ttime = tstop - tstart;
+    double BW = (6.0 * len * sizeof(float) * (double)titers) / ttime;
 
-  
+    masterPrintf("rmammpNorm2rxpap: len=%d time=%g iters=%d BW=%g\n",
+                 len,
+                 ttime,
+                 titers,
+                 BW * 1.0e-9);
 
-    for(int bt =1 ; bt <= N_simt; bt++) { 
-      masterPrintf("Timing rmammpNorm2rxpap: blasThreads=%d\n",bt);
-            
+    for (int bt = 1; bt <= N_simt; bt++) {
+      masterPrintf("Timing rmammpNorm2rxpap: blasThreads=%d\n", bt);
+
       tstart = omp_get_wtime();
-      
-      for(int i=0; i < titers; i++) { 
-	rmammpNorm2rxpap<float,VECLEN,QPHIX_SOALEN,true>(z2, ar, t1, norm2, x2, y1, geom, bt);
+
+      for (int i = 0; i < titers; i++) {
+        rmammpNorm2rxpap<float, VECLEN, QPHIX_SOALEN, true>(
+            z2, ar, t1, norm2, x2, y1, geom, bt);
       }
 
       double tstop = omp_get_wtime();
-      double ttime=tstop-tstart;
-      double BW = (6.0*len*sizeof(float)*(double)titers)/ttime;
-      masterPrintf("rmammpNorm2rxpap: blasThreads=%d len=%d time=%g iters=%d BW=%g\n", 
-	       bt, len, ttime, titers, BW*1.0e-9);
-      
+      double ttime = tstop - tstart;
+      double BW = (6.0 * len * sizeof(float) * (double)titers) / ttime;
+      masterPrintf(
+          "rmammpNorm2rxpap: blasThreads=%d len=%d time=%g iters=%d BW=%g\n",
+          bt,
+          len,
+          ttime,
+          titers,
+          BW * 1.0e-9);
     }
   }
 #endif
