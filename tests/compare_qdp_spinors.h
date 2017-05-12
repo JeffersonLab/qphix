@@ -6,16 +6,14 @@
 
 #include <iomanip>
 
-template <typename FT, int veclen, int soalen, bool compress12>
-void expect_near(QDP::LatticeDiracFermionD &spinor_a,
-                 QDP::LatticeDiracFermionD &spinor_b,
+template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+void expect_near(QdpSpinor &spinor_a,
+                 QdpSpinor &spinor_b,
                  double const abs_err,
                  QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
                  int const target_cb)
 {
-  typedef QDP::LatticeDiracFermionD Phi;
-
-  Phi diff = spinor_b - spinor_a;
+  QdpSpinor diff = spinor_b - spinor_a;
 
   QDP::Double diff_norm = sqrt(QDP::norm2(diff, QDP::rb[target_cb])) /
                           (QDP::Real(4 * 3 * 2 * QDP::Layout::vol()) / QDP::Real(2));

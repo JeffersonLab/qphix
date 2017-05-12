@@ -34,7 +34,12 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 
-template <typename FT, int V, int S, bool compress, typename U, typename Phi>
+template <typename FT,
+          int V,
+          int S,
+          bool compress,
+          typename QdpGauge,
+          typename QdpSpinor>
 void testClovDslashFull::runTest(void)
 {
 
@@ -76,21 +81,25 @@ void testClovDslashFull::runTest(void)
                                     PadXYZ,
                                     MinCt);
 
-  RandomGauge<FT, V, S, compress> gauge(geom);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
+
+  ClovDslash<FT, V, S, compress> D32(
+      &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
   auto psi_even = makeFourSpinorHandle(geom);
   auto psi_odd = makeFourSpinorHandle(geom);
   auto chi_even = makeFourSpinorHandle(geom);
   auto chi_odd = makeFourSpinorHandle(geom);
 
-  Phi chi, psi;
+  QdpSpinor chi, psi;
 
   Spinor *psi_s[2] = {psi_even.get(), psi_odd.get()};
   Spinor *chi_s[2] = {chi_even.get(), chi_odd.get()};
 
+  gaussian(psi);
   qdp_pack_spinor<>(psi, psi_even.get(), psi_odd.get(), geom);
 
-#if 0
+#if 1
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash \n" << endl;
@@ -102,21 +111,21 @@ void testClovDslashFull::runTest(void)
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      clov_chi = zero;
-      chi = zero;
+      QdpSpinor clov_chi = zero;
+      QdpSpinor chi = zero;
 
 // Apply Optimized Dslash
 #if 1
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
 
       D32.dslash(chi_s[target_cb],
                  psi_s[source_cb],
-                 u_packed[target_cb],
-                 invclov_packed[target_cb],
+                 gauge.u_packed[target_cb],
+                 gauge.invclov_packed[target_cb],
                  isign,
                  target_cb);
 
-      qdp_unpack_spinor<>(chi_even, chi_odd, clov_chi, geom);
+      qdp_unpack_spinor<>(chi_even.get(), chi_odd.get(), clov_chi, geom);
 
 #else
       // Work directly with the QDP-JIT pointers...
@@ -143,13 +152,14 @@ void testClovDslashFull::runTest(void)
       // clov_chi = chi;
 
       // Apply QDP Dslash
-      chi2 = zero;
-      clov_chi2 = zero;
-      dslash(chi2, u_test, psi, isign, target_cb);
-      invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
+      QdpSpinor chi2 = zero;
+      QdpSpinor clov_chi2 = zero;
+
+      dslash(chi2, gauge.u_aniso, psi, isign, target_cb);
+      gauge.invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
 
       // Check the difference per number in chi vector
-      Phi diff = clov_chi2 - clov_chi;
+      QdpSpinor diff = clov_chi2 - clov_chi;
       expect_near(clov_chi2, clov_chi, 1e-6, geom, target_cb);
 
     } // cb
@@ -187,7 +197,7 @@ void testClovDslashFull::runTest(void)
       // Apply QDP Dslash
       chi2 = zero;
       dslash(chi2, u_test, psi, isign, target_cb);
-      Phi res = zero;
+      QdpSpinor res = zero;
       clov_qdp.apply(res, psi, isign, target_cb);
       res[rb[target_cb]] -= beta * chi2;
 
@@ -224,10 +234,10 @@ void testClovDslashFull::runTest(void)
 
   QDPIO::cout << "Creating Clover term using Gauge field with antiperiodic BCs"
               << endl;
-  CloverTermT<Phi, U> clov_qdp_ap;
+  CloverTermT<QdpSpinor, QdpGauge> clov_qdp_ap;
   clov_qdp_ap.create(u_test, clparam);
   QDPIO::cout << "Inverting Clover Term" << endl;
-  CloverTermT<Phi, U> invclov_qdp_ap(clov_qdp_ap);
+  CloverTermT<QdpSpinor, QdpGauge> invclov_qdp_ap(clov_qdp_ap);
   for (int cb = 0; cb < 2; cb++) {
     invclov_qdp_ap.choles(cb);
   }
@@ -323,7 +333,7 @@ void testClovDslashFull::runTest(void)
       // Apply QDP Dslash
       chi2 = zero;
       dslash(chi2, u_test, psi, isign, target_cb);
-      Phi res = zero;
+      QdpSpinor res = zero;
       clov_qdp_ap.apply(res, psi, isign, target_cb);
       res[rb[target_cb]] -= beta * chi2;
 
@@ -337,7 +347,7 @@ void testClovDslashFull::runTest(void)
   // vectorization
   //
 
-  Phi ltmp = zero;
+  QdpSpinor ltmp = zero;
   Real betaFactor = Real(0.25);
 #if 0
   for (int cb = 0; cb < 2; ++cb) {
@@ -430,7 +440,7 @@ void testClovDslashFull::runTest(void)
       chi2[rb[cb]] -= betaFactor * ltmp;
 
       // chi3 = M^\dagger chi2
-      Phi chi3 = zero;
+      QdpSpinor chi3 = zero;
       dslash(chi3, u_test, chi2, -1, other_cb);
       invclov_qdp_ap.apply(clov_chi2, chi3, -1, other_cb);
       dslash(ltmp, u_test, clov_chi2, -1, cb);
@@ -442,7 +452,7 @@ void testClovDslashFull::runTest(void)
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      Phi diff = chi3 - psi;
+      QdpSpinor diff = chi3 - psi;
       QDPIO::cout << "cb=" << cb << " True norm is: "
                   << sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb])) << endl;
 
@@ -505,7 +515,7 @@ void testClovDslashFull::runTest(void)
       clov_qdp_ap.apply(chi2, chi, 1, cb);
       chi2[rb[cb]] -= betaFactor * ltmp;
 
-      Phi diff = chi2 - psi;
+      QdpSpinor diff = chi2 - psi;
       QDPIO::cout << " cb = " << cb << " True norm is: "
                   << sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb])) << endl;
 

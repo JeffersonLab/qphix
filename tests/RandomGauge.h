@@ -9,30 +9,39 @@
 
 namespace QPhiX
 {
-template <typename FT, int veclen, int soalen, bool compress12>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge = QDP::LatticeColorMatrixD,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 class RandomGauge
 {
  public:
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock Gauge;
   typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock Clover;
-  typedef QDP::LatticeColorMatrixD QdpGauge;
-  typedef QDP::LatticeDiracFermionD QdpSpinor;
-
-  //static Real const gauge_random_factor(0.08);
-  static double constexpr gauge_random_factor = 0.08;
-
-  static double constexpr xi_0_f = 0.3;
-  static double constexpr nu_f = 1.4;
-  //static QDP::Real const clover_mass(0.1);
-  //static QDP::Real const clover_coeff_R(1.2);
-  //static QDP::Real const clover_coeff_T(0.9);
-  static double constexpr clover_mass = 0.1;
-  static double constexpr clover_coeff_R = 1.2;
-  static double constexpr clover_coeff_T = 0.9;
-  static double constexpr t_boundary = 1.0;
 
   RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom);
+
+  double const gauge_random_factor = 0.08;
+  double const xi_0_f = 0.3;
+  double const nu_f = 1.4;
+  double const clover_mass = 0.1;
+  double const clover_coeff_R = 1.2;
+  double const clover_coeff_T = 0.9;
+  double const t_boundary = 1.0;
+
+  double const aniso_fac_s;
+  double const aniso_fac_t;
+
+  Gauge *u_packed[2];
+  Clover *invclov_packed[2];
+  Clover *clov_packed[2];
+
+  multi1d<QdpGauge> u_aniso;
+
+  CloverTermT<QdpSpinor, QdpGauge> invclov_qdp;
 
  private:
   Geometry<FT, veclen, soalen, compress12> &geom;
@@ -41,23 +50,21 @@ class RandomGauge
   void init_clover();
 
   multi1d<QdpGauge> u;
-  multi1d<QdpGauge> u_aniso;
 
   GaugeHandle<FT, veclen, soalen, compress12> gauge_even, gauge_odd;
-  Gauge *u_packed[2];
-
   CloverHandle<FT, veclen, soalen, compress12> A_even, A_odd, A_inv_even, A_inv_odd;
-  Clover *invclov_packed[2];
-  Clover *clov_packed[2];
 
   AnisoParam_t aniso;
   CloverFermActParams clparam;
-  double aniso_fac_s;
-  double aniso_fac_t;
 };
 
-template <typename FT, int veclen, int soalen, bool compress12>
-RandomGauge<FT, veclen, soalen, compress12>::RandomGauge(
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::RandomGauge(
     Geometry<FT, veclen, soalen, compress12> &geom)
     : geom(geom), u(4), u_aniso(4), gauge_even(geom), gauge_odd(geom), A_even(geom),
       A_odd(geom), A_inv_even(geom), A_inv_odd(geom),
@@ -74,8 +81,15 @@ RandomGauge<FT, veclen, soalen, compress12>::RandomGauge(
   init_clover();
 }
 
-template <typename FT, int veclen, int soalen, bool compress12>
-void RandomGauge<FT, veclen, soalen, compress12>::init_random_gauge() {
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::
+    init_random_gauge()
+{
   aniso.anisoP = true;
   aniso.xi_0 = xi_0_f;
   aniso.nu = nu_f;
@@ -102,8 +116,14 @@ void RandomGauge<FT, veclen, soalen, compress12>::init_random_gauge() {
   }
 }
 
-template <typename FT, int veclen, int soalen, bool compress12>
-void RandomGauge<FT, veclen, soalen, compress12>::init_clover() {
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clover()
+{
   clparam.anisoParam = aniso;
   clparam.Mass = clover_mass;
   clparam.clovCoeffR = clover_coeff_R;
@@ -112,7 +132,7 @@ void RandomGauge<FT, veclen, soalen, compress12>::init_clover() {
   CloverTermT<QdpSpinor, QdpGauge> clov_qdp;
   clov_qdp.create(u, clparam);
 
-  CloverTermT<QdpSpinor, QdpGauge> invclov_qdp(clov_qdp);
+  invclov_qdp = clov_qdp;
 
   // Test spinors.
   QdpSpinor qdp_spinor_1;
