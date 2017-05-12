@@ -12,8 +12,8 @@ QPHIX_MESSAGE("using LLVM Clover Term")
 #include "./clover_term_llvm_w.h"
 namespace QPhiX
 {
-template<typename Phi, typename U>
-using CloverTermT = LLVMCloverTermT<Phi,U>;
+template <typename Phi, typename U>
+using CloverTermT = LLVMCloverTermT<Phi, U>;
 };
 #else
 // Using regular cloverTerm
@@ -21,10 +21,10 @@ QPHIX_MESSAGE("using QDP Clover Term")
 
 #include "./clover_term_qdp_w.h"
 
-namespace QPhiX 
+namespace QPhiX
 {
-template<typename Phi,typename U>
-using CloverTermT = QDPCloverTermT<Phi,U>;
+template <typename Phi, typename U>
+using CloverTermT = QDPCloverTermT<Phi, U>;
 };
 
 #endif // if else defined QDP-JIT
