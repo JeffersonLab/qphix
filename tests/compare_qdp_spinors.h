@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qphix/geometry.h>
+#include <qphix/print_utils.h>
 
 #include <qdp.h>
 
@@ -22,7 +23,7 @@ void expect_near(QdpSpinor &spinor_a,
     return;
   }
 
-
+  QDPIO::cout << "Spinors are not near! diff/volume = " << diff_norm << std::endl;
 
   for (int t = 0; t < geom.Nt(); t++) {
     for (int z = 0; z < geom.Nz(); z++) {
@@ -41,22 +42,22 @@ void expect_near(QdpSpinor &spinor_a,
               double const diff_imag = a.imag() - b.imag();
 
               if (std::fabs(diff_real) > abs_err || std::fabs(diff_imag) > abs_err) {
-                QDPIO::cout << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                            //<< ") site=" << std::setw(5) << ind << " spin=" << s
-                            //<< " color=" << c << "a=(" << std::scientific
-                            //<< std::setw(15) << std::showpos << a.real() << ","
-                            //<< std::scientific << std::setw(15) << std::showpos
-                            //<< a.imag() << ") b=(" << std::scientific
-                            //<< std::setw(15) << std::showpos << b.real() << ","
-                            //<< std::scientific << std::setw(15) << std::showpos
-                            //<< b.imag() << ") diff=(" << std::scientific
-                            //<< std::setw(15) << std::showpos << diff_real << ","
-                            //<< std::scientific << std::setw(15) << std::showpos
-                            //<< diff_imag << ")" << std::endl;
-                            << ") site=" << ind << " spin=" << s << " color=" << c
-                            << "a=(" << a.real() << "," << a.imag() << ") b=("
-                            << b.real() << "," << b.imag() << ") diff=(" << diff_real
-                            << "," << diff_imag << ")" << std::endl;
+                masterPrintf("(xyzt)=(%2d,%2d,%2d,%2d) site=%5d s=%d c=%d "
+                             "A=(% 14.7e,% 14.7e) B=(% 14.7e,% 14.7e) "
+                             "A-B=(% 14.7e,% 14.7e)\n",
+                             x,
+                             y,
+                             z,
+                             t,
+                             ind,
+                             s,
+                             c,
+                             a.real(),
+                             a.imag(),
+                             b.real(),
+                             b.imag(),
+                             diff_real,
+                             diff_imag);
               }
             }
           }
