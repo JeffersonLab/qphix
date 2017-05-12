@@ -597,13 +597,6 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
   QDPIO::cout << "Filling psi with random noise" << endl;
   gaussian(psi);
 
-#if 0
-  Dslash<T,V,S,compress> D32(Layout::subgridLattSize().slice(), By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt, t_boundary, aniso_fac_s, aniso_fac_t);
-  
-  // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT 
-  Geometry<T,V,S,compress>& geom= D32.getGeometry();
-#endif
-
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                    By,
                                    Bz,
