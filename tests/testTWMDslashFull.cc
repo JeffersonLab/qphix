@@ -494,13 +494,13 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(const U &u, int t_bc)
 
   QDPIO::cout << "Applying anisotropy to test gauge field... ";
   U u_test(Nd);
-  //  for(int mu=0; mu < Nd; mu++) {
-  //    Real factor = Real(aniso_fac_s);
-  //    if( mu == Nd -1) {
-  //      factor = Real(aniso_fac_t);
-  //    }
-  //    u_test[mu] = factor*u[mu];
-  //  }
+  for (int mu = 0; mu < Nd; mu++) {
+    Real factor = Real(aniso_fac_s);
+    if (mu == Nd - 1) {
+      factor = Real(aniso_fac_t);
+    }
+    u_test[mu] = factor * u[mu];
+  }
   u_test = u;
   QDPIO::cout << "done." << endl;
 
