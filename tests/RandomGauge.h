@@ -41,7 +41,7 @@ class RandomGauge
 
   multi1d<QdpGauge> u_aniso;
 
-  CloverTermT<QdpSpinor, QdpGauge> invclov_qdp;
+  CloverTermT<QdpSpinor, QdpGauge> clov_qdp, invclov_qdp;
 
  private:
   Geometry<FT, veclen, soalen, compress12> &geom;
@@ -129,7 +129,6 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
   clparam.clovCoeffR = clover_coeff_R;
   clparam.clovCoeffT = clover_coeff_T;
 
-  CloverTermT<QdpSpinor, QdpGauge> clov_qdp;
   clov_qdp.create(u, clparam);
 
   invclov_qdp = clov_qdp;

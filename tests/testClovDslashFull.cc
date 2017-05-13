@@ -172,7 +172,7 @@ void testClovDslashFull::runTest(void)
 
 #endif
 
-#if 0
+#if 1
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -183,7 +183,7 @@ void testClovDslashFull::runTest(void)
       int target_cb = cb;
 
       chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
 
       double beta = (double)(0.25); // Always 0.25
 
@@ -191,8 +191,8 @@ void testClovDslashFull::runTest(void)
       D32.dslashAChiMinusBDPsi(chi_s[target_cb],
                                psi_s[source_cb],
                                psi_s[target_cb],
-                               u_packed[target_cb],
-                               clov_packed[target_cb],
+                               gauge.u_packed[target_cb],
+                               gauge.clov_packed[target_cb],
                                beta,
                                isign,
                                target_cb);
@@ -200,14 +200,14 @@ void testClovDslashFull::runTest(void)
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
 
       // Apply QDP Dslash
-      chi2 = zero;
-      dslash(chi2, u_test, psi, isign, target_cb);
+      QdpSpinor chi2 = zero;
+      dslash(chi2, gauge.u_aniso, psi, isign, target_cb);
       QdpSpinor res = zero;
-      clov_qdp.apply(res, psi, isign, target_cb);
+      gauge.clov_qdp.apply(res, psi, isign, target_cb);
       res[rb[target_cb]] -= beta * chi2;
 
       // Check the difference per number in chi vector
-      expect_near(res, chi, 1e-6, geom, target_cb);
+      expect_near(res, chi, 1e-6, geom, target_cb, "A chi - b d psi, QPhiX vs. QDP++");
     }
   }
 
