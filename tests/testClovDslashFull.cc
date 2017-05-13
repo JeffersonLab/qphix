@@ -288,10 +288,6 @@ void testClovDslashFull::runTest(void)
 
 #endif
 
-  // Disabling testing the even odd operator until recoded with new
-  // vectorization
-  //
-
   Real betaFactor = Real(0.25);
 #if 1
   for (int target_cb = 0; target_cb < 2; ++target_cb) {
@@ -329,7 +325,6 @@ void testClovDslashFull::runTest(void)
                   target_cb,
                   "Even-odd operator, QPhiX vs. QDP++");
     } // isign loop
-
   } // cb loop
 
 #endif
@@ -346,8 +341,6 @@ void testClovDslashFull::runTest(void)
                                                   gauge_antip.aniso_fac_s,
                                                   gauge_antip.aniso_fac_t);
 
-      chi = zero;
-      qdp_pack_cb_spinor<>(chi, chi_s[cb], geom, cb);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -358,9 +351,10 @@ void testClovDslashFull::runTest(void)
 
       InvCG<FT, V, S, compress> solver(M, max_iters);
 
+      hs_qphix1.zero();
       double start = omp_get_wtime();
-      solver(chi_s[cb],
-             psi_s[cb],
+      solver(hs_qphix1[cb],
+             hs_source[cb],
              rsd_target,
              niters,
              rsd_final,
@@ -370,28 +364,25 @@ void testClovDslashFull::runTest(void)
              verbose,
              cb);
       double end = omp_get_wtime();
-
-      qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom, cb);
-
-      QdpSpinor chi2, clov_chi2;
+      hs_qphix1.unpack();
 
       // Multiply back
       // chi2 = M chi
       QdpSpinor ltmp = zero;
-      dslash(chi2, gauge_antip.u_aniso, chi, 1, other_cb);
-      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, 1, other_cb);
-      dslash(ltmp, gauge_antip.u_aniso, clov_chi2, 1, cb);
+      dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_qphix1.qdp(), 1, other_cb);
+      gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), 1, other_cb);
+      dslash(ltmp, gauge_antip.u_aniso, hs_qdp2.qdp(), 1, cb);
 
-      gauge_antip.clov_qdp.apply(chi2, chi, 1, cb);
-      chi2[rb[cb]] -= betaFactor * ltmp;
+      gauge_antip.clov_qdp.apply(hs_qdp1.qdp(), hs_qphix1.qdp(), 1, cb);
+      hs_qdp1.qdp()[rb[cb]] -= betaFactor * ltmp;
 
       // chi3 = M^\dagger chi2
       QdpSpinor chi3 = zero;
-      dslash(chi3, gauge_antip.u_aniso, chi2, -1, other_cb);
-      gauge_antip.invclov_qdp.apply(clov_chi2, chi3, -1, other_cb);
-      dslash(ltmp, gauge_antip.u_aniso, clov_chi2, -1, cb);
+      dslash(chi3, gauge_antip.u_aniso, hs_qdp1.qdp(), -1, other_cb);
+      gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), chi3, -1, other_cb);
+      dslash(ltmp, gauge_antip.u_aniso, hs_qdp2.qdp(), -1, cb);
 
-      gauge_antip.clov_qdp.apply(chi3, chi2, -1, cb);
+      gauge_antip.clov_qdp.apply(chi3, hs_qdp1.qdp(), -1, cb);
       chi3[rb[cb]] -= betaFactor * ltmp;
 
       //  dslash(chi3,u,chi2, (-1), 1);
@@ -402,7 +393,7 @@ void testClovDslashFull::runTest(void)
       QDPIO::cout << "cb=" << cb << " True norm is: "
                   << sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb])) << endl;
 
-      expect_near(chi3, psi, 1e-6, geom, cb, "CG");
+      expect_near(chi3, hs_source.qdp(), 1e-6, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
