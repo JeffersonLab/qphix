@@ -99,35 +99,35 @@ void testClovDslashFull::runTest(void)
   gaussian(psi);
   qdp_pack_spinor<>(psi, psi_even.get(), psi_odd.get(), geom);
 
+  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom), hs_qphix2(geom),
+      hs_qdp1(geom), hs_qdp2(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
+
 #if 1
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash \n" << endl;
-
-  const int cbsize_in_blocks = rb[0].numSiteTable() / S;
 
   for (int isign = 1; isign >= -1; isign -= 2) {
     for (int cb = 0; cb < 2; cb++) {
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      QdpSpinor clov_chi = zero;
-      QdpSpinor chi = zero;
-
-// Apply Optimized Dslash
 #if 1
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
-
-      D32.dslash(chi_s[target_cb],
-                 psi_s[source_cb],
+      // Apply Optimized Dslash
+      hs_qphix1.zero();
+      D32.dslash(hs_qphix1[target_cb],
+                 hs_source[source_cb],
                  gauge.u_packed[target_cb],
                  gauge.invclov_packed[target_cb],
                  isign,
                  target_cb);
-
-      qdp_unpack_spinor<>(chi_even.get(), chi_odd.get(), clov_chi, geom);
+      hs_qphix1.unpack();
 
 #else
+      const int cbsize_in_blocks = rb[0].numSiteTable() / S;
+
       // Work directly with the QDP-JIT pointers...
       Spinor *chi_targ = (Spinor *)(chi.getFjit()) + target_cb * cbsize_in_blocks;
       Spinor *psi_src = (Spinor *)(psi.getFjit()) + source_cb * cbsize_in_blocks;
@@ -144,24 +144,12 @@ void testClovDslashFull::runTest(void)
                  isign,
                  target_cb);
 #endif
-
-      // Account for Clover term from QDP++
-      // We should remove this once the actual clover implementation is
-      // ready.
-      // invclov_qdp.apply(clov_chi,chi,isign, target_cb);
-      // clov_chi = chi;
-
       // Apply QDP Dslash
-      QdpSpinor chi2 = zero;
-      QdpSpinor clov_chi2 = zero;
+      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
+      gauge.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), isign, target_cb);
 
-      dslash(chi2, gauge.u_aniso, psi, isign, target_cb);
-      gauge.invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
-
-      // Check the difference per number in chi vector
-      QdpSpinor diff = clov_chi2 - clov_chi;
-      expect_near(clov_chi2,
-                  clov_chi,
+      expect_near(hs_qphix1,
+                  hs_qdp2,
                   1e-6,
                   geom,
                   target_cb,
@@ -182,32 +170,34 @@ void testClovDslashFull::runTest(void)
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      chi = zero;
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
+      hs_qphix1.zero();
 
-      double beta = (double)(0.25); // Always 0.25
+      double beta = 0.25; // Always 0.25
 
       // Apply Optimized Dslash
-      D32.dslashAChiMinusBDPsi(chi_s[target_cb],
-                               psi_s[source_cb],
-                               psi_s[target_cb],
+      D32.dslashAChiMinusBDPsi(hs_qphix1[target_cb],
+                               hs_source[source_cb],
+                               hs_source[target_cb],
                                gauge.u_packed[target_cb],
                                gauge.clov_packed[target_cb],
                                beta,
                                isign,
                                target_cb);
-
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+      hs_qphix1.unpack();
 
       // Apply QDP Dslash
-      QdpSpinor chi2 = zero;
-      dslash(chi2, gauge.u_aniso, psi, isign, target_cb);
+      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
       QdpSpinor res = zero;
-      gauge.clov_qdp.apply(res, psi, isign, target_cb);
-      res[rb[target_cb]] -= beta * chi2;
+      gauge.clov_qdp.apply(res, hs_source.qdp(), isign, target_cb);
+      res[rb[target_cb]] -= beta * hs_qdp1.qdp();
 
       // Check the difference per number in chi vector
-      expect_near(res, chi, 1e-6, geom, target_cb, "A chi - b d psi, QPhiX vs. QDP++");
+      expect_near(res,
+                  hs_qphix1.qdp(),
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "A chi - b d psi, QPhiX vs. QDP++");
     }
   }
 
@@ -231,33 +221,23 @@ void testClovDslashFull::runTest(void)
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      QdpSpinor clov_chi = zero;
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), D32_ap.getGeometry());
+      hs_qphix1.zero();
 
       // Apply Optimized Dslash
-      D32_ap.dslash(chi_s[target_cb],
-                    psi_s[source_cb],
+      D32_ap.dslash(hs_qphix1[target_cb],
+                    hs_source[source_cb],
                     gauge_antip.u_packed[target_cb],
                     gauge_antip.invclov_packed[target_cb],
                     isign,
                     target_cb);
-
-      qdp_unpack_spinor<>(chi_even.get(), chi_odd.get(), clov_chi, geom);
-
-      // Account for Clover term from QDP++
-      // We should remove this once the actual clover implementation is
-      // ready.
-      // invclov_qdp.apply(clov_chi,chi,isign, target_cb);
-      // clov_chi = chi;
+      hs_qphix1.unpack();
 
       // Apply QDP Dslash
-      QdpSpinor chi2 = zero;
-      QdpSpinor clov_chi2 = zero;
-      dslash(chi2, gauge_antip.u_aniso, psi, isign, target_cb);
-      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
+      dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_source.qdp(), isign, target_cb);
+      gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), isign, target_cb);
 
-      expect_near(clov_chi2,
-                  clov_chi,
+      expect_near(hs_qphix1,
+                  hs_qdp2,
                   1e-6,
                   geom,
                   target_cb,

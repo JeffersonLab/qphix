@@ -19,11 +19,18 @@ class HybridSpinor
   {
   }
 
-  void pack() { QPhiX::qdp_pack_spinor<>(qdp_, even_, odd_, geom_); }
-  void unpack() { QPhiX::qdp_unpack_spinor<>(even_, odd_, qdp_, geom_); }
+  Spinor *operator[](int cb) { return cb == 0 ? even_.get() : odd_.get(); }
 
-  Spinor &even() { return even_; }
-  Spinor &odd() { return odd_; }
+  void pack() { QPhiX::qdp_pack_spinor<>(qdp_, even_.get(), odd_.get(), geom_); }
+  void unpack() { QPhiX::qdp_unpack_spinor<>(even_.get(), odd_.get(), qdp_, geom_); }
+  void zero()
+  {
+    qdp_ = QDP::zero;
+    pack();
+  }
+
+  Spinor *even() { return even_.get(); }
+  Spinor *odd() { return odd_.get(); }
   QdpSpinor &qdp() { return qdp_; }
 
  private:
@@ -97,4 +104,14 @@ void expect_near(QdpSpinor &spinor_a,
   } // t
 
   assertion(false);
+}
+
+template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+void expect_near(HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_a,
+                 HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_b,
+                 double const abs_err,
+                 QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
+                 int const target_cb,
+                 char const *const message = nullptr) {
+  expect_near(spinor_a.qdp(), spinor_b.qdp(), abs_err, geom, target_cb, message);
 }
