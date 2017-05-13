@@ -267,7 +267,7 @@ void testClovDslashFull::runTest(void)
 
 #endif
 
-#if 0
+#if 1
   // Go through the test cases -- apply SSE dslash versus, QDP Dslash
   // Test ax - bDslash y
   QDPIO::cout << "Testing dslashAchiMinusBDPsi" << endl;
@@ -278,7 +278,7 @@ void testClovDslashFull::runTest(void)
       int target_cb = cb;
 
       chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, D32_ap.getGeometry());
+      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), D32_ap.getGeometry());
 
       double beta = (double)(0.25); // Always 0.25
 
@@ -286,8 +286,8 @@ void testClovDslashFull::runTest(void)
       D32_ap.dslashAChiMinusBDPsi(chi_s[target_cb],
                                   psi_s[source_cb],
                                   psi_s[target_cb],
-                                  u_packed[target_cb],
-                                  clov_packed[target_cb],
+                                  gauge_antip.u_packed[target_cb],
+                                  gauge_antip.clov_packed[target_cb],
                                   beta,
                                   isign,
                                   target_cb);
@@ -295,13 +295,19 @@ void testClovDslashFull::runTest(void)
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, D32_ap.getGeometry());
 
       // Apply QDP Dslash
-      chi2 = zero;
-      dslash(chi2, u_test, psi, isign, target_cb);
+      QdpSpinor chi2 = zero;
+      QdpSpinor clov_chi2 = zero;
+      dslash(chi2, gauge_antip.u_aniso, psi, isign, target_cb);
       QdpSpinor res = zero;
-      clov_qdp_ap.apply(res, psi, isign, target_cb);
+      gauge_antip.clov_qdp.apply(res, psi, isign, target_cb);
       res[rb[target_cb]] -= beta * chi2;
 
-      expect_near(res, chi, 1e-6, geom, target_cb);
+      expect_near(res,
+                  chi,
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "Antiperiodic A chi - b d psi, QPhiX vs. QDP++");
     }
   }
 
@@ -313,42 +319,44 @@ void testClovDslashFull::runTest(void)
 
   QdpSpinor ltmp = zero;
   Real betaFactor = Real(0.25);
-#if 0
-  for (int cb = 0; cb < 2; ++cb) {
-    int other_cb = 1 - cb;
+#if 1
+  for (int target_cb = 0; target_cb < 2; ++target_cb) {
+    int source_cb = 1 - target_cb;
     // FIXME: cb is needed to make the even odd operator... This has effects
     // down the line
 
     QDPIO::cout << "Testing Even Odd Operator" << endl;
-    t_boundary = (double)(-1);
-    EvenOddCloverOperator<FT, V, S, compress> M(u_packed,
-                                                clov_packed[cb],
-                                                invclov_packed[other_cb],
-                                                &geom,
-                                                t_boundary,
-                                                aniso_fac_s,
-                                                aniso_fac_t);
+    EvenOddCloverOperator<FT, V, S, compress> M(
+        gauge_antip.u_packed,
+        gauge_antip.clov_packed[target_cb],
+        gauge_antip.invclov_packed[source_cb],
+        &geom,
+        gauge_antip.t_boundary,
+        gauge_antip.aniso_fac_s,
+        gauge_antip.aniso_fac_t);
     // Apply optimized
     for (int isign = 1; isign >= -1; isign -= 2) {
       chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
 
-      M(chi_s[cb], psi_s[cb], isign, cb);
+      M(chi_s[target_cb], psi_s[target_cb], isign, target_cb);
 
       qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
 
       // Apply QDP Dslash
-      chi2 = zero;
+      QdpSpinor chi2 = zero;
+      QdpSpinor clov_chi2 = zero;
 
-      dslash(chi2, u_test, psi, isign, other_cb);
-      invclov_qdp_ap.apply(clov_chi2, chi2, isign, other_cb);
-      dslash(ltmp, u_test, clov_chi2, isign, cb);
+      dslash(chi2, gauge_antip.u_aniso, psi, isign, source_cb);
+      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, isign, source_cb);
+      dslash(ltmp, gauge_antip.u_aniso, clov_chi2, isign, target_cb);
 
-      clov_qdp_ap.apply(chi2, psi, isign, cb);
+      gauge_antip.clov_qdp.apply(chi2, psi, isign, target_cb);
 
-      chi2[rb[cb]] -= betaFactor * ltmp;
+      chi2[rb[target_cb]] -= betaFactor * ltmp;
 
-      expect_near(chi2, chi, 1e-6, geom, target_cb);
+      expect_near(
+          chi2, chi, 1e-6, geom, target_cb, "Even-odd operator, QPhiX vs. QDP++");
     } // isign loop
 
   } // cb loop
