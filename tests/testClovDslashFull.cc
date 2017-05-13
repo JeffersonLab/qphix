@@ -86,19 +86,6 @@ void testClovDslashFull::runTest(void)
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
-  auto psi_even = makeFourSpinorHandle(geom);
-  auto psi_odd = makeFourSpinorHandle(geom);
-  auto chi_even = makeFourSpinorHandle(geom);
-  auto chi_odd = makeFourSpinorHandle(geom);
-
-  QdpSpinor chi, psi;
-
-  Spinor *psi_s[2] = {psi_even.get(), psi_odd.get()};
-  Spinor *chi_s[2] = {chi_even.get(), chi_odd.get()};
-
-  gaussian(psi);
-  qdp_pack_spinor<>(psi, psi_even.get(), psi_odd.get(), geom);
-
   HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom), hs_qphix2(geom),
       hs_qdp1(geom), hs_qdp2(geom);
   gaussian(hs_source.qdp());
@@ -389,9 +376,10 @@ void testClovDslashFull::runTest(void)
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      QdpSpinor diff = chi3 - psi;
+      QdpSpinor diff = chi3 - hs_source.qdp();
       QDPIO::cout << "cb=" << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb])) << endl;
+                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
+                  << endl;
 
       expect_near(chi3, hs_source.qdp(), 1e-6, geom, cb, "CG");
 
