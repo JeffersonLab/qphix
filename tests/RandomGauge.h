@@ -1,9 +1,11 @@
 #pragma once
 
-#include "tolerance.h"
+#include "clover_term.h"
 #include "compare_qdp_spinors.h"
+#include "tolerance.h"
 
 #include <qphix/geometry.h>
+#include <qphix/qdp_packer.h>
 
 #include <qdp.h>
 
@@ -39,7 +41,7 @@ class RandomGauge
   Clover *invclov_packed[2];
   Clover *clov_packed[2];
 
-  multi1d<QdpGauge> u_aniso;
+  ::QDP::multi1d<QdpGauge> u_aniso;
 
   CloverTermT<QdpSpinor, QdpGauge> clov_qdp, invclov_qdp;
 
@@ -49,7 +51,7 @@ class RandomGauge
   void init_random_gauge();
   void init_clover();
 
-  multi1d<QdpGauge> u;
+  ::QDP::multi1d<QdpGauge> u;
 
   GaugeHandle<FT, veclen, soalen, compress12> gauge_even, gauge_odd;
   CloverHandle<FT, veclen, soalen, compress12> A_even, A_odd, A_inv_even, A_inv_odd;

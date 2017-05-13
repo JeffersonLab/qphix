@@ -6,19 +6,12 @@
 #include "qdp.h"
 using namespace QDP;
 
-#ifndef DSLASH_M_W_H
-#include "dslashm_w.h" //???
-#endif
-
-#ifndef REUNIT_H
+#include "dslashm_w.h"
 #include "reunit.h"
-#endif
 
 #include "qphix/geometry.h"
 #include "qphix/qdp_packer.h"
 #include "qphix/blas_new_c.h"
-// Disabling Full M and CG tests until vectorized dslash
-// works better
 #include "qphix/twisted_mass.h"
 #include "qphix/invcg.h"
 #include "qphix/invbicgstab.h"
@@ -37,60 +30,13 @@ using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
-
-#if defined(QPHIX_MIC_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-#include <immintrin.h>
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_HP 8
-#define VECLEN_DP 4
-
-#else
-#warning SCALAR_SOURCE
-#define VECLEN_SP 1
-#define VECLEN_DP 1
-#endif
+#include "RandomGauge.h"
+#include "veclen.h"
+#include "tolerance.h"
 
 // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
-
-template <typename F>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-const Double tolerance<double>::small = Double(1.0e-07);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-4);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
 
 void testTWMDslashFull::run(void)
 {
@@ -272,11 +218,7 @@ void testTWMDslashFull::testTWMDslash(const U &u, int t_bc)
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
   typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
 
-  const double aniso_fac_s = 1.0;
-  const double aniso_fac_t = 1.0;
-  const double t_boundary = (double)t_bc;
-
-  const double Mass = 0.1;
+  const double Mass = 0.2;
   const double TwistedMass = 0.1;
 
   const double alpha = 4.0 + Mass;
@@ -284,7 +226,7 @@ void testTWMDslashFull::testTWMDslash(const U &u, int t_bc)
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
 
   QDPIO::cout << endl
-              << "TESTING TM Dlash (time boundary condition = " << t_boundary << ")"
+              << "TESTING TM Dlash (time boundary condition = " << t_bc << ")"
               << endl
               << "================" << endl
               << endl;
@@ -298,55 +240,17 @@ void testTWMDslashFull::testTWMDslash(const U &u, int t_bc)
                                    PadXY,
                                    PadXYZ,
                                    MinCt);
+
+  RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
+
   TMDslash<T, V, S, compress> TMD(
       &geom, t_boundary, aniso_fac_s, aniso_fac_t, Mass, TwistedMass);
 
-  QDPIO::cout << "Allocating fields... ";
-  Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
-  Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
-  Spinor *psi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *psi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Gauge *u_packed[2];
-  u_packed[0] = packed_gauge_cb0;
-  u_packed[1] = packed_gauge_cb1;
-  Spinor *psi_s[2] = {psi_even, psi_odd};
-  Spinor *chi_s[2] = {chi_even, chi_odd};
-  QDPIO::cout << "done." << endl;
+  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom), hs_qphix2(geom),
+      hs_qdp1(geom), hs_qdp2(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
 
-  QDPIO::cout << "Filling psi with noise... ";
-  Phi psi;
-  gaussian(psi);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing gauge field... ";
-  qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing fermions... ";
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Preparing gauge field... ";
-  U u_test(Nd);
-  for (int mu = 0; mu < Nd; mu++) {
-    Real factor = Real(aniso_fac_s);
-    if (mu == Nd - 1) {
-      factor = Real(aniso_fac_t);
-    }
-    u_test[mu] = factor * u[mu];
-  }
-  QDPIO::cout << "done." << endl;
-
-  // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
-  QDPIO::cout << "Applying BCs... ";
-  u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3] - 1),
-                     Real(t_boundary),
-                     Real(1));
-  QDPIO::cout << "done." << endl;
-
-  // Go through the test cases -- apply SSE dslash versus, QDP Dslash
   for (auto isign : {1, -1}) {
     for (auto cb : {0, 1}) {
 
@@ -354,82 +258,22 @@ void testTWMDslashFull::testTWMDslash(const U &u, int t_bc)
       int target_cb = cb;
 
       // 1. Apply QPhiX Dslash
-      // =====================
-      Phi chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
-      TMD.dslash(
-          chi_s[target_cb], psi_s[source_cb], u_packed[target_cb], isign, target_cb);
-      qdp_unpack_spinor<>(chi_even, chi_odd, chi, geom);
+      hs_qphix1.zero();
+      TMD.dslash(hs_qphix1[target_cb],
+                 hs_source[source_cb],
+                 gauge.u_packed[target_cb],
+                 isign,
+                 target_cb);
+      hs_qphix1.pack();
 
       // 2. Apply QDP++ Dslash (Plain Wilson Dslash + Twisted Mass)
-      // =====================
-      Phi chi2 = zero;
-      dslash(chi2, u_test, psi, isign, target_cb);
-      applyInvTwist<>(chi2, Mu, MuInv, isign, target_cb);
+      hs_qdp1.zero();
+      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
+      applyInvTwist<>(hs_qdp1.qdp(), Mu, MuInv, isign, target_cb);
 
-      // 3. Calculate the difference
-      // ===========================
-      Phi diff = chi2 - chi;
-      double volume = 4.0 * 3.0 * 2.0 * Layout::vol();
-      Double diff_norm = sqrt(norm2(diff, rb[target_cb])) / volume;
-      QDPIO::cout << "\t cb = " << target_cb << "  isign = " << isign
-                  << "  diff_norm = " << diff_norm << endl;
-
-      // 4. Assert correctness
-      // =====================
-      int num_of_records = 0;
-      if (toBool(diff_norm > tolerance<T>::small)) {
-        for (int t = 0; t < Nt; t++) {
-          for (int z = 0; z < Nz; z++) {
-            for (int y = 0; y < Ny; y++) {
-              for (int x = 0; x < Nxh; x++) {
-
-                // These are unpadded QDP++ indices...
-                int ind = x + Nxh * (y + Ny * (z + Nz * t));
-                for (int s = 0; s < Ns; s++) {
-                  for (int c = 0; c < Nc; c++) {
-                    REAL dr = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .real();
-                    REAL di = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .imag();
-                    if ((toBool(fabs(dr) > tolerance<T>::small) ||
-                         toBool(fabs(di) > tolerance<T>::small)) &&
-                        num_of_records < 16) {
-                      num_of_records += 1;
-                      QDPIO::cout
-                          << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                          << ") site=" << ind << " spin=" << s << " color=" << c
-                          << " Diff = "
-                          << diff.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << "  chi = "
-                          << chi.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << " qdp++ ="
-                          << chi2.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << endl;
-                    }
-                  }
-                }
-              } // x
-            } // y
-          } // z
-        } // t
-      }
-      assertion(toBool(diff_norm < tolerance<T>::small));
-      fflush(stdout);
-
+      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "Dslash");
     } // cb
   } // isign
-
-  geom.free(packed_gauge_cb0);
-  geom.free(packed_gauge_cb1);
-  geom.free(psi_even);
-  geom.free(psi_odd);
-  geom.free(chi_even);
-  geom.free(chi_odd);
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
