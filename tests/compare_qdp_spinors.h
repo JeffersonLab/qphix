@@ -20,15 +20,14 @@ void expect_near(QdpSpinor &spinor_a,
   QDP::Double diff_norm = sqrt(QDP::norm2(diff, QDP::rb[target_cb])) /
                           (QDP::Real(4 * 3 * 2 * QDP::Layout::vol()) / QDP::Real(2));
 
+  if (message != nullptr) {
+    QDPIO::cout << "Spinor comparison: " << message << ": ";
+  }
+  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err << std::endl;
+
   if (QDP::toBool(diff_norm < abs_err)) {
     return;
   }
-
-  if (message != nullptr) {
-    QDPIO::cout << "Spinor missmatch detected in: " << message << std::endl;
-  }
-
-  QDPIO::cout << "diff/volume = " << diff_norm << std::endl;
 
   for (int t = 0; t < geom.Nt(); t++) {
     for (int z = 0; z < geom.Nz(); z++) {
