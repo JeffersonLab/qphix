@@ -8,6 +8,32 @@
 #include <iomanip>
 
 template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+class HybridSpinor
+{
+ public:
+  typedef typename QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+      Spinor;
+
+  HybridSpinor(QPhiX::Geometry<FT, veclen, soalen, compress12> &geom)
+      : geom_(geom), even_(geom), odd_(geom)
+  {
+  }
+
+  void pack() { QPhiX::qdp_pack_spinor<>(qdp_, even_, odd_, geom_); }
+  void unpack() { QPhiX::qdp_unpack_spinor<>(even_, odd_, qdp_, geom_); }
+
+  Spinor &even() { return even_; }
+  Spinor &odd() { return odd_; }
+  QdpSpinor &qdp() { return qdp_; }
+
+ private:
+  QPhiX::Geometry<FT, veclen, soalen, compress12> &geom_;
+
+  QPhiX::FourSpinorHandle<FT, veclen, soalen, compress12> even_, odd_;
+  QdpSpinor qdp_;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
 void expect_near(QdpSpinor &spinor_a,
                  QdpSpinor &spinor_b,
                  double const abs_err,
