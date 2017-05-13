@@ -213,83 +213,36 @@ void testClovDslashFull::runTest(void)
 
 #endif
 
-#if 0
+#if 1
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
-  t_boundary = (double)(-1);
+
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0);
 
   // Create Antiperiodic Dslash
-  ClovDslash<FT, V, S, compress> D32_ap(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
-
-  // Step 1: Convert u_test into one with antiperiodic BCs.
-  // NB: This alone does not need a re-pack for the gauge field.
-  QDPIO::cout << "Applying BCs to original gauge field" << endl;
-  int mu_t = Nd - 1;
-
-  // Let us make u_test to be u with antiperiodic_BCs
-  for (int mu = 0; mu < Nd; mu++) {
-    u_test[mu] = u[mu];
-  }
-
-  u_test[mu_t] *=
-      where(Layout::latticeCoordinate(mu_t) == (Layout::lattSize()[mu_t] - 1),
-            Real(t_boundary),
-            Real(1));
-
-  QDPIO::cout << "Creating Clover term using Gauge field with antiperiodic BCs"
-              << endl;
-  CloverTermT<QdpSpinor, QdpGauge> clov_qdp_ap;
-  clov_qdp_ap.create(u_test, clparam);
-  QDPIO::cout << "Inverting Clover Term" << endl;
-  CloverTermT<QdpSpinor, QdpGauge> invclov_qdp_ap(clov_qdp_ap);
-  for (int cb = 0; cb < 2; cb++) {
-    invclov_qdp_ap.choles(cb);
-  }
-  QDPIO::cout << "Done" << endl;
-
-  // Now we need to repack this.
-  QDPIO::cout << "Packing Clover term..." << endl;
-  for (int cb = 0; cb < 2; cb++) {
-    qdp_pack_clover<>(invclov_qdp_ap, invclov_packed[cb], D32_ap.getGeometry(), cb);
-  }
-
-  for (int cb = 0; cb < 2; cb++) {
-    qdp_pack_clover<>(clov_qdp_ap, clov_packed[cb], D32_ap.getGeometry(), cb);
-  }
-
-  QDPIO::cout << "Folding aniso factors into gauge field for testing" << endl;
-  for (int mu = 0; mu < Nd; mu++) {
-    Real factor;
-    if (mu == 3) {
-      factor = Real(aniso_fac_t);
-    } else {
-      factor = Real(aniso_fac_s);
-    }
-    u_test[mu] *= factor;
-  }
-
-  // NB: Gauge field doesn't need to be repacked. It is the original 'u'
-  // without the aniso factors or boundaries
-  // As these are now handled in the Dslash.
+  ClovDslash<FT, V, S, compress> D32_ap(&geom,
+                                        gauge_antip.t_boundary,
+                                        gauge_antip.aniso_fac_s,
+                                        gauge_antip.aniso_fac_t);
 
   for (int isign = 1; isign >= -1; isign -= 2) {
     for (int cb = 0; cb < 2; cb++) {
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      clov_chi = zero;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, D32_ap.getGeometry());
+      QdpSpinor clov_chi = zero;
+      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), D32_ap.getGeometry());
 
       // Apply Optimized Dslash
       D32_ap.dslash(chi_s[target_cb],
                     psi_s[source_cb],
-                    u_packed[target_cb],
-                    invclov_packed[target_cb],
+                    gauge_antip.u_packed[target_cb],
+                    gauge_antip.invclov_packed[target_cb],
                     isign,
                     target_cb);
 
-      qdp_unpack_spinor<>(chi_even, chi_odd, clov_chi, geom);
+      qdp_unpack_spinor<>(chi_even.get(), chi_odd.get(), clov_chi, geom);
 
       // Account for Clover term from QDP++
       // We should remove this once the actual clover implementation is
@@ -298,11 +251,17 @@ void testClovDslashFull::runTest(void)
       // clov_chi = chi;
 
       // Apply QDP Dslash
-      chi2 = zero;
-      dslash(chi2, u_test, psi, isign, target_cb);
-      invclov_qdp_ap.apply(clov_chi2, chi2, isign, target_cb);
+      QdpSpinor chi2 = zero;
+      QdpSpinor clov_chi2 = zero;
+      dslash(chi2, gauge_antip.u_aniso, psi, isign, target_cb);
+      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
 
-      expect_near(clov_chi2, clov_chi, 1e-6, geom, target_cb);
+      expect_near(clov_chi2,
+                  clov_chi,
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "Dslash with antiperiodic T, QPhiX vs. QDP++");
     } // cb
   } // isign
 
