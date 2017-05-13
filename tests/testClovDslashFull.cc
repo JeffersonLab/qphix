@@ -418,8 +418,6 @@ void testClovDslashFull::runTest(void)
                                                   gauge_antip.aniso_fac_s,
                                                   gauge_antip.aniso_fac_t);
 
-      chi = zero;
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -430,9 +428,10 @@ void testClovDslashFull::runTest(void)
 
       InvBiCGStab<FT, V, S, compress> solver(M, max_iters);
       const int isign = 1;
+      hs_qphix1.zero();
       double start = omp_get_wtime();
-      solver(chi_s[cb],
-             psi_s[cb],
+      solver(hs_qphix1[cb],
+             hs_source[cb],
              rsd_target,
              niters,
              rsd_final,
@@ -442,24 +441,22 @@ void testClovDslashFull::runTest(void)
              verbose,
              cb);
       double end = omp_get_wtime();
-
-      qdp_unpack_cb_spinor<>(chi_s[cb], chi, geom, cb);
+      hs_qphix1.unpack();
 
       // Multiply back
       // chi2 = M chi
       QdpSpinor ltmp = zero;
-      QdpSpinor chi2, clov_chi, clov_chi2;
-      dslash(chi2, gauge_antip.u_aniso, chi, 1, other_cb);
-      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, 1, other_cb);
-      dslash(ltmp, gauge_antip.u_aniso, clov_chi2, 1, cb);
+      dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_qphix1.qdp(), 1, other_cb);
+      gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), 1, other_cb);
+      dslash(ltmp, gauge_antip.u_aniso, hs_qdp2.qdp(), 1, cb);
 
-      gauge_antip.clov_qdp.apply(chi2, chi, 1, cb);
-      chi2[rb[cb]] -= betaFactor * ltmp;
+      gauge_antip.clov_qdp.apply(hs_qdp1.qdp(), hs_qphix1.qdp(), 1, cb);
+      hs_qdp1.qdp()[rb[cb]] -= betaFactor * ltmp;
 
-      QdpSpinor diff = chi2 - psi;
+      QdpSpinor diff = hs_qdp1.qdp() - hs_source.qdp();
       QDPIO::cout << " cb = " << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb])) << endl;
-      expect_near(chi2, psi, 1e-6, geom, cb, "BiCGStab");
+                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb])) << endl;
+      expect_near(hs_qdp1.qdp(), hs_source.qdp(), 1e-6, geom, cb, "BiCGStab");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
