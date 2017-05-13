@@ -12,7 +12,8 @@ void expect_near(QdpSpinor &spinor_a,
                  QdpSpinor &spinor_b,
                  double const abs_err,
                  QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
-                 int const target_cb)
+                 int const target_cb,
+                 char const *const message = nullptr)
 {
   QdpSpinor diff = spinor_b - spinor_a;
 
@@ -23,7 +24,11 @@ void expect_near(QdpSpinor &spinor_a,
     return;
   }
 
-  QDPIO::cout << "Spinors are not near! diff/volume = " << diff_norm << std::endl;
+  if (message != nullptr) {
+    QDPIO::cout << "Spinor missmatch detected in: " << message << std::endl;
+  }
+
+  QDPIO::cout << "diff/volume = " << diff_norm << std::endl;
 
   for (int t = 0; t < geom.Nt(); t++) {
     for (int z = 0; z < geom.Nz(); z++) {
