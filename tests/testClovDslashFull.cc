@@ -160,7 +160,12 @@ void testClovDslashFull::runTest(void)
 
       // Check the difference per number in chi vector
       QdpSpinor diff = clov_chi2 - clov_chi;
-      expect_near(clov_chi2, clov_chi, 1e-6, geom, target_cb);
+      expect_near(clov_chi2,
+                  clov_chi,
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "Wilson clover Dslash, QPhiX vs. QDP++");
 
     } // cb
   } // isign

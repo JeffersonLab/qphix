@@ -145,7 +145,7 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
   for (int cb = 0; cb < 2; ++cb) {
     clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
     invclov_qdp.apply(qdp_spinor_3, qdp_spinor_1, 1, cb);
-    expect_near(qdp_spinor_1, qdp_spinor_3, 1e-6, geom, cb);
+    expect_near(qdp_spinor_2, qdp_spinor_3, 1e-6, geom, cb, "Clover term copy");
   }
 
   // Invert the clover term.
@@ -157,7 +157,7 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
   for (int cb = 0; cb < 2; ++cb) {
     clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
     invclov_qdp.apply(qdp_spinor_3, qdp_spinor_2, 1, cb);
-    expect_near(qdp_spinor_1, qdp_spinor_3, 1e-6, geom, cb);
+    expect_near(qdp_spinor_1, qdp_spinor_3, 1e-6, geom, cb, "Clover term inversion");
   }
 
   for (int cb = 0; cb < 2; cb++) {
