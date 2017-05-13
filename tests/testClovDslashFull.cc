@@ -257,33 +257,28 @@ void testClovDslashFull::runTest(void)
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      chi = zero;
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), D32_ap.getGeometry());
-
-      double beta = (double)(0.25); // Always 0.25
+      double beta = 0.25; // Always 0.25
 
       // Apply Optimized Dslash
-      D32_ap.dslashAChiMinusBDPsi(chi_s[target_cb],
-                                  psi_s[source_cb],
-                                  psi_s[target_cb],
+      hs_qphix1.zero();
+      D32_ap.dslashAChiMinusBDPsi(hs_qphix1[target_cb],
+                                  hs_source[source_cb],
+                                  hs_source[target_cb],
                                   gauge_antip.u_packed[target_cb],
                                   gauge_antip.clov_packed[target_cb],
                                   beta,
                                   isign,
                                   target_cb);
-
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, D32_ap.getGeometry());
+      hs_qphix1.unpack();
 
       // Apply QDP Dslash
-      QdpSpinor chi2 = zero;
-      QdpSpinor clov_chi2 = zero;
-      dslash(chi2, gauge_antip.u_aniso, psi, isign, target_cb);
+      dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_source.qdp(), isign, target_cb);
       QdpSpinor res = zero;
-      gauge_antip.clov_qdp.apply(res, psi, isign, target_cb);
-      res[rb[target_cb]] -= beta * chi2;
+      gauge_antip.clov_qdp.apply(res, hs_source.qdp(), isign, target_cb);
+      res[rb[target_cb]] -= beta * hs_qdp1.qdp();
 
       expect_near(res,
-                  chi,
+                  hs_qphix1.qdp(),
                   1e-6,
                   geom,
                   target_cb,
@@ -297,15 +292,12 @@ void testClovDslashFull::runTest(void)
   // vectorization
   //
 
-  QdpSpinor ltmp = zero;
   Real betaFactor = Real(0.25);
 #if 1
   for (int target_cb = 0; target_cb < 2; ++target_cb) {
     int source_cb = 1 - target_cb;
-    // FIXME: cb is needed to make the even odd operator... This has effects
-    // down the line
-
     QDPIO::cout << "Testing Even Odd Operator" << endl;
+
     EvenOddCloverOperator<FT, V, S, compress> M(
         gauge_antip.u_packed,
         gauge_antip.clov_packed[target_cb],
@@ -314,29 +306,28 @@ void testClovDslashFull::runTest(void)
         gauge_antip.t_boundary,
         gauge_antip.aniso_fac_s,
         gauge_antip.aniso_fac_t);
-    // Apply optimized
+
     for (int isign = 1; isign >= -1; isign -= 2) {
-      chi = zero;
-      qdp_pack_spinor<>(chi, chi_even.get(), chi_odd.get(), geom);
-
-      M(chi_s[target_cb], psi_s[target_cb], isign, target_cb);
-
-      qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+      hs_qphix1.zero();
+      M(hs_qphix1[target_cb], hs_source[target_cb], isign, target_cb);
+      hs_qphix1.unpack();
 
       // Apply QDP Dslash
-      QdpSpinor chi2 = zero;
-      QdpSpinor clov_chi2 = zero;
+      QdpSpinor ltmp = zero;
+      dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_source.qdp(), isign, source_cb);
+      gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), isign, source_cb);
+      dslash(ltmp, gauge_antip.u_aniso, hs_qdp2.qdp(), isign, target_cb);
 
-      dslash(chi2, gauge_antip.u_aniso, psi, isign, source_cb);
-      gauge_antip.invclov_qdp.apply(clov_chi2, chi2, isign, source_cb);
-      dslash(ltmp, gauge_antip.u_aniso, clov_chi2, isign, target_cb);
+      gauge_antip.clov_qdp.apply(hs_qdp1.qdp(), hs_source.qdp(), isign, target_cb);
 
-      gauge_antip.clov_qdp.apply(chi2, psi, isign, target_cb);
+      hs_qdp1.qdp()[rb[target_cb]] -= betaFactor * ltmp;
 
-      chi2[rb[target_cb]] -= betaFactor * ltmp;
-
-      expect_near(
-          chi2, chi, 1e-6, geom, target_cb, "Even-odd operator, QPhiX vs. QDP++");
+      expect_near(hs_qdp1,
+                  hs_qphix1,
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "Even-odd operator, QPhiX vs. QDP++");
     } // isign loop
 
   } // cb loop
@@ -386,6 +377,7 @@ void testClovDslashFull::runTest(void)
 
       // Multiply back
       // chi2 = M chi
+      QdpSpinor ltmp = zero;
       dslash(chi2, gauge_antip.u_aniso, chi, 1, other_cb);
       gauge_antip.invclov_qdp.apply(clov_chi2, chi2, 1, other_cb);
       dslash(ltmp, gauge_antip.u_aniso, clov_chi2, 1, cb);
@@ -464,6 +456,7 @@ void testClovDslashFull::runTest(void)
 
       // Multiply back
       // chi2 = M chi
+      QdpSpinor ltmp = zero;
       QdpSpinor chi2, clov_chi, clov_chi2;
       dslash(chi2, gauge_antip.u_aniso, chi, 1, other_cb);
       gauge_antip.invclov_qdp.apply(clov_chi2, chi2, 1, other_cb);
