@@ -27,7 +27,7 @@ AC_ARG_ENABLE(parallel-arch,
 AC_ARG_ENABLE(testing,
    AC_HELP_STRING([--enable-testing],
    [ Build the tests (takes quite some time) ]),
-   [ build_tests=yes ],
+   [ build_tests=${enableval} ],
    [ build_tests=no ]
 )
 
@@ -524,6 +524,11 @@ yes|YES)
 ;;
 esac
 
+if test "x${build_tests}x" = "xyesx"; then
+  AC_MSG_NOTICE([Building tests])
+else
+  AC_MSG_NOTICE([Not building tests])
+fi
 AM_CONDITIONAL(QPHIX_BUILD_TESTS, [ test "${build_tests}" = "yes" ])
 
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
