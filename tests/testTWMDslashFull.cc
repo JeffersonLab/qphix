@@ -494,14 +494,16 @@ void testTWMDslashFull::testTWMM(int t_bc)
       dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, source_cb);
       applyInvTwist<>(hs_qdp1.qdp(), Mu, MuInv, isign, source_cb);
 
+      Phi tmp = hs_source.qdp();
+
       // apply achimdpsi incl.twist
       dslash(hs_qdp2.qdp(), gauge.u_aniso, hs_qdp1.qdp(), isign, target_cb);
-      applyTwist<>(hs_source.qdp(), Mu, alpha, isign, target_cb);
+      applyTwist<>(tmp, Mu, alpha, isign, target_cb);
 
-      hs_qdp1.qdp()[rb[target_cb]] = hs_source.qdp() - beta * hs_qdp2.qdp();
+      hs_qdp1.qdp()[rb[target_cb]] = tmp - beta * hs_qdp2.qdp();
 
       // Check the difference per number in chi vector
-      expect_near(hs_qphix1, hs_qdp2, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
