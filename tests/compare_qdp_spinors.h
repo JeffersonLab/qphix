@@ -62,6 +62,8 @@ void expect_near(QdpSpinor &spinor_a,
     return;
   }
 
+  uint64_t printed_out = 0;
+
   for (int t = 0; t < geom.Nt(); t++) {
     for (int z = 0; z < geom.Nz(); z++) {
       for (int y = 0; y < geom.Ny(); y++) {
@@ -95,6 +97,14 @@ void expect_near(QdpSpinor &spinor_a,
                              b.imag(),
                              diff_real,
                              diff_imag);
+
+                ++printed_out;
+
+                if (printed_out > 100) {
+                    masterPrintf("More elements are not printed in order to make the output readable.\n");
+                    assertion(false);
+                    break;
+                }
               }
             }
           }
