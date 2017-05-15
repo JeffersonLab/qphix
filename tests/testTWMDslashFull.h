@@ -44,13 +44,13 @@ class testTWMDslashFull : public TestFixture
   Seed rng_seed;
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMDslashWrapper(const U &u)
+  void testTWMDslashWrapper()
   {
     for (int t_bc = +1; t_bc >= -1; t_bc -= 2) {
       if (compress12) {
-        testTWMDslash<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMDslash<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMDslash<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMDslash<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
@@ -69,13 +69,13 @@ class testTWMDslashFull : public TestFixture
 
 #if 1
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMMWrapper(const U &u)
+  void testTWMMWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
       if (compress12) {
-        testTWMM<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMM<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMM<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMM<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
@@ -128,13 +128,13 @@ class testTWMDslashFull : public TestFixture
   }
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMDslash(const U &u, int t_bc);
+  void testTWMDslash(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
   void testTWMDslashAChiMBDPsi(const U &u, int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMM(const U &u, int t_bc);
+  void testTWMM(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
   void testTWMCG(const U &u, int t_bc);

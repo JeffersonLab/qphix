@@ -43,6 +43,8 @@ class RandomGauge
 
   ::QDP::multi1d<QdpGauge> u_aniso;
 
+  ::QDP::multi1d<QdpGauge> const &get_u_aniso() const { return u_aniso; }
+
   CloverTermT<QdpSpinor, QdpGauge> clov_qdp, invclov_qdp;
 
  private:

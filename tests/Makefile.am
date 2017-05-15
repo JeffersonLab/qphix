@@ -106,7 +106,9 @@ if QPHIX_BUILD_TWISTED_MASS
 t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testTWMDslashFull.h \
 	testTWMDslashFull.cc \
-	t_twm_dslash.cc
+	t_twm_dslash.cc \
+	mesfield.h \
+	mesfield.cc
 
 time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_noqdp.cc \
