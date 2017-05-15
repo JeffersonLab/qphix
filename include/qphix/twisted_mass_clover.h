@@ -81,9 +81,16 @@ class EvenOddTMCloverOperator
     int source_cb = 1 - target_cb;
     double beta = (double)0.25;
 
-    D->dslash(tmp, in, u[source_cb], (const FullCloverBlock **)invclov, isign, 0);
-    D->dslashAChiMinusBDPsi(
-        res, tmp, in, u[target_cb], (const FullCloverBlock **)clov, beta, isign, 1);
+    D->dslash(
+        tmp, in, u[source_cb], (const FullCloverBlock **)invclov, isign, source_cb);
+    D->dslashAChiMinusBDPsi(res,
+                            tmp,
+                            in,
+                            u[target_cb],
+                            (const FullCloverBlock **)clov,
+                            beta,
+                            isign,
+                            target_cb);
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry()
