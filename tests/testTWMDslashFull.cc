@@ -438,10 +438,6 @@ void testTWMDslashFull::testTWMM(int t_bc)
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
   typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
 
-  double aniso_fac_s = 0.35;
-  double aniso_fac_t = 1.4;
-  double t_boundary = (double)(t_bc);
-
   const double Mass = 0.1;
   const double TwistedMass = 0.1;
 
@@ -449,12 +445,6 @@ void testTWMDslashFull::testTWMM(int t_bc)
   const double beta = 0.25;
   const double Mu = TwistedMass / alpha;
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
-
-  QDPIO::cout << endl
-              << "TESTING TM Fermion Matrix (time boundary condition = "
-              << t_boundary << ")" << endl
-              << "=========================" << endl
-              << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                    By,
@@ -467,6 +457,12 @@ void testTWMDslashFull::testTWMM(int t_bc)
                                    MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
+
+  QDPIO::cout << endl
+              << "TESTING TM Fermion Matrix (time boundary condition = "
+              << gauge.t_boundary << ")" << endl
+              << "=========================" << endl
+              << endl;
 
   HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
@@ -486,24 +482,29 @@ void testTWMDslashFull::testTWMM(int t_bc)
       int source_cb = 1 - target_cb;
       QDPIO::cout << "Target CB = " << target_cb << endl;
 
+      // QPhiX version
       hs_qphix1.zero();
       M(hs_qphix1[target_cb], hs_source[target_cb], isign);
       hs_qphix1.unpack();
 
-      // Apply QDP Dslash + TM term
+      // QDP++ version:
+      // (a) hs_qdp2 := D A^{-1} D hs_source
       dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, source_cb);
       applyInvTwist<>(hs_qdp1.qdp(), Mu, MuInv, isign, source_cb);
-
-      Phi tmp = hs_source.qdp();
-
-      // apply achimdpsi incl.twist
       dslash(hs_qdp2.qdp(), gauge.u_aniso, hs_qdp1.qdp(), isign, target_cb);
+
+      // (b) tmp := A hs_source
+      Phi tmp = hs_source.qdp();
+      expect_near(
+          hs_source.qdp(), tmp, 1e-6, geom, target_cb, "QDP Spinor copy-ctor");
       applyTwist<>(tmp, Mu, alpha, isign, target_cb);
 
-      hs_qdp1.qdp()[rb[target_cb]] = tmp - beta * hs_qdp2.qdp();
+      // (c) result := A hs_source - beta D A^{-1} D hs_source
+      Phi qdp_result = zero;
+      qdp_result[rb[target_cb]] = tmp - beta * hs_qdp2.qdp();
 
-      // Check the difference per number in chi vector
-      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(
+          hs_qphix1.qdp(), qdp_result, 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
