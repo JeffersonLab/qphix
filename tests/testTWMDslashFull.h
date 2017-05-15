@@ -56,13 +56,13 @@ class testTWMDslashFull : public TestFixture
   }
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMDslashAChiMBDPsiWrapper(const U &u)
+  void testTWMDslashAChiMBDPsiWrapper()
   {
     for (int t_bc = 1; t_bc >= -1; t_bc -= 2) {
       if (compress12) {
-        testTWMDslashAChiMBDPsi<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMDslashAChiMBDPsi<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMDslashAChiMBDPsi<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMDslashAChiMBDPsi<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
@@ -131,7 +131,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMDslash(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMDslashAChiMBDPsi(const U &u, int t_bc);
+  void testTWMDslashAChiMBDPsi(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
   void testTWMM(int t_bc);
