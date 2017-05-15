@@ -27,8 +27,13 @@ class RandomGauge
   RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom, double const t_boundary = 1.0);
 
   double const gauge_random_factor = 0.08;
+#if 0
   double const xi_0_f = 0.3;
   double const nu_f = 1.4;
+#else
+  double const xi_0_f = 1.0;
+  double const nu_f = 1.0;
+#endif
   double const clover_mass = 0.1;
   double const clover_coeff_R = 1.2;
   double const clover_coeff_T = 0.9;
