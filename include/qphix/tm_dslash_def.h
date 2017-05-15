@@ -189,9 +189,4 @@ class TMDslash
 }; // Class
 
 } // Namespace
-#include "qphix/tm_dslash_body.h"
-
-#ifdef QPHIX_QMP_COMMS
-#include "qphix/tm_dslash_face.h"
-#endif
 #endif
