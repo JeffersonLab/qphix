@@ -331,7 +331,9 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
   hs_source2.pack();
 
   for (auto isign : {1, -1}) {
-    for (auto target_cb : {0, 1}) {
+    for (auto target_cb : {1, 0}) {
+      masterPrintf("Target CB: %i\n", target_cb);
+
       int const source_cb = 1 - target_cb;
 
       // 1. Apply QPhiX Dslash
@@ -406,7 +408,7 @@ void testTWMDslashFull::testTWMM(int t_bc)
                                                gauge.aniso_fac_t);
 
   for (auto isign : {1, -1}) {
-    for (int target_cb : {0, 1}) {
+    for (int target_cb : {1, 0}) {
       int source_cb = 1 - target_cb;
       QDPIO::cout << "Target CB = " << target_cb << endl;
 
