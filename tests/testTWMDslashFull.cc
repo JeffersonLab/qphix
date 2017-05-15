@@ -414,7 +414,7 @@ void testTWMDslashFull::testTWMM(int t_bc)
 
       // QPhiX version
       hs_qphix1.zero();
-      M(hs_qphix1[target_cb], hs_source[target_cb], isign);
+      M(hs_qphix1[target_cb], hs_source[target_cb], isign, target_cb);
       hs_qphix1.unpack();
 
       // QDP++ version:
