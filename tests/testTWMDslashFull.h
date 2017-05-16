@@ -82,13 +82,13 @@ class testTWMDslashFull : public TestFixture
 #endif
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMCGWrapper(const U &u)
+  void testTWMCGWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
       if (compress12) {
-        testTWMCG<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMCG<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMCG<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMCG<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
@@ -137,7 +137,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMM(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMCG(const U &u, int t_bc);
+  void testTWMCG(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
   void testTWMBiCGStab(const U &u, int t_bc);

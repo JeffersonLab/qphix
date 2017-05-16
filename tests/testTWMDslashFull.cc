@@ -1,3 +1,5 @@
+// TODO Make an `A chi - b D psi` function for QDP spinors.
+
 #include "unittest.h"
 #include "testTWMDslashFull.h"
 #undef SEEK_SET
@@ -97,7 +99,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 1, MUF, PhiF>(u_in);
+      testTWMCGWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 1, MUF, PhiF>(u_in);
     }
 
@@ -106,7 +108,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 4, MUF, PhiF>(u_in);
+      testTWMCGWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 4, MUF, PhiF>(u_in);
     }
 
@@ -115,7 +117,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 8, MUF, PhiF>(u_in);
+      testTWMCGWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 8, MUF, PhiF>(u_in);
     }
 
@@ -125,7 +127,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 16, MUF, PhiF>(u_in);
+      testTWMCGWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 16, MUF, PhiF>(u_in);
 #else
       masterPrintf("SOALEN = 16 not available");
@@ -146,7 +148,7 @@ void testTWMDslashFull::run(void)
       QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=4 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 4, MUF, PhiF>(u_in);
+      testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
       testTWMBiCGStabWrapper<half, VECLEN_HP, 4, MUF, PhiF>(u_in);
     }
 
@@ -154,7 +156,7 @@ void testTWMDslashFull::run(void)
       QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=8 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 8, MUF, PhiF>(u_in);
+      testTWMCGWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 8, MUF, PhiF>(u_in);
     }
 
@@ -163,7 +165,7 @@ void testTWMDslashFull::run(void)
       QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=16 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 16, MUF, PhiF>(u_in);
+      testTWMCGWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 16, MUF, PhiF>(u_in);
 #endif
     }
@@ -186,7 +188,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 2, MUD, PhiD>(u_in);
+      testTWMCGWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 2, MUD, PhiD>(u_in);
 #endif
     }
@@ -196,7 +198,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 4, MUD, PhiD>(u_in);
+      testTWMCGWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 4, MUD, PhiD>(u_in);
     }
 
@@ -206,7 +208,7 @@ void testTWMDslashFull::run(void)
       testTWMDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 8, MUD, PhiD>(u_in);
+      testTWMCGWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 8, MUD, PhiD>(u_in);
 #endif
     }
@@ -441,16 +443,12 @@ void testTWMDslashFull::testTWMM(int t_bc)
 
 // add twisted mass term.
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMCG(const U &u, int t_bc)
+void testTWMDslashFull::testTWMCG(int t_bc)
 {
   RNG::setrn(rng_seed);
 
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
   typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
-
-  const double aniso_fac_s = 0.35;
-  const double aniso_fac_t = 1.4;
-  const double t_boundary = (double)(t_bc);
 
   const double Mass = 0.1;
   const double TwistedMass = 0.1;
@@ -459,12 +457,6 @@ void testTWMDslashFull::testTWMCG(const U &u, int t_bc)
   const double beta = 0.25;
   const double Mu = TwistedMass / alpha;
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
-
-  QDPIO::cout << endl
-              << "TESTING TM CG Inversion (time boundary condition = " << t_boundary
-              << ")" << endl
-              << "=======================" << endl
-              << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                    By,
@@ -476,59 +468,34 @@ void testTWMDslashFull::testTWMCG(const U &u, int t_bc)
                                    PadXYZ,
                                    MinCt);
 
-  QDPIO::cout << "Allocating Fields... ";
-  Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
-  Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
-  Spinor *psi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *psi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Gauge *u_packed[2];
-  u_packed[0] = packed_gauge_cb0;
-  u_packed[1] = packed_gauge_cb1;
-  Spinor *psi_s[2] = {psi_even, psi_odd};
-  Spinor *chi_s[2] = {chi_even, chi_odd};
-  QDPIO::cout << "done." << endl;
+  RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
+  HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
+      hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
 
-  QDPIO::cout << "Filling psi with gaussian noise... ";
-  Phi psi;
-  gaussian(psi);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing gauge field... ";
-  qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing fermions... ";
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Applying anisotropy to test gauge field... ";
-  U u_test(Nd);
-  for (int mu = 0; mu < Nd; mu++) {
-    Real factor = Real(aniso_fac_s);
-    if (mu == Nd - 1) {
-      factor = Real(aniso_fac_t);
-    }
-    u_test[mu] = factor * u[mu];
-  }
-  QDPIO::cout << "done." << endl;
-
-  // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
-  QDPIO::cout << "Applying BCs to test gauge field... ";
-  u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3] - 1),
-                     Real(t_boundary),
-                     Real(1));
-  QDPIO::cout << "done." << endl;
+  QDPIO::cout << endl
+              << "TESTING TM CG Inversion (time boundary condition = "
+              << gauge.t_boundary << ")" << endl
+              << "=======================" << endl
+              << endl;
 
   QDPIO::cout << "Constructing TM Wilson Fermion Matrix... " << endl;
-  EvenOddTMWilsonOperator<T, V, S, compress> M(
-      Mass, TwistedMass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddTMWilsonOperator<T, V, S, compress> M(Mass,
+                                               TwistedMass,
+                                               gauge.u_packed,
+                                               &geom,
+                                               gauge.t_boundary,
+                                               gauge.aniso_fac_s,
+                                               gauge.aniso_fac_t);
   QDPIO::cout << "done." << endl << endl;
 
   double r2 = 0.0;
-  norm2Spinor<T, V, S, compress>(r2, psi_even, geom, 1);
+  norm2Spinor<T, V, S, compress>(r2, hs_source[0], geom, 1);
   QDPIO::cout << "||psi||^2 = " << r2 << endl << endl;
+
+  int const source_target_cb = 0;
+  int const other_cb = 1 - source_target_cb;
 
   // 0. Setup Solver
   // ===============
@@ -543,44 +510,44 @@ void testTWMDslashFull::testTWMCG(const U &u, int t_bc)
 
   // 1. QPhiX CG Solve
   // =================
-  Phi chi = zero;
-  qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
   double start = omp_get_wtime();
-  solver(chi_s[0],
-         psi_s[0],
+  solver(hs_qphix1[source_target_cb],
+         hs_source[source_target_cb],
          rsd_target,
          niters,
          rsd_final,
          site_flops,
          mv_apps,
          isign,
-         verbose);
+         verbose,
+         source_target_cb);
   double end = omp_get_wtime();
-  qdp_unpack_spinor<>(chi_s[0], chi_s[1], chi, geom);
+  hs_qphix1.unpack();
 
   // 2. Multiply back with QDP + TM term
   // ===================================
   // chi2 = M chi
   Phi chi2 = zero;
   Phi ltmp = zero;
-  dslash(chi2, u_test, chi, 1, 1);
-  applyInvTwist<>(chi2, Mu, MuInv, 1, 1);
-  dslash(ltmp, u_test, chi2, 1, 0);
-  applyTwist<>(chi, Mu, alpha, 1, 0);
-  chi2[rb[0]] = chi - beta * ltmp;
+  dslash(chi2, gauge.u_aniso, hs_qphix1.qdp(), 1, other_cb);
+  applyInvTwist<>(chi2, Mu, MuInv, 1, other_cb);
+  dslash(ltmp, gauge.u_aniso, chi2, 1, source_target_cb);
+  applyTwist<>(hs_qphix1.qdp(), Mu, alpha, 1, source_target_cb);
+  chi2[rb[source_target_cb]] = hs_qphix1.qdp() - beta * ltmp;
 
   // chi3 = M^\dagger chi2
   Phi chi3 = zero;
-  dslash(chi3, u_test, chi2, (-1), 1);
-  applyInvTwist<>(chi3, Mu, MuInv, (-1), 1);
-  dslash(ltmp, u_test, chi3, (-1), 0);
-  applyTwist<>(chi2, Mu, alpha, (-1), 0);
-  chi3[rb[0]] = chi2 - beta * ltmp;
+  dslash(chi3, gauge.u_aniso, chi2, (-1), other_cb);
+  applyInvTwist<>(chi3, Mu, MuInv, (-1), other_cb);
+  dslash(ltmp, gauge.u_aniso, chi3, (-1), source_target_cb);
+  applyTwist<>(chi2, Mu, alpha, (-1), source_target_cb);
+  chi3[rb[source_target_cb]] = chi2 - beta * ltmp;
 
   // 3. Assert difference & GFLOP/s
   // ===================================
-  Phi diff = chi3 - psi;
-  Double true_norm = sqrt(norm2(diff, rb[0]) / norm2(psi, rb[0]));
+  Phi diff = chi3 - hs_source.qdp();
+  Double true_norm = sqrt(norm2(diff, rb[source_target_cb]) /
+                          norm2(hs_source.qdp(), rb[source_target_cb]));
   QDPIO::cout << "True norm of residuum is: " << true_norm << endl;
 
   unsigned long num_cb_sites = Layout::vol() / 2;
@@ -589,12 +556,8 @@ void testTWMDslashFull::testTWMCG(const U &u, int t_bc)
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
   assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
-  geom.free(packed_gauge_cb0);
-  geom.free(packed_gauge_cb1);
-  geom.free(psi_even);
-  geom.free(psi_odd);
-  geom.free(chi_even);
-  geom.free(chi_odd);
+  expect_near(chi3, hs_source.qdp(), 1e-6, geom, source_target_cb, "CG");
+
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
@@ -704,7 +667,8 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
            site_flops,
            mv_apps,
            isign,
-           verbose);
+           verbose,
+           0);
     double end = omp_get_wtime();
     qdp_unpack_cb_spinor<>(chi_s[0], chi, geom, 0);
 
