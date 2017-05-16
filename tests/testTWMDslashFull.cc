@@ -905,6 +905,48 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
   geom_outer.free(chi_odd);
 }
 
+template <typename QdpGauge, QdpSpinor>
+void qdp_achimbdpsi(QdpSpinor &out,
+                    QdpSpinor const &chi,
+                    QdpSpinor const &psi,
+                    QDP::multi1d<QdpGauge> const &u_aniso,
+                    double const Mu,
+                    double const MuInv,
+                    double const alpha,
+                    double const beta,
+                    int const isign,
+                    int const target_cb)
+{
+    int const other_cb = 1 - target_cb;
+
+    dslash(D_A_inv_D_psi, u_aniso, psi, isign, target_cb);
+    QdpSpinor A_chi = chi;
+    applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
+    out[rb[target_cb]] = A_chi - beta * D_A_inv_D_psi;
+}
+
+template <typename QdpGauge, QdpSpinor>
+void qdp_apply_operator(QdpSpinor &out,
+                        QdpSpinor const &chi,
+                        QdpSpinor const &psi,
+                        QDP::multi1d<QdpGauge> const &u_aniso,
+                        double const Mu,
+                        double const MuInv,
+                        double const alpha,
+                        double const beta,
+                        int const isign,
+                        int const target_cb)
+{
+    int const other_cb = 1 - target_cb;
+
+    Phi A_inv_D_psi = zero;
+    dslash(A_inv_D_psi, u_aniso, psi, isign, other_cb);
+    applyInvTwist<>(A_inv_D_psi, Mu, MuInv, isign, other_cb);
+
+    qdp_achimbdpsi(
+        out, chi, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
+}
+
 template <typename QDPSpinor>
 void testTWMDslashFull::applyTwist(
     QDPSpinor &psi, double Mu, double Alpha, int isign, int target_cb)
