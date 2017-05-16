@@ -153,12 +153,40 @@ class testTWMDslashFull : public TestFixture
             typename Phi>
   void testTWMRichardson(const U &u, int t_bc);
 
+  // FIXME There is no need for those functions to be members. It is
+  // convenient, but passing the Geometry object into them makes much more
+  // sense.
+
   template <typename QDPSpinor>
   void applyTwist(QDPSpinor &psi, double Mu, double Alpha, int isign, int target_cb);
 
   template <typename QDPSpinor>
   void
   applyInvTwist(QDPSpinor &psi, double Mu, double MuInv, int isign, int target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
+  void qdp_apply_operator(QdpSpinor &out,
+                          QdpSpinor const &chi,
+                          QdpSpinor const &psi,
+                          QDP::multi1d<QdpGauge> const &u_aniso,
+                          double const Mu,
+                          double const MuInv,
+                          double const alpha,
+                          double const beta,
+                          int const isign,
+                          int const target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
+  void qdp_achimbdpsi(QdpSpinor &out,
+                      QdpSpinor const &chi,
+                      QdpSpinor const &psi,
+                      QDP::multi1d<QdpGauge> const &u_aniso,
+                      double const Mu,
+                      double const MuInv,
+                      double const alpha,
+                      double const beta,
+                      int const isign,
+                      int const target_cb);
 };
 
 #endif
