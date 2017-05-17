@@ -39,7 +39,6 @@ class TMDslash
                             const FourSpinorBlock *psi,
                             const FourSpinorBlock *chi,
                             const SU3MatrixBlock *u,
-                            //                                 double mu,
                             double alpha,
                             double beta,
                             int isign,

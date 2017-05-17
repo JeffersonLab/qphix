@@ -56,9 +56,15 @@ class EvenOddTMWilsonOperator
                   int target_cb = 1) const override
   {
     int source_cb = 1 - target_cb;
-    D->dslash(tmp, in, u[source_cb], isign, 1);
-    D->dslashAChiMinusBDPsi(
-        res, tmp, in, u[target_cb], mass_factor_alpha, mass_factor_beta, isign, 0);
+    D->dslash(tmp, in, u[source_cb], isign, source_cb);
+    D->dslashAChiMinusBDPsi(res,
+                            tmp,
+                            in,
+                            u[target_cb],
+                            mass_factor_alpha,
+                            mass_factor_beta,
+                            isign,
+                            target_cb);
   }
 
  private:

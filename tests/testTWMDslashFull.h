@@ -44,51 +44,51 @@ class testTWMDslashFull : public TestFixture
   Seed rng_seed;
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMDslashWrapper(const U &u)
+  void testTWMDslashWrapper()
   {
     for (int t_bc = +1; t_bc >= -1; t_bc -= 2) {
       if (compress12) {
-        testTWMDslash<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMDslash<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMDslash<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMDslash<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMDslashAChiMBDPsiWrapper(const U &u)
+  void testTWMDslashAChiMBDPsiWrapper()
   {
     for (int t_bc = 1; t_bc >= -1; t_bc -= 2) {
       if (compress12) {
-        testTWMDslashAChiMBDPsi<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMDslashAChiMBDPsi<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMDslashAChiMBDPsi<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMDslashAChiMBDPsi<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
 
 #if 1
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMMWrapper(const U &u)
+  void testTWMMWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
       if (compress12) {
-        testTWMM<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMM<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMM<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMM<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
 #endif
 
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMCGWrapper(const U &u)
+  void testTWMCGWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
       if (compress12) {
-        testTWMCG<T, V, S, true, U, Phi>(u, t_bc);
+        testTWMCG<T, V, S, true, U, Phi>(t_bc);
       } else {
-        testTWMCG<T, V, S, false, U, Phi>(u, t_bc);
+        testTWMCG<T, V, S, false, U, Phi>(t_bc);
       }
     }
   }
@@ -128,16 +128,16 @@ class testTWMDslashFull : public TestFixture
   }
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMDslash(const U &u, int t_bc);
+  void testTWMDslash(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMDslashAChiMBDPsi(const U &u, int t_bc);
+  void testTWMDslashAChiMBDPsi(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMM(const U &u, int t_bc);
+  void testTWMM(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMCG(const U &u, int t_bc);
+  void testTWMCG(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
   void testTWMBiCGStab(const U &u, int t_bc);
@@ -153,12 +153,48 @@ class testTWMDslashFull : public TestFixture
             typename Phi>
   void testTWMRichardson(const U &u, int t_bc);
 
+  // FIXME There is no need for those functions to be members. It is
+  // convenient, but passing the Geometry object into them makes much more
+  // sense.
+
   template <typename QDPSpinor>
   void applyTwist(QDPSpinor &psi, double Mu, double Alpha, int isign, int target_cb);
 
   template <typename QDPSpinor>
   void
   applyInvTwist(QDPSpinor &psi, double Mu, double MuInv, int isign, int target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
+  void qdp_dslash(QdpSpinor &out,
+                  QdpSpinor const &in,
+                  QDP::multi1d<QdpGauge> const &u_aniso,
+                  double const Mu,
+                  double const MuInv,
+                  int const isign,
+                  int const target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
+  void qdp_apply_operator(QdpSpinor &out,
+                          QdpSpinor const &in,
+                          QDP::multi1d<QdpGauge> const &u_aniso,
+                          double const Mu,
+                          double const MuInv,
+                          double const alpha,
+                          double const beta,
+                          int const isign,
+                          int const target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
+  void qdp_achimbdpsi(QdpSpinor &out,
+                      QdpSpinor const &chi,
+                      QdpSpinor const &psi,
+                      QDP::multi1d<QdpGauge> const &u_aniso,
+                      double const Mu,
+                      double const MuInv,
+                      double const alpha,
+                      double const beta,
+                      int const isign,
+                      int const target_cb);
 };
 
 #endif

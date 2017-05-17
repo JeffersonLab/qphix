@@ -190,13 +190,30 @@ int main(int argc, char **argv)
                                      4),
                   "testDslashFull_S4\n");
 
-// Disabling these for now -- to speed up compile times.
-// tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user,
-// Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 8),
-// "testDslashFull_S8\n" );
-// tests.addTest(new testDslashFull(By_user, Bz_user, NCores_user, Sy_user,
-// Sz_user, PadXY_user, PadXYZ_user, MinCt_user, compress12, prec_user, 16),
-// "testDslashFull_S16\n" );
+    tests.addTest(new testDslashFull(By_user,
+                                     Bz_user,
+                                     NCores_user,
+                                     Sy_user,
+                                     Sz_user,
+                                     PadXY_user,
+                                     PadXYZ_user,
+                                     MinCt_user,
+                                     compress12,
+                                     prec_user,
+                                     8),
+                  "testDslashFull_S8\n");
+    tests.addTest(new testDslashFull(By_user,
+                                     Bz_user,
+                                     NCores_user,
+                                     Sy_user,
+                                     Sz_user,
+                                     PadXY_user,
+                                     PadXYZ_user,
+                                     MinCt_user,
+                                     compress12,
+                                     prec_user,
+                                     16),
+                  "testDslashFull_S16\n");
 
 #endif
   }

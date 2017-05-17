@@ -1,6 +1,8 @@
 #ifndef QPHIX_TEST_CLOVER_TERM_H
 #define QPHIX_TEST_CLOVER_TERM_H
 
+#include <type_traits>
+
 #include "qphix/diagnostics.h"
 
 #include "qphix/qphix_config.h"
@@ -24,7 +26,10 @@ QPHIX_MESSAGE("using QDP Clover Term")
 namespace QPhiX
 {
 template <typename Phi, typename U>
-using CloverTermT = QDPCloverTermT<Phi, U>;
+using CloverTermT =
+    typename std::enable_if<std::is_same<U, QDP::LatticeColorMatrixF>::value ||
+                                std::is_same<U, QDP::LatticeColorMatrixD>::value,
+                            QDPCloverTermT<Phi, U>>::type;
 };
 
 #endif // if else defined QDP-JIT

@@ -492,137 +492,155 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   }
 #endif
 
-#if 0
-  double rsd_target=rsdTarget<FT>::value;
-  int max_iters=100;
+#if 1
+  double rsd_target = rsdTarget<FT>::value;
+  int max_iters = 100;
   int niters;
   double rsd_final;
-  int len = (geom.getPxyz()*geom.Nt()*sizeof(Spinor))/sizeof(FT); 
+  int len = (geom.getPxyz() * geom.Nt() * sizeof(Spinor)) / sizeof(FT);
   FT *c_s0 = (FT *)chi_s[0];
 
   {
     masterPrintf("Creating Solver\n");
-    InvCG<FT,V,S, compress> solver(M, max_iters);
-    
+    InvCG<FT, V, S, compress> solver(M, max_iters);
+
     masterPrintf("Tuning Solver\n");
-  
-    for(int solve = 0; solve < 1; solve++ ) {
+
+    for (int solve = 0; solve < 1; solve++) {
       masterPrintf("Starting solver\n");
-      unsigned long site_flops=0;
-      unsigned long mv_apps=0;
-      
+      unsigned long site_flops = 0;
+      unsigned long mv_apps = 0;
+
       FT *psi_0 = (FT *)psi_s[0];
 #if defined(__INTEL_COMPILER)
 #pragma simd
 #endif
 #pragma omp parallel for
-      for(int i=0; i < len; i++) { 
-	c_s0[i] = rep<FT,double>(0);
-      psi_0[i]= rep<FT,double>(0);
+      for (int i = 0; i < len; i++) {
+        c_s0[i] = rep<FT, double>(0);
+        psi_0[i] = rep<FT, double>(0);
       }
 
-#pragma omp parallel for collapse(4)    
-      for(int t=0; t < lT; t++) {
-	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < lY; y++) {
-	    for(int s=0; s < nvecs; s++) { 
-	      for(int spin=0; spin < 4; spin++) { 
-		for(int col=0; col < 3; col++)  {
-		  for(int x=0; x < S; x++) { 
-		    
-		    int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-		    int x_coord = s*S + x;
-		    double d1 = drand48()-0.5;
-		    double d2 = drand48()-0.5;
-		    double d3 = drand48()-0.5;
-		    double d4 = drand48()-0.5;
-		    
-		    psi_s[0][ind][col][spin][0][x] = rep<FT,double>(d1);
-		    psi_s[0][ind][col][spin][1][x] = rep<FT,double>(d2);
-		    psi_s[1][ind][col][spin][0][x] = rep<FT,double>(d3);
-		    psi_s[1][ind][col][spin][1][x] = rep<FT,double>(d4);
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+#pragma omp parallel for collapse(4)
+      for (int t = 0; t < lT; t++) {
+        for (int z = 0; z < lZ; z++) {
+          for (int y = 0; y < lY; y++) {
+            for (int s = 0; s < nvecs; s++) {
+              for (int spin = 0; spin < 4; spin++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int x = 0; x < S; x++) {
+
+                    int ind = t * Pxyz + z * Pxy + y * nvecs +
+                              s; //((t*Nz+z)*Ny+y)*nvecs+s;
+                    int x_coord = s * S + x;
+                    double d1 = drand48() - 0.5;
+                    double d2 = drand48() - 0.5;
+                    double d3 = drand48() - 0.5;
+                    double d4 = drand48() - 0.5;
+
+                    psi_s[0][ind][col][spin][0][x] = rep<FT, double>(d1);
+                    psi_s[0][ind][col][spin][1][x] = rep<FT, double>(d2);
+                    psi_s[1][ind][col][spin][0][x] = rep<FT, double>(d3);
+                    psi_s[1][ind][col][spin][1][x] = rep<FT, double>(d4);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-      
+
       start = omp_get_wtime();
-      solver(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,1,verbose);
+      solver(chi_s[0],
+             psi_s[0],
+             rsd_target,
+             niters,
+             rsd_final,
+             site_flops,
+             mv_apps,
+             1,
+             verbose);
       end = omp_get_wtime();
-    
-      
-      unsigned long num_cb_sites=X1h*Ny*Nz*Nt;
-      unsigned long total_flops = (site_flops + (72+2*(1320+72/*twist*/))*mv_apps)*num_cb_sites;
-      masterPrintf("Solver Time=%g(s)\n", (end-start));
-      masterPrintf("CG GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
-    
+
+      unsigned long num_cb_sites = X1h * Ny * Nz * Nt;
+      unsigned long total_flops =
+          (site_flops + (72 + 2 * (1320 + 72 /*twist*/)) * mv_apps) * num_cb_sites;
+      masterPrintf("Solver Time=%g(s)\n", (end - start));
+      masterPrintf("CG GFLOPS=%g\n", 1.0e-9 * (double)(total_flops) / (end - start));
     }
   } // Solver
 #endif
 
-#if 0
+#if 1
   {
     masterPrintf("Creating BiCGStab Solver\n");
-    InvBiCGStab<FT,V,S,compress> solver2(M, max_iters,1);
+    InvBiCGStab<FT, V, S, compress> solver2(M, max_iters);
     masterPrintf("Tuning BiCGStab Solver\n");
-    
-    for(int solve =0; solve < 5; solve++) { 
+
+    for (int solve = 0; solve < 5; solve++) {
       unsigned long site_flops;
       unsigned long mv_apps;
-      
+
       FT *psi_0 = (FT *)psi_s[0];
 #if defined(__INTEL_COMPILER)
 #pragma simd
 #endif
 #pragma omp parallel for
-      for(int i=0; i < len; i++) { 
-	c_s0[i] = rep<FT,double>(0);
-	psi_0[i]= rep<FT,double>(0);
+      for (int i = 0; i < len; i++) {
+        c_s0[i] = rep<FT, double>(0);
+        psi_0[i] = rep<FT, double>(0);
       }
 
-#pragma omp parallel for collapse(4)    
-      for(int t=0; t < lT; t++) {
-	for(int z=0; z < lZ; z++) {
-	  for(int y=0; y < lY; y++) {
-	    for(int s=0; s < nvecs; s++) { 
-	      for(int spin=0; spin < 4; spin++) { 
-		for(int col=0; col < 3; col++)  {
-		  for(int x=0; x < S; x++) { 
-		    
-		    int ind = t*Pxyz+z*Pxy+y*nvecs+s; //((t*Nz+z)*Ny+y)*nvecs+s;
-		    int x_coord = s*S + x;
-		    
-		    double d1 = drand48()-0.5;
-		    double d2 = drand48()-0.5;
-		    double d3 = drand48()-0.5;
-		    double d4 = drand48()-0.5;
-		  
-		    psi_s[0][ind][col][spin][0][x] = rep<FT,double>(d1);
-		    psi_s[0][ind][col][spin][1][x] = rep<FT,double>(d2);
-		    psi_s[1][ind][col][spin][0][x] = rep<FT,double>(d3);
-		    psi_s[1][ind][col][spin][1][x] = rep<FT,double>(d4);
-		    
-		  }
-		}
-	      }
-	    }
-	  }
-	}
+#pragma omp parallel for collapse(4)
+      for (int t = 0; t < lT; t++) {
+        for (int z = 0; z < lZ; z++) {
+          for (int y = 0; y < lY; y++) {
+            for (int s = 0; s < nvecs; s++) {
+              for (int spin = 0; spin < 4; spin++) {
+                for (int col = 0; col < 3; col++) {
+                  for (int x = 0; x < S; x++) {
+
+                    int ind = t * Pxyz + z * Pxy + y * nvecs +
+                              s; //((t*Nz+z)*Ny+y)*nvecs+s;
+                    int x_coord = s * S + x;
+
+                    double d1 = drand48() - 0.5;
+                    double d2 = drand48() - 0.5;
+                    double d3 = drand48() - 0.5;
+                    double d4 = drand48() - 0.5;
+
+                    psi_s[0][ind][col][spin][0][x] = rep<FT, double>(d1);
+                    psi_s[0][ind][col][spin][1][x] = rep<FT, double>(d2);
+                    psi_s[1][ind][col][spin][0][x] = rep<FT, double>(d3);
+                    psi_s[1][ind][col][spin][1][x] = rep<FT, double>(d4);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    
+
       start = omp_get_wtime();
-      solver2(chi_s[0], psi_s[0], rsd_target, niters, rsd_final, site_flops, mv_apps,verbose);
+      solver2(chi_s[0],
+              psi_s[0],
+              rsd_target,
+              niters,
+              rsd_final,
+              site_flops,
+              mv_apps,
+              1,
+              verbose,
+              1);
       end = omp_get_wtime();
-      
-      
-      unsigned long num_cb_sites=X1h*Ny*Nz*Nt;
-      unsigned long total_flops = (site_flops + (72+2*(1320+72/*twist*/))*mv_apps)*num_cb_sites;
-      
-      masterPrintf("Solver Time=%g(s)\n", (end-start));
-      masterPrintf("BICGSTAB GFLOPS=%g\n", 1.0e-9*(double)(total_flops)/(end -start));
+
+      unsigned long num_cb_sites = X1h * Ny * Nz * Nt;
+      unsigned long total_flops =
+          (site_flops + (72 + 2 * (1320 + 72 /*twist*/)) * mv_apps) * num_cb_sites;
+
+      masterPrintf("Solver Time=%g(s)\n", (end - start));
+      masterPrintf("BICGSTAB GFLOPS=%g\n",
+                   1.0e-9 * (double)(total_flops) / (end - start));
     }
   }
 #endif
