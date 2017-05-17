@@ -12,7 +12,7 @@ template <>
 const Double tolerance<float>::small = Double(1.0e-6);
 
 template <>
-const Double tolerance<double>::small = Double(1.0e-13);
+const Double tolerance<double>::small = Double(1.0e-7);
 
 template <typename T>
 struct rsdTarget {
