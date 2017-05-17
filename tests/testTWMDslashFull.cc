@@ -94,6 +94,7 @@ void testTWMDslashFull::run(void)
       u_in[mu] = u[mu];
     }
 
+#if defined(QPHIX_SCALAR_SOURCE)
     if (soalen == 1) {
       QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 4" << endl;
       testTWMDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>();
@@ -102,6 +103,7 @@ void testTWMDslashFull::run(void)
       testTWMCGWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 1, MUF, PhiF>(u_in);
     }
+#endif
 
     if (soalen == 4) {
       QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 4" << endl;
