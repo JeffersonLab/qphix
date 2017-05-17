@@ -277,8 +277,13 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
 
       // 2. Apply QDP++ Dslash (Plain Wilson Dslash + Twisted Mass)
       hs_qdp1.zero();
-      dslash(hs_qdp1.qdp(), gauge.get_u_aniso(), hs_source.qdp(), isign, target_cb);
-      applyInvTwist<>(hs_qdp1.qdp(), Mu, MuInv, isign, target_cb);
+      qdp_dslash(hs_qdp1.qdp(),
+                 hs_source.qdp(),
+                 gauge.u_aniso,
+                 Mu,
+                 MuInv,
+                 isign,
+                 target_cb);
 
       expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "Dslash");
     } // cb
@@ -350,14 +355,18 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
       hs_qphix1.unpack();
 
       // 2. Apply QDP++ Dslash
-      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source2.qdp(), isign, target_cb);
-      Phi source_copy = hs_source1.qdp();
-      applyTwist<>(source_copy, Mu, alpha, isign, target_cb);
+      qdp_achimbdpsi(hs_qdp1.qdp(),
+                     hs_source1.qdp(),
+                     hs_source2.qdp(),
+                     gauge.u_aniso,
+                     Mu,
+                     MuInv,
+                     alpha,
+                     beta,
+                     isign,
+                     target_cb);
 
-      hs_qdp2.zero();
-      hs_qdp2.qdp()[rb[target_cb]] = source_copy - beta * hs_qdp1.qdp();
-
-      expect_near(hs_qphix1, hs_qdp2, 1e-6, geom, target_cb, "A chi - b D psi");
+      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "A chi - b D psi");
     } // cb
   } // isign
 }
@@ -412,7 +421,7 @@ void testTWMDslashFull::testTWMM(int t_bc)
   for (auto isign : {1, -1}) {
     for (int target_cb : {1, 0}) {
       int source_cb = 1 - target_cb;
-      QDPIO::cout << "Target CB = " << target_cb << endl;
+      QDPIO::cout << "Target CB = " << target_cb << ", isign = " << isign << endl;
 
       // QPhiX version
       hs_qphix1.zero();
@@ -420,23 +429,18 @@ void testTWMDslashFull::testTWMM(int t_bc)
       hs_qphix1.unpack();
 
       // QDP++ version:
-      // (a) hs_qdp2 := D A^{-1} D hs_source
-      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, source_cb);
-      applyInvTwist<>(hs_qdp1.qdp(), Mu, MuInv, isign, source_cb);
-      dslash(hs_qdp2.qdp(), gauge.u_aniso, hs_qdp1.qdp(), isign, target_cb);
-
-      // (b) tmp := A hs_source
-      Phi tmp = hs_source.qdp();
-      expect_near(
-          hs_source.qdp(), tmp, 1e-6, geom, target_cb, "QDP Spinor copy-ctor");
-      applyTwist<>(tmp, Mu, alpha, isign, target_cb);
-
-      // (c) result := A hs_source - beta D A^{-1} D hs_source
-      Phi qdp_result = zero;
-      qdp_result[rb[target_cb]] = tmp - beta * hs_qdp2.qdp();
+      qdp_apply_operator(hs_qdp1.qdp(),
+                         hs_source.qdp(),
+                         gauge.u_aniso,
+                         Mu,
+                         MuInv,
+                         alpha,
+                         beta,
+                         isign,
+                         target_cb);
 
       expect_near(
-          hs_qphix1.qdp(), qdp_result, 1e-6, geom, target_cb, "TM Fermion Matrix");
+          hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
@@ -527,25 +531,14 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   // 2. Multiply back with QDP + TM term
   // ===================================
   // chi2 = M chi
-  Phi chi2 = zero;
-  Phi ltmp = zero;
-  dslash(chi2, gauge.u_aniso, hs_qphix1.qdp(), 1, other_cb);
-  applyInvTwist<>(chi2, Mu, MuInv, 1, other_cb);
-  dslash(ltmp, gauge.u_aniso, chi2, 1, source_target_cb);
-  applyTwist<>(hs_qphix1.qdp(), Mu, alpha, 1, source_target_cb);
-  chi2[rb[source_target_cb]] = hs_qphix1.qdp() - beta * ltmp;
+  qdp_apply_operator(hs_qdp1.qdp(), hs_qphix1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, 1, source_target_cb);
 
   // chi3 = M^\dagger chi2
-  Phi chi3 = zero;
-  dslash(chi3, gauge.u_aniso, chi2, (-1), other_cb);
-  applyInvTwist<>(chi3, Mu, MuInv, (-1), other_cb);
-  dslash(ltmp, gauge.u_aniso, chi3, (-1), source_target_cb);
-  applyTwist<>(chi2, Mu, alpha, (-1), source_target_cb);
-  chi3[rb[source_target_cb]] = chi2 - beta * ltmp;
+  qdp_apply_operator(hs_qdp2.qdp(), hs_qdp1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, -1, source_target_cb);
 
   // 3. Assert difference & GFLOP/s
   // ===================================
-  Phi diff = chi3 - hs_source.qdp();
+  Phi diff = hs_qdp2.qdp() - hs_source.qdp();
   Double true_norm = sqrt(norm2(diff, rb[source_target_cb]) /
                           norm2(hs_source.qdp(), rb[source_target_cb]));
   QDPIO::cout << "True norm of residuum is: " << true_norm << endl;
@@ -556,7 +549,7 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
   assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
-  expect_near(chi3, hs_source.qdp(), 1e-6, geom, source_target_cb, "CG");
+  expect_near(hs_qdp2, hs_source, 1e-6, geom, source_target_cb, "CG");
 
 }
 
@@ -996,6 +989,19 @@ void testTWMDslashFull::applyInvTwist(
 }
 
 template <typename QdpGauge, typename QdpSpinor>
+void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
+                                   QdpSpinor const &in,
+                                   QDP::multi1d<QdpGauge> const &u_aniso,
+                                   double const Mu,
+                                   double const MuInv,
+                                   int const isign,
+                                   int const target_cb)
+{
+    dslash(out, u_aniso, in, isign, target_cb);
+    applyInvTwist<>(out, Mu, MuInv, isign, target_cb);
+}
+
+template <typename QdpGauge, typename QdpSpinor>
 void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
                                        QdpSpinor const &chi,
                                        QdpSpinor const &psi,
@@ -1009,17 +1015,18 @@ void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
 {
     int const other_cb = 1 - target_cb;
 
-    QdpSpinor D_A_inv_D_psi = zero;
-    dslash(D_A_inv_D_psi, u_aniso, psi, isign, target_cb);
+    QdpSpinor D_psi = zero;
+    dslash(D_psi, u_aniso, psi, isign, target_cb);
+
     QdpSpinor A_chi = chi;
     applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
-    out[rb[target_cb]] = A_chi - beta * D_A_inv_D_psi;
+
+    out[rb[target_cb]] = A_chi - beta * D_psi;
 }
 
 template <typename QdpGauge, typename QdpSpinor>
 void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
-                                           QdpSpinor const &chi,
-                                           QdpSpinor const &psi,
+                                           QdpSpinor const &in,
                                            QDP::multi1d<QdpGauge> const &u_aniso,
                                            double const Mu,
                                            double const MuInv,
@@ -1030,10 +1037,10 @@ void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
 {
     int const other_cb = 1 - target_cb;
 
+
     QdpSpinor A_inv_D_psi = zero;
-    dslash(A_inv_D_psi, u_aniso, psi, isign, other_cb);
-    applyInvTwist<>(A_inv_D_psi, Mu, MuInv, isign, other_cb);
+    qdp_dslash(A_inv_D_psi, in, u_aniso, Mu, MuInv, isign, other_cb);
 
     qdp_achimbdpsi(
-        out, chi, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
+        out, in, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
 }

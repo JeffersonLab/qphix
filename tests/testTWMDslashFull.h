@@ -165,9 +165,17 @@ class testTWMDslashFull : public TestFixture
   applyInvTwist(QDPSpinor &psi, double Mu, double MuInv, int isign, int target_cb);
 
   template <typename QdpGauge, typename QdpSpinor>
+  void qdp_dslash(QdpSpinor &out,
+                  QdpSpinor const &in,
+                  QDP::multi1d<QdpGauge> const &u_aniso,
+                  double const Mu,
+                  double const MuInv,
+                  int const isign,
+                  int const target_cb);
+
+  template <typename QdpGauge, typename QdpSpinor>
   void qdp_apply_operator(QdpSpinor &out,
-                          QdpSpinor const &chi,
-                          QdpSpinor const &psi,
+                          QdpSpinor const &in,
                           QDP::multi1d<QdpGauge> const &u_aniso,
                           double const Mu,
                           double const MuInv,
