@@ -56,7 +56,6 @@ class Dslash
 
   int log2veclen;
   int log2soalen;
-  void init();
 
   const int n_threads_per_core;
 

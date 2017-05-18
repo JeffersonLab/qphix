@@ -12,11 +12,18 @@ namespace QPhiX
 
 #include "qphix/dslash_generated.h"
 
-/*! \brief initialization function
-*/
-
 template <typename FT, int veclen, int soalen, bool compress12>
-void Dslash<FT, veclen, soalen, compress12>::init()
+Dslash<FT, veclen, soalen, compress12>::Dslash(
+    Geometry<FT, veclen, soalen, compress12> *geom_,
+    double t_boundary_,
+    double aniso_coeff_S_,
+    double aniso_coeff_T_)
+    : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
+      By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
+      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
+      PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
+      n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
+      aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
 {
   // OK we need to set up log of veclen
   log2veclen = 0;
@@ -284,22 +291,6 @@ void Dslash<FT, veclen, soalen, compress12>::init()
   if (compress12) {
     masterPrintf("WILL Use 12 compression\n");
   }
-}
-
-template <typename FT, int veclen, int soalen, bool compress12>
-Dslash<FT, veclen, soalen, compress12>::Dslash(
-    Geometry<FT, veclen, soalen, compress12> *geom_,
-    double t_boundary_,
-    double aniso_coeff_S_,
-    double aniso_coeff_T_)
-    : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
-      By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
-      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
-      PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
-      n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
-      aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
-{
-  init();
 }
 
 // Destructor: Free tables etc
