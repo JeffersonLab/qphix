@@ -54,7 +54,7 @@ cc_name=gcc-6
 cxx_name=g++-6
 color_flags=""
 openmp_flags="-fopenmp"
-base_flags="-O2 -finline-limit=50000 -fmax-errors=1 $color_flags"
+base_flags="-O2 -finline-limit=50000 $color_flags"
 cxx11_flags="--std=c++11"
 disable_warnings_flags="-Wno-all -Wno-pedantic"
 qphix_flags="-Drestrict=__restrict__"
