@@ -158,7 +158,7 @@ void testTWMDslashFull::run(void)
       QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=4 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
+      testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 4, MUF, PhiF>(u_in);
     }
 
