@@ -202,6 +202,13 @@ class Geometry
     clover_bytes = ((Pxyz * Nt_ * S) / V) * sizeof(CloverBlock);
     full_clover_bytes = ((Pxyz * Nt_ * S) / V) * sizeof(FullCloverBlock);
 
+    masterPrintf(
+        "The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n");
+    masterPrintf("  Spinor:     %10ld\n", spinor_bytes / 1024 / 1024);
+    masterPrintf("  Gauge:      %10ld\n", gauge_bytes / 1024 / 1024);
+    masterPrintf("  Clover:     %10ld\n", clover_bytes / 1024 / 1024);
+    masterPrintf("  FullClover: %10ld\n", full_clover_bytes / 1024 / 1024);
+
     // This works out the phase breakdown
     int ly = Ny_ / By;
     int lz = Nz_ / Bz;
