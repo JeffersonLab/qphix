@@ -351,7 +351,7 @@ export OMP_NUM_THREADS=2
 pushd $build/qphix/tests
 
 l=16
-args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
+args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f"
 
 tests=(
 t_clov_dslash

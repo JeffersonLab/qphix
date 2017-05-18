@@ -146,7 +146,6 @@ void testDslashFull::run(void)
 #endif
   }
 
-#if 1 // Save build time
   if (precision == FLOAT_PREC) {
 
     QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
@@ -173,17 +172,13 @@ void testDslashFull::run(void)
     defined(QPHIX_SSE_SOURCE)
         QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
         testDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-
-#if 1
         testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
         testMWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
         testCGWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
         testBiCGStabWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
 #endif
-#endif
       }
 
-#if 1
       if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
@@ -195,9 +190,7 @@ void testDslashFull::run(void)
         testBiCGStabWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
 #endif
       }
-#endif
 
-#if 1
       if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
         QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
@@ -211,13 +204,9 @@ void testDslashFull::run(void)
         return;
 #endif
       }
-#endif
     }
   }
 
-#endif // If 0
-
-#if 1
   if (precision == HALF_PREC) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_AVX512_SOURCE)
@@ -261,9 +250,7 @@ void testDslashFull::run(void)
                 << endl;
 #endif
   }
-#endif // If 0
 
-#if 1
   if (precision == DOUBLE_PREC) {
     QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);
@@ -272,7 +259,6 @@ void testDslashFull::run(void)
     }
 
     {
-
       if (soalen == 1) {
 #if defined(QPHIX_SCALAR_SOURCE)
         QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=1 " << endl;
@@ -281,7 +267,6 @@ void testDslashFull::run(void)
         testMWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
         testCGWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
         testBiCGStabWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-
 #endif
       }
 
@@ -293,21 +278,12 @@ void testDslashFull::run(void)
         testMWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
         testCGWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
         testBiCGStabWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-
 #endif
       }
 
       if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
-        testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testMWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testCGWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-
-#elif defined(QPHIX_QPX_SOURCE)
         QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
         testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
         testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
@@ -330,9 +306,7 @@ void testDslashFull::run(void)
       }
     }
   }
-#endif // If 0
 
-#if 1
   {
     multi1d<LatticeColorMatrixD3> u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
@@ -355,7 +329,7 @@ void testDslashFull::run(void)
         masterPrintf("I havent set up that mixed precision solver combination\n");
       }
     }
-#else
+#elif defined(QPHIX_AVX_SOURCE)
     // AVX: Double SOALEN = 4
     if (Nx % 16 == 0) {
       testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
@@ -372,7 +346,6 @@ void testDslashFull::run(void)
     }
 #endif
   }
-#endif
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
@@ -381,10 +354,8 @@ void testDslashFull::testDslash(const U &u, int t_bc)
   QDPIO::cout << "RNG seeed = " << rng_seed << std::endl;
   RNG::setrn(rng_seed);
 
-#if 1
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
   typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
-#endif
 
   QDPIO::cout << "In testDslash" << endl;
   double aniso_fac_s = ((double)0.35);
@@ -398,7 +369,6 @@ void testDslashFull::testDslash(const U &u, int t_bc)
   QDPIO::cout << "Filling psi with noise: " << endl;
   gaussian(psi);
 
-#if 1
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                    By,
                                    Bz,
@@ -436,7 +406,6 @@ void testDslashFull::testDslash(const U &u, int t_bc)
   qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
 
   QDPIO::cout << "done" << endl;
-#endif
 
   U u_test(Nd);
   for (int mu = 0; mu < Nd; mu++) {
