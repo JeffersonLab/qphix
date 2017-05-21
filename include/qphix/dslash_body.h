@@ -293,7 +293,6 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   }
 }
 
-// Destructor: Free tables etc
 template <typename FT, int veclen, int soalen, bool compress12>
 Dslash<FT, veclen, soalen, compress12>::~Dslash()
 {
@@ -348,9 +347,6 @@ void Dslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
   DPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb);
 }
 
-// This Essentially threads over Y and Z with each thread doing a 'scanline' of X at
-// a time
-//    void DyzPlus(size_t lo, size_t hi, int tid, const void *a)
 template <typename FT, int veclen, int soalen, bool compress12>
 void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                                                  const FourSpinorBlock *psi,
@@ -359,7 +355,6 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                                                  bool is_plus,
                                                  int cb)
 {
-
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
   const int Ny = s->Ny();
@@ -657,10 +652,6 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
   } // phases
 }
 
-// _aChiMinusBDPsi versions
-// This Essentially threads over Y and Z with each thread doing a 'scanline' of X at
-// a time
-//    void DyzPlus(size_t lo, size_t hi, int tid, const void *a)
 template <typename FT, int veclen, int soalen, bool compress12>
 void Dslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
     int tid,
