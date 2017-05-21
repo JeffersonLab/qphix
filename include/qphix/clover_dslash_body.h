@@ -16,8 +16,19 @@ namespace QPhiX
 #include "qphix/dslash_generated.h"
 #include "qphix/clov_dslash_generated.h"
 
+/* Constructor */
 template <typename FT, int veclen, int soalen, bool compress12>
-void ClovDslash<FT, veclen, soalen, compress12>::init()
+ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
+    Geometry<FT, veclen, soalen, compress12> *geom_,
+    double t_boundary_,
+    double dslash_aniso_s_,
+    double dslash_aniso_t_)
+    : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
+      By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
+      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
+      PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
+      n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
+      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
 {
   // OK we need to set up log of veclen
   log2veclen = 0;
@@ -289,23 +300,6 @@ void ClovDslash<FT, veclen, soalen, compress12>::init()
   if (compress12) {
     masterPrintf("WILL Use 12 compression\n");
   }
-}
-
-/* Constructor */
-template <typename FT, int veclen, int soalen, bool compress12>
-ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
-    Geometry<FT, veclen, soalen, compress12> *geom_,
-    double t_boundary_,
-    double dslash_aniso_s_,
-    double dslash_aniso_t_)
-    : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
-      By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
-      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
-      PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
-      n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
-      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
-{
-  init();
 }
 
 // Destructor: Free tables etc

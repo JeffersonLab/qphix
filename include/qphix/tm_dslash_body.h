@@ -987,8 +987,6 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(
     bool const is_plus,
     int cb)
 {
-  int const plus_int = (is_plus ? 1 : 0);
-
   double beta_s = -aniso_coeff_S;
   double beta_t_f = -aniso_coeff_T;
   double beta_t_b = -aniso_coeff_T;
@@ -1078,8 +1076,6 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
     bool const is_plus,
     int cb)
 {
-  int const plus_int = (is_plus ? 1 : 0);
-
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
   double beta_t_b = beta * aniso_coeff_T;

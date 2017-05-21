@@ -57,7 +57,6 @@ class ClovDslash
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
  private:
-  void init();
   Geometry<FT, veclen, soalen, compress12> *s;
   Comms<FT, veclen, soalen, compress12> *comms;
 
