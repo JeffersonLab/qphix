@@ -96,61 +96,37 @@ class TMDslash
 
   TMDslash(); // Hide Free Constructor
 
-  void TMDyzPlus(int tid,
-                 const FourSpinorBlock *psi,
-                 FourSpinorBlock *res,
-                 const SU3MatrixBlock *u,
-                 int cb);
+  void TMDyz(int tid,
+             const FourSpinorBlock *psi,
+             FourSpinorBlock *res,
+             const SU3MatrixBlock *u,
+             bool const is_plus,
+             int cb);
 
-  void TMDyzMinus(int tid,
-                  const FourSpinorBlock *psi,
-                  FourSpinorBlock *res,
-                  const SU3MatrixBlock *u,
-                  int cb);
+  void TMDyzAChiMinusBDPsi(int tid,
+                           const FourSpinorBlock *psi,
+                           const FourSpinorBlock *chi,
+                           FourSpinorBlock *res,
+                           const SU3MatrixBlock *u,
+                           double alpha,
+                           double beta,
+                           bool const is_plus,
+                           int cb);
 
-  void TMDyzPlusAChiMinusBDPsi(int tid,
-                               const FourSpinorBlock *psi,
-                               const FourSpinorBlock *chi,
-                               FourSpinorBlock *res,
-                               const SU3MatrixBlock *u,
-                               double alpha,
-                               double beta,
-                               int cb);
+  void TMDPsi(const SU3MatrixBlock *u,
+              const FourSpinorBlock *psi_in,
+              FourSpinorBlock *res_out,
+              bool const is_plus,
+              int cb);
 
-  void TMDyzMinusAChiMinusBDPsi(int tid,
-                                const FourSpinorBlock *psi,
-                                const FourSpinorBlock *chi,
-                                FourSpinorBlock *res,
-                                const SU3MatrixBlock *u,
-                                double alpha,
-                                double beta,
-                                int cb);
-
-  void TMDPsiPlus(const SU3MatrixBlock *u,
-                  const FourSpinorBlock *psi_in,
-                  FourSpinorBlock *res_out,
-                  int cb);
-
-  void TMDPsiMinus(const SU3MatrixBlock *u,
-                   const FourSpinorBlock *psi_in,
-                   FourSpinorBlock *res_out,
-                   int cb);
-
-  void TMDPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                                const FourSpinorBlock *psi_in,
-                                const FourSpinorBlock *chi,
-                                FourSpinorBlock *res_out,
-                                double alpha,
-                                double beta,
-                                int cb);
-
-  void TMDPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                                 const FourSpinorBlock *psi_in,
-                                 const FourSpinorBlock *chi,
-                                 FourSpinorBlock *re_out,
-                                 double alpha,
-                                 double beta,
-                                 int cb);
+  void TMDPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                            const FourSpinorBlock *psi_in,
+                            const FourSpinorBlock *chi,
+                            FourSpinorBlock *res_out,
+                            double alpha,
+                            double beta,
+                            bool const is_plus,
+                            int cb);
 
 // packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS
