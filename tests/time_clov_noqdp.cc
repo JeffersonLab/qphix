@@ -7,6 +7,7 @@ using namespace std;
 #include "qphix/qphix_config.h"
 #include "qphix/print_utils.h"
 #include "qphix/threadbind.h"
+#include "qphix/memory_usage.h"
 
 #ifdef QPHIX_QMP_COMMS
 #include "qmp.h"
@@ -301,6 +302,10 @@ int main(int argc, char **argv)
                      do_bicgstab);
 
   test.run(nrow_in, qmp_geometry);
+
+  QPhiX::masterPrintf("Maximum resident memory size: %g MiB\n",
+                      QPhiX::get_max_resident_mib());
+
 #ifdef QPHIX_QMP_COMMS
   QMP_finalize_msg_passing();
 #endif
