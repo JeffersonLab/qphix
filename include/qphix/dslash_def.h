@@ -133,7 +133,7 @@ class Dslash
                    int cb,
                    int dir,
                    int fb,
-                   int isPlus);
+                   bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeFaceDir(int tid,
@@ -144,7 +144,7 @@ class Dslash
                        int cb,
                        int dir,
                        int fb,
-                       int isPlus);
+                       bool const is_plus);
 #endif
 
 }; // Class
