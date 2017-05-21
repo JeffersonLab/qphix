@@ -949,10 +949,10 @@ void ClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
                                                                      veclen,
                                                                      soalen,
                                                                      compress12>
-                                   : clov_dslash_achimbdpsi_plus_vec<FT,
-                                                                     veclen,
-                                                                     soalen,
-                                                                     compress12>);
+                                   : clov_dslash_achimbdpsi_minus_vec<FT,
+                                                                      veclen,
+                                                                      soalen,
+                                                                      compress12>);
 
             kernel(xyBase + X,
                    zbBase + X,
