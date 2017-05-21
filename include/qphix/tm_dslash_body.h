@@ -1016,8 +1016,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(
       {
         int tid = omp_get_thread_num();
 
-        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, plus_int);
-        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, plus_int);
+        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1051,7 +1051,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(
                           cb,
                           d,
                           0,
-                          plus_int);
+                          is_plus);
         completeTMFaceDir(tid,
                           comms->recvFromDir[2 * d + 1],
                           res_out,
@@ -1060,7 +1060,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(
                           cb,
                           d,
                           1,
-                          plus_int);
+                          is_plus);
       }
     }
   }
@@ -1106,8 +1106,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
       {
         int tid = omp_get_thread_num();
 
-        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, plus_int);
-        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, plus_int);
+        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packTMFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1141,7 +1141,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
                                   cb,
                                   d,
                                   0,
-                                  plus_int);
+                                  is_plus);
         completeFaceDirAChiMBDPsi(tid,
                                   comms->recvFromDir[2 * d + 1],
                                   res_out,
@@ -1150,7 +1150,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
                                   cb,
                                   d,
                                   1,
-                                  plus_int);
+                                  is_plus);
       }
     } // end if
   } // end for

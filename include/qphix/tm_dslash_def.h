@@ -137,7 +137,7 @@ class TMDslash
                      int cb,
                      int dir,
                      int fb,
-                     int isPlus);
+                     bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeTMFaceDir(int tid,
@@ -148,7 +148,7 @@ class TMDslash
                          int cb,
                          int dir,
                          int fb,
-                         int isPlus);
+                         bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeFaceDirAChiMBDPsi(int tid,
@@ -159,7 +159,7 @@ class TMDslash
                                  int cb,
                                  int dir,
                                  int fb,
-                                 int isPlus);
+                                 bool const is_plus);
 #endif
 }; // Class
 
