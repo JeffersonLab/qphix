@@ -1002,9 +1002,8 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 #pragma omp parallel
       {
         int tid = omp_get_thread_num();
-        int const is_plus_int = (is_plus ? 1 : 0);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus_int);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus_int);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1032,7 +1031,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
         double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
         completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, 1);
+            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
       }
     } else
       comms->recv_queue.push(d);
@@ -1051,7 +1050,6 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     bool is_plus,
     int cb)
 {
-
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
   double beta_t_b = beta * aniso_coeff_T;
@@ -1078,9 +1076,8 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
       {
         int tid = omp_get_thread_num();
 
-        int const is_plus_int = (is_plus ? 1 : 0);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus_int);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus_int);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1107,7 +1104,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
         double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
         completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, 1);
+            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
       }
     } else
       comms->recv_queue.push(d);
