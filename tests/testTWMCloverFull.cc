@@ -1,6 +1,8 @@
 #include "unittest.h"
 #include "testTWMCloverFull.h"
 
+#include <initializer_list>
+
 // Stupid compiler thing
 #undef SEEK_SET
 #undef SEEK_CUR

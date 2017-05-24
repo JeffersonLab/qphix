@@ -1,6 +1,8 @@
 #include "timeTWMClover.h"
 #include <omp.h>
 
+#include <initializer_list>
+
 #include "qphix/tm_clov_dslash_def.h"
 #include "qphix/tm_clov_dslash_body.h"
 #include "qphix/twisted_mass_clover.h"
