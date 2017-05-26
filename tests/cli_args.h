@@ -31,6 +31,8 @@ extern int Sy_user;
 extern int Sz_user;
 extern int MinCt_user;
 
-void printHelp();
+void printHelp(bool const is_timing);
+void printArgHelp(bool const is_timing);
+void printTimingCaseHelp();
 
-void processArgs(int &argc, char **&argv);
+void processArgs(int &argc, char **&argv, bool const is_timing = false);

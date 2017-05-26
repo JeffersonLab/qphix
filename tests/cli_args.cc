@@ -30,7 +30,7 @@ int Sy_user = -1;
 int Sz_user = -1;
 int MinCt_user = 1;
 
-void printArgHelp() {
+void printArgHelp(bool const is_timing) {
   masterPrintf("Lattice size:\n"
                "  -x Lx              lattice size in X [default: %i]\n"
                "  -y Ly              lattice size in Y [default: %i]\n"
@@ -55,6 +55,13 @@ void printArgHelp() {
                    ? "float"
                    : (prec_user == DOUBLE_PREC ? "double" : "half"),
                compress12 ? "given" : "not given");
+
+  if (is_timing) {
+      printTimingCaseHelp();
+  }
+}
+
+void printTimingCaseHelp() {
   masterPrintf("Timing case selection (select at least one):\n"
                "  -dslash            Dslash\n"
                "  -mmat              Even-odd linear operator\n"
@@ -63,31 +70,36 @@ void printArgHelp() {
                "\n");
 }
 
-void printHelp()
+void printHelp(bool const is_timing)
 {
-  masterPrintf("This program measures the performance of the fundamental operations "
-               "in QPhiX.\n"
-               "\n"
-               "The following options are available. If no default is listed, that "
+  if (is_timing) {
+    masterPrintf("This program measures the performance of the fundamental "
+                 "operations in QPhiX.\n\n");
+  } else {
+    masterPrintf("This program verifies the correctness of the fundamental "
+                 "operations in QPhiX by comparing them to QDP++.\n\n");
+  }
+  masterPrintf("The following options are available. If no default is listed, that "
                "option is a mandatory one.\n"
                "\n");
 
   some_user_args.printArgHelp();
-  printArgHelp();
-
-  exit(1);
+  printArgHelp(is_timing);
 }
 
-void processArgs(int &argc, char **&argv)
+void processArgs(int &argc, char **&argv, bool const is_timing)
 {
   if (argc == 1) {
-    printHelp();
+    printHelp(is_timing);
+    exit(1);
   }
 
+  /*
   masterPrintf("argc = %i\n", argc);
   for (int i = 0; i < argc; ++i) {
-      masterPrintf("argv[%02d] = %s\n", i, argv[i]);
+      masterPrintf("argv[% 2d] = %s\n", i, argv[i]);
   }
+  */
 
   // Let the class parse the arguments first. It will consume whatever it can parse.
   some_user_args.init(argc, argv);
@@ -101,10 +113,12 @@ void processArgs(int &argc, char **&argv)
   Sz_user = some_user_args.getSz();
   MinCt_user = some_user_args.getMinCt();
 
+  /*
   masterPrintf("argc = %i\n", argc);
   for (int i = 0; i < argc; ++i) {
-    masterPrintf("argv[%02d] = %s\n", i, argv[i]);
+    masterPrintf("argv[% 2d] = %s\n", i, argv[i]);
   }
+  */
 
   for (int i = 1; i < argc;) {
     std::string const arg(argv[i]);
@@ -134,18 +148,18 @@ void processArgs(int &argc, char **&argv)
       qmp_geometry[3] = atoi(argv[i + 4]);
       i += 4;
 
-    } else if (arg == "-dslash") {
+    } else if (is_timing && arg == "-dslash") {
       do_dslash = true;
       i++;
 
-    } else if (arg == "-mmat") {
+    } else if (is_timing && arg == "-mmat") {
       do_m = true;
       i++;
-    } else if (arg == "-cg") {
+    } else if (is_timing && arg == "-cg") {
       do_cg = true;
       i++;
 
-    } else if (arg == "-bicgstab") {
+    } else if (is_timing && arg == "-bicgstab") {
       do_bicgstab = true;
       i++;
     }
@@ -170,17 +184,17 @@ void processArgs(int &argc, char **&argv)
       QPhiX::masterPrintf("ERROR: The option “%s” could not be parsed. Please have "
                           "a look at the supported options below.\n\n",
                           arg.c_str());
-      printArgHelp();
+      some_user_args.printArgHelp();
+      printArgHelp(is_timing);
       exit(1);
     }
   }
 
-
-  if (!do_dslash && !do_m && !do_cg && !do_bicgstab) {
+  if (is_timing && (!do_dslash && !do_m && !do_cg && !do_bicgstab)) {
     QPhiX::masterPrintf("No timing case has been selected. Please select at least "
                         "one of them such that this program can do some actual "
                         "work.\n\n");
-    printArgHelp();
+    printTimingCaseHelp();
     exit(1);
   }
 }

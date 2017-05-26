@@ -40,14 +40,13 @@ FRAMEWORK_SRCS =  unittest.h \
 	dslashm_w.cc \
 	reunit.h \
 	invbicgstab_test.h \
-	reunit.cc
+	reunit.cc \
+	cli_args.cc
 
 t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testDslashFull.h \
 	testDslashFull.cc \
 	t_dslash.cc
-
-
 
 time_dslash_noqdp_SOURCES= \
 	time_dslash_noqdp.cc \
@@ -115,13 +114,11 @@ t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_noqdp.cc \
 	timeTWMNoQDP.h \
-	timeTWMNoQDP.cc \
-	cli_args.cc
+	timeTWMNoQDP.cc
 
 t_twm_dslash_DEPENDENCIES = build_lib
 time_twm_noqdp_DEPENDENCIES = build_lib
 endif
-
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 
@@ -145,8 +142,7 @@ t_twm_clover_SOURCES = $(FRAMEWORK_SRCS) \
 time_twm_clover_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_clover.cc \
 	timeTWMClover.h \
-	timeTWMClover.cc \
-	cli_args.cc
+	timeTWMClover.cc
 
 t_twm_clover_DEPENDENCIES = build_lib
 time_twm_clover_DEPENDENCIES = build_lib

@@ -18,7 +18,7 @@ using namespace std;
 int main(int argc, char **argv)
 {
   // Initialize UnitTest jig
-  processArgs(argc, argv);
+  processArgs(argc, argv, true);
   omp_set_num_threads(NCores_user * Sy_user * Sz_user);
 
 #ifdef QPHIX_QMP_COMMS

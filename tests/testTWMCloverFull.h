@@ -1,11 +1,9 @@
 #ifndef TEST_TWM_CLOVER_FULL
 #define TEST_TWM_CLOVER_FULL
 
-#ifndef UNITTEST_H
 #include "unittest.h"
-#endif
 
-enum Prec { FLOAT_PREC = 0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 #include <qphix/qphix_cli_args.h>
 using namespace QPhiX;
