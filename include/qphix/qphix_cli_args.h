@@ -37,9 +37,9 @@ class QPhiXCLIArgs
     }
   }
 
-  // Parse args...
-  void init(int argc, char *argv[]);
+  void init(int &argc, char **&argv);
   void printHelp() const;
+  void printArgHelp() const;
 
  private:
   bool initedP;

@@ -5,101 +5,127 @@
  *      Author: bjoo
  */
 
-#include <string>
-#include <cstdlib>
-
 #include "qphix/qphix_cli_args.h"
 #include "qphix/print_utils.h"
 
+#include <cstdlib>
 #include <iostream>
+#include <string>
+#include <vector>
 
-using namespace std;
-
-namespace QPhiX {
-
-void QPhiXCLIArgs::init(int argc, char *argv[])
+namespace QPhiX
 {
-	bool FoundBy=false;
-	bool FoundBz=false;
-	bool FoundPxy=false;
-	bool FoundPxyz=false;
-	bool FoundNCores = false;
-	bool FoundSy = false;
-	bool FoundSz = false;
-	bool FoundMinCt = false;
 
-	int i=0;
+void QPhiXCLIArgs::init(int &argc, char **&argv)
+{
+  bool FoundBy = false;
+  bool FoundBz = false;
+  bool FoundPxy = false;
+  bool FoundPxyz = false;
+  bool FoundNCores = false;
+  bool FoundSy = false;
+  bool FoundSz = false;
+  bool FoundMinCt = false;
 
-	while( i < argc)  {
+  std::vector<char *> new_argv;
 
-		if ( string(argv[i]).compare("-by") == 0 ) {
-			By=atoi(argv[i+1]);
-			i+=2;
-			FoundBy=true;
-	    }
-		else if (string(argv[i]).compare("-bz") == 0 ) {
-			Bz=atoi(argv[i+1]);
-			i+=2;
-			FoundBz=true;
-	    }
-		else if ( string(argv[i]).compare("-c") == 0 ) {
-			NCores=atoi(argv[i+1]);
-	        i+=2;
-	        FoundNCores=true;
-	    }
-	    else if ( string(argv[i]).compare("-sy") == 0 ) {
-	    	Sy=atoi(argv[i+1]);
-	    	i+=2;
-	    	FoundSy=true;
-	    }
-	    else if (string(argv[i]).compare("-sz") == 0 ) {
-	    	Sz=atoi(argv[i+1]);
-	    	i+=2;
-	    	FoundSz=true;
-	    }
-		else if ( string(argv[i]).compare("-pxy") == 0 ) {
-			Pxy=atoi(argv[i+1]);
-			i+=2;
-			FoundPxy=true;
-	    }
-	    else if (string(argv[i]).compare("-pxyz") == 0 ) {
-	    	Pxyz=atoi(argv[i+1]);
-	        i+=2;
-	        FoundPxyz=true;
-	    }
-		else if (string(argv[i]).compare("-minct") == 0 ) {
-			MinCt=atoi(argv[i+1]);
-			i+=2;
-			FoundMinCt=true;
-	    }
-		else {
-			i++;
-		}
+  for (int i = 0; i < argc;) {
+    std::string const arg(argv[i]);
 
-	} // While loop.
-	if( !FoundPxy ) { Pxy = 0; FoundPxy=true; }
-	if( !FoundPxyz) { Pxyz = 0; FoundPxyz=true;}
-	if( !FoundMinCt) { MinCt = 1; FoundMinCt=true;}
+    if (arg == "-by") {
+      By = atoi(argv[i + 1]);
+      i += 2;
+      FoundBy = true;
+    } else if (arg == "-bz") {
+      Bz = atoi(argv[i + 1]);
+      i += 2;
+      FoundBz = true;
+    } else if (arg == "-c") {
+      NCores = atoi(argv[i + 1]);
+      i += 2;
+      FoundNCores = true;
+    } else if (arg == "-sy") {
+      Sy = atoi(argv[i + 1]);
+      i += 2;
+      FoundSy = true;
+    } else if (arg == "-sz") {
+      Sz = atoi(argv[i + 1]);
+      i += 2;
+      FoundSz = true;
+    } else if (arg == "-pxy") {
+      Pxy = atoi(argv[i + 1]);
+      i += 2;
+      FoundPxy = true;
+    } else if (arg == "-pxyz") {
+      Pxyz = atoi(argv[i + 1]);
+      i += 2;
+      FoundPxyz = true;
+    } else if (arg == "-minct") {
+      MinCt = atoi(argv[i + 1]);
+      i += 2;
+      FoundMinCt = true;
+    } else {
+      new_argv.push_back(argv[i]);
+      i++;
+    }
 
-	bool FoundAll = FoundBy && FoundBz && FoundPxy && FoundPxyz
-			&& FoundNCores && FoundSy && FoundSz & FoundMinCt;
+  } // While loop.
 
-	if (!FoundAll ) { printHelp();abort();}
-	initedP = true;
+  if (!FoundPxy) {
+    Pxy = 0;
+    FoundPxy = true;
+  }
+  if (!FoundPxyz) {
+    Pxyz = 0;
+    FoundPxyz = true;
+  }
+  if (!FoundMinCt) {
+    MinCt = 1;
+    FoundMinCt = true;
+  }
+
+  bool FoundAll = FoundBy && FoundBz && FoundPxy && FoundPxyz && FoundNCores &&
+                  FoundSy && FoundSz & FoundMinCt;
+
+  if (!FoundAll) {
+    printHelp();
+    abort();
+  }
+  initedP = true;
+
+  // Copy the remaining arguments back to the argument list. This function will have
+  // consumed the arguments that it has understood.
+  for (int i = 0; i < argc; ++i) {
+      argv[i] = nullptr;
+  }
+  argc = new_argv.size();
+  for (int i = 0; i < new_argv.size(); ++i) {
+      argv[i] = new_argv[i];
+  }
 }
 
 void QPhiXCLIArgs::printHelp() const
 {
-	cout <<"QPhiX Geometry Args: -by BY -bz BZ -c NCores  -sy SY -sz SZ  -pxy Pxy -pxyz Pxyz -minct MinCt\n";
-	cout << "   BY is the block size in Y \n" ;
-	cout << "   BZ is the block size in Z \n" ;
-	cout << "   NCores is the number of cores \n";
-	cout << "   Sy is the no of simt threads in y\n";
-	cout << "   Sz is the no of simt threads in z\n";
-	cout << "   Pxy is the extra pad in the XY plane\n";
-	cout << "   Pxyz is the extra pad in the XYZ plane\n";
-	cout << "   MinCt is the MinCt in the blocking scheme\n";
+  masterPrintf("There has been an issue with parsing the QPhiX options. The "
+               "following is a list of all QPhiX options. All of them are "
+               "required!\n"
+               "\n");
+  printArgHelp();
 }
 
-
+void QPhiXCLIArgs::printArgHelp() const
+{
+  masterPrintf("Internal data layout:\n"
+               "  -by BY             block size in Y \n"
+               "  -bz BZ             block size in Z \n"
+               "  -pxy Pxy           extra pad in the XY plane \n"
+               "  -pxyz Pxyz         extra pad in the XYZ plane \n"
+               "  -minct MinCt       MinCt\n"
+               "\n"
+               "Threading options:\n"
+               "  -c NCores          number of cores\n"
+               "  -sy Sy             number of SMT threads in Y\n"
+               "  -sz Sz             number of SMT threads in Z\n"
+               "\n");
+}
 }

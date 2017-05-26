@@ -2,18 +2,10 @@
 
 #include <qphix/print_utils.h>
 
+using QPhiX::masterPrintf;
+
 int nrow_in[4] = {4, 4, 4, 4};
 int iters = 10000;
-int By_user = -1;
-int Bz_user = -1;
-int NCores_user = -1;
-int Sy_user = -1;
-int Sz_user = -1;
-
-// Hardwire these for now.
-int PadXY_user = 1;
-int PadXYZ_user = 0;
-int MinCt_user = 1;
 
 bool compress12 = false;
 int qmp_geometry[4] = {1, 1, 1, 1};
@@ -26,16 +18,19 @@ bool do_m = false;
 bool do_cg = false;
 bool do_bicgstab = false;
 
-void printHelp()
-{
-  using QPhiX::masterPrintf;
+QPhiX::QPhiXCLIArgs some_user_args;
 
-  masterPrintf("This program measures the performance of the fundamental operations "
-               "in QPhiX.\n"
-               "\n"
-               "The following options are available. If no default is listed, that "
-               "option is a mandatory one.\n"
-               "\n");
+// Arguments contained in `QPhiXCLIArgs`.
+int By_user = -1;
+int Bz_user = -1;
+int PadXY_user = 1;
+int PadXYZ_user = 0;
+int NCores_user = -1;
+int Sy_user = -1;
+int Sz_user = -1;
+int MinCt_user = 1;
+
+void printArgHelp() {
   masterPrintf("Lattice size:\n"
                "  -x Lx              lattice size in X [default: %i]\n"
                "  -y Ly              lattice size in Y [default: %i]\n"
@@ -46,21 +41,7 @@ void printHelp()
                nrow_in[1],
                nrow_in[2],
                nrow_in[3]);
-  masterPrintf("Internal data layout:\n"
-               "  -by BY             block size in Y [defaults to Ly]\n"
-               "  -bz BZ             block size in Z [defaults to Lz]\n"
-               "  -pxy Pxy           extra pad in the XY plane [default: %i]\n"
-               "  -pxyz Pxyz         extra pad in the XYZ plane [default: %i]\n"
-               "  -minct MinCt       MinCt (default %i)\n"
                "\n",
-               PadXY_user,
-               PadXYZ_user,
-               MinCt_user);
-  masterPrintf("Threading options (all required):\n"
-               "  -c NCores          number of cores\n"
-               "  -sy Sy             number of SMT threads in Y\n"
-               "  -sz Sz             number of SMT threads in Z\n"
-               "\n");
   masterPrintf("MPI options (optional but recommended):\n"
                "  -geom Px Py Pz Pt  4D grid of MPI processes\n"
                "\n");
@@ -79,15 +60,50 @@ void printHelp()
                "  -mmat              Even-odd linear operator\n"
                "  -cg                Conjugate gradient\n"
                "  -bicgstab          BiCGStab\n"
-               "");
+               "\n");
+}
+
+void printHelp()
+{
+  masterPrintf("This program measures the performance of the fundamental operations "
+               "in QPhiX.\n"
+               "\n"
+               "The following options are available. If no default is listed, that "
+               "option is a mandatory one.\n"
+               "\n");
+
+  some_user_args.printArgHelp();
+  printArgHelp();
 
   exit(1);
 }
 
-void processArgs(int argc, char *argv[])
+void processArgs(int &argc, char **&argv)
 {
   if (argc == 1) {
     printHelp();
+  }
+
+  masterPrintf("argc = %i\n", argc);
+  for (int i = 0; i < argc; ++i) {
+      masterPrintf("argv[%02d] = %s\n", i, argv[i]);
+  }
+
+  // Let the class parse the arguments first. It will consume whatever it can parse.
+  some_user_args.init(argc, argv);
+
+  By_user = some_user_args.getBy();
+  Bz_user = some_user_args.getBz();
+  PadXY_user = some_user_args.getPxy();
+  PadXYZ_user = some_user_args.getPxyz();
+  NCores_user = some_user_args.getNCores();
+  Sy_user = some_user_args.getSy();
+  Sz_user = some_user_args.getSz();
+  MinCt_user = some_user_args.getMinCt();
+
+  masterPrintf("argc = %i\n", argc);
+  for (int i = 0; i < argc; ++i) {
+    masterPrintf("argv[%02d] = %s\n", i, argv[i]);
   }
 
   for (int i = 1; i < argc;) {
@@ -107,30 +123,6 @@ void processArgs(int argc, char *argv[])
       i += 2;
     } else if (arg == "-i") {
       iters = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-by") {
-      By_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-bz") {
-      Bz_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-c") {
-      NCores_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-sy") {
-      Sy_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-sz") {
-      Sz_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-pxy") {
-      PadXY_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-pxyz") {
-      PadXYZ_user = atoi(argv[i + 1]);
-      i += 2;
-    } else if (arg == "-minct") {
-      MinCt_user = atoi(argv[i + 1]);
       i += 2;
     } else if (arg == "-compress12") {
       compress12 = true;
@@ -176,35 +168,19 @@ void processArgs(int argc, char *argv[])
       i++;
     } else {
       QPhiX::masterPrintf("ERROR: The option “%s” could not be parsed. Please have "
-                          "a look at the supported options below.\n\n----\n\n",
+                          "a look at the supported options below.\n\n",
                           arg.c_str());
-      printHelp();
+      printArgHelp();
       exit(1);
     }
   }
 
-  if (NCores_user < 0) {
-    printHelp();
-  }
-  if (Sy_user < 0) {
-    printHelp();
-  }
-  if (Sz_user < 0) {
-    printHelp();
-  }
-
-  // Ct does not have to divide t, we can pick that up.
-  if (By_user < 0) {
-    By_user = nrow_in[1];
-  }
-  if (Bz_user < 0) {
-    Bz_user = nrow_in[2];
-  }
 
   if (!do_dslash && !do_m && !do_cg && !do_bicgstab) {
     QPhiX::masterPrintf("No timing case has been selected. Please select at least "
                         "one of them such that this program can do some actual "
                         "work.\n\n");
-    printHelp();
+    printArgHelp();
+    exit(1);
   }
 }
