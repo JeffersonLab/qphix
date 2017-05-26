@@ -1,7 +1,7 @@
 #ifndef TIME_TWMDSLASH_NOQDP
 #define TIME_TWMDSLASH_NOQDP
 
-enum Prec { FLOAT_PREC = 0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 class timeTWMDslashNoQDP
 {
