@@ -5,7 +5,10 @@
 using QPhiX::masterPrintf;
 
 int nrow_in[4] = {4, 4, 4, 4};
-int iters = 10000;
+int iters = 1;
+
+int const iters_test = 1;
+int const iters_timing = 500;
 
 bool compress12 = false;
 int qmp_geometry[4] = {1, 1, 1, 1};
@@ -41,7 +44,6 @@ void printArgHelp(bool const is_timing) {
                nrow_in[1],
                nrow_in[2],
                nrow_in[3]);
-               "\n",
   masterPrintf("MPI options (optional but recommended):\n"
                "  -geom Px Py Pz Pt  4D grid of MPI processes\n"
                "\n");
@@ -50,7 +52,7 @@ void printArgHelp(bool const is_timing) {
                "  -prec f|h|d        precision (float, half, double) [default: %s]\n"
                "  -compress12        enable gauge compression [default: %s]\n"
                "\n",
-               iters,
+               is_timing ? iters_timing : iters_test,
                prec_user == FLOAT_PREC
                    ? "float"
                    : (prec_user == DOUBLE_PREC ? "double" : "half"),
@@ -119,6 +121,9 @@ void processArgs(int &argc, char **&argv, bool const is_timing)
     masterPrintf("argv[% 2d] = %s\n", i, argv[i]);
   }
   */
+
+  // Set the iterations to a decent default value.
+  iters = is_timing ? iters_timing : iters_test;
 
   for (int i = 1; i < argc;) {
     std::string const arg(argv[i]);
