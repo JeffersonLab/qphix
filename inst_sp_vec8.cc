@@ -23,7 +23,8 @@ string DeclareFVec::serialize() const
 #if 0
     return v.getType()+" "+v.getName()+ " = _mm256_undefined_ps();";
 #else
-  return v.getType() + " " + v.getName() + " = _mm256_setzero_ps();";
+  return v.getType() + " " + v.getName() +
+         " = _mm256_setzero_ps();";
 #endif
 }
 
@@ -52,21 +53,24 @@ string DeclareMask::serialize() const
 string IntToMask::serialize() const
 {
   ostringstream outbuf;
-  outbuf << mask << " = _mm256_int2mask_ps(" << value << ");" << endl;
+  outbuf << mask << " = _mm256_int2mask_ps(" << value << ");"
+         << endl;
   return outbuf.str();
 }
 
 string DeclareOffsets::serialize() const
 {
   ostringstream outbuf;
-  outbuf << "__m256i " << vname << " = _mm256_load_si256((__m256i const *)" << pname
+  outbuf << "__m256i " << vname
+         << " = _mm256_load_si256((__m256i const *)" << pname
          << ");" << endl;
   return outbuf.str();
 }
 
 string IfAllOneCond::serialize() const
 {
-  return " if ((" + condition + " & " + fullIntMask + ") == " + fullIntMask + ") { ";
+  return " if ((" + condition + " & " + fullIntMask + ") == " +
+         fullIntMask + ") { ";
 }
 
 string LoadFVec::serialize() const
@@ -75,18 +79,23 @@ string LoadFVec::serialize() const
 
   if (mask.empty()) {
     if (!a->isHalfType()) {
-      buf << v.getName() << " = _mm256_load_ps(" << a->serialize() << ");" << endl;
+      buf << v.getName() << " = _mm256_load_ps(" << a->serialize()
+          << ");" << endl;
     } else {
-      buf << v.getName() << " = _mm256_cvtph_ps(_mm_load_si128((__m128i*)"
+      buf << v.getName()
+          << " = _mm256_cvtph_ps(_mm_load_si128((__m128i*)"
           << a->serialize() << "));" << endl;
     }
   } else {
     if (!a->isHalfType()) {
-      buf << v.getName() << " = _mm256_maskload_ps(" << a->serialize()
-          << ", _mm256_castps_si256(" << mask << "));" << endl;
+      buf << v.getName() << " = _mm256_maskload_ps("
+          << a->serialize() << ", _mm256_castps_si256(" << mask
+          << "));" << endl;
     } else {
-      printf("Warning: AVX Masked load ignoring mask for half type\n");
-      buf << v.getName() << " = _mm256_cvtph_ps(_mm_load_si128((__m128i*)"
+      printf(
+          "Warning: AVX Masked load ignoring mask for half type\n");
+      buf << v.getName()
+          << " = _mm256_cvtph_ps(_mm_load_si128((__m128i*)"
           << a->serialize() << "));" << endl;
     }
   }
@@ -101,25 +110,29 @@ string StoreFVec::serialize() const
 
   if (streaming) {
     if (!a->isHalfType()) {
-      buf << "_mm256_stream_ps(" << a->serialize() << ", " << v.getName() << ");"
-          << endl;
+      buf << "_mm256_stream_ps(" << a->serialize() << ", "
+          << v.getName() << ");" << endl;
     } else {
-      // buf << "_mm_stream_si128((__m128i *)" << a->serialize() << ",
+      // buf << "_mm_stream_si128((__m128i *)" << a->serialize() <<
+      // ",
       // _mm256_cvtps_ph(" << v.getName() <<  ",
       // _MM_FROUND_CUR_DIRECTION));" <<endl;
-      buf << "_mm_stream_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph("
-          << v.getName() << ", " << SET_ROUND << "));" << endl;
+      buf << "_mm_stream_si128((__m128i *)" << a->serialize()
+          << ", _mm256_cvtps_ph(" << v.getName() << ", "
+          << SET_ROUND << "));" << endl;
     }
   } else {
     if (!a->isHalfType()) {
-      buf << "_mm256_store_ps(" << a->serialize() << ", " << v.getName() << ");"
-          << endl;
+      buf << "_mm256_store_ps(" << a->serialize() << ", "
+          << v.getName() << ");" << endl;
     } else {
-      // buf << "_mm_store_si128((__m128i *)" << a->serialize() << ",
+      // buf << "_mm_store_si128((__m128i *)" << a->serialize() <<
+      // ",
       // _mm256_cvtps_ph(" << v.getName() <<  ",
       // _MM_FROUND_CUR_DIRECTION));" <<endl;
-      buf << "_mm_store_si128((__m128i *)" << a->serialize() << ", _mm256_cvtps_ph("
-          << v.getName() << ", " << SET_ROUND << "));" << endl;
+      buf << "_mm_store_si128((__m128i *)" << a->serialize()
+          << ", _mm256_cvtps_ph(" << v.getName() << ", "
+          << SET_ROUND << "));" << endl;
     }
   }
 
@@ -132,17 +145,20 @@ string GatherFVec::serialize() const
 
   if (mask.empty()) {
     if (!a->isHalfType()) {
-      buf << v.getName() << " = _mm256_i32gather_ps(" << a->getBase() << ", "
-          << a->getOffsets() << ", _MM_SCALE_4);" << endl;
+      buf << v.getName() << " = _mm256_i32gather_ps("
+          << a->getBase() << ", " << a->getOffsets()
+          << ", _MM_SCALE_4);" << endl;
     } else {
-      buf << v.getName() << " = _mm256_cvtph_ps(_mm_i32gather_ps(" << a->getBase()
-          << ", " << a->getOffsets() << ", _MM_SCALE_2));" << endl;
+      buf << v.getName() << " = _mm256_cvtph_ps(_mm_i32gather_ps("
+          << a->getBase() << ", " << a->getOffsets()
+          << ", _MM_SCALE_2));" << endl;
     }
   } else {
     if (!a->isHalfType()) {
-      buf << v.getName() << " = _mm256_mask_i32gather_ps(" << v.getName() << ", "
-          << a->getBase() << ", " << a->getOffsets() << ", " << mask
-          << ", _MM_SCALE_4);" << endl;
+      buf << v.getName() << " = _mm256_mask_i32gather_ps("
+          << v.getName() << ", " << a->getBase() << ", "
+          << a->getOffsets() << ", " << mask << ", _MM_SCALE_4);"
+          << endl;
     } else {
       printf("Error: AVX2 half type gather not supported\n");
       exit(1);
@@ -166,11 +182,11 @@ string LoadBroadcast::serialize() const
   std::ostringstream buf;
 
   if (!a->isHalfType()) {
-    buf << v.getName() << " = _mm256_broadcast_ss(" << a->serialize() << ");"
-        << endl;
+    buf << v.getName() << " = _mm256_broadcast_ss("
+        << a->serialize() << ");" << endl;
   } else {
-    buf << v.getName() << " = _mm256_cvtph_ps(_mm_set1_epi16(*" << a->serialize()
-        << "));" << endl;
+    buf << v.getName() << " = _mm256_cvtph_ps(_mm_set1_epi16(*"
+        << a->serialize() << "));" << endl;
   }
 
   return buf.str();
@@ -220,7 +236,9 @@ PrefetchL2::PrefetchL2(const Address *a_, int type) : a(a_)
   }
 }
 
-GatherPrefetchL1::GatherPrefetchL1(const GatherAddress *a_, int type) : a(a_)
+GatherPrefetchL1::GatherPrefetchL1(const GatherAddress *a_,
+                                   int type)
+    : a(a_)
 {
   // Type: 0 - none, 1 - NT, 2 - Ex, 3 - NT+Ex
   switch (type) {
@@ -238,13 +256,16 @@ GatherPrefetchL1::GatherPrefetchL1(const GatherAddress *a_, int type) : a(a_)
 string GatherPrefetchL1::serialize() const
 {
   std::ostringstream buf;
-  buf << "#error \"Gather Prefetch is not supported in AVX/AVX2\"" << endl;
+  buf << "#error \"Gather Prefetch is not supported in AVX/AVX2\""
+      << endl;
   printf("Gather Prefetch is not supported in AVX/AVX2\n");
   exit(1);
   return buf.str();
 }
 
-GatherPrefetchL2::GatherPrefetchL2(const GatherAddress *a_, int type) : a(a_)
+GatherPrefetchL2::GatherPrefetchL2(const GatherAddress *a_,
+                                   int type)
+    : a(a_)
 {
   // Type: 0 - none, 1 - NT, 2 - Ex, 3 - NT+Ex
   switch (type) {
@@ -262,7 +283,8 @@ GatherPrefetchL2::GatherPrefetchL2(const GatherAddress *a_, int type) : a(a_)
 string GatherPrefetchL2::serialize() const
 {
   std::ostringstream buf;
-  buf << "#error \"Gather Prefetch is not supported in AVX/AVX2\"" << endl;
+  buf << "#error \"Gather Prefetch is not supported in AVX/AVX2\""
+      << endl;
   printf("Gather Prefetch is not supported in AVX/AVX2\n");
   exit(1);
   return buf.str();
@@ -276,12 +298,12 @@ string SetZero::serialize() const
 string Mul::serialize() const
 {
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_mul_ps( " + a.getName() + " , " + b.getName() +
-           " );";
+    return ret.getName() + " = _mm256_mul_ps( " + a.getName() +
+           " , " + b.getName() + " );";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_mul_ps( " + a.getName() + " , " + b.getName() + "), " + mask +
-           ");";
+           ", _mm256_mul_ps( " + a.getName() + " , " + b.getName() +
+           "), " + mask + ");";
   }
 }
 
@@ -290,23 +312,24 @@ string FnMAdd::serialize() const
 #ifndef AVX2
 
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_sub_ps(" + c.getName() + ", _mm256_mul_ps(" +
-           a.getName() + " , " + b.getName() + "));";
+    return ret.getName() + " = _mm256_sub_ps(" + c.getName() +
+           ", _mm256_mul_ps(" + a.getName() + " , " + b.getName() +
+           "));";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_sub_ps(" + c.getName() + ", _mm256_mul_ps(" + a.getName() +
-           " , " + b.getName() + ")), " + mask + ");";
+           ", _mm256_sub_ps(" + c.getName() + ", _mm256_mul_ps(" +
+           a.getName() + " , " + b.getName() + ")), " + mask + ");";
   }
 
 #else
 
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_fnmadd_ps( " + a.getName() + " , " +
-           b.getName() + " , " + c.getName() + " );";
+    return ret.getName() + " = _mm256_fnmadd_ps( " + a.getName() +
+           " , " + b.getName() + " , " + c.getName() + " );";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_fnmadd_ps( " + a.getName() + " , " + b.getName() + " , " +
-           c.getName() + " ), " + mask + ");";
+           ", _mm256_fnmadd_ps( " + a.getName() + " , " +
+           b.getName() + " , " + c.getName() + " ), " + mask + ");";
   }
 
 #endif
@@ -317,23 +340,24 @@ string FMAdd::serialize() const
 #ifndef AVX2
 
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_add_ps(_mm256_mul_ps(" + a.getName() + ", " +
-           b.getName() + "), " + c.getName() + " );";
+    return ret.getName() + " = _mm256_add_ps(_mm256_mul_ps(" +
+           a.getName() + ", " + b.getName() + "), " + c.getName() +
+           " );";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_add_ps(_mm256_mul_ps(" + a.getName() + ", " + b.getName() +
-           "), " + c.getName() + "), " + mask + ");";
+           ", _mm256_add_ps(_mm256_mul_ps(" + a.getName() + ", " +
+           b.getName() + "), " + c.getName() + "), " + mask + ");";
   }
 
 #else
 
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_fmadd_ps( " + a.getName() + " , " +
-           b.getName() + " , " + c.getName() + " );";
+    return ret.getName() + " = _mm256_fmadd_ps( " + a.getName() +
+           " , " + b.getName() + " , " + c.getName() + " );";
   } else {
     return ret.getName() + " =_mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_fmadd_ps( " + a.getName() + " , " + b.getName() + " , " +
-           c.getName() + " ), " + mask + ");";
+           ", _mm256_fmadd_ps( " + a.getName() + " , " +
+           b.getName() + " , " + c.getName() + " ), " + mask + ");";
   }
 
 #endif
@@ -342,24 +366,24 @@ string FMAdd::serialize() const
 string Add::serialize() const
 {
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_add_ps( " + a.getName() + " , " + b.getName() +
-           " );";
+    return ret.getName() + " = _mm256_add_ps( " + a.getName() +
+           " , " + b.getName() + " );";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_add_ps( " + a.getName() + " , " + b.getName() + "), " + mask +
-           ");";
+           ", _mm256_add_ps( " + a.getName() + " , " + b.getName() +
+           "), " + mask + ");";
   }
 }
 
 string Sub::serialize() const
 {
   if (mask.empty()) {
-    return ret.getName() + " = _mm256_sub_ps( " + a.getName() + " , " + b.getName() +
-           " );";
+    return ret.getName() + " = _mm256_sub_ps( " + a.getName() +
+           " , " + b.getName() + " );";
   } else {
     return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
-           ", _mm256_sub_ps( " + a.getName() + " , " + b.getName() + "), " + mask +
-           ");";
+           ", _mm256_sub_ps( " + a.getName() + " , " + b.getName() +
+           "), " + mask + ");";
   }
 }
 
@@ -368,23 +392,27 @@ string MovFVec::serialize() const
   if (mask.empty()) {
     return ret.getName() + " = " + a.getName() + ";";
   } else {
-    return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() + ", " +
-           a.getName() + ", " + mask + ");";
+    return ret.getName() + " = _mm256_blendv_ps(" + ret.getName() +
+           ", " + a.getName() + ", " + mask + ");";
   }
 }
 
 class Perm32x4 : public Instruction
 {
  public:
-  Perm32x4(const FVec &ret_, const FVec &a_, const FVec &b_, int imm_)
+  Perm32x4(const FVec &ret_,
+           const FVec &a_,
+           const FVec &b_,
+           int imm_)
       : ret(ret_), a(a_), b(b_), imm(imm_)
   {
   }
   string serialize() const
   {
     ostringstream stream;
-    stream << ret.getName() << " = _mm256_permute2f128_ps(" << a.getName() << ", "
-           << b.getName() << ", " << imm << ");";
+    stream << ret.getName() << " = _mm256_permute2f128_ps("
+           << a.getName() << ", " << b.getName() << ", " << imm
+           << ");";
     return stream.str();
   }
   int numArithmeticInst() const { return 0; }
@@ -408,10 +436,12 @@ class LoadHalfFVec : public MemRefInstruction
     std::ostringstream buf;
 
     if (!a->isHalfType()) {
-      buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
-          << ", _mm_load_ps(" << a->serialize() << "), " << num << ");" << endl;
+      buf << v.getName() << " =  _mm256_insertf128_ps("
+          << v.getName() << ", _mm_load_ps(" << a->serialize()
+          << "), " << num << ");" << endl;
     } else {
-      buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
+      buf << v.getName() << " =  _mm256_insertf128_ps("
+          << v.getName()
           << ", _mm_cvtph_ps(_mm_castpd_si128(_mm_load_sd((double*)"
           << a->serialize() << "))), " << num << ");" << endl;
     }
@@ -439,16 +469,20 @@ class StoreHalfFVec : public MemRefInstruction
     std::ostringstream buf;
 
     if (!a->isHalfType()) {
-      buf << "_mm_store_ps(" << a->serialize() << ", _mm256_extractf128_ps("
-          << v.getName() << ", " << num << "));" << endl;
+      buf << "_mm_store_ps(" << a->serialize()
+          << ", _mm256_extractf128_ps(" << v.getName() << ", "
+          << num << "));" << endl;
     } else {
       // buf << "_mm_store_sd((double*)" << a->serialize() <<  ",
       // _mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps(" <<
-      // v.getName() << ", " << num << "), _MM_FROUND_CUR_DIRECTION)));"
+      // v.getName() << ", " << num << "),
+      // _MM_FROUND_CUR_DIRECTION)));"
       // << endl;
       buf << "_mm_store_sd((double*)" << a->serialize()
-          << ", _mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps(" << v.getName()
-          << ", " << num << "), " << SET_ROUND << ")));" << endl;
+          << ", "
+             "_mm_castsi128_pd(_mm_cvtps_ph(_mm256_extractf128_ps("
+          << v.getName() << ", " << num << "), " << SET_ROUND
+          << ")));" << endl;
     }
 
     return buf.str();
@@ -471,7 +505,8 @@ class LoadSplitSOAFVec : public MemRefInstruction
                    const int soanum_,
                    const int soalen_,
                    int forward_)
-      : v(v_), a1(a1_), a2(a2_), soanum(soanum_), soalen(soalen_), forward(forward_)
+      : v(v_), a1(a1_), a2(a2_), soanum(soanum_), soalen(soalen_),
+        forward(forward_)
   {
   }
   string serialize() const
@@ -481,57 +516,67 @@ class LoadSplitSOAFVec : public MemRefInstruction
     if (!a1->isHalfType()) {
       if (forward) {
         if (soalen == 8) {
-          buf << v.getName() << " =  _mm256_blend_ps(_mm256_loadu_ps("
-              << a1->serialize() << "), _mm256_broadcast_ss(" << a2->serialize()
-              << "), " << (1 << (soalen - 1)) << ");" << endl;
+          buf << v.getName()
+              << " =  _mm256_blend_ps(_mm256_loadu_ps("
+              << a1->serialize() << "), _mm256_broadcast_ss("
+              << a2->serialize() << "), " << (1 << (soalen - 1))
+              << ");" << endl;
         } else {
-          buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
-              << ", _mm_blend_ps(_mm_loadu_ps(" << a1->serialize()
-              << "), _mm_broadcast_ss(" << a2->serialize() << "), "
-              << (1 << (soalen - 1)) << "), " << soanum << ");" << endl;
+          buf << v.getName() << " =  _mm256_insertf128_ps("
+              << v.getName() << ", _mm_blend_ps(_mm_loadu_ps("
+              << a1->serialize() << "), _mm_broadcast_ss("
+              << a2->serialize() << "), " << (1 << (soalen - 1))
+              << "), " << soanum << ");" << endl;
         }
       } else {
         if (soalen == 8) {
-          buf << v.getName() << " =  _mm256_blend_ps(_mm256_loadu_ps(("
-              << a2->serialize() << ")-1), _mm256_broadcast_ss(" << a1->serialize()
-              << "), 1);" << endl;
+          buf << v.getName()
+              << " =  _mm256_blend_ps(_mm256_loadu_ps(("
+              << a2->serialize() << ")-1), _mm256_broadcast_ss("
+              << a1->serialize() << "), 1);" << endl;
         } else {
-          buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
-              << ", _mm_blend_ps(_mm_loadu_ps((" << a2->serialize()
-              << ")-1), _mm_broadcast_ss(" << a1->serialize() << "), 1), " << soanum
-              << ");" << endl;
+          buf << v.getName() << " =  _mm256_insertf128_ps("
+              << v.getName() << ", _mm_blend_ps(_mm_loadu_ps(("
+              << a2->serialize() << ")-1), _mm_broadcast_ss("
+              << a1->serialize() << "), 1), " << soanum << ");"
+              << endl;
         }
       }
     } else {
       if (forward) {
         if (soalen == 8) {
-          buf << v.getName() << " =  "
-                                "_mm256_cvtph_ps(_mm_blend_epi16(_mm_"
-                                "loadu_si128((__m128i*)"
-              << a1->serialize() << "), _mm_set1_epi16(*" << a2->serialize() << "), "
-              << (1 << (soalen - 1)) << "));" << endl;
-        } else {
-          buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
-              << ", "
-                 "_mm_cvtph_ps(_mm_blend_epi16(_mm_"
+          buf << v.getName()
+              << " =  "
+                 "_mm256_cvtph_ps(_mm_blend_epi16(_mm_"
                  "loadu_si128((__m128i*)"
-              << a1->serialize() << "), _mm_set1_epi16(*" << a2->serialize() << "), "
-              << (1 << (soalen - 1)) << ")), " << soanum << ");" << endl;
+              << a1->serialize() << "), _mm_set1_epi16(*"
+              << a2->serialize() << "), " << (1 << (soalen - 1))
+              << "));" << endl;
+        } else {
+          buf << v.getName() << " =  _mm256_insertf128_ps("
+              << v.getName() << ", "
+                                "_mm_cvtph_ps(_mm_blend_epi16(_mm_"
+                                "loadu_si128((__m128i*)"
+              << a1->serialize() << "), _mm_set1_epi16(*"
+              << a2->serialize() << "), " << (1 << (soalen - 1))
+              << ")), " << soanum << ");" << endl;
         }
       } else {
         if (soalen == 8) {
-          buf << v.getName() << " =  "
-                                "_mm256_cvtph_ps(_mm_blend_epi16(_mm_"
-                                "loadu_si128((__m128i*)("
-              << a2->serialize() << ")-1), _mm_set1_epi16(*" << a1->serialize()
-              << "), 1));" << endl;
-        } else {
-          buf << v.getName() << " =  _mm256_insertf128_ps(" << v.getName()
-              << ", "
-                 "_mm_cvtph_ps(_mm_blend_epi16(_mm_"
+          buf << v.getName()
+              << " =  "
+                 "_mm256_cvtph_ps(_mm_blend_epi16(_mm_"
                  "loadu_si128((__m128i*)("
-              << a2->serialize() << ")-1), _mm_set1_epi16(*" << a1->serialize()
-              << "), 1)), " << soanum << ");" << endl;
+              << a2->serialize() << ")-1), _mm_set1_epi16(*"
+              << a1->serialize() << "), 1));" << endl;
+        } else {
+          buf << v.getName() << " =  _mm256_insertf128_ps("
+              << v.getName() << ", "
+                                "_mm_cvtph_ps(_mm_blend_epi16(_mm_"
+                                "loadu_si128((__m128i*)("
+              << a2->serialize() << ")-1), _mm_set1_epi16(*"
+              << a1->serialize() << "), 1)), " << soanum << ");"
+              << endl;
         }
       }
     }
@@ -570,12 +615,12 @@ class CondInsertFVecElement : public MemRefInstruction
 
     if (!a->isHalfType()) {
       buf << v.getName() << " = _mm256_blend_ps(" << v.getName()
-          << ", _mm256_broadcast_ss(" << a->serialize() << "), " << (1 << pos)
-          << ");" << endl;
+          << ", _mm256_broadcast_ss(" << a->serialize() << "), "
+          << (1 << pos) << ");" << endl;
     } else {
       buf << v.getName() << " = _mm256_blend_ps(" << v.getName()
-          << ", _mm256_cvtph_ps(_mm_set1_epi16(*" << a->serialize() << ")), "
-          << (1 << pos) << ");" << endl;
+          << ", _mm256_cvtph_ps(_mm_set1_epi16(*" << a->serialize()
+          << ")), " << (1 << pos) << ");" << endl;
     }
 
     return buf.str();
@@ -612,14 +657,17 @@ class CondExtractFVecElement : public MemRefInstruction
 
     if (!a->isHalfType()) {
       buf << "((int*)" << a->serialize()
-          << ")[0] = _mm_extract_ps(_mm256_extractf128_ps(" << v.getName() << ", "
-          << pos / 4 << "), " << (pos % 4) << ");" << endl;
+          << ")[0] = _mm_extract_ps(_mm256_extractf128_ps("
+          << v.getName() << ", " << pos / 4 << "), " << (pos % 4)
+          << ");" << endl;
     } else {
       // buf << "(" << a->serialize() << ")[0] =
       // _mm_extract_epi16(_mm256_cvtps_ph(" << v.getName() << ",
       // _MM_FROUND_CUR_DIRECTION), " << pos << ");" << endl;
-      buf << "(" << a->serialize() << ")[0] = _mm_extract_epi16(_mm256_cvtps_ph("
-          << v.getName() << ", " << SET_ROUND << "), " << pos << ");" << endl;
+      buf << "(" << a->serialize()
+          << ")[0] = _mm_extract_epi16(_mm256_cvtps_ph("
+          << v.getName() << ", " << SET_ROUND << "), " << pos
+          << ");" << endl;
     }
 
     return buf.str();
@@ -647,20 +695,29 @@ void loadSOAFVec(InstVector &ivector,
   } else if (soalen == 4) {
     ivector.push_back(new LoadHalfFVec(ret, a, soanum));
   } else {
-    printf("SOALEN = %d not supported at %s:%d\n", soalen, __FILE__, __LINE__);
+    printf("SOALEN = %d not supported at %s:%d\n",
+           soalen,
+           __FILE__,
+           __LINE__);
     exit(1);
   }
 }
 
-void storeSOAFVec(
-    InstVector &ivector, const FVec &ret, const Address *a, int soanum, int soalen)
+void storeSOAFVec(InstVector &ivector,
+                  const FVec &ret,
+                  const Address *a,
+                  int soanum,
+                  int soalen)
 {
   if (soalen == 8) {
     ivector.push_back(new StoreFVec(ret, a, 0));
   } else if (soalen == 4) {
     ivector.push_back(new StoreHalfFVec(ret, a, soanum));
   } else {
-    printf("SOALEN = %d not supported at %s:%d\n", soalen, __FILE__, __LINE__);
+    printf("SOALEN = %d not supported at %s:%d\n",
+           soalen,
+           __FILE__,
+           __LINE__);
     exit(1);
   }
 }
@@ -674,11 +731,15 @@ void loadSplitSOAFVec(InstVector &ivector,
                       int forward,
                       string mask)
 {
-  ivector.push_back(new LoadSplitSOAFVec(ret, a1, a2, soanum, soalen, forward));
+  ivector.push_back(
+      new LoadSplitSOAFVec(ret, a1, a2, soanum, soalen, forward));
 }
 
-void unpackFVec(
-    InstVector &ivector, const FVec &ret, Address *a, string mask, int possibleMask)
+void unpackFVec(InstVector &ivector,
+                const FVec &ret,
+                Address *a,
+                string mask,
+                int possibleMask)
 {
   int pos = 0, nBits = 0;
 
@@ -695,8 +756,11 @@ void unpackFVec(
     }
 }
 
-void packFVec(
-    InstVector &ivector, const FVec &ret, Address *a, string mask, int possibleMask)
+void packFVec(InstVector &ivector,
+              const FVec &ret,
+              Address *a,
+              string mask,
+              int possibleMask)
 {
   int pos = 0, nBits = 0;
 
@@ -713,22 +777,31 @@ void packFVec(
     }
 }
 
-void gatherFVec(InstVector &ivector, const FVec &ret, GatherAddress *a, string mask)
+void gatherFVec(InstVector &ivector,
+                const FVec &ret,
+                GatherAddress *a,
+                string mask)
 {
   ivector.push_back(new GatherFVec(ret, a, mask));
 }
 
-void scatterFVec(InstVector &ivector, const FVec &ret, GatherAddress *a)
+void scatterFVec(InstVector &ivector,
+                 const FVec &ret,
+                 GatherAddress *a)
 {
   ivector.push_back(new ScatterFVec(ret, a));
 }
 
-void gatherPrefetchL1(InstVector &ivector, GatherAddress *a, int type)
+void gatherPrefetchL1(InstVector &ivector,
+                      GatherAddress *a,
+                      int type)
 {
   ivector.push_back(new GatherPrefetchL1(a, type));
 }
 
-void gatherPrefetchL2(InstVector &ivector, GatherAddress *a, int type)
+void gatherPrefetchL2(InstVector &ivector,
+                      GatherAddress *a,
+                      int type)
 {
   ivector.push_back(new GatherPrefetchL2(a, type));
 }
@@ -742,19 +815,26 @@ void fperm32x4(InstVector &ivector,
   ivector.push_back(new Perm32x4(ret, a, b, imm));
 }
 
-void transpose2x2(InstVector &ivector, const FVec r[2], const FVec f[2])
+void transpose2x2(InstVector &ivector,
+                  const FVec r[2],
+                  const FVec f[2])
 {
   for (int i = 0; i < 2; i++) {
     fperm32x4(ivector, r[i], f[0], f[1], 0x20 + i * 0x11);
   }
 }
 
-void transpose1x1(InstVector &ivector, const FVec r[1], const FVec f[1])
+void transpose1x1(InstVector &ivector,
+                  const FVec r[1],
+                  const FVec f[1])
 {
   movFVec(ivector, r[0], f[0], string(""));
 }
 
-void transpose(InstVector &ivector, const FVec r[], const FVec f[], int soalen)
+void transpose(InstVector &ivector,
+               const FVec r[],
+               const FVec f[],
+               int soalen)
 {
   switch (soalen) {
   case 4:
