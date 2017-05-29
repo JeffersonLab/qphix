@@ -1,7 +1,5 @@
 // TODO Make an `A chi - b D psi` function for QDP spinors.
 
-#include <initializer_list>
-
 #include "unittest.h"
 #include "testTWMDslashFull.h"
 #undef SEEK_SET
