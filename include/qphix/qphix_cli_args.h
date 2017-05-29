@@ -8,7 +8,9 @@
 #ifndef INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
 #define INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
 
+#include <cstdlib>
 #include <iostream>
+
 namespace QPhiX
 {
 
