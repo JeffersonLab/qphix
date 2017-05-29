@@ -89,7 +89,7 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
 
   if (!FoundAll) {
     printHelp();
-    abort();
+    std::abort();
   }
   initedP = true;
 
