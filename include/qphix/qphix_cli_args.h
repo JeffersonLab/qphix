@@ -31,7 +31,7 @@ class QPhiXCLIArgs
     if (!initedP) {
       std::cout << "ERROR: QPhiX CLI Arg Not Inited\n";
       printHelp();
-      abort();
+      std::abort();
     } else {
       return value;
     }
