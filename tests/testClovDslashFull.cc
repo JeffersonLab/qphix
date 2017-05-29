@@ -57,20 +57,6 @@ void testClovDslashFull::runTest(void)
   int Nz = lattSize[2];
   int Nt = lattSize[3];
 
-  QDPIO::cout << "VECLEN=" << V << "  SOALEN=" << S << endl;
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
-
-  QDPIO::cout << "Block Sizes: By=" << By << " Bz=" << Bz << endl;
-  QDPIO::cout << "N Cores" << NCores << endl;
-  QDPIO::cout << "SMT Grid: Sy=" << Sy << " Sz=" << Sz << endl;
-  QDPIO::cout << "Pad Factors: PadXY=" << PadXY << " PadXYZ=" << PadXYZ << endl;
-  QDPIO::cout << "MinCt=" << MinCt << endl;
-  QDPIO::cout << "Threads_per_core = " << N_simt << endl;
-
   Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                     By,
                                     Bz,
@@ -467,7 +453,6 @@ void testClovDslashFull::run(void)
 
 #if defined(QPHIX_SCALAR_SOURCE)
   if (precision == FLOAT_PREC) {
-    QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if (compress12) {
       runTest<float, 1, 1, true, UF, PhiF>();
     } else {
@@ -475,7 +460,6 @@ void testClovDslashFull::run(void)
     }
   }
   if (precision == DOUBLE_PREC) {
-    QDPIO::cout << "DOUBLE PRECISION TESTING " << endl;
     if (compress12) {
       runTest<double, 1, 1, true, UF, PhiF>();
     } else {
@@ -488,7 +472,6 @@ void testClovDslashFull::run(void)
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_SSE_SOURCE)
-    QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if (compress12) {
       runTest<float, VECLEN_SP, 4, true, UF, PhiF>();
     } else {
@@ -517,7 +500,6 @@ void testClovDslashFull::run(void)
   if (precision == HALF_PREC) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_AVX2_SOURCE)
-    QDPIO::cout << "SINGLE PRECISION TESTING " << endl;
     if (compress12) {
       runTest<half, VECLEN_HP, 4, true, UF, PhiF>();
     } else {
@@ -545,7 +527,6 @@ void testClovDslashFull::run(void)
   }
 
   if (precision == DOUBLE_PREC) {
-    QDPIO::cout << "DOUBLE PRECISION TESTING" << endl;
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
     // Only AVX can do DP 2

@@ -94,6 +94,27 @@ T1 rep(const T2 &in)
 
 #endif // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
+template <typename FT>
+char const *type_name();
+
+template <>
+char const *type_name<double>()
+{
+  return "double";
+}
+
+template <>
+char const *type_name<float>()
+{
+  return "float";
+}
+
+template <>
+char const *type_name<half>()
+{
+  return "half";
+}
+
 template <typename T, int V, int S, const bool compressP>
 class Geometry
 {
@@ -202,13 +223,6 @@ class Geometry
     clover_bytes = ((Pxyz * Nt_ * S) / V) * sizeof(CloverBlock);
     full_clover_bytes = ((Pxyz * Nt_ * S) / V) * sizeof(FullCloverBlock);
 
-    masterPrintf(
-        "The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n");
-    masterPrintf("  Spinor:     %10ld\n", spinor_bytes / 1024 / 1024);
-    masterPrintf("  Gauge:      %10ld\n", gauge_bytes / 1024 / 1024);
-    masterPrintf("  Clover:     %10ld\n", clover_bytes / 1024 / 1024);
-    masterPrintf("  FullClover: %10ld\n", full_clover_bytes / 1024 / 1024);
-
     // This works out the phase breakdown
     int ly = Ny_ / By;
     int lz = Nz_ / Bz;
@@ -231,6 +245,40 @@ class Geometry
       // n_phases, p.Cyz, p.Ct, p.startBlock);
       n_phases++;
     }
+
+    masterPrintf("Constructed a new Geometry object.\n"
+                 "  Template parameters are:\n"
+                 "    FT          %s\n"
+                 "    veclen      %d\n"
+                 "    soalen      %d\n"
+                 "    compress12  %s\n",
+                 type_name<T>(),
+                 veclen,
+                 soalen,
+                 compress12 ? "true" : "false");
+    masterPrintf(
+        "  The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n"
+        "    Spinor:     %10ld\n"
+        "    Gauge:      %10ld\n"
+        "    Clover:     %10ld\n"
+        "    FullClover: %10ld\n",
+        spinor_bytes / 1024 / 1024,
+        gauge_bytes / 1024 / 1024,
+        clover_bytes / 1024 / 1024,
+        full_clover_bytes / 1024 / 1024);
+
+    masterPrintf("  Geometry properties are:\n");
+    masterPrintf("    Local Lattice size %d %d %d %d\n", Nx_, Ny_, Nz_, Nt_);
+    masterPrintf("    number of vectors  %d\n", nvecs_);
+    masterPrintf("    Blocking           %d %d\n", By, Bz);
+    masterPrintf("    nGY                %d\n", ngy_);
+    masterPrintf("    PadXY PadXYZ       %d %d\n", PadXY, PadXYZ);
+    masterPrintf("    MinCt              %d\n", MinCt);
+    masterPrintf("    Phases             %d\n", n_phases);
+    masterPrintf("  Threading options are:\n");
+    masterPrintf("    Cores              %d\n", num_cores);
+    masterPrintf("    Sy Sz              %d %d\n", Sy, Sz);
+    masterPrintf("    Total threads      %d\n", num_threads);
   }
 
   ~Geometry() {}

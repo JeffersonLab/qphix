@@ -87,26 +87,6 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   int lZ = subLattSize[2];
   int lT = subLattSize[3];
 
-  // Diagnostic information:
-  masterPrintf("VECLEN=%d SOALEN=%d\n", V, S);
-  masterPrintf("Global Lattice Size = ");
-  for (int mu = 0; mu < 4; mu++) {
-    masterPrintf(" %d", lattSize[mu]);
-  }
-  masterPrintf("\n");
-
-  masterPrintf("Local Lattice Size = ");
-  for (int mu = 0; mu < 4; mu++) {
-    masterPrintf(" %d", subLattSize[mu]);
-  }
-  masterPrintf("\n");
-
-  masterPrintf("Block Sizes: By= %d Bz=%d\n", By, Bz);
-  masterPrintf("Cores = %d\n", NCores);
-  masterPrintf("SMT Grid: Sy=%d Sz=%d\n", Sy, Sz);
-  masterPrintf("Pad Factors: PadXY=%d PadXYZ=%d\n", PadXY, PadXYZ);
-  masterPrintf("Threads_per_core = %d\n", N_simt);
-
   masterPrintf("Initializing Dslash\n");
 
   double t_boundary = (double)(1);
@@ -710,7 +690,6 @@ void timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
       abort();
     }
 
-    masterPrintf("TIMING IN SINGLE PRECISION \n");
     if (compress12) {
       runTest<float, VECLEN_SP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
     } else {
@@ -729,7 +708,6 @@ void timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
       abort();
     }
 
-    masterPrintf("TIMING IN HALF PRECISION \n");
     if (compress12) {
       runTest<half, VECLEN_HP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
     } else {
@@ -750,7 +728,6 @@ void timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
       abort();
     }
 
-    masterPrintf("TIMING IN DOUBLE PRECISION \n");
     if (compress12) {
       runTest<double, VECLEN_DP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
     } else {

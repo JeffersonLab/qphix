@@ -115,19 +115,6 @@ void testDslashFull::run(void)
   Nz = lattSize[2];
   Nt = lattSize[3];
 
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
-
-  QDPIO::cout << "Block Sizes: By=" << By << " Bz=" << Bz << endl;
-  QDPIO::cout << "N Cores" << NCores << endl;
-  QDPIO::cout << "SMT Grid: Sy=" << Sy << " Sz=" << Sz << endl;
-  QDPIO::cout << "Pad Factors: PadXY=" << PadXY << " PadXYZ=" << PadXYZ << endl;
-  QDPIO::cout << "MinCt=" << MinCt << endl;
-  QDPIO::cout << "Threads_per_core = " << N_simt << endl;
-
   QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
   // Make a random gauge field
   multi1d<LatticeColorMatrix> u(4);
@@ -148,7 +135,6 @@ void testDslashFull::run(void)
 
   if (precision == FLOAT_PREC) {
 
-    QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
@@ -157,7 +143,6 @@ void testDslashFull::run(void)
 
       if (soalen == 1) {
 #if defined(QPHIX_SCALAR_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=1 " << endl;
         testDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
         testMWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
@@ -170,7 +155,6 @@ void testDslashFull::run(void)
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_SSE_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=4 " << endl;
         testDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
         testMWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
@@ -182,7 +166,6 @@ void testDslashFull::run(void)
       if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=8" << endl;
         testDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
         testMWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
@@ -193,7 +176,6 @@ void testDslashFull::run(void)
 
       if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_SP << " SOALEN=16 " << endl;
         testDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
         testMWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
@@ -210,14 +192,12 @@ void testDslashFull::run(void)
   if (precision == HALF_PREC) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_AVX512_SOURCE)
-    QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
     }
     {
       if (soalen == 4) {
-        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=4 " << endl;
         testDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
         testMWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
@@ -226,7 +206,6 @@ void testDslashFull::run(void)
       }
 
       if (soalen == 8) {
-        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=8 " << endl;
         testDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
         testMWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
@@ -236,7 +215,6 @@ void testDslashFull::run(void)
 
       if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_HP << " SOALEN=16 " << endl;
         testDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
         testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
         testMWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
@@ -252,7 +230,6 @@ void testDslashFull::run(void)
   }
 
   if (precision == DOUBLE_PREC) {
-    QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     UD u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
@@ -261,7 +238,6 @@ void testDslashFull::run(void)
     {
       if (soalen == 1) {
 #if defined(QPHIX_SCALAR_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=1 " << endl;
         testDslashWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
         testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
         testMWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
@@ -272,7 +248,6 @@ void testDslashFull::run(void)
 
       if (soalen == 2) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=2 " << endl;
         testDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
         testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
         testMWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
@@ -284,7 +259,6 @@ void testDslashFull::run(void)
       if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=4 " << endl;
         testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
         testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
         testMWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
@@ -295,7 +269,6 @@ void testDslashFull::run(void)
 
       if (soalen == 8) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        QDPIO::cout << "VECLEN = " << VECLEN_DP << " SOALEN=8 " << endl;
         testDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
         testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
         testMWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
