@@ -14,8 +14,10 @@
 | Name | Institution | Email | Notes |
 | --- | --- | --- | --- |
 | Thorsten Kurth | LBL | | |
-| Aaron Walden | ODU | | for integrating the AVX512 output from the code-generator and testing in Intel SDE |
-| Mario Schroeck | INFN | mario.schroeck AT roma3.infn.it | Work on the Twisted Mass Fermion (`qphix-tmf`) branch |
-| Alexei Strelchenko | FNAL | astrel AT fnal.gov | Work on the Twisted Mass Fermion (`qphix-tmf`) branch |
-| Diptorup Deb | RENCI University of North Carolina Chapel Hill | diptorup AT cs.unc.edu | is working on portability to other compilers |
+| Aaron Walden | ODU | | Integrating AVX512 from the code-generator and testing in Intel SDE |
+| Mario Schroeck | INFN | mario.schroeck AT roma3.infn.it | Twisted Mass Fermion (`qphix-tmf`) branch |
+| Alexei Strelchenko | FNAL | astrel AT fnal.gov | Twisted Mass Fermion (`qphix-tmf`) branch |
+| Diptorup Deb | RENCI University of North Carolina Chapel Hill | diptorup AT cs.unc.edu | Portability to other compilers |
 | Kiran Pamnany | Intel Parallel Computing Labs, Bangalore, India | kiran.pamndany AT intel.com | MIC Barrier routine (`Barrier_mic.h`)
+| Peter Labus | SISSA | plabus AT sissa.it | Twisted Mass Clover |
+| Martin Ueding | Uni Bonn, Germany | ueding AT hiskp.uni-bonn.de | Refactoring |
