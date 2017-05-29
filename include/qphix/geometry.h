@@ -38,7 +38,7 @@ inline float cvtHalf2Float(half val)
           _mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
 #elif defined(QPHIX_AVX512_SOURCE)
   _mm512_mask_storeu_ps(&ret, 0x1, _mm512_cvtph_ps(_mm256_set1_epi16(val)));
-#endif
+#endif // defined(QPHIX_MIC_SOURCE)
   return ret;
 }
 
@@ -61,7 +61,7 @@ inline half cvtFloat2Half(float val)
                            _mm512_castsi256_si512(_mm512_cvt_roundps_ph(
                                _mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT)));
   ret = (half)temp;
-#endif
+#endif // defined(QPHIX_MIC_SOURCE)
   return ret;
 }
 
@@ -83,7 +83,7 @@ T1 rep(const T2 &in)
   }
 }
 
-#else
+#else // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 // rep: cast 'in' of type T2 into a 'T1' and return it.
 template <typename T1, typename T2>
@@ -92,7 +92,7 @@ T1 rep(const T2 &in)
   return (T1)(in);
 }
 
-#endif
+#endif // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 template <typename T, int V, int S, const bool compressP>
 class Geometry
