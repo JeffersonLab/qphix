@@ -247,8 +247,8 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
   gaussian(hs_source.qdp());
   hs_source.pack();
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -324,8 +324,8 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
   hs_source1.pack();
   hs_source2.pack();
 
-  for (auto isign : {1, -1}) {
-    for (auto target_cb : {1, 0}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int target_cb = 0; target_cb <= 1; ++target_cb) {
       masterPrintf("Target CB: %i\n", target_cb);
 
       int const source_cb = 1 - target_cb;
@@ -405,8 +405,8 @@ void testTWMDslashFull::testTWMM(int t_bc)
                                                gauge.aniso_fac_s,
                                                gauge.aniso_fac_t);
 
-  for (auto isign : {1, -1}) {
-    for (int target_cb : {1, 0}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int target_cb = 0; target_cb <= 1; ++target_cb) {
       int source_cb = 1 - target_cb;
       QDPIO::cout << "Target CB = " << target_cb << ", isign = " << isign << endl;
 
@@ -634,7 +634,7 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
   unsigned long mv_apps = 0;
   InvBiCGStab<T, V, S, compress> solver(M, max_iters);
 
-  for (auto isign : {1, -1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
 
     Phi chi = zero;
     qdp_pack_cb_spinor<>(chi, chi_even, geom, 0);

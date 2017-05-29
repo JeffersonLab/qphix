@@ -481,8 +481,8 @@ void timeTWMClover::runTest(const int lattSize[], const int qmp_geom[])
 
   if (do_dslash) {
 
-    for (auto isign : {1, -1}) {
-      for (auto cb : {0, 1}) {
+    for (int isign = 1; isign >= -1; isign -= 2) {
+      for (int cb = 0; cb <= 1; ++cb) {
 
         int source_cb = 1 - cb;
         int target_cb = cb;
@@ -528,7 +528,7 @@ void timeTWMClover::runTest(const int lattSize[], const int qmp_geom[])
 
   if (do_m) {
 
-    for (auto isign : {1, -1}) {
+    for (int isign = 1; isign >= -1; isign -= 2) {
 
       masterPrintf("Timing M: isign = %d\n", isign);
       masterPrintf("===============================\n");

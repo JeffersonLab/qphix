@@ -293,8 +293,8 @@ void testTWMCloverFull::runTest(void)
 
   const int cbsize_in_blocks = rb[0].numSiteTable() / S;
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -380,8 +380,8 @@ void testTWMCloverFull::runTest(void)
   // 2. Test ax - bDslash y
   QDPIO::cout << std::endl << "TESTING A CHI - b D PSI" << std::endl;
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -507,8 +507,8 @@ void testTWMCloverFull::runTest(void)
 
   QDPIO::cout << std::endl << "TESTING DSLASH w/ ANTI-PERIODIC BCs:" << std::endl;
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -593,8 +593,8 @@ void testTWMCloverFull::runTest(void)
   QDPIO::cout << std::endl
               << "TESTING A CHI - b D PSI w/ ANTI-PERIODIC BCs" << std::endl;
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -663,7 +663,7 @@ void testTWMCloverFull::runTest(void)
   Phi ltmp = zero;
   Real betaFactor = Real(0.25);
 
-  for (auto isign : {1, -1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
 
     // (a) Apply QPhiX Operator
     chi = zero;
