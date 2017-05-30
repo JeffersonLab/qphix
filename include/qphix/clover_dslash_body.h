@@ -22,7 +22,9 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
     Geometry<FT, veclen, soalen, compress12> *geom_,
     double t_boundary_,
     double dslash_aniso_s_,
-    double dslash_aniso_t_)
+    double dslash_aniso_t_,
+    bool use_tbc_[4],
+    FT tbc_phases_[4][2])
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
@@ -30,6 +32,16 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
       n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
       aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
 {
+  if (use_tbc_ != nullptr && tbc_phases_ != nullptr) {
+    for (int dim = 0; dim < 4; ++dim) {
+      use_tbc[dim] = use_tbc_[dim];
+
+      for (int dir : {0, 1}) {
+        tbc_phases[dim][dir] = tbc_phases_[dim][dir];
+      }
+    }
+  }
+
   // OK we need to set up log of veclen
   log2veclen = 0;
   int veclen_bits = veclen;
@@ -654,7 +666,8 @@ void ClovDslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                    accumulate,
                    aniso_coeff_S_T,
                    forw_t_coeff_T,
-                   back_t_coeff_T);
+                   back_t_coeff_T,
+                   tbc_phases);
           }
         } // End for over scanlines y
       } // End for over scalines z
@@ -984,6 +997,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
                    beta_s_T,
                    beta_t_f_T,
                    beta_t_b_T,
+                   tbc_phases,
                    accumulate);
           }
         } // End for over scanlines y

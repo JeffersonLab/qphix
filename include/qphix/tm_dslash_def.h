@@ -24,7 +24,9 @@ class TMDslash
            double aniso_coeff_S_,
            double aniso_coeff_T_,
            double Mass_,
-           double TwistedMass_);
+           double TwistedMass_,
+           bool use_tbc_[4] = nullptr,
+           FT tbc_phases_[4][2] = nullptr);
 
   ~TMDslash();
 
@@ -73,6 +75,9 @@ class TMDslash
   // Anisotropy
   double aniso_coeff_S;
   double aniso_coeff_T;
+
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
 
   // Wilson & Twisted Mass Parameters
   double Mass;

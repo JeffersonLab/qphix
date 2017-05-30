@@ -31,7 +31,9 @@ class ClovDslash
   ClovDslash(Geometry<FT, veclen, soalen, compress12> *geom_,
              double t_boundary_,
              double dslash_aniso_s_,
-             double dslash_aniso_t_);
+             double dslash_aniso_t_,
+             bool use_tbc_[4] = nullptr,
+             FT tbc_phases_[4][2] = nullptr);
 
   /* Destructor */
   ~ClovDslash();
@@ -77,6 +79,9 @@ class ClovDslash
   const double t_boundary;
   const double aniso_coeff_S;
   const double aniso_coeff_T;
+
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
 
   bool amIPtMin;
   bool amIPtMax;

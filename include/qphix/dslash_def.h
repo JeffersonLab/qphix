@@ -28,7 +28,9 @@ class Dslash
   Dslash(Geometry<FT, veclen, soalen, compress12> *geom_,
          double t_boundary_,
          double aniso_coeff_S_,
-         double aniso_coeff_T_);
+         double aniso_coeff_T_,
+         bool use_tbc_[4] = nullptr,
+         FT tbc_phases_[4][2] = nullptr);
 
   /* Destructor */
   ~Dslash();
@@ -88,6 +90,9 @@ class Dslash
   unsigned int xfmask_xn_xodd[2];
   unsigned int ybmask_y0;
   unsigned int yfmask_yn;
+
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
 
   // Hide Free Constructor
   Dslash();

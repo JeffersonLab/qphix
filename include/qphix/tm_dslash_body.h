@@ -21,7 +21,9 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
     double aniso_coeff_S_,
     double aniso_coeff_T_,
     double Mass_,
-    double TwistedMass_)
+    double TwistedMass_,
+    bool use_tbc_[4],
+    FT tbc_phases_[4][2])
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
@@ -32,6 +34,16 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
       derived_mu_inv((4.0 + Mass) /
                      (TwistedMass * TwistedMass + (4.0 + Mass) * (4.0 + Mass)))
 {
+  if (use_tbc_ != nullptr && tbc_phases_ != nullptr) {
+    for (int dim = 0; dim < 4; ++dim) {
+      use_tbc[dim] = use_tbc_[dim];
+
+      for (int dir : {0, 1}) {
+        tbc_phases[dim][dir] = tbc_phases_[dim][dir];
+      }
+    }
+  }
+
   // OK we need to set up log of veclen
   log2veclen = 0;
   int veclen_bits = veclen;
@@ -647,6 +659,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyz(int tid,
                    aniso_coeff_s_T,
                    forw_t_coeff_T,
                    back_t_coeff_T,
+                   tbc_phases,
                    derived_mu,
                    derived_mu_inv);
           }
@@ -966,6 +979,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
                    beta_s_T,
                    beta_t_f_T,
                    beta_t_b_T,
+                   tbc_phases,
                    derived_mu,
                    accumulate);
           }
