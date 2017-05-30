@@ -7,6 +7,7 @@ import argparse
 import getpass
 import json
 import os
+import itertools
 import socket
 
 import jinja2
@@ -33,6 +34,11 @@ def main():
 
     with open('kernels.js') as f:
         kernel_patterns = json.load(f)
+
+    tf_list = [''.join(tfs)
+               for tfs in itertools.product(*([('t', 's')] * 4))]
+    true_false_list = [', '.join(tfs)
+                       for tfs in itertools.product(*([('true', 'false')] * 4))]
 
     # Setting up Jinja
     env = jinja2.Environment(
@@ -99,6 +105,7 @@ def main():
                 defines=defines,
                 extra_includes_local=isa_data['extra_includes_local'],
                 extra_includes_global=isa_data['extra_includes_global'],
+                true_false_list=list(zip(true_false_list, tf_list)),
             )
             filename = os.path.join('../generated', isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
             with open(filename, 'w') as f:
