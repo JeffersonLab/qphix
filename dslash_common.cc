@@ -1685,7 +1685,8 @@ void dslash_plain_body(InstVector &ivector,
                        bool const compress12,
                        bool const clover,
                        TwistedMassVariant const twisted_mass,
-                       bool const isPlus)
+                       bool const isPlus,
+                       bool const *const tbc)
 {
   declare_b_Spins(ivector);
   declare_ub_Spins(ivector);
@@ -1745,7 +1746,7 @@ void dslash_plain_body(InstVector &ivector,
               p_ops,
               rec_ops_bw,
               rec_ops_fw,
-              *outspinor);
+              *outspinor, tbc);
 
   if (clover) {
     if (twisted_mass == TwistedMassVariant::none) {
@@ -1785,7 +1786,8 @@ void dslash_achimbdpsi_body(InstVector &ivector,
                             bool const compress12,
                             bool const clover,
                             TwistedMassVariant const twisted_mass,
-                            bool const isPlus)
+                            bool const isPlus,
+                            bool const *const tbc)
 {
   declare_b_Spins(ivector);
   declare_ub_Spins(ivector);
@@ -1842,7 +1844,8 @@ void dslash_achimbdpsi_body(InstVector &ivector,
               p_ops,
               rec_ops_bw,
               rec_ops_fw,
-              out_spinor);
+              out_spinor,
+              tbc);
 
   // Store
   StreamFullSpinor(ivector, out_spinor, outBase, outOffs);

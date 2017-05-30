@@ -193,7 +193,8 @@ void dslash_body(InstVector &ivector,
                  proj_ops *ops,
                  recons_ops *rec_ops_bw,
                  recons_ops *rec_ops_fw,
-                 FVec outspinor[4][3][2])
+                 FVec outspinor[4][3][2],
+                 bool const *const tbc)
 {
   for (int dim = 0; dim < 4; dim++) {
     for (int dir = 0; dir < 2; dir++) {
@@ -290,7 +291,8 @@ void dslash_body(InstVector &ivector,
                  proj_ops *ops,
                  recons_ops *rec_ops_bw,
                  recons_ops *rec_ops_fw,
-                 FVec outspinor[4][3][2])
+                 FVec outspinor[4][3][2],
+                 bool const *const tbc)
 {
   for (int dim = 0; dim < 4; dim++) {
     for (int dir = 0; dir < 2; dir++) {
@@ -499,52 +501,74 @@ void generate_code(void)
       for (auto kernel : {"dslash", "dslash_achimbdpsi"}) {
         for (auto isPlus : {true, false}) {
           for (auto compress12 : {true, false}) {
-            InstVector ivector;
-            InstVector l2prefs;
-            std::ostringstream filename;
+            // Twisted boundary conditions.
+            for (auto tbc_x : {false, true}) {
+              for (auto tbc_y : {false, true}) {
+                for (auto tbc_z : {false, true}) {
+                  for (auto tbc_t : {false, true}) {
+                    bool const tbc[4] = {tbc_x, tbc_y, tbc_z, tbc_t};
 
-            std::string tm_prefix =
-                twisted_mass_prefixes.at(twisted_mass);
-            std::string clov_prefix =
-                clover ? "clov_" + CloverTypeName + "_" : "";
-            std::string plusminus = isPlus ? "plus" : "minus";
-            int num_components = compress12 ? 12 : 18;
-            bool chi_prefetches =
-                (kernel == "dslash_achimbdpsi") ? true : false;
+                    InstVector ivector;
+                    InstVector l2prefs;
+                    std::ostringstream filename;
 
-            filename << "generated/" << ARCH_NAME << "/generated/"
-                     << tm_prefix << clov_prefix << kernel << "_"
-                     << plusminus << "_"
-                     << "body"
-                     << "_" << SpinorTypeName << "_"
-                     << GaugeTypeName << "_v" << VECLEN << "_s"
-                     << SOALEN << "_" << num_components;
+                    std::string tm_prefix =
+                        twisted_mass_prefixes.at(twisted_mass);
+                    std::string clov_prefix =
+                        clover ? "clov_" + CloverTypeName + "_"
+                               : "";
+                    std::string plusminus =
+                        isPlus ? "plus" : "minus";
+                    int num_components = compress12 ? 12 : 18;
+                    bool chi_prefetches =
+                        (kernel == "dslash_achimbdpsi") ? true
+                                                        : false;
 
-            cout << "GENERATING " << tm_prefix << kernel << "_"
-                 << plusminus << "_"
-                 << "vec body" << endl;
+                    filename
+                        << "generated/" << ARCH_NAME
+                        << "/generated/" << tm_prefix << clov_prefix
+                        << kernel << "_" << plusminus << "_"
+                        << "body"
+                        << "_" << SpinorTypeName << "_"
+                        << GaugeTypeName << "_v" << VECLEN << "_s"
+                        << SOALEN << "_" << num_components << "_";
 
-            // Generate instructions
-            generateL2Prefetches(l2prefs,
-                                 compress12,
-                                 chi_prefetches,
-                                 clover,
-                                 twisted_mass);
-            if (kernel == "dslash")
-              dslash_plain_body(ivector,
-                                compress12,
-                                clover,
-                                twisted_mass,
-                                isPlus);
-            else if (kernel == "dslash_achimbdpsi")
-              dslash_achimbdpsi_body(ivector,
-                                     compress12,
-                                     clover,
-                                     twisted_mass,
-                                     isPlus);
-            mergeIvectorWithL2Prefetches(ivector, l2prefs);
-            dumpIVector(ivector, filename.str());
+                    for (int i = 0; i < 4; ++i) {
+                        // Have Twisted or Simple boundary conditions.
+                        char const letter = (tbc[i] ? 't' : 's');
+                        filename << letter;
+                    }
 
+                    cout << "GENERATING " << tm_prefix << kernel
+                         << "_" << plusminus << "_"
+                         << "vec body" << endl;
+
+                    // Generate instructions
+                    generateL2Prefetches(l2prefs,
+                                         compress12,
+                                         chi_prefetches,
+                                         clover,
+                                         twisted_mass);
+                    if (kernel == "dslash")
+                      dslash_plain_body(ivector,
+                                        compress12,
+                                        clover,
+                                        twisted_mass,
+                                        isPlus,
+                                        tbc);
+                    else if (kernel == "dslash_achimbdpsi")
+                      dslash_achimbdpsi_body(ivector,
+                                             compress12,
+                                             clover,
+                                             twisted_mass,
+                                             isPlus,
+                                             tbc);
+                    mergeIvectorWithL2Prefetches(ivector, l2prefs);
+                    dumpIVector(ivector, filename.str());
+                  }
+                }
+              }
+            }
           } // gauge compression
         } // plus/minus
       } // kernel

@@ -100,7 +100,8 @@ void dslash_plain_body(InstVector &ivector,
                        bool const compress12,
                        bool const clover,
                        TwistedMassVariant const twisted_mass,
-                       bool const isPlus);
+                       bool const isPlus,
+                       bool const *const tbc);
 
 // ***** ------- a chi - b D psi versions
 
@@ -108,7 +109,8 @@ void dslash_achimbdpsi_body(InstVector &ivector,
                             bool const compress12,
                             bool const clover,
                             TwistedMassVariant const twisted_mass,
-                            bool const isPlus);
+                            bool const isPlus,
+                            bool const *const tbc);
 
 void pack_face_to_dir_dim_vec(InstVector &ivector,
                               bool isPlus,
@@ -127,7 +129,9 @@ void dslash_body(InstVector &ivector,
                  proj_ops *ops,
                  recons_ops *rec_ops_bw,
                  recons_ops *rec_ops_fw,
-                 FVec outspinor[4][3][2]);
+                 FVec outspinor[4][3][2],
+                 bool const *const tbc);
+
 void pack_face_vec(InstVector &ivector,
                    FVec spinor[2][3][2],
                    proj_ops proj[],
