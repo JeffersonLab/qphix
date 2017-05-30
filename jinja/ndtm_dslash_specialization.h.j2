@@ -6,8 +6,21 @@
 #error VLEN not defined
 #endif
 
+#if !defined(FPTYPE)
+#error FTYPE not defined
+#endif
+
+#if !defined(VEC)
+#error VLEN not defined
+#endif
+
+{% for isign in ['plus', 'minus'] %}
+{% for tbc_true_false, tbc_ts in true_false_list %}
+// Specializations for the twisted boundary condition setup {{ tbc_true_false }}.
+
+
 template <>
-inline void ndtm_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
@@ -77,7 +90,7 @@ inline void ndtm_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template <>
-inline void ndtm_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+inline void ndtm_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
