@@ -37,7 +37,8 @@ inline void tm_clov_dslash_plus_vec(
     const unsigned int accumulate[8],
     const FT coeff_s,
     const FT coeff_t_f,
-    const FT coeff_t_b) {
+    const FT coeff_t_b,
+    const double tbc_phases[4][2]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // clov_dslash_generated_c.h later
     fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
@@ -83,7 +84,8 @@ inline void tm_clov_dslash_minus_vec(
     const unsigned int accumulate[8],
     const FT coeff_s,
     const FT coeff_t_f,
-    const FT coeff_t_b) {
+    const FT coeff_t_b,
+    const double tbc_phases[4][2]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // clov_dslash_generated_c.h later
     fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
@@ -134,6 +136,7 @@ inline void tm_clov_dslash_achimbdpsi_plus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // clov_dslash_generated_c.h later
@@ -185,6 +188,7 @@ inline void tm_clov_dslash_achimbdpsi_minus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // clov_dslash_generated_c.h later

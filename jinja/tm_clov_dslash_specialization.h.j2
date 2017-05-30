@@ -27,7 +27,8 @@ inline void tm_clov_dslash_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const unsigned int accumulate[8],
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
-    const FPTYPE coeff_t_b) {
+    const FPTYPE coeff_t_b,
+    const double tbc_phases[4][2]) {
     // clang-format off
     {{ include_generated_kernel(ISA, kernel, "plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
@@ -62,7 +63,8 @@ inline void tm_clov_dslash_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const unsigned int accumulate[8],
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
-    const FPTYPE coeff_t_b) {
+    const FPTYPE coeff_t_b,
+    const double tbc_phases[4][2]) {
     // clang-format off
     {{ include_generated_kernel(ISA, kernel, "minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
     // clang-format on
@@ -100,6 +102,7 @@ inline void tm_clov_dslash_achimbdpsi_plus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
+    const double tbc_phases[4][2],
     const unsigned int accumulate[8]) {
     // clang-format off
     {{ include_generated_kernel(ISA, kernel, "achimbdpsi_plus_body", FPTYPE, VEC, SOA, COMPRESS12) }}
@@ -138,6 +141,7 @@ inline void tm_clov_dslash_achimbdpsi_minus_vec<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
+    const double tbc_phases[4][2],
     const unsigned int accumulate[8]) {
     // clang-format off
     {{ include_generated_kernel(ISA, kernel, "achimbdpsi_minus_body", FPTYPE, VEC, SOA, COMPRESS12) }}

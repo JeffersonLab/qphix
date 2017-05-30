@@ -35,6 +35,7 @@ inline void tm_dslash_plus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const FT mu,
     const FT muinv) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
@@ -80,6 +81,7 @@ inline void tm_dslash_minus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const FT mu,
     const FT muinv) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
@@ -130,6 +132,7 @@ inline void tm_dslash_achimbdpsi_plus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const FT mu,
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
@@ -180,6 +183,7 @@ inline void tm_dslash_achimbdpsi_minus_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const double tbc_phases[4][2],
     const FT mu,
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
