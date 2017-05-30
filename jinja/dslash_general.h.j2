@@ -95,7 +95,7 @@ inline void dslash_achimbdpsi_{{ isign }}_vec(
 
 #ifdef QPHIX_DO_COMMS
 
-template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
+template <typename FT, int veclen, int soalen, bool compress12>
 inline void face_proj_dir_{{ isign }}(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
@@ -111,7 +111,7 @@ inline void face_proj_dir_{{ isign }}(
     abort();
 }
 
-template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
+template <typename FT, int veclen, int soalen, bool compress12>
 inline void face_finish_dir_{{ isign }}(
     const FT *inbuf,
     const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock

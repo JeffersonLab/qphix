@@ -1,5 +1,5 @@
 {% for isign in ['{{ isign }}', 'minus'] %}
-template <typename FT, int veclen, int soalen, bool compress12>
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
 inline void tm_dslash_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
@@ -45,7 +45,7 @@ inline void tm_dslash_{{ isign }}_vec(
     abort();
 }
 
-template <typename FT, int veclen, int soalen, bool compress12>
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
 inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
