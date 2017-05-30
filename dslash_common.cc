@@ -7,6 +7,8 @@ using namespace std;
 #include "unsupported_values.h"
 
 extern string beta_names[8];
+extern string tbc_names[4][2];
+
 extern string alpha_name;
 extern string outBase;
 extern string outOffs;

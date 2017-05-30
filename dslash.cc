@@ -187,7 +187,46 @@ void generateL2Prefetches(InstVector &ivector,
   PrefetchL2FullSpinorOut(ivector, outBase, "offs", "siprefdist4");
 }
 
+// XXX Some forward declarations because there is no proper header
+// file for this.
+extern FVec ub_spinor[2][3][2];
+void mulCVec(
+    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+void mulConjCVec(
+    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
+
+void applyTwistedBoundaryConditions(InstVector &ivector,
+                                    bool const adjMul,
+                                    bool const has_tbc,
+                                    FVec *tbc_phase)
+{
+  string mask;
+
+  if (has_tbc) {
+    for (int s = 0; s < 2; s++) {
+      for (int c1 = 0; c1 < 3; c1++) {
+        if (!adjMul) {
+          mulCVec(ivector,
+                  ub_spinor[s][c1],
+                  tbc_phase,
+                  ub_spinor[s][c1],
+                  mask);
+        } else {
+          mulConjCVec(ivector,
+                      ub_spinor[s][c1],
+                      tbc_phase,
+                      ub_spinor[s][c1],
+                      mask);
+        }
+      }
+    }
+  }
+}
+
 #ifdef SERIAL_SPIN
+// FIXME These two functions share a bunch of code, but are two
+// complete copies. Better push that `#ifdef` further inside the
+// function to remove the code duplication.
 void dslash_body(InstVector &ivector,
                  bool compress12,
                  proj_ops *ops,
@@ -197,6 +236,8 @@ void dslash_body(InstVector &ivector,
                  bool const *const tbc)
 {
   for (int dim = 0; dim < 4; dim++) {
+    stringstream dim_str;
+    dim_str << dim;
     for (int dir = 0; dir < 2; dir++) {
       int d = dim * 2 + dir;
       stringstream d_str;
@@ -219,6 +260,15 @@ void dslash_body(InstVector &ivector,
         loadBroadcastScalar(
             ivector, beta_vec, beta_names[d], SpinorType);
 
+        FVec tbc_phase[2] = {declareFVec(ivector, "tbc_phase_re"),
+                             declareFVec(ivector, "tbc_phase_im")};
+        loadBroadcastScalar(ivector,
+                            tbc_phase[RE],
+                            "tbc_phases[" + dim_str.str() + "][0]");
+        loadBroadcastScalar(ivector,
+                            tbc_phase[IM],
+                            "tbc_phases[" + dim_str.str() + "][1]");
+
 #ifdef NO_HW_MASKING
 
         if (requireAllOneCheck[dim]) {
@@ -240,6 +290,8 @@ void dslash_body(InstVector &ivector,
               }
 
               matMultVec(ivector, adjMul, s);
+              applyTwistedBoundaryConditions(
+                  ivector, adjMul, tbc[dim], tbc_phase);
               recons_add(ivector, rec_op, outspinor, mask, s);
             }
           }
@@ -270,6 +322,8 @@ void dslash_body(InstVector &ivector,
           }
 
           matMultVec(ivector, adjMul, s);
+          applyTwistedBoundaryConditions(
+              ivector, adjMul, tbc[dim], tbc_phase);
           recons_add(ivector, rec_op, outspinor, mask, s);
         }
 
@@ -295,6 +349,8 @@ void dslash_body(InstVector &ivector,
                  bool const *const tbc)
 {
   for (int dim = 0; dim < 4; dim++) {
+    stringstream dim_str;
+    dim_str << dim;
     for (int dir = 0; dir < 2; dir++) {
       int d = dim * 2 + dir;
       stringstream d_str;
@@ -327,6 +383,8 @@ void dslash_body(InstVector &ivector,
                     d);
             loadGaugeDir(ivector, d, compress12);
             matMultVec(ivector, adjMul);
+            applyTwistedBoundaryConditions(
+                ivector, adjMul, tbc[dim], tbc_phase);
             recons_add(ivector, rec_op, outspinor, mask);
           }
           elseStatement(ivector);
@@ -350,6 +408,8 @@ void dslash_body(InstVector &ivector,
                 d);
         loadGaugeDir(ivector, d, compress12);
         matMultVec(ivector, adjMul);
+        applyTwistedBoundaryConditions(
+            ivector, adjMul, tbc[dim], tbc_phase);
         recons_add(ivector, rec_op, outspinor, mask);
 #ifdef NO_HW_MASKING
 
