@@ -1,5 +1,5 @@
 #if !defined(FPTYPE)
-#error FTYPE not defined
+#error FPTYPE not defined
 #endif
 
 #if !defined(VEC)
@@ -38,7 +38,7 @@ inline void tm_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
-    const double tbc_phases[4][2],
+    const FPTYPE tbc_phases[4][2],
     const FPTYPE mu,
     const FPTYPE muinv) {
     // clang-format off
@@ -77,7 +77,7 @@ inline void tm_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
-    const double tbc_phases[4][2],
+    const FPTYPE tbc_phases[4][2],
     const FPTYPE mu,
     const unsigned int accumulate[8]) {
     // clang-format off

@@ -1,5 +1,5 @@
-{% for isign in ['{{ isign }}', 'minus'] %}
-template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
+{% for isign in ['plus', 'minus'] %}
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
 inline void ndtm_dslash_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
@@ -36,6 +36,7 @@ inline void ndtm_dslash_{{ isign }}_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const FT tbc_phases[4][2],
     const FT mu,
     const FT muinv) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
@@ -44,7 +45,7 @@ inline void ndtm_dslash_{{ isign }}_vec(
     abort();
 }
 
-template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x, bool tbc_y, bool tbc_z, bool tbc_t>
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
 inline void ndtm_dslash_achimbdpsi_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
@@ -87,6 +88,7 @@ inline void ndtm_dslash_achimbdpsi_{{ isign }}_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
+    const FT tbc_phases[4][2],
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // dslash_generated_c.h later
