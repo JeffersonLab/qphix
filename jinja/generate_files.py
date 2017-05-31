@@ -44,6 +44,7 @@ def main():
     with open('kernels.js') as f:
         kernel_patterns = json.load(f)
 
+    all_header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
 
     # Setting up Jinja
     env = jinja2.Environment(
@@ -64,6 +65,8 @@ def main():
         filename = '../generated/{}_generated.h'.format(kernel)
         with open(filename, 'w') as f:
             f.write(rendered)
+        all_header_files.append(filename)
+
 
     for isa, isa_data in sorted(isas.items()):
         if len(options.isa) > 0 and not isa in options.isa:
@@ -74,10 +77,10 @@ def main():
             continue
 
         source_files = []
-        header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
+        header_files = list(all_header_files)
 
         os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
-        os.makedirs(os.path.join('..', 'generated', isa, 'lib'), exist_ok=True)
+        os.makedirs(os.path.join('..', 'generated', isa, 'src'), exist_ok=True)
 
         # Generate a `Makefile.am`.
         generated_files = os.listdir(os.path.join('..', 'generated', isa, 'generated'))
@@ -133,7 +136,7 @@ def main():
                         filename_spec = os.path.join(
                             '../generated',
                             isa,
-                            'lib',
+                            'src',
                             '{}_{}_spec_{}_{}_{}_{}.cpp'.format(
                                 kernel,
                                 isa,
@@ -161,7 +164,7 @@ def main():
                             filename_spec = os.path.join(
                                 '../generated',
                                 isa,
-                                'lib',
+                                'src',
                                 '{}_{}_spec_{}_{}_{}_{}_{}.cpp'.format(
                                     kernel,
                                     isa,

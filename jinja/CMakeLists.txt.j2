@@ -12,7 +12,7 @@ add_definitions("-march={{ march }}")
 add_library(qphix_codegen
 
     {% for source_file in source_files -%}
-    "lib/{{ source_file }}"
+    "src/{{ source_file }}"
     {% endfor -%}
     )
 
