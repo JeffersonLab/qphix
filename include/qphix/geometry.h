@@ -94,7 +94,7 @@ T1 rep(const T2 &in)
 
 #endif
 
-template <typename T, int V, int S, const bool compressP>
+template <typename T, int V, int S, bool compressP>
 class Geometry
 {
  public:
