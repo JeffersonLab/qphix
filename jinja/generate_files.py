@@ -64,6 +64,8 @@ def main():
             print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
             continue
 
+        source_files = []
+
         os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
         os.makedirs(os.path.join('..', 'generated', isa, 'lib'), exist_ok=True)
 
@@ -90,7 +92,7 @@ def main():
             kernel = kernel_pattern % {'fptype_underscore': ''}
 
             filename_decl = os.path.join('..', 'generated', isa, 'include', '{}_{}_decl.h'.format(kernel, isa))
-            template_decl = env.get_template('jinja/{}_general.h.j2'.format(kernel))
+            template_decl = env.get_template('jinja/{}_decl.h.j2'.format(kernel))
 
             rendered = template_decl.render()
             with open(filename_decl, 'w') as f:
@@ -101,24 +103,49 @@ def main():
                 for soalen in fptype_data['soalens']:
                     print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
                     for compress12 in ['true', 'false']:
+                        template_param = {
+                            'FPTYPE': fptype,
+                            'VEC': veclen,
+                            'SOA': soalen,
+                            'COMPRESS12': compress12,
+                            'generated_warning': generated_warning,
+                            'ISA': isa,
+                            'kernel_pattern': kernel_pattern,
+                            'extra_includes_local': isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
+                            'extra_includes_global': isa_data['extra_includes_global'],
+                        }
+
+                        rendered = complete_specialization.render(
+                            kernel_base=kernel,
+                            **template_param,
+                        )
+                        filename_spec = os.path.join(
+                            '../generated',
+                            isa,
+                            'lib',
+                            '{}_{}_spec_{}_{}_{}_{}.cpp'.format(
+                                kernel,
+                                isa,
+                                fptype,
+                                veclen,
+                                soalen,
+                                'compress18' if compress12 == 'true' else 'compress12',
+                            )
+                        )
+                        with open(filename_spec, 'w') as f:
+                            f.write(rendered)
+                        source_files.append(filename_spec)
+
                         for tbc in itertools.product(*([(True, False)] * 4)):
                             tbc_ts = ''.join(['t' if x else 's' for x in tbc])
                             tbc_true_false = ''.join(['true' if x else 'false' for x in tbc])
 
                             # Generate the complete specialization.
                             rendered = complete_specialization.render(
-                                FPTYPE=fptype,
-                                VEC=veclen,
-                                SOA=soalen,
-                                COMPRESS12=compress12,
-                                generated_warning=generated_warning,
-                                ISA=isa,
                                 tbc_ts=tbc_ts,
                                 tbc_true_false=tbc_true_false,
-                                kernel_base=kernel,
-                                kernel_pattern=kernel_pattern,
-                                extra_includes_local=isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
-                                extra_includes_global=isa_data['extra_includes_global'],
+                                kernel_base=kernel + '_tbc',
+                                **template_param,
                             )
                             filename_spec = os.path.join(
                                 '../generated',
@@ -136,6 +163,17 @@ def main():
                             )
                             with open(filename_spec, 'w') as f:
                                 f.write(rendered)
+                            source_files.append(filename_spec)
+
+
+        cmake_template = env.get_template('jinja/CMakeLists.txt.j2')
+        filename_cmake = os.path.join('../generated', isa, 'CMakeLists.txt')
+        with open(filename_cmake, 'w') as f:
+            f.write(cmake_template.render(
+                source_files=[
+                    os.path.basename(source_file)
+                    for source_file in source_files]
+            ))
 
 
 def _parse_args():

@@ -7,9 +7,6 @@
 #endif
 
 {% for isign in ['plus', 'minus'] %}
-{% for tbc_true_false, tbc_ts in true_false_list %}
-// Specializations for the twisted boundary condition setup {{ tbc_true_false }}.
-
 template <>
 inline void tm_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
     const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
@@ -84,62 +81,4 @@ inline void tm_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {
     {{ include_generated_kernel_ts(ISA, kernel, "achimbdpsi_"+isign+"_body", FPTYPE, VEC, SOA, COMPRESS12, tbc_tc) }}
     // clang-format on
 }
-{% endfor %}
-
-#ifdef QPHIX_QMP_COMMS
-
-template <>
-inline void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
-    const FPTYPE *inbuf,
-    const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
-    const int gOffs[VEC],
-    const int offs[VEC],
-    const int hsprefdist,
-    const int gprefdist,
-    const int soprefdist,
-    const FPTYPE beta,
-    const FPTYPE mu,
-    const FPTYPE muinv,
-    unsigned int mask,
-    int dir) {
-    if (dir == 0) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 1) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 2) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 3) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 4) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 5) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 6) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else if (dir == 7) {
-        // clang-format off
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
-        // clang-format on
-    } else {
-        printf("Invalid dir for unpack boundary\n");
-        exit(1);
-    }
-}
-
-#endif // QPHIX_QMP_COMMS (outer)
 {% endfor %}

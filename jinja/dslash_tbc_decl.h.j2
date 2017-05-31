@@ -1,6 +1,6 @@
 {% for isign in ['plus', 'minus'] %}
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
-inline void tm_dslash_{{ isign }}_vec(
+inline void dslash_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -36,9 +36,7 @@ inline void tm_dslash_{{ isign }}_vec(
     const FT coeff_s,
     const FT coeff_t_f,
     const FT coeff_t_b,
-    const FT tbc_phases[4][2],
-    const FT mu,
-    const FT muinv) {
+    const FT tbc_phases[4][2]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // dslash_generated_c.h later
     fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
@@ -46,7 +44,7 @@ inline void tm_dslash_{{ isign }}_vec(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
-inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
+inline void dslash_achimbdpsi_{{ isign }}_vec(
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
     const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -88,37 +86,10 @@ inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
     const FT coeff_t_f,
     const FT coeff_t_b,
     const FT tbc_phases[4][2],
-    const FT mu,
     const unsigned int accumulate[8]) {
     // BASE CASE TEMPLATE. Do nothing for now. Define this in
     // dslash_generated_c.h later
     fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
     abort();
 }
-
-#ifdef QPHIX_QMP_COMMS
-
-template <typename FT, int veclen, int soalen, bool compress12>
-inline void tm_face_finish_dir_{{ isign }}(
-    const FT *inbuf,
-    const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
-        *gBase,
-    typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
-    const int gOffs[veclen],
-    const int offs[veclen],
-    const int hsprefdist,
-    const int gprefdist,
-    const int soprefdist,
-    const FT beta,
-    const FT mu,
-    const FT muinv,
-    unsigned int mask,
-    int dir) {
-    // BASE CASE TEMPLATE. Do nothing for now. Define this in
-    // dslash_generated_c.h later
-    fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
-    abort();
-}
-
-#endif // QPHIX_QMP_COMMS (outer)
 {% endfor %}

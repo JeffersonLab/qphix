@@ -1,0 +1,41 @@
+{% for isign in ['plus', 'minus'] %}
+#ifdef QPHIX_DO_COMMS
+
+template <typename FT, int veclen, int soalen, bool compress12>
+inline void face_proj_dir_{{ isign }}(
+    const typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+        *xyBase,
+    const int offs[veclen],
+    const int si_prefdist,
+    FT *outbuf,
+    const int hsprefdist,
+    unsigned int mask,
+    int dir) {
+    // BASE CASE TEMPLATE. Do nothing for now. Define this in
+    // dslash_generated_c.h later
+    fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
+    abort();
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+inline void face_finish_dir_{{ isign }}(
+    const FT *inbuf,
+    const typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+        *gBase,
+    typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+    const int gOffs[veclen],
+    const int offs[veclen],
+    const int hsprefdist,
+    const int gprefdist,
+    const int soprefdist,
+    const FT beta,
+    unsigned int mask,
+    int dir) {
+    // BASE CASE TEMPLATE. Do nothing for now. Define this in
+    // dslash_generated_c.h later
+    fprintf(stderr, "Generic veclen and soalen not supported yet.\n");
+    abort();
+}
+
+#endif // QPHIX_DO_COMMS (outer)
+{% endfor %}
