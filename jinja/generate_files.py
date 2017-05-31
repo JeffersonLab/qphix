@@ -35,10 +35,6 @@ def main():
     with open('kernels.js') as f:
         kernel_patterns = json.load(f)
 
-    tf_list = [''.join(tfs)
-               for tfs in itertools.product(*([('t', 's')] * 4))]
-    true_false_list = [', '.join(tfs)
-                       for tfs in itertools.product(*([('true', 'false')] * 4))]
 
     # Setting up Jinja
     env = jinja2.Environment(
@@ -68,7 +64,8 @@ def main():
             print('Code for ISA `{}` is not generated. Skipping.'.format(isa))
             continue
 
-        os.makedirs(os.path.join('..', 'generated', isa), exist_ok=True)
+        os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
+        os.makedirs(os.path.join('..', 'generated', isa, 'lib'), exist_ok=True)
 
         # Generate a `Makefile.am`.
         generated_files = os.listdir(os.path.join('..', 'generated', isa, 'generated'))
@@ -91,25 +88,54 @@ def main():
 
         for kernel_pattern in kernel_patterns:
             kernel = kernel_pattern % {'fptype_underscore': ''}
-            print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
-            defines = [
-                (fptype, fptype_data['veclen'], fptype_data['soalens'])
-                for fptype, fptype_data in sorted(isa_data['fptypes'].items())]
 
-            # Generate the complete specialization.
-            rendered = complete_specialization.render(
-                generated_warning=generated_warning,
-                ISA=isa,
-                kernel_base=kernel,
-                kernel_pattern=kernel_pattern,
-                defines=defines,
-                extra_includes_local=isa_data['extra_includes_local'],
-                extra_includes_global=isa_data['extra_includes_global'],
-                true_false_list=list(zip(true_false_list, tf_list)),
-            )
-            filename = os.path.join('../generated', isa, '{}_{}_complete_specialization.h'.format(kernel, isa))
-            with open(filename, 'w') as f:
+            filename_decl = os.path.join('..', 'generated', isa, 'include', '{}_{}_decl.h'.format(kernel, isa))
+            template_decl = env.get_template('jinja/{}_general.h.j2'.format(kernel))
+
+            rendered = template_decl.render()
+            with open(filename_decl, 'w') as f:
                 f.write(rendered)
+
+            for fptype, fptype_data in sorted(isa_data['fptypes'].items()):
+                veclen = fptype_data['veclen']
+                for soalen in fptype_data['soalens']:
+                    print('Working on kernel `{}` for ISA `{}` …'.format(kernel, isa))
+                    for compress12 in ['true', 'false']:
+                        for tbc in itertools.product(*([(True, False)] * 4)):
+                            tbc_ts = ''.join(['t' if x else 's' for x in tbc])
+                            tbc_true_false = ''.join(['true' if x else 'false' for x in tbc])
+
+                            # Generate the complete specialization.
+                            rendered = complete_specialization.render(
+                                FPTYPE=fptype,
+                                VEC=veclen,
+                                SOA=soalen,
+                                COMPRESS12=compress12,
+                                generated_warning=generated_warning,
+                                ISA=isa,
+                                tbc_ts=tbc_ts,
+                                tbc_true_false=tbc_true_false,
+                                kernel_base=kernel,
+                                kernel_pattern=kernel_pattern,
+                                extra_includes_local=isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
+                                extra_includes_global=isa_data['extra_includes_global'],
+                            )
+                            filename_spec = os.path.join(
+                                '../generated',
+                                isa,
+                                'lib',
+                                '{}_{}_spec_{}_{}_{}_{}_{}.cpp'.format(
+                                    kernel,
+                                    isa,
+                                    fptype,
+                                    veclen,
+                                    soalen,
+                                    'compress18' if compress12 == 'true' else 'compress12',
+                                    tbc_ts,
+                                )
+                            )
+                            with open(filename_spec, 'w') as f:
+                                f.write(rendered)
 
 
 def _parse_args():

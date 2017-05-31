@@ -47,12 +47,9 @@ includes with the Jinja2 include.
 #define _mm_prefetch(a,b) {}
 {% endif %}
 
-{% include 'jinja/%s_general.h.j2'|format(kernel_base) %}
+{# {% include 'jinja/%s_general.h.j2'|format(kernel_base) %} #}
 
-{% for FPTYPE, VEC, soalens in defines %}
 {% set kernel = kernel_pattern|format(fptype_underscore=FPTYPE+'_') %}
-{% for SOA in soalens %}
-{% for COMPRESS12 in ['true', 'false'] %}
 #define FPTYPE {{ FPTYPE }}
 #define VEC {{ VEC }}
 #define SOA {{ SOA }}
@@ -62,6 +59,3 @@ includes with the Jinja2 include.
 #undef VEC
 #undef SOA
 #undef COMPRESS12
-{% endfor %}
-{% endfor %}
-{% endfor %}
