@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(qphix_codegen C CXX)
 
+option(qphix_dir "Root directory of QPhiX")
+
 add_library(qphix_codegen
 
     {% for source_file in source_files -%}
