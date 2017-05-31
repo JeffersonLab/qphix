@@ -13,6 +13,14 @@ import socket
 import jinja2
 
 
+march = {
+    'scalar': 'TODO',
+    'avx': 'sandybridge',
+    'avx2': 'haswell',
+    'avx512': 'knl',
+}
+
+
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
     generated_files = os.listdir(os.path.join('..', 'generated', isa,
                                               'generated'))
@@ -138,7 +146,7 @@ def main():
 
                         for tbc in itertools.product(*([(True, False)] * 4)):
                             tbc_ts = ''.join(['t' if x else 's' for x in tbc])
-                            tbc_true_false = ''.join(['true' if x else 'false' for x in tbc])
+                            tbc_true_false = ', '.join(['true' if x else 'false' for x in tbc])
 
                             # Generate the complete specialization.
                             rendered = complete_specialization.render(
@@ -172,7 +180,8 @@ def main():
             f.write(cmake_template.render(
                 source_files=[
                     os.path.basename(source_file)
-                    for source_file in source_files]
+                    for source_file in source_files],
+                march=march[isa],
             ))
 
 

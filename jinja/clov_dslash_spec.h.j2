@@ -12,9 +12,9 @@
 template <>
 inline void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
-    const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
-    const typename Geometry<FPTYPE, VEC, SOA, COMPRESS12>::CloverBlock *clBase,
+    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
+    CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const typename CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::CloverBlock *clBase,
     const int gOffs[VEC],
     const int offs[VEC],
     const int hsprefdist,

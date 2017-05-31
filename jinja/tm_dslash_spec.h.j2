@@ -12,8 +12,8 @@
 template <>
 inline void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
-    const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
+    CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
     const int gOffs[VEC],
     const int offs[VEC],
     const int hsprefdist,

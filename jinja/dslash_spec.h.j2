@@ -11,7 +11,7 @@
 
 template <>
 inline void face_proj_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
-    const typename Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock
+    const typename CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock
         *xyBase,
     const int offs[VEC],
     const int si_prefdist,
@@ -60,8 +60,8 @@ inline void face_proj_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
 template <>
 inline void face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
-    const Geometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    Geometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
+    CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
     const int gOffs[VEC],
     const int offs[VEC],
     const int hsprefdist,

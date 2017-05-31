@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(qphix_codegen C CXX)
 
-option(qphix_dir "Root directory of QPhiX")
+include_directories(".")
+include_directories("../../include")
+
+add_definitions("--std=c++11")
+
+add_definitions("-march={{ march }}")
 
 add_library(qphix_codegen
 
