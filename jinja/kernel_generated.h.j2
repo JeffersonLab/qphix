@@ -3,8 +3,7 @@
 #pragma once
 
 {% for isa in isas %}
-{% set filename = 'qphix/%s/include/%s_%s_decl.h'|format(isa, kernel, isa) %}
 #if defined (QPHIX_{{ isa|upper }}_SOURCE)
-#include "{{ filename }}"
+#include "{{ 'qphix_codegen/%s_%s_decl.h'|format(kernel, isa) }}"
 #endif
 {% endfor %}
