@@ -8,7 +8,7 @@
 #                                 Help Screen                                 #
 ###############################################################################
 
-if (( $# != 1 )); then
+if (( $# != 3 )); then
     cat <<EOF
 Generates kernels and compiles them.
 
@@ -20,9 +20,11 @@ these files will be compiled into a static library.
 
 Call it like this:
 
-    $0 ISA
+    $0 ISA CXX CXXFLAGS
 
 - ISA is something like “avx” or “avx512”.
+- CXX C++ compiler name
+- CXXFLAGS Flags for the C++ compiler
 EOF
     exit 1
 fi
@@ -31,6 +33,8 @@ set -e
 set -u
 
 isa="$1"
+cxx="$2"
+cxxflags="$3"
 
 ###############################################################################
 #                        Check that Jinja is installed                        #
@@ -76,14 +80,15 @@ pushd jinja
 ./generate_files.py "$isa"
 popd
 
+rm -rf cmake_build cmake_local
 mkdir -p cmake_build
 mkdir -p cmake_local
 
 installdir=$PWD/cmake_local
 
 pushd cmake_build
-cmake ../generated/$isa -DCMAKE_INSTALL_PREFIX="$installdir"
-nice make -j "$(nproc)"
+CXX="$cxx" CXXFLAGS="$cxxflags" cmake ../generated/$isa -DCMAKE_INSTALL_PREFIX="$installdir"
+nice make -j "$(nproc)" VERBOSE=1
 make install
 popd
 

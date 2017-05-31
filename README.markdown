@@ -40,16 +40,21 @@ Available targets are:
 
 #### Kernels and Specialization Headers
 
-For maximum comfort, generate it with the `generate-and-copy-to-qphix` script.
-If the architecture is AVX2 and the QPhiX repository is at `../qphix`, call it
-like so:
+For maximum comfort, generate it with the `generate-and-compile` script. The arguments that it expects are the following:
 
-    ./generate-and-copy-to-qphix avx2 ../qphix
+    ./generate-and-compile ISA CXX CXXFLAGS
+
+If the architecture is AVX and you want to use the GCC compiler, call it like
+so:
+
+    ./generate-and-compile avx g++ "-march=sandybridge -O2"
 
 It will generate all kernels for the architecture utilizing all cores in your
-machine. Then it will generate the specialization headers and copy everything
-into the right positions in the QPhiX repository. All you need to do is
-re-compile QPhiX and check the new kernels into Git.
+machine. Then it will compile the kernels into a static library. QPhiX itself
+has to be linked against this kernel library. At the very end, the script will
+tell you what to pass to QPhiX. It might look like this:
+
+    --with-codegen=/home/mu/Projekte/qphix-codegen/cmake_local
 
 #### Just the Kernels
 
