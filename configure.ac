@@ -104,6 +104,17 @@ AC_ARG_WITH(qmt,
    [ qmt_enabled="no" ]
 )
 
+AC_ARG_WITH(codegen,
+  AC_HELP_STRING(
+     [--with-codegen=DIR],
+     [ Location of the code generator installation ]
+  ),
+  [ CODEGEN_HOME="${with_qdp}"
+    CODEGEN_GIVEN="yes"
+  ],CODEGEN
+  [ CODEGEN_GIVEN="no" ]
+)
+
 dnl Use OpenMP threading
 AC_ARG_ENABLE(openmp,
    AC_HELP_STRING(
@@ -197,6 +208,10 @@ fi
 
 echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
+
+if test "${CODEGEN_GIVEN}" = "yes" && test "${CODEGEN_HOME}" != "no"; then
+    AC_SUBST(QODEGEN_HOME, "${CODEGEN_HOME}")
+fi
 
 if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
 
@@ -544,13 +559,6 @@ dnl dnl produce output
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(include/Makefile)
 AC_CONFIG_FILES(include/qphix/Makefile)
-AC_CONFIG_FILES(include/qphix/avx/Makefile)
-AC_CONFIG_FILES(include/qphix/avx2/Makefile)
-AC_CONFIG_FILES(include/qphix/avx512/Makefile)
-AC_CONFIG_FILES(include/qphix/scalar/Makefile)
-AC_CONFIG_FILES(include/qphix/qpx/Makefile)
-AC_CONFIG_FILES(include/qphix/sse/Makefile)
-AC_CONFIG_FILES(include/qphix/mic/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
 AC_CONFIG_FILES(tests-gtest/Makefile)

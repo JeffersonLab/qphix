@@ -7,11 +7,10 @@
 #include "qphix/print_utils.h"
 #include <omp.h>
 
+#include "qphix_codegen/dslash_generated.h"
+
 namespace QPhiX
 {
-
-#include "qphix/dslash_generated.h"
-
 template <typename FT, int veclen, int soalen, bool compress12>
 Dslash<FT, veclen, soalen, compress12>::Dslash(
     Geometry<FT, veclen, soalen, compress12> *geom_,

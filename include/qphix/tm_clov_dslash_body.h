@@ -8,13 +8,11 @@
 #include <immintrin.h>
 #include <omp.h>
 
+#include <qphix_codegen/dslash_generated.h>
+#include <qphix_codegen/tm_clov_dslash_generated.h>
+
 namespace QPhiX
 {
-
-#include "qphix/dslash_generated.h" // This sorts out the inclusion of face_proj
-// (which is independent of tm and/or clover)
-#include "qphix/tm_clov_dslash_generated.h"
-
 template <typename FT, int veclen, int soalen, bool compress12>
 TMClovDslash<FT, veclen, soalen, compress12>::TMClovDslash(
     Geometry<FT, veclen, soalen, compress12> *geom_,
@@ -28,7 +26,7 @@ TMClovDslash<FT, veclen, soalen, compress12>::TMClovDslash(
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
       PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
       n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
-      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_),
+      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
 {
   if (use_tbc_ != nullptr && tbc_phases_ != nullptr) {
     for (int dim = 0; dim < 4; ++dim) {

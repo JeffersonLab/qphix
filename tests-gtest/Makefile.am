@@ -16,4 +16,4 @@ tests_g_SOURCES = main.cc \
 		  ../tests/mesfield.cc
 tests_g_CXXFLAGS = $(AM_CXXFLAGS)
 
-tests_g_LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@ -lgtest
+tests_g_LDADD = -lqphix_solver -lqphix_codegen @LIBS@ @QPHIX_AUX_LIBS@ -lgtest

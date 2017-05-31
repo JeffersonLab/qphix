@@ -8,15 +8,11 @@ using namespace std;
 #include "qphix/qphix_config.h"
 #include "qphix/print_utils.h"
 
-using namespace std;
+#include <qphix_codegen/dslash_generated.h>
+#include <qphix_codegen/clov_dslash_generated.h>
+
 namespace QPhiX
 {
-
-/* Specialize - Dslash of float */
-#include "qphix/dslash_generated.h"
-#include "qphix/clov_dslash_generated.h"
-
-/* Constructor */
 template <typename FT, int veclen, int soalen, bool compress12>
 ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
     Geometry<FT, veclen, soalen, compress12> *geom_,

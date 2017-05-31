@@ -1,5 +1,3 @@
-SUBDIRS = ./avx ./avx2 ./sse ./avx512 ./mic ./scalar ./qpx
-
 qphix_includedir=$(includedir)/qphix
 
 qphix_include_HEADERS= \
@@ -12,7 +10,6 @@ qphix_include_HEADERS += \
 	./comm.h \
 	./dslash_def.h \
 	./dslash_body.h \
-	./dslash_generated.h \
 	./face.h \
 	./Barrier_mic.h \
 	./Barrier_stubs.h \
@@ -49,7 +46,6 @@ if QPHIX_BUILD_CLOVER
 qphix_include_HEADERS += ./clover.h \
 	./clover_dslash_def.h \
 	./clover_dslash_body.h \
-	./clov_dslash_generated.h \
 	./clov_face.h
 endif
 
@@ -58,7 +54,6 @@ if QPHIX_BUILD_TWISTED_MASS
 qphix_include_HEADERS += ./twisted_mass.h \
 	./tm_dslash_def.h \
 	./tm_dslash_body.h \
-	./tm_dslash_generated.h \
 	./tm_dslash_face.h
 endif
 
@@ -67,7 +62,6 @@ if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 qphix_include_HEADERS += ./twisted_mass_clover.h \
 	./tm_clov_dslash_def.h \
 	./tm_clov_dslash_body.h \
-	./tm_clov_dslash_generated.h \
 	./tm_clov_dslash_face.h
 endif
 

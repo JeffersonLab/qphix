@@ -8,12 +8,11 @@
 #include <immintrin.h>
 #include <omp.h>
 
+#include <qphix_codegen/dslash_generated.h>
+#include <qphix_codegen/tm_dslash_generated.h>
+
 namespace QPhiX
 {
-
-#include "qphix/dslash_generated.h"
-#include "qphix/tm_dslash_generated.h"
-
 template <typename FT, int veclen, int soalen, bool compress12>
 TMDslash<FT, veclen, soalen, compress12>::TMDslash(
     Geometry<FT, veclen, soalen, compress12> *geom_,
