@@ -3,3 +3,5 @@ codegen
 generated
 html
 doc/jinja-dependencies.pdf
+cmake_build/
+cmake_local/
