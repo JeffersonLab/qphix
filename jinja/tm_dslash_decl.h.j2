@@ -1,20 +1,22 @@
 {% include "jinja/spec_common.h.j2" %}
 
+namespace QPhiX {
+
 {% for isign in ['plus', 'minus'] %}
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
-inline void tm_dslash_{{ isign }}_vec(
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+void tm_dslash_{{ isign }}_vec(
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *zbBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *zfBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *tbBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *tfBase,
-    typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+    typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+    const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
     const int xbOffs[veclen],
     const int xfOffs[veclen],
@@ -28,11 +30,11 @@ inline void tm_dslash_{{ isign }}_vec(
     const int siprefdist4,
     const int gprefdist,
     const int pfyOffs[veclen],
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase2,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase3,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase4,
     const unsigned int accumulate[8],
     const FT coeff_s,
@@ -43,21 +45,21 @@ inline void tm_dslash_{{ isign }}_vec(
     const FT muinv);
 
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc_x = false, bool tbc_y = false, bool tbc_z = false, bool tbc_t = false>
-inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+void tm_dslash_achimbdpsi_{{ isign }}_vec(
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *xyBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *zbBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *zfBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *tbBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *tfBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *chiBase,
-    typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+    typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+    const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
     const int xbOffs[veclen],
     const int xfOffs[veclen],
@@ -72,13 +74,13 @@ inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
     const int chiprefdist,
     const int gprefdist,
     const int pfyOffs[veclen],
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase2,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase3,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBase4,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
         *pfBaseChi,
     const FT alpha,
     const FT coeff_s,
@@ -91,11 +93,11 @@ inline void tm_dslash_achimbdpsi_{{ isign }}_vec(
 #ifdef QPHIX_QMP_COMMS
 
 template <typename FT, int veclen, int soalen, bool compress12>
-inline void tm_face_finish_dir_{{ isign }}(
+void tm_face_finish_dir_{{ isign }}(
     const FT *inbuf,
-    const typename CodegenGeometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+    const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
-    typename CodegenGeometry<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+    typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
     const int gOffs[veclen],
     const int offs[veclen],
     const int hsprefdist,
@@ -109,3 +111,5 @@ inline void tm_face_finish_dir_{{ isign }}(
 
 #endif // QPHIX_QMP_COMMS (outer)
 {% endfor %}
+
+}

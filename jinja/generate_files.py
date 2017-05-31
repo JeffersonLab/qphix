@@ -33,6 +33,19 @@ def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
     return sorted(set(files))
 
 
+def write_if_changed(filename, content_new):
+    with open(filename, 'r') as f:
+        content_old = f.read()
+
+    if content_old == content_new:
+        return
+
+    print('Updating', filename)
+
+    with open(filename, 'w') as f:
+        f.write(content_new)
+
+
 def main():
     options = _parse_args()
 
@@ -63,9 +76,8 @@ def main():
             isas=sorted(isas.keys()),
         )
         filename = '../generated/{}_generated.h'.format(kernel)
-        with open(filename, 'w') as f:
-            f.write(rendered)
-        all_header_files.append(filename)
+        write_if_changed(filename, rendered)
+        all_header_files.append(os.path.join('..', os.path.basename(filename)))
 
 
     for isa, isa_data in sorted(isas.items()):
@@ -98,8 +110,7 @@ def main():
             generated_for_prefix=generated_for_prefix,
         )
         filename = os.path.join('../generated', isa, 'Makefile.am')
-        with open(filename, 'w') as f:
-            f.write(rendered)
+        write_if_changed(filename, rendered)
 
         for kernel_pattern in kernel_patterns:
             kernel = kernel_pattern % {'fptype_underscore': ''}
@@ -108,8 +119,7 @@ def main():
             template_decl = env.get_template('jinja/{}_decl.h.j2'.format(kernel))
 
             rendered = template_decl.render()
-            with open(filename_decl, 'w') as f:
-                f.write(rendered)
+            write_if_changed(filename_decl, rendered)
             header_files.append(os.path.join('include', os.path.basename(filename_decl)))
 
             for fptype, fptype_data in sorted(isa_data['fptypes'].items()):
@@ -143,11 +153,10 @@ def main():
                                 fptype,
                                 veclen,
                                 soalen,
-                                'compress18' if compress12 == 'true' else 'compress12',
+                                'compress12' if compress12 == 'true' else 'compress18',
                             )
                         )
-                        with open(filename_spec, 'w') as f:
-                            f.write(rendered)
+                        write_if_changed(filename_spec, rendered)
                         source_files.append(filename_spec)
 
                         for tbc in itertools.product(*([(True, False)] * 4)):
@@ -171,25 +180,24 @@ def main():
                                     fptype,
                                     veclen,
                                     soalen,
-                                    'compress18' if compress12 == 'true' else 'compress12',
+                                    'compress12' if compress12 == 'true' else 'compress18',
                                     tbc_ts,
                                 )
                             )
-                            with open(filename_spec, 'w') as f:
-                                f.write(rendered)
+                            write_if_changed(filename_spec, rendered)
                             source_files.append(filename_spec)
 
 
         cmake_template = env.get_template('jinja/CMakeLists.txt.j2')
         filename_cmake = os.path.join('../generated', isa, 'CMakeLists.txt')
-        with open(filename_cmake, 'w') as f:
-            f.write(cmake_template.render(
-                source_files=[
-                    os.path.basename(source_file)
-                    for source_file in source_files],
-                header_files=header_files,
-                march=march[isa],
-            ))
+        rendered = cmake_template.render(
+            source_files=[
+                os.path.basename(source_file)
+                for source_file in source_files],
+            header_files=header_files,
+            march=march[isa],
+        )
+        write_if_changed(filename_cmake, rendered)
 
 
 def _parse_args():

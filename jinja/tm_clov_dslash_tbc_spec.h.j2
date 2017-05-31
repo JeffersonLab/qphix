@@ -1,22 +1,14 @@
-#if !defined(FPTYPE)
-#error FPTYPE not defined
-#endif
-
-#if !defined(VEC)
-#error VLEN not defined
-#endif
-
 {% for isign in ['plus', 'minus'] %}
-template <>
-inline void tm_clov_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tbBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tfBase,
-    CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *clBase,
+{% call definition_instantiation(isign + "_body") %}
+void tm_clov_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tbBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tfBase,
+    Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *clBase,
     const int xbOffs[VEC],
     const int xfOffs[VEC],
     const int ybOffs[VEC],
@@ -30,30 +22,27 @@ inline void tm_clov_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_
     const int gprefdist,
     const int clprefdist,
     const int pfyOffs[VEC],
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase2,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase3,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase4,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase2,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase3,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase4,
     const unsigned int accumulate[8],
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
-    const FPTYPE tbc_phases[4][2]) {
-    // clang-format off
-    {{ include_generated_kernel_ts(ISA, kernel, isign+"_body", FPTYPE, VEC, SOA, COMPRESS12, tbc_ts) }}
-    // clang-format on
-}
+    const FPTYPE tbc_phases[4][2])
+{% endcall %}
 
-template <>
-inline void tm_clov_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tbBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tfBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chiBase,
-    CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *clBase,
+{% call definition_instantiation("achimbdpsi_"+isign+"_body") %}
+void tm_clov_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *xyBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zbBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *zfBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tbBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *tfBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chiBase,
+    Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *clBase,
     const int xbOffs[VEC],
     const int xfOffs[VEC],
     const int ybOffs[VEC],
@@ -68,17 +57,14 @@ inline void tm_clov_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS
     const int gprefdist,
     const int clprefdist,
     const int pfyOffs[VEC],
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase2,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase3,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase4,
-    const CodegenGeometry<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBaseChi,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase2,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase3,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBase4,
+    const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *pfBaseChi,
     const FPTYPE coeff_s,
     const FPTYPE coeff_t_f,
     const FPTYPE coeff_t_b,
     const FPTYPE tbc_phases[4][2],
-    const unsigned int accumulate[8]) {
-    // clang-format off
-    {{ include_generated_kernel_ts(ISA, kernel, "achimbdpsi_"+isign+"_body", FPTYPE, VEC, SOA, COMPRESS12, tbc_ts) }}
-    // clang-format on
-}
+    const unsigned int accumulate[8])
+{% endcall %}
 {% endfor %}
