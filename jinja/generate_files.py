@@ -5,9 +5,10 @@
 
 import argparse
 import getpass
+import glob
+import itertools
 import json
 import os
-import itertools
 import socket
 
 import jinja2
@@ -73,6 +74,7 @@ def main():
             continue
 
         source_files = []
+        header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
 
         os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
         os.makedirs(os.path.join('..', 'generated', isa, 'lib'), exist_ok=True)
@@ -105,6 +107,7 @@ def main():
             rendered = template_decl.render()
             with open(filename_decl, 'w') as f:
                 f.write(rendered)
+            header_files.append(os.path.join('include', os.path.basename(filename_decl)))
 
             for fptype, fptype_data in sorted(isa_data['fptypes'].items()):
                 veclen = fptype_data['veclen']
@@ -181,6 +184,7 @@ def main():
                 source_files=[
                     os.path.basename(source_file)
                     for source_file in source_files],
+                header_files=header_files,
                 march=march[isa],
             ))
 

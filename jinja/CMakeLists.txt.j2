@@ -12,6 +12,16 @@ add_definitions("-march={{ march }}")
 add_library(qphix_codegen
 
     {% for source_file in source_files -%}
-    lib/{{ source_file }}
+    "lib/{{ source_file }}"
     {% endfor -%}
     )
+
+install(TARGETS qphix_codegen
+    DESTINATION lib)
+
+install(FILES
+    {% for header_file in header_files -%}
+    "{{ header_file }}"
+    {% endfor -%}
+
+    DESTINATION "include")
