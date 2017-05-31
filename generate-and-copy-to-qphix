@@ -8,23 +8,21 @@
 #                                 Help Screen                                 #
 ###############################################################################
 
-if (( $# != 2 )); then
+if (( $# != 1 )); then
     cat <<EOF
-Generate kernels and copy then to QPhiX.
+Generates kernels and compiles them.
 
 This script will compile the code generator for the given architecture, once
 for each floating point type and vector length and soalen and compression. Then
 it will run generator to generate the code. Third, a Python script will
 generate the \`Makefile.am\` and all the specialization header files. Lastly,
-those files are copied into the right spots of the QPhiX repository.
+these files will be compiled into a static library.
 
 Call it like this:
 
-    $0 ISA QPHIX-DIRECTORY
+    $0 ISA
 
 - ISA is something like “avx” or “avx512”.
-
-- DIRECTORY is the base of the directory where the qphix repo is located.
 EOF
     exit 1
 fi
@@ -33,16 +31,6 @@ set -e
 set -u
 
 isa="$1"
-qphix="$2"
-
-###############################################################################
-#                         Check for QPhiX Repository                          #
-###############################################################################
-
-if ! [[ -d "$qphix/.git" ]]; then
-    echo "The QPhiX Git repository could not be found at $qphix. Please make sure it is there or change the variable in this script."
-    exit 1
-fi
 
 ###############################################################################
 #                        Check that Jinja is installed                        #
@@ -81,16 +69,25 @@ fi
 ###############################################################################
 
 # Generate the kernel code.
-make -j "$(nproc)" "$isa"
+nice make -j "$(nproc)" "$isa"
 
 # Generate the specialization code.
 pushd jinja
 ./generate_files.py "$isa"
 popd
 
-# Copy the kernel files to QPhiX.
-mkdir -p "$qphix/include/qphix/$isa"
-cp -r "generated/$isa" "$qphix/include/qphix/"
+mkdir -p cmake_build
+mkdir -p cmake_local
 
-# Copy the specialization files to QPhiX.
-cp "generated/"*.h "$qphix/include/qphix/"
+installdir=$PWD/cmake_local
+
+pushd cmake_build
+cmake ../generated/$isa -DCMAKE_INSTALL_PREFIX="$installdir"
+nice make -j "$(nproc)"
+make install
+popd
+
+cat <<EOF
+Everything has been installed into “$installdir”. Please pass this to QPhiX
+“configure” by specifying “--with-codegen=$installdir”.
+EOF
