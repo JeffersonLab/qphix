@@ -5,6 +5,7 @@
 #include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
+#include "qphix/kernel_selector.h"
 #include <immintrin.h>
 #include <omp.h>
 
@@ -367,6 +368,12 @@ void TMClovDslash<FT, veclen, soalen, compress12>::Dyz(
     bool const is_plus,
     int cb)
 {
+  auto kernel =
+      (is_plus ? QPHIX_KERNEL_SELECT(
+                     tm_clov_dslash_plus_vec, FT, veclen, soalen, compress12)
+               : QPHIX_KERNEL_SELECT(
+                     tm_clov_dslash_minus_vec, FT, veclen, soalen, compress12));
+
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
   const int Ny = s->Ny();
@@ -630,10 +637,6 @@ void TMClovDslash<FT, veclen, soalen, compress12>::Dyz(
             FT forw_t_coeff_T = rep<FT, double>(forw_t_coeff);
             FT back_t_coeff_T = rep<FT, double>(back_t_coeff);
 
-            auto kernel =
-                (is_plus ? tm_clov_dslash_plus_vec<FT, veclen, soalen, compress12>
-                         : tm_clov_dslash_minus_vec<FT, veclen, soalen, compress12>);
-
             kernel(xyBase + X,
                    zbBase + X,
                    zfBase + X,
@@ -686,6 +689,16 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
     bool const is_plus,
     int cb)
 {
+  auto kernel =
+      (is_plus
+           ? QPHIX_KERNEL_SELECT(
+                 tm_clov_dslash_achimbdpsi_plus_vec, FT, veclen, soalen, compress12)
+           : QPHIX_KERNEL_SELECT(tm_clov_dslash_achimbdpsi_minus_vec,
+                                 FT,
+                                 veclen,
+                                 soalen,
+                                 compress12));
+
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
   const int Ny = s->Ny();
@@ -953,16 +966,6 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
             FT beta_s_T = rep<FT, double>(beta_s);
             FT beta_t_f_T = rep<FT, double>(beta_t_f);
             FT beta_t_b_T = rep<FT, double>(beta_t_b);
-
-            auto kernel =
-                (is_plus ? tm_clov_dslash_achimbdpsi_plus_vec<FT,
-                                                              veclen,
-                                                              soalen,
-                                                              compress12>
-                         : tm_clov_dslash_achimbdpsi_minus_vec<FT,
-                                                               veclen,
-                                                               soalen,
-                                                               compress12>);
 
             kernel(xyBase + X,
                    zbBase + X,

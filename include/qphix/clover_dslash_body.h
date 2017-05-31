@@ -7,6 +7,7 @@ using namespace std;
 
 #include "qphix/qphix_config.h"
 #include "qphix/print_utils.h"
+#include "qphix/kernel_selector.h"
 
 #include <qphix_codegen/dslash_generated.h>
 #include <qphix_codegen/clov_dslash_generated.h>
@@ -368,6 +369,11 @@ void ClovDslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                                                      bool const is_plus,
                                                      int cb)
 {
+  auto kernel =
+      (is_plus ? QPHIX_KERNEL_SELECT(
+                     clov_dslash_plus_vec, FT, veclen, soalen, compress12)
+               : QPHIX_KERNEL_SELECT(
+                     clov_dslash_minus_vec, FT, veclen, soalen, compress12));
 
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
@@ -631,10 +637,6 @@ void ClovDslash<FT, veclen, soalen, compress12>::Dyz(int tid,
             FT forw_t_coeff_T = rep<FT, double>(forw_t_coeff);
             FT back_t_coeff_T = rep<FT, double>(back_t_coeff);
 
-            auto kernel =
-                (is_plus ? clov_dslash_plus_vec<FT, veclen, soalen, compress12>
-                         : clov_dslash_minus_vec<FT, veclen, soalen, compress12>);
-
             kernel(xyBase + X,
                    zbBase + X,
                    zfBase + X,
@@ -687,6 +689,13 @@ void ClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
     bool const is_plus,
     int cb)
 {
+  auto kernel =
+      (is_plus
+           ? QPHIX_KERNEL_SELECT(
+                 clov_dslash_achimbdpsi_plus_vec, FT, veclen, soalen, compress12)
+           : QPHIX_KERNEL_SELECT(
+                 clov_dslash_achimbdpsi_minus_vec, FT, veclen, soalen, compress12));
+
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
   const int Ny = s->Ny();
@@ -953,15 +962,6 @@ void ClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
             FT beta_s_T = rep<FT, double>(beta_s);
             FT beta_t_f_T = rep<FT, double>(beta_t_f);
             FT beta_t_b_T = rep<FT, double>(beta_t_b);
-
-            auto kernel = (is_plus ? clov_dslash_achimbdpsi_plus_vec<FT,
-                                                                     veclen,
-                                                                     soalen,
-                                                                     compress12>
-                                   : clov_dslash_achimbdpsi_minus_vec<FT,
-                                                                      veclen,
-                                                                      soalen,
-                                                                      compress12>);
 
             kernel(xyBase + X,
                    zbBase + X,

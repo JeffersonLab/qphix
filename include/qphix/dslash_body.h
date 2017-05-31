@@ -5,6 +5,7 @@
 #include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
+#include "qphix/kernel_selector.h"
 #include <omp.h>
 
 #include "qphix_codegen/dslash_generated.h"
@@ -363,9 +364,14 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                                                  const FourSpinorBlock *psi,
                                                  FourSpinorBlock *res,
                                                  const SU3MatrixBlock *u,
-                                                 bool is_plus,
+                                                 bool const is_plus,
                                                  int cb)
 {
+  auto kernel =
+      (is_plus
+           ? QPHIX_KERNEL_SELECT(dslash_plus_vec, FT, veclen, soalen, compress12)
+           : QPHIX_KERNEL_SELECT(dslash_minus_vec, FT, veclen, soalen, compress12));
+
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
   const int Ny = s->Ny();
@@ -622,10 +628,6 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
             FT forw_t_coeff_T = rep<FT, double>(forw_t_coeff);
             FT back_t_coeff_T = rep<FT, double>(back_t_coeff);
 
-            auto kernel =
-                (is_plus ? dslash_plus_vec<FT, veclen, soalen, compress12>
-                         : dslash_minus_vec<FT, veclen, soalen, compress12>);
-
             kernel(xyBase + X,
                    zbBase + X,
                    zfBase + X,
@@ -673,9 +675,14 @@ void Dslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
     const SU3MatrixBlock *u,
     double alpha,
     double beta,
-    bool is_plus,
+    bool const is_plus,
     int cb)
 {
+  auto kernel =
+      (is_plus ? QPHIX_KERNEL_SELECT(
+                     dslash_achimbdpsi_plus_vec, FT, veclen, soalen, compress12)
+               : QPHIX_KERNEL_SELECT(
+                     dslash_achimbdpsi_minus_vec, FT, veclen, soalen, compress12));
 
   const int Nxh = s->Nxh();
   const int Nx = s->Nx();
@@ -935,11 +942,6 @@ void Dslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
             FT beta_t_f_T = rep<FT, double>(beta_t_f);
             FT beta_t_b_T = rep<FT, double>(beta_t_b);
 
-            auto kernel =
-                (is_plus
-                     ? dslash_achimbdpsi_plus_vec<FT, veclen, soalen, compress12>
-                     : dslash_achimbdpsi_minus_vec<FT, veclen, soalen, compress12>);
-
             kernel(xyBase + X,
                    zbBase + X,
                    zfBase + X,
@@ -986,7 +988,7 @@ template <typename FT, int veclen, int soalen, bool compress12>
 void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                                                   const FourSpinorBlock *psi_in,
                                                   FourSpinorBlock *res_out,
-                                                  bool is_plus,
+                                                  bool const is_plus,
                                                   int cb)
 {
   double beta_s = -aniso_coeff_S;
@@ -1060,7 +1062,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     FourSpinorBlock *res_out,
     double alpha,
     double beta,
-    bool is_plus,
+    bool const is_plus,
     int cb)
 {
   double beta_s = beta * aniso_coeff_S;

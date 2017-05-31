@@ -24,6 +24,7 @@ qphix_include_HEADERS += \
 	./blas_utils.h \
 	./real_functors.h \
 	./complex_functors.h \
+	./kernel_selector.h \
 	./site_loops.h \
 	./blas_new_c.h \
 	./print_utils.h \
