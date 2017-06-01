@@ -4,6 +4,8 @@
 
 namespace QPhiX
 {
+typedef unsigned short half;
+
 template <typename T, int V, int S, bool compressP>
 struct Types {
   typedef T FourSpinorBlock[3][4][2][S];
