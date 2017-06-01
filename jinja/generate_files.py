@@ -34,11 +34,12 @@ def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
 
 
 def write_if_changed(filename, content_new):
-    with open(filename, 'r') as f:
-        content_old = f.read()
+    if os.path.isfile(filename):
+        with open(filename, 'r') as f:
+            content_old = f.read()
 
-    if content_old == content_new:
-        return
+        if content_old == content_new:
+            return
 
     print('Updating', filename)
 
