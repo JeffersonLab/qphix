@@ -31,6 +31,7 @@ fi
 
 set -e
 set -u
+set -x
 
 isa="$1"
 cxx="$2"
