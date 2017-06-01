@@ -1,7 +1,7 @@
 TOPDIR=@top_srcdir@
 BUILDDIR=@top_builddir@
 
-AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @QPHIX_AUX_CFLAGS@
+AM_CXXFLAGS= -I$(TOPDIR)/include -I$(BUILDDIR)/include @QPHIX_AUX_CFLAGS@ -I@QPHIX_CODEGEN_HOME@/include
 
 lib_LIBRARIES = libqphix_solver.a
 

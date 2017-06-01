@@ -210,7 +210,7 @@ echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
 
 if test "${CODEGEN_GIVEN}" = "yes" && test "${CODEGEN_HOME}" != "no"; then
-    AC_SUBST(QODEGEN_HOME, "${CODEGEN_HOME}")
+    AC_SUBST(QPHIX_CODEGEN_HOME, "${CODEGEN_HOME}")
 fi
 
 if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
