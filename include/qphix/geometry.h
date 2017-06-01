@@ -26,8 +26,6 @@ struct CorePhase {
   int startBlock;
 };
 
-typedef unsigned short half;
-
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 inline float cvtHalf2Float(half val)
 {
