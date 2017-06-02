@@ -109,9 +109,9 @@ AC_ARG_WITH(codegen,
      [--with-codegen=DIR],
      [ Location of the code generator installation ]
   ),
-  [ CODEGEN_HOME="${with_qdp}"
+  [ CODEGEN_HOME="${with_codegen}"
     CODEGEN_GIVEN="yes"
-  ],CODEGEN
+  ],
   [ CODEGEN_GIVEN="no" ]
 )
 
