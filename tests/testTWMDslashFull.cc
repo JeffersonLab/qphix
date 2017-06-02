@@ -59,21 +59,8 @@ void testTWMDslashFull::run(void)
   Nz = lattSize[2];
   Nt = lattSize[3];
 
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
-
-  QDPIO::cout << "Block Sizes: By = " << By << ", Bz = " << Bz << endl;
-  QDPIO::cout << "Number of Cores = " << NCores << endl;
-  QDPIO::cout << "SMT Grid: Sy = " << Sy << ", Sz = " << Sz << endl;
-  QDPIO::cout << "Pad Factors: PadXY = " << PadXY << ", PadXYZ = " << PadXYZ << endl;
-  QDPIO::cout << "MinCt = " << MinCt << endl;
-  QDPIO::cout << "Threads_per_core = " << N_simt << endl;
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-
   // Make a random gauge field
+  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
   multi1d<LatticeColorMatrix> u(4);
   LatticeColorMatrix g;
   LatticeColorMatrix uf;
@@ -88,7 +75,6 @@ void testTWMDslashFull::run(void)
   // Save build time
   if (precision == FLOAT_PREC) {
 
-    QDPIO::cout << "SINGLE PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
@@ -96,7 +82,6 @@ void testTWMDslashFull::run(void)
 
 #if defined(QPHIX_SCALAR_SOURCE)
     if (soalen == 1) {
-      QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 4" << endl;
       testTWMDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 1, UF, PhiF>();
@@ -109,7 +94,6 @@ void testTWMDslashFull::run(void)
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_SSE_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 4" << endl;
       testTWMDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 4, UF, PhiF>();
@@ -121,7 +105,6 @@ void testTWMDslashFull::run(void)
     if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 8" << endl;
       testTWMDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 8, UF, PhiF>();
@@ -132,7 +115,6 @@ void testTWMDslashFull::run(void)
 
     if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_SP << ", SOALEN = 16" << endl;
       testTWMDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMMWrapper<float, VECLEN_SP, 16, UF, PhiF>();
@@ -149,13 +131,11 @@ void testTWMDslashFull::run(void)
   if (precision == HALF_PREC) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_AVX512_SOURCE)
-    QDPIO::cout << "HALF PRECISION TESTING:" << endl;
     multi1d<LatticeColorMatrixF> u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
     }
     if (soalen == 4) {
-      QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=4 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>();
@@ -163,7 +143,6 @@ void testTWMDslashFull::run(void)
     }
 
     if (soalen == 8) {
-      QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=8 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMCGWrapper<half, VECLEN_HP, 8, UF, PhiF>();
@@ -171,7 +150,6 @@ void testTWMDslashFull::run(void)
     }
 
     if (soalen == 16) {
-      QDPIO::cout << "VECLEN = " << VECLEN_HP << ", SOALEN=16 " << endl;
       testTWMDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMCGWrapper<half, VECLEN_HP, 16, UF, PhiF>();
@@ -184,7 +162,6 @@ void testTWMDslashFull::run(void)
   } // HALF_PREC
 
   if (precision == DOUBLE_PREC) {
-    QDPIO::cout << "DOUBLE PRECISION TESTING:" << endl;
     MUD u_in(4);
     for (int mu = 0; mu < Nd; mu++) {
       u_in[mu] = u[mu];
@@ -192,7 +169,6 @@ void testTWMDslashFull::run(void)
 
     if (soalen == 2) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_DP << ", SOALEN = 2 " << endl;
       testTWMDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 2, UD, PhiD>();
@@ -204,7 +180,6 @@ void testTWMDslashFull::run(void)
     if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_DP << ", SOALEN = 4 " << endl;
       testTWMDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 4, UD, PhiD>();
@@ -215,7 +190,6 @@ void testTWMDslashFull::run(void)
 
     if (soalen == 8) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      QDPIO::cout << "VECLEN = " << VECLEN_DP << ", SOALEN = 8 " << endl;
       testTWMDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMMWrapper<double, VECLEN_DP, 8, UD, PhiD>();
@@ -271,8 +245,8 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
   gaussian(hs_source.qdp());
   hs_source.pack();
 
-  for (auto isign : {1, -1}) {
-    for (auto cb : {0, 1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int cb = 0; cb <= 1; ++cb) {
 
       int source_cb = 1 - cb;
       int target_cb = cb;
@@ -348,8 +322,8 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
   hs_source1.pack();
   hs_source2.pack();
 
-  for (auto isign : {1, -1}) {
-    for (auto target_cb : {1, 0}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int target_cb = 0; target_cb <= 1; ++target_cb) {
       masterPrintf("Target CB: %i\n", target_cb);
 
       int const source_cb = 1 - target_cb;
@@ -429,8 +403,8 @@ void testTWMDslashFull::testTWMM(int t_bc)
                                                gauge.aniso_fac_s,
                                                gauge.aniso_fac_t);
 
-  for (auto isign : {1, -1}) {
-    for (int target_cb : {1, 0}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
+    for (int target_cb = 0; target_cb <= 1; ++target_cb) {
       int source_cb = 1 - target_cb;
       QDPIO::cout << "Target CB = " << target_cb << ", isign = " << isign << endl;
 
@@ -658,7 +632,7 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
   unsigned long mv_apps = 0;
   InvBiCGStab<T, V, S, compress> solver(M, max_iters);
 
-  for (auto isign : {1, -1}) {
+  for (int isign = 1; isign >= -1; isign -= 2) {
 
     Phi chi = zero;
     qdp_pack_cb_spinor<>(chi, chi_even, geom, 0);

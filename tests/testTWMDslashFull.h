@@ -1,11 +1,9 @@
 #ifndef TEST_TWM_DSLASH_FULL
 #define TEST_TWM_DSLASH_FULL
 
-#ifndef UNITTEST_H
 #include "unittest.h"
-#endif
 
-enum Prec { FLOAT_PREC = 0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 class testTWMDslashFull : public TestFixture
 {

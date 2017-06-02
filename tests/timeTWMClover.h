@@ -1,7 +1,7 @@
 #ifndef TIME_TWM_CLOVER
 #define TIME_TWM_CLOVER
 
-enum Prec { FLOAT_PREC = 0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 class timeTWMClover
 {

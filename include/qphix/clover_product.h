@@ -4,6 +4,7 @@
 #include <qphix/geometry.h>
 
 #include <cassert>
+#include <initializer_list>
 #include <iomanip>
 #include <iostream>
 #include <vector>

@@ -40,19 +40,19 @@ FRAMEWORK_SRCS =  unittest.h \
 	dslashm_w.cc \
 	reunit.h \
 	invbicgstab_test.h \
-	reunit.cc
+	reunit.cc \
+	cli_args.cc
 
 t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testDslashFull.h \
 	testDslashFull.cc \
 	t_dslash.cc
 
-
-
 time_dslash_noqdp_SOURCES= \
 	time_dslash_noqdp.cc \
 	timeDslashNoQDP.h \
-	timeDslashNoQDP.cc
+	timeDslashNoQDP.cc \
+	cli_args.cc
 
 t_minvcg_SOURCES = $(FRAMEWORK_SRCS) \
 	testMInvCG.h \
@@ -94,7 +94,8 @@ t_clov_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
 time_clov_noqdp_SOURCES= \
 	time_clov_noqdp.cc \
 	timeClovNoQDP.h \
-	timeClovNoQDP.cc
+	timeClovNoQDP.cc \
+	cli_args.cc
 
 t_clov_dslash_DEPENDENCIES = build_lib
 t_clov_invert_from_file_DEPENDENCIES = build_lib
@@ -118,7 +119,6 @@ time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 t_twm_dslash_DEPENDENCIES = build_lib
 time_twm_noqdp_DEPENDENCIES = build_lib
 endif
-
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 

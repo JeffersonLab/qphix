@@ -131,7 +131,8 @@ class TestRunner : public TestCase
       num_tried++;
       t.test->run();
       t.success = SUCCESS;
-    } catch (std::exception) {
+    } catch (std::exception const &e) {
+      QDPIO::cout << e.what() << std::endl;
       t.success = FAIL;
     } catch (...) {
       t.success = ERROR;

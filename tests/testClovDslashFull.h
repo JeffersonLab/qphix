@@ -3,7 +3,7 @@
 
 #include "unittest.h"
 
-enum Prec { FLOAT_PREC = 0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 #include <qphix/qphix_cli_args.h>
 using namespace QPhiX;

@@ -156,20 +156,6 @@ void testClovInvertFromFile::runTest(double mass,
   int Nz = lattSize[2];
   int Nt = lattSize[3];
 
-  QDPIO::cout << "VECLEN=" << V << "  SOALEN=" << S << endl;
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
-
-  QDPIO::cout << "Block Sizes: By=" << By << " Bz=" << Bz << endl;
-  QDPIO::cout << "N Cores" << NCores << endl;
-  QDPIO::cout << "SMT Grid: Sy=" << Sy << " Sz=" << Sz << endl;
-  QDPIO::cout << "Pad Factors: PadXY=" << PadXY << " PadXYZ=" << PadXYZ << endl;
-  QDPIO::cout << "MinCt=" << MinCt << endl;
-  QDPIO::cout << "Threads_per_core = " << N_simt << endl;
-
   // What we consider to be small enough...
   QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
 

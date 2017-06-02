@@ -8,7 +8,9 @@
 #ifndef INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
 #define INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
 
+#include <cstdlib>
 #include <iostream>
+
 namespace QPhiX
 {
 
@@ -31,15 +33,15 @@ class QPhiXCLIArgs
     if (!initedP) {
       std::cout << "ERROR: QPhiX CLI Arg Not Inited\n";
       printHelp();
-      abort();
+      std::abort();
     } else {
       return value;
     }
   }
 
-  // Parse args...
-  void init(int argc, char *argv[]);
+  void init(int &argc, char **&argv);
   void printHelp() const;
+  void printArgHelp() const;
 
  private:
   bool initedP;
