@@ -2,8 +2,9 @@
 #define TEST_CLOVDSLASH_FULL
 
 #include "unittest.h"
-
 #include "prec.h"
+#include "tparam_selector.h"
+#include "cli_args.h"
 
 #include <qphix/qphix_cli_args.h>
 using namespace QPhiX;
@@ -19,13 +20,17 @@ class testClovDslashFull : public TestFixture
   {
   }
 
-  // Toplevel test function wrapper
-  void run(void);
+  void run() override;
+
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()();
 
  private:
-  // Templated test function
-  template <typename FT, int V, int S, bool compress, typename U, typename Phi>
-  void runTest(void);
 
   const int By;
   const int Bz;

@@ -3,12 +3,16 @@
 #include "veclen.h"
 #include "prec.h"
 
+#include <qphix/print_utils.h>
+
+#include <qphix_codegen/decl_common.h>
+
 template <typename FT>
 struct QdpTypes {
 };
 
 template <>
-struct QdpTypes<half> {
+struct QdpTypes<QPhiX::half> {
   typedef LatticeColorMatrixF QdpGauge;
   typedef LatticeDiracFermionF QdpSpinor;
 };
@@ -45,8 +49,8 @@ void call(TestClass &instance, Prec prec, int soalen, bool compress12)
     defined(QPHIX_AVX512_SOURCE)
     call_1<TestClass, QPhiX::half>(instance, soalen, compress12);
 #else
-    masterPrintf("This architecture does not support half-precision floating point "
-                 "operations.\n");
+    QPhiX::masterPrintf("This architecture does not support half-precision floating "
+                        "point operations.\n");
     std::abort();
 #endif
   } else if (prec == FLOAT_PREC) {
@@ -67,7 +71,7 @@ void call_1(TestClass &instance, int soalen, bool compress12)
   } else if (soalen == veclen_half) {
     Call2<veclen_half>::template call_2<TestClass, FT>(instance, compress12);
   } else {
-    masterPrintf("soalen %d is not implemented.\n", soalen);
+    QPhiX::masterPrintf("soalen %d is not implemented.\n", soalen);
     std::abort();
   }
 }

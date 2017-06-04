@@ -26,6 +26,14 @@ class testDslashFull : public TestFixture
   }
   void run(void);
 
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()();
+
  private:
   const int By;
   const int Bz;
@@ -41,81 +49,20 @@ class testDslashFull : public TestFixture
   const int soalen;
   Seed rng_seed;
 
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testDslashWrapper(const U &u)
-  {
-    for (int t_bc = +1; t_bc >= -1; t_bc -= 2) {
-      if (compress12) {
-        testDslash<T, V, S, true, U, Phi>(u, t_bc);
-      } else {
-        testDslash<T, V, S, false, U, Phi>(u, t_bc);
-      }
-    }
-  }
-
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testDslashAChiMBDPsiWrapper(const U &u)
-  {
-    for (int t_bc = 1; t_bc >= -1; t_bc -= 2) {
-      if (compress12) {
-        testDslashAChiMBDPsi<T, V, S, true, U, Phi>(u, t_bc);
-      } else {
-        testDslashAChiMBDPsi<T, V, S, false, U, Phi>(u, t_bc);
-      }
-    }
-  }
-
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testMWrapper(const U &u)
-  {
-    for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
-        testM<T, V, S, true, U, Phi>(u, t_bc);
-      } else {
-        testM<T, V, S, false, U, Phi>(u, t_bc);
-      }
-    }
-  }
-
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testCGWrapper(const U &u)
-  {
-    for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
-        testCG<T, V, S, true, U, Phi>(u, t_bc);
-      } else {
-        testCG<T, V, S, false, U, Phi>(u, t_bc);
-      }
-    }
-  }
-
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testBiCGStabWrapper(const U &u)
-  {
-    // for(int t_bc=-1; t_bc <= +1; t_bc+=2) {
-    int t_bc = -1;
-    if (compress12) {
-      testBiCGStab<T, V, S, true, U, Phi>(u, t_bc);
-    } else {
-      testBiCGStab<T, V, S, false, U, Phi>(u, t_bc);
-    }
-    //}
-  }
+  template <typename T, int V, int S, bool compress, typename U, typename Phi>
+  void testDslash(const multi1d<U> &u, int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testDslash(const U &u, int t_bc);
+  void testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testDslashAChiMBDPsi(const U &u, int t_bc);
+  void testM(const multi1d<U> &u, int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testM(const U &u, int t_bc);
+  void testCG(const multi1d<U> &u, int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testCG(const U &u, int t_bc);
-
-  template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testBiCGStab(const U &u, int t_bc);
+  void testBiCGStab(const multi1d<U> &u, int t_bc);
 
   template <typename T1,
             int VEC1,
@@ -126,7 +73,7 @@ class testDslashFull : public TestFixture
             int SOA2,
             typename U,
             typename Phi>
-  void testRichardson(const U &u, int t_bc);
+  void testRichardson(const multi1d<U> &u, int t_bc);
 };
 
 #endif

@@ -36,7 +36,6 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "tparam_selector.h"
-#include "cli_args.h"
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -51,7 +50,7 @@ void testTWMDslashFull::run(void)
   Nz = lattSize[2];
   Nt = lattSize[3];
 
-  call(*this, precision, g_soalen, compress12);
+  call(*this, precision, soalen, compress12);
 
   /*
 

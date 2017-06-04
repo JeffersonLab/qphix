@@ -34,13 +34,15 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 
+void testClovDslashFull::run() { call(*this, precision, g_soalen, compress12); }
+
 template <typename FT,
           int V,
           int S,
           bool compress,
           typename QdpGauge,
           typename QdpSpinor>
-void testClovDslashFull::runTest(void)
+void testClovDslashFull::operator()()
 {
 
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
@@ -442,117 +444,4 @@ void testClovDslashFull::runTest(void)
     } // cb loop
   } // scope
 #endif
-}
-
-void testClovDslashFull::run(void)
-{
-  typedef LatticeColorMatrixF UF;
-  typedef LatticeDiracFermionF PhiF;
-
-  typedef LatticeColorMatrixD UD;
-  typedef LatticeDiracFermionD PhiD;
-
-#if defined(QPHIX_SCALAR_SOURCE)
-  if (precision == FLOAT_PREC) {
-    if (compress12) {
-      runTest<float, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<float, 1, 1, false, UF, PhiF>();
-    }
-  }
-  if (precision == DOUBLE_PREC) {
-    if (compress12) {
-      runTest<double, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<double, 1, 1, false, UF, PhiF>();
-    }
-  }
-#else
-
-  if (precision == FLOAT_PREC) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 4, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 4, false, UF, PhiF>();
-    }
-
-#if !defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 8, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 8, false, UF, PhiF>();
-    }
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 16, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 16, false, UF, PhiF>();
-    }
-#endif
-#endif // QPHIX_AVX_SOURCE|| QPHIX_AVX2_SOURCE|| QPHIX_MIC_SOURCE |
-    // QPHIX_AVX512_SOURCE
-  }
-
-  if (precision == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_AVX2_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 4, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 4, false, UF, PhiF>();
-    }
-
-    if (compress12) {
-      runTest<half, VECLEN_HP, 8, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 8, false, UF, PhiF>();
-    }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 16, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 16, false, UF, PhiF>();
-    }
-#endif
-#else
-    QDPIO::cout << "Half precision tests are not available in this build. "
-                   "Currently only in MIC builds"
-                << endl;
-#endif
-  }
-
-  if (precision == DOUBLE_PREC) {
-
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-    // Only AVX can do DP 2
-    if (compress12) {
-      runTest<double, VECLEN_DP, 2, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 2, false, UD, PhiD>();
-    }
-#endif
-
-    if (compress12) {
-      runTest<double, VECLEN_DP, 4, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 4, false, UD, PhiD>();
-    }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    // Only MIC can do DP 8
-    if (compress12) {
-      runTest<double, VECLEN_DP, 8, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 8, false, UD, PhiD>();
-    }
-#endif
-  }
-
-#endif // SCALAR SOURCE
 }

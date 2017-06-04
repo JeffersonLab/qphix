@@ -67,6 +67,8 @@ using namespace QPhiX;
 
 #endif
 
+#include "tparam_selector.h"
+
 // What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -99,203 +101,65 @@ const double rsdTarget<float>::value = (double)(1.0e-7);
 template <>
 const double rsdTarget<double>::value = (double)(1.0e-12);
 
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void testDslashFull::operator()()
+  {
+    RNG::savern(rng_seed);
+
+    QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
+    // Make a random gauge field
+    multi1d<QdpGauge> u(4);
+    QdpGauge g;
+    QdpGauge uf;
+    for (int mu = 0; mu < 4; mu++) {
+#if 1
+      uf = 1; // Unit gauge
+
+      Real factor = Real(0.09);
+      gaussian(g);
+      u[mu] = uf + factor * g;
+      reunit(u[mu]);
+#else
+      u[mu] = 1;
+#endif
+    }
+
+    for (int const t_bc : {1, -1}) {
+      testDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+      testDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(
+          u, t_bc);
+      testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+      testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+      testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    }
+  }
+
 void testDslashFull::run(void)
 {
   RNG::savern(rng_seed);
 
-  typedef multi1d<LatticeColorMatrixF> UF;
-  typedef multi1d<LatticeColorMatrixD> UD;
-  typedef LatticeDiracFermionF PhiF;
-  typedef LatticeDiracFermionD PhiD;
+  call(*this, precision, soalen, compress12);
 
-  // Diagnostic information:
-  const multi1d<int> &lattSize = Layout::subgridLattSize();
-  Nx = lattSize[0];
-  Ny = lattSize[1];
-  Nz = lattSize[2];
-  Nt = lattSize[3];
-
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-  // Make a random gauge field
-  multi1d<LatticeColorMatrix> u(4);
-  LatticeColorMatrix g;
-  LatticeColorMatrix uf;
-  for (int mu = 0; mu < 4; mu++) {
-#if 1
-    uf = 1; // Unit gauge
-
-    Real factor = Real(0.09);
-    gaussian(g);
-    u[mu] = uf + factor * g;
-    reunit(u[mu]);
-#else
-    u[mu] = 1;
-#endif
-  }
-
-  if (precision == FLOAT_PREC) {
-
-    multi1d<LatticeColorMatrixF> u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-    {
-
-      if (soalen == 1) {
-#if defined(QPHIX_SCALAR_SOURCE)
-        testDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-        testMWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-        testCGWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-        testBiCGStabWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-#endif
-      }
-
-      if (soalen == 4) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_SSE_SOURCE)
-        testDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-        testMWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-        testCGWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-        testBiCGStabWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-#endif
-      }
-
-      if (soalen == 8) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-        testMWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-        testCGWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-        testBiCGStabWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-#endif
-      }
-
-      if (soalen == 16) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-        testMWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-        testCGWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-        testBiCGStabWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-#else
-        masterPrintf("SOALEN=16 not available");
-        return;
-#endif
-      }
-    }
-  }
-
-  if (precision == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_AVX512_SOURCE)
-    multi1d<LatticeColorMatrixF> u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-    {
-      if (soalen == 4) {
-        testDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-        testMWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-        testCGWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-        testBiCGStabWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-      }
-
-      if (soalen == 8) {
-        testDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-        testMWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-        testCGWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-        testBiCGStabWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-      }
-
-      if (soalen == 16) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-        testDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-        testMWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-        testCGWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-        testBiCGStabWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-#endif
-      }
-    }
-#else
-    QDPIO::cout << " Half Prec is only supported on MIC and AVX2 Targets just now "
-                << endl;
-#endif
-  }
-
-  if (precision == DOUBLE_PREC) {
-    UD u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-
-    {
-      if (soalen == 1) {
-#if defined(QPHIX_SCALAR_SOURCE)
-        testDslashWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-        testMWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-        testCGWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-        testBiCGStabWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-#endif
-      }
-
-      if (soalen == 2) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-        testDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-        testMWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-        testCGWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-        testBiCGStabWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-#endif
-      }
-
-      if (soalen == 4) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testMWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testCGWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-#endif
-      }
-
-      if (soalen == 8) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-        testDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-        testMWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-
-        testCGWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-        testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-#endif
-      }
-    }
-  }
-
+  /*
   {
-    multi1d<LatticeColorMatrixD3> u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
+    typedef multi1d<LatticeColorMatrixF> UF;
+    typedef multi1d<LatticeColorMatrixD> UD;
+    typedef LatticeDiracFermionF PhiF;
+    typedef LatticeDiracFermionD PhiD;
 
     int t_bc = -1;
 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
     if (Nx % 32 == 0) {
-      testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
       testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 16, UD, PhiD>(
           u_in, t_bc);
     } else {
       if (Nx % 16 == 0) {
-        testBiCGStabWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
         testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 8, UD, PhiD>(
             u_in, t_bc);
       } else {
@@ -305,12 +169,10 @@ void testDslashFull::run(void)
 #elif defined(QPHIX_AVX_SOURCE)
     // AVX: Double SOALEN = 4
     if (Nx % 16 == 0) {
-      testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
       testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 8, UD, PhiD>(
           u_in, t_bc);
     } else {
       if (Nx % 8 == 0) {
-        testBiCGStabWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
         testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 4, UD, PhiD>(
             u_in, t_bc);
       } else {
@@ -319,10 +181,11 @@ void testDslashFull::run(void)
     }
 #endif
   }
+  */
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testDslash(const U &u, int t_bc)
+void testDslashFull::testDslash(const multi1d<U> &u, int t_bc)
 {
   QDPIO::cout << "RNG seeed = " << rng_seed << std::endl;
   RNG::setrn(rng_seed);
@@ -380,7 +243,7 @@ void testDslashFull::testDslash(const U &u, int t_bc)
 
   QDPIO::cout << "done" << endl;
 
-  U u_test(Nd);
+  multi1d<U> u_test(Nd);
   for (int mu = 0; mu < Nd; mu++) {
 #if 1
     Real factor = Real(aniso_fac_s);
@@ -515,7 +378,7 @@ void testDslashFull::testDslash(const U &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
+void testDslashFull::testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -576,7 +439,7 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
   QDPIO::cout << "T BCs = " << t_boundary << endl;
 
   QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-  U u_test(Nd);
+  multi1d<U> u_test(Nd);
   for (int mu = 0; mu < Nd; mu++) {
     Real factor = Real(aniso_fac_s);
     if (mu == Nd - 1) {
@@ -653,7 +516,7 @@ void testDslashFull::testDslashAChiMBDPsi(const U &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testM(const U &u, int t_bc)
+void testDslashFull::testM(const multi1d<U> &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -711,7 +574,7 @@ void testDslashFull::testM(const U &u, int t_bc)
   QDPIO::cout << "T BCs = " << t_boundary << endl;
 
   QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-  U u_test(Nd);
+  multi1d<U> u_test(Nd);
   for (int mu = 0; mu < Nd; mu++) {
     Real factor = Real(aniso_fac_s);
     if (mu == Nd - 1) {
@@ -790,7 +653,7 @@ void testDslashFull::testM(const U &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testCG(const U &u, int t_bc)
+void testDslashFull::testCG(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -856,7 +719,7 @@ void testDslashFull::testCG(const U &u, int t_bc)
     QDPIO::cout << "T BCs = " << t_boundary << endl;
 
     QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-    U u_test(Nd);
+    multi1d<U> u_test(Nd);
     for (int mu = 0; mu < Nd; mu++) {
       Real factor = Real(aniso_fac_s);
       if (mu == Nd - 1) {
@@ -941,7 +804,7 @@ void testDslashFull::testCG(const U &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testBiCGStab(const U &u, int t_bc)
+void testDslashFull::testBiCGStab(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -1002,7 +865,7 @@ void testDslashFull::testBiCGStab(const U &u, int t_bc)
 
     QDPIO::cout << "done" << endl;
     QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-    U u_test(Nd);
+    multi1d<U> u_test(Nd);
     for (int mu = 0; mu < Nd; mu++) {
       Real factor = Real(aniso_fac_s);
       if (mu == Nd - 1) {
@@ -1097,7 +960,7 @@ template <typename T1,
           int SOA2,
           typename U,
           typename Phi>
-void testDslashFull::testRichardson(const U &u, int t_bc)
+void testDslashFull::testRichardson(const multi1d<U> &u, int t_bc)
 {
 
   for (int cb = 0; cb < 2; ++cb) {
@@ -1181,7 +1044,7 @@ void testDslashFull::testRichardson(const U &u, int t_bc)
 
     QDPIO::cout << "done" << endl;
     QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-    U u_test(Nd);
+    multi1d<U> u_test(Nd);
     for (int mu = 0; mu < Nd; mu++) {
       Real factor = Real(aniso_fac_s);
       if (mu == Nd - 1) {
