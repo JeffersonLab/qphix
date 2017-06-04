@@ -32,8 +32,8 @@ void tm_clov_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     } else if (dir == 7) {
         {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
     } else {
-        printf("Invalid dir for unpack boundary\n");
-        exit(1);
+        ::std::cout << "Invalid dir for unpack boundary" << ::std::endl;
+        ::std::exit(1);
     }
 }
 

@@ -2,6 +2,8 @@
 
 // {{ generated_warning }}
 
+#include <iostream>
+
 {% macro include_generated_kernel(isa, kernel, operator, fptype, vec, soa, compress12) -%}
 {% if compress12 == '' -%}
 {% set suffix = '' -%}
