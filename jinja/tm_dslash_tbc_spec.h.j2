@@ -1,11 +1,3 @@
-#if !defined(FPTYPE)
-#error FPTYPE not defined
-#endif
-
-#if !defined(VEC)
-#error VLEN not defined
-#endif
-
 {% for isign in ['plus', 'minus'] %}
 {% call definition_instantiation(isign + "_body") %}
 void tm_dslash_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_true_false }}>(

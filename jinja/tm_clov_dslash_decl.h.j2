@@ -92,8 +92,6 @@ void tm_clov_dslash_achimbdpsi_{{ isign }}_vec(
     const FT tbc_phases[4][2],
     const unsigned int accumulate[8]);
 
-#ifdef QPHIX_DO_COMMS
-
 template <typename FT, int veclen, int soalen, bool compress12>
 void tm_clov_face_finish_dir_{{ isign }}(
     const FT *inbuf,
@@ -111,8 +109,6 @@ void tm_clov_face_finish_dir_{{ isign }}(
     const FT beta,
     unsigned int mask,
     int dir);
-
-#endif
 {% endfor %}
 
 }

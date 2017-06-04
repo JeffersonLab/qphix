@@ -90,8 +90,6 @@ void tm_dslash_achimbdpsi_{{ isign }}_vec(
     const FT mu,
     const unsigned int accumulate[8]);
 
-#ifdef QPHIX_QMP_COMMS
-
 template <typename FT, int veclen, int soalen, bool compress12>
 void tm_face_finish_dir_{{ isign }}(
     const FT *inbuf,
@@ -108,8 +106,6 @@ void tm_face_finish_dir_{{ isign }}(
     const FT muinv,
     unsigned int mask,
     int dir);
-
-#endif // QPHIX_QMP_COMMS (outer)
 {% endfor %}
 
 }

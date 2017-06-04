@@ -87,8 +87,6 @@ void dslash_achimbdpsi_{{ isign }}_vec(
     const FT tbc_phases[4][2],
     const unsigned int accumulate[8]);
 
-#ifdef QPHIX_DO_COMMS
-
 template <typename FT, int veclen, int soalen, bool compress12>
 void face_proj_dir_{{ isign }}(
     const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -114,8 +112,6 @@ void face_finish_dir_{{ isign }}(
     const FT beta,
     unsigned int mask,
     int dir);
-
-#endif // QPHIX_DO_COMMS (outer)
 {% endfor %}
 
 }

@@ -1,14 +1,4 @@
-#if !defined(FPTYPE)
-#error FPTYPE not defined
-#endif
-
-#if !defined(VEC)
-#error VLEN not defined
-#endif
-
 {% for isign in ['plus', 'minus'] %}
-#ifdef QPHIX_DO_COMMS
-
 template <>
 void face_proj_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const typename Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock
@@ -100,6 +90,4 @@ void face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE beta,
     unsigned int mask,
     int dir);
-
-#endif // QPHIX_DO_COMMS (outer)
 {% endfor %}

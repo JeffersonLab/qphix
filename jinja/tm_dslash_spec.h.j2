@@ -1,6 +1,4 @@
 {% for isign in ['plus', 'minus'] %}
-#ifdef QPHIX_QMP_COMMS
-
 template <>
 void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE *inbuf,
@@ -53,6 +51,4 @@ void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE muinv,
     unsigned int mask,
     int dir);
-
-#endif
 {% endfor %}
