@@ -26,6 +26,25 @@ class testTWMDslashFull : public TestFixture
   }
   void run(void);
 
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()()
+  {
+    RNG::savern(rng_seed);
+
+    for (int const t_bc : {1, -1}) {
+      testTWMDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
+      testTWMDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(
+          t_bc);
+      testTWMM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
+      testTWMCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
+    }
+  }
+
  private:
   const int By;
   const int Bz;

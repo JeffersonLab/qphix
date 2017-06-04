@@ -7,6 +7,7 @@
 
 namespace QPhiX
 {
+
 template <typename FT, int veclen, int soalen, bool compress12>
 class TMDslash
 {
@@ -77,7 +78,11 @@ class TMDslash
   double aniso_coeff_T;
 
   bool use_tbc[4] = {false, false, false, false};
-  FT tbc_phases[4][2] = {{1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
+
 
   // Wilson & Twisted Mass Parameters
   double Mass;

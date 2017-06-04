@@ -92,7 +92,10 @@ class Dslash
   unsigned int yfmask_yn;
 
   bool use_tbc[4] = {false, false, false, false};
-  FT tbc_phases[4][2] = {{1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
 
   // Hide Free Constructor
   Dslash();

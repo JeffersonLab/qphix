@@ -72,8 +72,8 @@ void testClovDslashFull::runTest(void)
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
-  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom), hs_qphix2(geom),
-      hs_qdp1(geom), hs_qdp2(geom);
+  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom),
+      hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
   gaussian(hs_source.qdp());
   hs_source.pack();
 
@@ -306,14 +306,14 @@ void testClovDslashFull::runTest(void)
   {
     for (int cb = 0; cb < 2; ++cb) {
       int other_cb = 1 - cb;
-      EvenOddCloverOperator<FT, V, S, compress> M(gauge_antip.u_packed,
-                                                  gauge_antip.clov_packed[cb],
-                                                  gauge_antip.invclov_packed[other_cb],
-                                                  &geom,
-                                                  gauge_antip.t_boundary,
-                                                  gauge_antip.aniso_fac_s,
-                                                  gauge_antip.aniso_fac_t);
-
+      EvenOddCloverOperator<FT, V, S, compress> M(
+          gauge_antip.u_packed,
+          gauge_antip.clov_packed[cb],
+          gauge_antip.invclov_packed[other_cb],
+          &geom,
+          gauge_antip.t_boundary,
+          gauge_antip.aniso_fac_s,
+          gauge_antip.aniso_fac_t);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -384,14 +384,14 @@ void testClovDslashFull::runTest(void)
   {
     for (int cb = 0; cb < 2; ++cb) {
       int other_cb = 1 - cb;
-      EvenOddCloverOperator<FT, V, S, compress> M(gauge_antip.u_packed,
-                                                  gauge_antip.clov_packed[cb],
-                                                  gauge_antip.invclov_packed[other_cb],
-                                                  &geom,
-                                                  gauge_antip.t_boundary,
-                                                  gauge_antip.aniso_fac_s,
-                                                  gauge_antip.aniso_fac_t);
-
+      EvenOddCloverOperator<FT, V, S, compress> M(
+          gauge_antip.u_packed,
+          gauge_antip.clov_packed[cb],
+          gauge_antip.invclov_packed[other_cb],
+          &geom,
+          gauge_antip.t_boundary,
+          gauge_antip.aniso_fac_s,
+          gauge_antip.aniso_fac_t);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -429,7 +429,8 @@ void testClovDslashFull::runTest(void)
 
       QdpSpinor diff = hs_qdp1.qdp() - hs_source.qdp();
       QDPIO::cout << " cb = " << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb])) << endl;
+                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
+                  << endl;
       expect_near(hs_qdp1.qdp(), hs_source.qdp(), 1e-6, geom, cb, "BiCGStab");
 
       int Nxh = Nx / 2;

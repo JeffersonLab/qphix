@@ -24,7 +24,8 @@ class RandomGauge
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock Gauge;
   typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock Clover;
 
-  RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom, double const t_boundary = 1.0);
+  RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom,
+              double const t_boundary = 1.0);
 
   double const gauge_random_factor = 0.08;
 #if 0
@@ -127,9 +128,9 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::
 
   int const mu_t = QDP::Nd - 1;
   u_aniso[mu_t] *= QDP::where(QDP::Layout::latticeCoordinate(mu_t) ==
-                                 (QDP::Layout::lattSize()[mu_t] - 1),
-                             QDP::Real(t_boundary),
-                             QDP::Real(1));
+                                  (QDP::Layout::lattSize()[mu_t] - 1),
+                              QDP::Real(t_boundary),
+                              QDP::Real(1));
 }
 
 template <typename FT,
