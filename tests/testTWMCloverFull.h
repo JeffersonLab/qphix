@@ -20,14 +20,17 @@ class testTWMCloverFull : public TestFixture
   {
   }
 
-  // Toplevel test function wrapper
-  void run(void);
+  void run() override;
+
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()();
 
  private:
-  // Templated test function
-  template <typename FT, int V, int S, bool compress, typename U, typename Phi>
-  void runTest(void);
-
   const int By;
   const int Bz;
   const int NCores;

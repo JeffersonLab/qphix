@@ -94,8 +94,13 @@ const double rsdTarget<float>::value = (double)(1.0e-7);
 template <>
 const double rsdTarget<double>::value = (double)(1.0e-12);
 
+#include "cli_args.h"
+#include "tparam_selector.h"
+
+void testTWMCloverFull::run() { call(*this, precision, g_soalen, compress12); }
+
 template <typename FT, int V, int S, bool compress, typename U, typename Phi>
-void testTWMCloverFull::runTest(void)
+void testTWMCloverFull::operator()(void)
 {
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, V, S, compress>::SU3MatrixBlock Gauge;
@@ -847,118 +852,4 @@ void testTWMCloverFull::runTest(void)
   geom.free(A_inv_cb0_minus);
   geom.free(A_inv_cb1_plus);
   geom.free(A_inv_cb1_minus);
-}
-
-void testTWMCloverFull::run(void)
-{
-  typedef LatticeColorMatrixF UF;
-  typedef LatticeDiracFermionF PhiF;
-
-  typedef LatticeColorMatrixD UD;
-  typedef LatticeDiracFermionD PhiD;
-
-  QDPIO::cout << std::endl;
-
-#if defined(QPHIX_SCALAR_SOURCE)
-  if (precision == FLOAT_PREC) {
-    if (compress12) {
-      runTest<float, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<float, 1, 1, false, UF, PhiF>();
-    }
-  }
-  if (precision == DOUBLE_PREC) {
-    if (compress12) {
-      runTest<double, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<double, 1, 1, false, UF, PhiF>();
-    }
-  }
-#else
-
-  if (precision == FLOAT_PREC) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 4, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 4, false, UF, PhiF>();
-    }
-
-#if !defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 8, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 8, false, UF, PhiF>();
-    }
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 16, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 16, false, UF, PhiF>();
-    }
-#endif
-#endif // QPHIX_AVX_SOURCE|| QPHIX_AVX2_SOURCE|| QPHIX_MIC_SOURCE |
-    // QPHIX_AVX512_SOURCE
-  }
-
-  if (precision == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_AVX2_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 4, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 4, false, UF, PhiF>();
-    }
-
-    if (compress12) {
-      runTest<half, VECLEN_HP, 8, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 8, false, UF, PhiF>();
-    }
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 16, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 16, false, UF, PhiF>();
-    }
-#endif
-#else
-    QDPIO::cout << "Half precision tests are not available in this build. "
-                   "Currently only in MIC builds"
-                << endl;
-#endif
-  } // HALF_PREC
-
-  if (precision == DOUBLE_PREC) {
-
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-    // Only AVX can do DP 2
-    if (compress12) {
-      runTest<double, VECLEN_DP, 2, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 2, false, UD, PhiD>();
-    }
-#endif
-
-    if (compress12) {
-      runTest<double, VECLEN_DP, 4, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 4, false, UD, PhiD>();
-    }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    // Only MIC can do DP 8
-    if (compress12) {
-      runTest<double, VECLEN_DP, 8, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 8, false, UD, PhiD>();
-    }
-#endif
-  } // DOUBLE PREC
-
-#endif // SCALAR SOURCE
 }
