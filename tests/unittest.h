@@ -98,7 +98,6 @@ class TestRunner : public TestCase
       : num_success(0), num_failed(0), num_unexpected_failed(0), num_tried(0)
   {
 
-    QDP_initialize(argc, argv);
     multi1d<int> nrow(Nd);
     nrow = latdims;
     Layout::setLattSize(nrow);

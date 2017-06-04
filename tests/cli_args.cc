@@ -98,6 +98,8 @@ void printHelp(bool const is_timing)
 
 void processArgs(int &argc, char **&argv, bool const is_timing)
 {
+  QDP_initialize(&argc, &argv);
+
   if (argc == 1) {
     printHelp(is_timing);
     exit(1);
