@@ -161,7 +161,7 @@ void processArgs(int &argc, char **&argv, bool const is_timing)
       qmp_geometry[1] = atoi(argv[i + 2]);
       qmp_geometry[2] = atoi(argv[i + 3]);
       qmp_geometry[3] = atoi(argv[i + 4]);
-      i += 4;
+      i += 5;
 
     } else if (is_timing && arg == "-dslash") {
       do_dslash = true;
