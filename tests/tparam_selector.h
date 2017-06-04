@@ -47,6 +47,7 @@ void call(TestClass &instance, Prec prec, int soalen, bool compress12)
 #else
     masterPrintf("This architecture does not support half-precision floating point "
                  "operations.\n");
+    std::abort();
 #endif
   } else if (prec == FLOAT_PREC) {
     call_1<TestClass, float>(instance, soalen, compress12);
@@ -67,6 +68,7 @@ void call_1(TestClass &instance, int soalen, bool compress12)
     Call2<veclen_half>::template call_2<TestClass, FT>(instance, compress12);
   } else {
     masterPrintf("soalen %d is not implemented.\n", soalen);
+    std::abort();
   }
 }
 

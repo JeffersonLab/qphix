@@ -95,22 +95,22 @@ T1 rep(const T2 &in)
 #endif // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 template <typename FT>
-char const *type_name();
+inline char const *type_name();
 
 template <>
-char const *type_name<double>()
+inline char const *type_name<double>()
 {
   return "double";
 }
 
 template <>
-char const *type_name<float>()
+inline char const *type_name<float>()
 {
   return "float";
 }
 
 template <>
-char const *type_name<half>()
+inline char const *type_name<half>()
 {
   return "half";
 }

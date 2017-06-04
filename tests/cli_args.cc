@@ -1,5 +1,7 @@
 #include "cli_args.h"
 
+#include "veclen.h"
+
 #include <qphix/print_utils.h>
 
 using QPhiX::masterPrintf;
@@ -14,6 +16,7 @@ bool compress12 = false;
 int qmp_geometry[4] = {1, 1, 1, 1};
 
 Prec prec_user = FLOAT_PREC;
+int g_soalen = get_veclen<float>();
 bool thread_bind = false;
 
 bool do_dslash = false;
@@ -51,12 +54,14 @@ void printArgHelp(bool const is_timing)
   masterPrintf("Timing parameters:\n"
                "  -i iters           number of iterations [default: %i]\n"
                "  -prec f|h|d        precision (float, half, double) [default: %s]\n"
+               "  -soalen soalen     structure of array length [default: %d]\n"
                "  -compress12        enable gauge compression [default: %s]\n"
                "\n",
                is_timing ? iters_timing : iters_test,
                prec_user == FLOAT_PREC
                    ? "float"
                    : (prec_user == DOUBLE_PREC ? "double" : "half"),
+               g_soalen,
                compress12 ? "given" : "not given");
 
   if (is_timing) {
@@ -183,6 +188,9 @@ void processArgs(int &argc, char **&argv, bool const is_timing)
       if (user_arg.compare("d") == 0) {
         prec_user = DOUBLE_PREC;
       }
+      i += 2;
+    } else if (arg == "-soalen") {
+      g_soalen = atoi(argv[i + 1]);
       i += 2;
     } else if (arg == "-bind") {
       thread_bind = true;

@@ -12,6 +12,7 @@ extern bool compress12;
 extern int qmp_geometry[4];
 
 extern Prec prec_user;
+extern int g_soalen;
 extern bool thread_bind;
 
 extern bool do_dslash;
