@@ -311,8 +311,11 @@ make-make-install
 popd
 
 ###############################################################################
-#                            QPhiX Code Generator                             #
+#                                    QPhiX                                    #
 ###############################################################################
+
+repo=qphix
+print-fancy-heading $repo
 
 case "$QPHIX_ARCH" in
     SCALAR)
@@ -336,26 +339,6 @@ case "$QPHIX_ARCH" in
         exit 1;
         ;;
 esac
-
-repo=qphix-codegen
-print-fancy-heading $repo
-clone-if-needed https://github.com/JeffersonLab/qphix-codegen.git $repo twisted-bc
-
-pushd $repo
-cflags="$base_cflags $openmp_flags $qphix_flags"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
-if ! [[ -f build-succeeded ]]; then
-    ./generate-and-compile "${QPHIX_ARCH,,}" "$cxx_name" "$cxxflags $archflag"
-    touch build-succeeded
-fi
-popd
-
-###############################################################################
-#                                    QPhiX                                    #
-###############################################################################
-
-repo=qphix
-print-fancy-heading $repo
 
 fold_start $repo.autoreconf
 pushd $repo
@@ -381,7 +364,6 @@ if ! [[ -f Makefile ]]; then
             --enable-openmp \
             --enable-mm-malloc \
             --enable-parallel-arch=parscalar \
-            --with-codegen=$sourcedir/qphix-codegen/cmake_local \
             --with-qdp="$prefix" \
             CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
         cat config.log

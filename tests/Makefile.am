@@ -1,7 +1,7 @@
-INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include -I@QPHIX_CODEGEN_HOME@/include
+INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include -I@top_srcdir@/codegen/cmake_local/include
 
 AM_CXXFLAGS=$(INCFLAGS) @QPHIX_AUX_CFLAGS@
-AM_LDFLAGS=-L@top_builddir@/lib -L@QPHIX_CODEGEN_HOME@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@
+AM_LDFLAGS=-L@top_builddir@/lib -L@top_srcdir@/codegen/cmake_local/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@
 LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@ -lqphix_codegen
 
 check_PROGRAMS = time_dslash_noqdp

@@ -97,17 +97,6 @@ AC_ARG_WITH(qmt,
    [ qmt_enabled="no" ]
 )
 
-AC_ARG_WITH(codegen,
-  AC_HELP_STRING(
-     [--with-codegen=DIR],
-     [ Location of the code generator installation ]
-  ),
-  [ CODEGEN_HOME="${with_codegen}"
-    CODEGEN_GIVEN="yes"
-  ],
-  [ CODEGEN_GIVEN="no" ]
-)
-
 dnl Use OpenMP threading
 AC_ARG_ENABLE(openmp,
    AC_HELP_STRING(
@@ -176,17 +165,14 @@ AC_ARG_ENABLE(qdpalloc,
   [ qdpalloc="no" ]
 )
    
-   
-dnl dnl ******************** DONE WITH USER INPUT *********************
-dnl dnl ***        Now Configuration                               ****
-dnl dnl ***************************************************************
+dnl ******************** DONE WITH USER INPUT *********************
+dnl ***        Now Configuration                               ****
+dnl ***************************************************************
 dnl 
-dnl     ***************************************************************
-dnl     ***       There are two distinct branches depending         ***
-dnl     ***      on whether we are compiling with QDP++ or not      ***
-dnl     ***************************************************************
-
-dnl 
+dnl ***************************************************************
+dnl ***       There are two distinct branches depending         ***
+dnl ***      on whether we are compiling with QDP++ or not      ***
+dnl ***************************************************************
 
 if test "x${qdpalloc}x" = "xyesx"; then
 	AC_MSG_NOTICE([Will Use QDP++ Pool Allocator ])
@@ -198,13 +184,8 @@ if test "${extra_messages_enabled}" = "yes"; then
 	AC_DEFINE(QPHIX_EMIT_MESSAGES, [1], [ Emit compilation messages ])
 fi
 
-
 echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
-
-if test "${CODEGEN_GIVEN}" = "yes" && test "${CODEGEN_HOME}" != "no"; then
-    AC_SUBST(QPHIX_CODEGEN_HOME, "${CODEGEN_HOME}")
-fi
 
 if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
 
@@ -274,7 +255,6 @@ if test "${QDPXX_GIVEN}" = "yes" && test "${QDPXX_HOME}" != "no"; then
 	AC_MSG_ERROR([Cannot compile/link a program with QDP++.
     Use --with-qdp++=<dir> to select a working version.])
     fi 
-
 
 
     dnl *********************************************************
@@ -431,40 +411,47 @@ case ${proc} in
 AVX|avx) 
 	AC_DEFINE([QPHIX_AVX_SOURCE],[1], [ Generate AVX Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [avx])
 
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
 ;;
 AVX2|avx2)
         AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
         AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [avx2])
 
         AC_MSG_NOTICE([Configuring AVX2 Specializations ])
 ;;
 AVX512|avx512)
         AC_DEFINE([QPHIX_AVX512_SOURCE],[1], [ Generate AVX512 Specializations ])
         AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [avx512])
 
         AC_MSG_NOTICE([Configuring AVX512 Specializations ])
 ;;
 SSE|sse)
 	AC_DEFINE([QPHIX_SSE_SOURCE],[1], [ Generate SSE4 Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN],[64], [ L2 Cache alignment ])
+        AC_SUBST(ISA, [sse])
 	AC_MSG_NOTICE([Configuring SSE4 Specializations])
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [mic])
 
 	AC_MSG_NOTICE([Configuring MIC Specializations ])
 ;;
 SCALAR|scalar)
 	AC_DEFINE([QPHIX_SCALAR_SOURCE],[1], [ Generate Scalar Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [scalar])
 	AC_MSG_NOTICE([Configuring Scalar Specializations ])
 ;;        
 QPX|qpx)
 	AC_DEFINE([QPHIX_QPX_SOURCE],[1], [ Generate QPX Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [128], [ L2 Cache alignment ] )
+        AC_SUBST(ISA, [qpx])
 	AC_MSG_NOTICE([Configuring QPX Specializations ])
 	build_qpx="yes"
 ;;
