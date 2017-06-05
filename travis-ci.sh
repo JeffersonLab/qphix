@@ -42,16 +42,19 @@ cd ..
 fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6
-sudo apt-get install -y ccache
+sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev
 
 ls -l /usr/lib/ccache
 fold_end update_gcc
 
 basedir=$PWD
 
-cc_name=gcc-6
-cxx_name=g++-6
+cc_name=mpicc
+cxx_name=mpic++
+
+export OMPI_CC=gcc-6
+export OMPI_CXX=g++-6
+
 color_flags=""
 openmp_flags="-fopenmp"
 base_flags="-O2 -finline-limit=50000 $color_flags"
@@ -232,6 +235,39 @@ make-make-install
 popd
 
 ###############################################################################
+#                                     QMP                                     #
+###############################################################################
+
+repo=qmp
+fold_start $repo.download
+print-fancy-heading $repo
+clone-if-needed https://github.com/usqcd-software/qmp.git $repo master
+fold_end $repo.download
+
+fold_start $repo.autoreconf
+pushd $repo
+cflags="$base_cflags $openmp_flags --std=c99"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
+autoreconf-if-needed
+popd
+fold_end $repo.autoreconf
+
+fold_start $repo.configure
+mkdir -p "$build/$repo"
+pushd "$build/$repo"
+if ! [[ -f Makefile ]]; then
+    if ! $sourcedir/$repo/configure $base_configure \
+            --with-qmp-comms-type=MPI \
+            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+        cat config.log
+        exit 1
+    fi
+fi
+fold_end $repo.configure
+make-make-install
+popd
+
+###############################################################################
 #                                    QDP++                                    #
 ###############################################################################
 
@@ -256,8 +292,9 @@ if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             --enable-openmp \
             --enable-sse --enable-sse2 \
-            --enable-parallel-arch=scalar \
+            --enable-parallel-arch=parscalar \
             --enable-precision=double \
+            --with-qmp="$prefix" \
             --with-libxml2="$prefix/bin/xml2-config" \
             CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
         cat config.log
@@ -319,7 +356,7 @@ if ! [[ -f Makefile ]]; then
             --enable-tm-clover \
             --enable-openmp \
             --enable-mm-malloc \
-            --enable-parallel-arch=scalar \
+            --enable-parallel-arch=parscalar \
             --with-qdp="$prefix" \
             CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
         cat config.log
@@ -351,7 +388,7 @@ export OMP_NUM_THREADS=2
 pushd $build/qphix/tests
 
 l=16
-args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f"
+args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f -geom 1 1 1 2"
 
 tests=(
 t_clov_dslash
@@ -363,7 +400,7 @@ t_twm_clover
 for runner in "${tests[@]}"
 do
     fold_start testing.$runner
-    ./$runner $args
+    mpirun -n 2 ./$runner $args
     fold_end testing.$runner
 done
 
