@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
   TestRunner tests(&argc, &argv);
 
-  tests.addTest(new testTWMCloverFull(tests.args()), "testTWMCloverFull");
+  tests.addTest(new TestTMClover(tests.args()), "testTWMCloverFull");
 
   tests.run();
   tests.summary();

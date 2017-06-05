@@ -7,13 +7,9 @@
 #include "qdp.h"
 using namespace QDP;
 
-#ifndef DSLASH_M_W_H
 #include "dslashm_w.h"
-#endif
 
-#ifndef REUNIT_H
 #include "reunit.h"
-#endif
 
 #include "qphix/qdp_packer.h"
 #include "./clover_term.h"
@@ -28,74 +24,19 @@ using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_HP 8
-#define VECLEN_DP 4
-
-#elif defined(QPHIX_SSE_SOURCE)
-
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-
-#elif defined(QPHIX_SCALAR_SOURCE)
-#define VECLEN_DP 1
-#define VECLEN_SP 1
-
-#elif defined(QPHIX_QPX_SOURCE)
-#define VECLEN_DP 4
-
-#endif
-
-template <typename T>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-// FIXME
-// Smaller values here will not agree with QPD++
-// (but the same is true for the Wilson Clover tests...)
-const Double tolerance<double>::small = Double(1.0e-7);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-3);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
+#include "tolerance.h"
+#include "veclen.h"
 
 #include "cli_args.h"
 #include "tparam_selector.h"
 
-void testTWMCloverFull::run() { call(*this, precision, g_soalen, compress12); }
+void TestTMClover::run()
+{
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
 
 template <typename FT, int V, int S, bool compress, typename U, typename Phi>
-void testTWMCloverFull::operator()(void)
+void TestTMClover::operator()()
 {
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, V, S, compress>::SU3MatrixBlock Gauge;
@@ -170,14 +111,14 @@ void testTWMCloverFull::operator()(void)
   QDPIO::cout << "Instantiating ClovDslash<FT," << V << "," << S << ">"
               << " with t_boundary = " << t_boundary << std::endl;
   Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                    By,
-                                    Bz,
-                                    NCores,
-                                    Sy,
-                                    Sz,
-                                    PadXY,
-                                    PadXYZ,
-                                    MinCt);
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt);
   TMClovDslash<FT, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   // Make a random source

@@ -10,7 +10,7 @@
 class TestClover : public TestFixture
 {
  public:
-     TestClover(CliArgs &args) : args_(args) {}
+  TestClover(CliArgs &args) : args_(args) {}
 
   void run() override;
 

@@ -14,12 +14,10 @@ using namespace QDP;
 #include "qphix/qdp_packer.h"
 #include "clover_term.h"
 
-#if 1
 #include "qphix/clover.h"
 #include "qphix/invcg.h"
 #include "qphix/invbicgstab.h"
 #include "qphix/inv_richardson_multiprec.h"
-#endif
 
 #include <omp.h>
 
@@ -27,63 +25,8 @@ using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_DP 4
-
-#elif defined(QPHIX_SSE_SOURCE)
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-
-#elif defined(QPHIX_SCALAR_SOURCE)
-#warning SCALAR_SOURCE
-#define VECLEN_DP 1
-#define VECLEN_SP 1
-
-#elif defined(QPHIX_QPX_SOURCE)
-#define VECLEN_DP 4
-#define VECLEN_SP 4
-
-#endif
-
-template <typename T>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-const Double tolerance<double>::small = Double(1.0e-13);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-3);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
+#include "tolerance.h"
+#include "veclen.h"
 
 void MesPlq(const multi1d<LatticeColorMatrixD> &u, Double &w_plaq, Double &link)
 {
@@ -129,7 +72,7 @@ template <typename FT,
           int SOA2,
           typename U,
           typename Phi>
-void testClovInvertFromFile::runTest(double mass,
+void TestClovFile::runTest(double mass,
                                      double clov_coeff,
                                      const std::string &filename)
 {
@@ -217,23 +160,23 @@ void testClovInvertFromFile::runTest(double mass,
   double t_boundary = double(-1);
   // Create Dslash
   Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                    By,
-                                    Bz,
-                                    NCores,
-                                    Sy,
-                                    Sz,
-                                    PadXY,
-                                    PadXYZ,
-                                    MinCt);
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt);
   Geometry<FT2, V2, SOA2, compress> geom_inner(Layout::subgridLattSize().slice(),
-                                               By,
-                                               Bz,
-                                               NCores,
-                                               Sy,
-                                               Sz,
-                                               PadXY,
-                                               PadXYZ,
-                                               MinCt);
+                                               args_.By,
+                                               args_.Bz,
+                                               args_.NCores,
+                                               args_.Sy,
+                                               args_.Sz,
+                                               args_.PadXY,
+                                               args_.PadXYZ,
+                                               args_.MinCt);
 
   // Make a random source
   QDPIO::cout << "Initializing QDP++ input spinor" << endl;
@@ -403,7 +346,7 @@ void testClovInvertFromFile::runTest(double mass,
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
         (site_flops + (1320 + 504 + 1320 + 504 + 48) * mv_apps) * num_cb_sites;
-    masterPrintf("BICGSTAB: run=%d iters=%d\n", run, niters);
+    masterPrintf("BICGSTAB: run=%d args_.iters=%d\n", run, niters);
     masterPrintf("BICGSTAB: Time for solve=%16.8e sec\n", (end - start));
     masterPrintf("BICGSTAB: GFLOPS=%e\n",
                  1.0e-9 * (double)(total_flops) / (end - start));
@@ -454,7 +397,7 @@ void testClovInvertFromFile::runTest(double mass,
 
     unsigned long total_flops =
         (site_flops + (1320 + 504 + 1320 + 504 + 48) * mv_apps) * num_cb_sites;
-    masterPrintf("RICHARDSON: run=%d iters=%d\n", run, niters);
+    masterPrintf("RICHARDSON: run=%d args_.iters=%d\n", run, niters);
     masterPrintf("RICHARDSON Time for solve=%16.8e sec\n", (end - start));
     masterPrintf("RICHARDSON GFLOPS=%e\n",
                  1.0e-9 * (double)(total_flops) / (end - start));
@@ -480,7 +423,7 @@ void testClovInvertFromFile::runTest(double mass,
   geom_inner.free(A_inv_cb1_i);
 }
 
-void testClovInvertFromFile::run(void)
+void TestClovFile::run(void)
 {
   typedef LatticeColorMatrixF UF;
   typedef LatticeDiracFermionF PhiF;

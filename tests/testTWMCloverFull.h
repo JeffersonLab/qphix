@@ -1,24 +1,14 @@
-#ifndef TEST_TWM_CLOVER_FULL
-#define TEST_TWM_CLOVER_FULL
+#pragma once
 
+#include "cli_args.h"
 #include "unittest.h"
 
-#include "prec.h"
-
 #include <qphix/qphix_cli_args.h>
-using namespace QPhiX;
 
-class testTWMCloverFull : public TestFixture
+class TestTMClover : public TestFixture
 {
-
  public:
-  testTWMCloverFull(const QPhiXCLIArgs &GeomArgs_, bool c12, Prec precision_)
-      : By(GeomArgs_.getBy()), Bz(GeomArgs_.getBz()), NCores(GeomArgs_.getNCores()),
-        Sy(GeomArgs_.getSy()), Sz(GeomArgs_.getSz()), PadXY(GeomArgs_.getPxy()),
-        PadXYZ(GeomArgs_.getPxyz()), MinCt(GeomArgs_.getMinCt()), N_simt(Sy * Sz),
-        compress12(c12), precision(precision_), GeomArgs(GeomArgs_)
-  {
-  }
+  TestTMClover(CliArgs &args) : args_(args) {}
 
   void run() override;
 
@@ -31,17 +21,5 @@ class testTWMCloverFull : public TestFixture
   void operator()();
 
  private:
-  const int By;
-  const int Bz;
-  const int NCores;
-  const int Sy;
-  const int Sz;
-  const int PadXY;
-  const int PadXYZ;
-  const int MinCt;
-  const int N_simt;
-  const bool compress12;
-  const Prec precision;
-  QPhiXCLIArgs GeomArgs;
+  CliArgs &args_;
 };
-#endif

@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 {
   TestRunner tests(&argc, &argv);
 
-  tests.addTest(new testTWMDslashFull(tests.args()), "testDslashFull");
+  tests.addTest(new TestTMDslash(tests.args()), "testDslashFull");
 
   tests.run();
   tests.summary();

@@ -1,29 +1,13 @@
-#ifndef TEST_TWM_DSLASH_FULL
-#define TEST_TWM_DSLASH_FULL
+#pragma once
 
+#include "cli_args.h"
 #include "unittest.h"
 
-#include "prec.h"
-
-class testTWMDslashFull : public TestFixture
+class TestTMDslash : public TestFixture
 {
  public:
-  testTWMDslashFull(int By_,
-                    int Bz_,
-                    int NCores_,
-                    int Sy_,
-                    int Sz_,
-                    int PadXY_,
-                    int PadXYZ_,
-                    int MinCt_,
-                    bool c12,
-                    Prec precision_,
-                    const int soalen_)
-      : By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_),
-        PadXYZ(PadXYZ_), MinCt(MinCt_), N_simt(Sy_ * Sz_), compress12(c12),
-        precision(precision_), soalen(soalen_)
-  {
-  }
+  TestTMDslash(CliArgs &args) : args_(args) {}
+
   void run(void);
 
   template <typename FT,
@@ -46,25 +30,14 @@ class testTWMDslashFull : public TestFixture
   }
 
  private:
-  const int By;
-  const int Bz;
-  const int NCores;
-  const int Sy;
-  const int Sz;
-  const int PadXY;
-  const int PadXYZ;
-  const int MinCt;
-  const int N_simt;
-  const bool compress12;
-  const Prec precision;
-  const int soalen;
+  CliArgs &args_;
   Seed rng_seed;
 
   template <typename T, int V, int S, typename U, typename Phi>
   void testTWMDslashWrapper()
   {
     for (int t_bc = +1; t_bc >= -1; t_bc -= 2) {
-      if (compress12) {
+      if (args_.compress12) {
         testTWMDslash<T, V, S, true, U, Phi>(t_bc);
       } else {
         testTWMDslash<T, V, S, false, U, Phi>(t_bc);
@@ -76,7 +49,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMDslashAChiMBDPsiWrapper()
   {
     for (int t_bc = 1; t_bc >= -1; t_bc -= 2) {
-      if (compress12) {
+      if (args_.compress12) {
         testTWMDslashAChiMBDPsi<T, V, S, true, U, Phi>(t_bc);
       } else {
         testTWMDslashAChiMBDPsi<T, V, S, false, U, Phi>(t_bc);
@@ -89,7 +62,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMMWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
+      if (args_.compress12) {
         testTWMM<T, V, S, true, U, Phi>(t_bc);
       } else {
         testTWMM<T, V, S, false, U, Phi>(t_bc);
@@ -102,7 +75,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMCGWrapper()
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
+      if (args_.compress12) {
         testTWMCG<T, V, S, true, U, Phi>(t_bc);
       } else {
         testTWMCG<T, V, S, false, U, Phi>(t_bc);
@@ -116,7 +89,7 @@ class testTWMDslashFull : public TestFixture
   {
     // for(int t_bc=-1; t_bc <= +1; t_bc+=2) {
     int t_bc = -1;
-    if (compress12) {
+    if (args_.compress12) {
       testTWMBiCGStab<T, V, S, true, U, Phi>(u, t_bc);
     } else {
       testTWMBiCGStab<T, V, S, false, U, Phi>(u, t_bc);
@@ -136,7 +109,7 @@ class testTWMDslashFull : public TestFixture
   void testTWMRichardsonWrapper(const U &u)
   {
     for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
+      if (args_.compress12) {
         testTWMRichardson<T1, VEC1, SOA1, true, T2, VEC2, SOA2, U, Phi>(u, t_bc);
       } else {
         testTWMRichardson<T1, VEC1, SOA1, false, T2, VEC2, SOA2, U, Phi>(u, t_bc);
@@ -213,5 +186,3 @@ class testTWMDslashFull : public TestFixture
                       int const isign,
                       int const target_cb);
 };
-
-#endif
