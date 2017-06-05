@@ -515,6 +515,7 @@ void testClovInvertFromFile::run(void)
 #endif
 #endif
 
+#if 0
   std::string filename("./cl3_64_128_b5p0_m0p3550_m0p3550_cfg_544.lime");
   double mass = -0.3550;
   double clov_coeff = 1.90497469553511;
@@ -524,5 +525,6 @@ void testClovInvertFromFile::run(void)
 #else
   runTest<double, VECLEN_DP, 4, true, float, VECLEN_SP, 8, UD, PhiD>(
       mass, clov_coeff, filename);
+#endif
 #endif
 }
