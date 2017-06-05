@@ -16,9 +16,7 @@ using namespace QDP;
 #include "qphix/invcg.h"
 #include "qphix/invbicgstab.h"
 #include "qphix/inv_richardson_multiprec.h"
-#if 1
 #include "./invbicgstab_test.h"
-#endif
 
 #include <omp.h>
 
@@ -32,44 +30,6 @@ using namespace QPhiX;
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
-
-template <typename FT,
-          int veclen,
-          int soalen,
-          bool compress12,
-          typename QdpGauge,
-          typename QdpSpinor>
-void TestDslash::operator()()
-{
-  RNG::savern(rng_seed);
-
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-  // Make a random gauge field
-  multi1d<QdpGauge> u(4);
-  QdpGauge g;
-  QdpGauge uf;
-  for (int mu = 0; mu < 4; mu++) {
-#if 1
-    uf = 1; // Unit gauge
-
-    Real factor = Real(0.09);
-    gaussian(g);
-    u[mu] = uf + factor * g;
-    reunit(u[mu]);
-#else
-    u[mu] = 1;
-#endif
-  }
-
-  for (int const t_bc : {1, -1}) {
-    testDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-    testDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u,
-                                                                              t_bc);
-    testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-    testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-    testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-  }
-}
 
 void TestDslash::run(void)
 {
@@ -114,6 +74,44 @@ void TestDslash::run(void)
 #endif
   }
   */
+}
+
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+void TestDslash::operator()()
+{
+  RNG::savern(rng_seed);
+
+  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
+  // Make a random gauge field
+  multi1d<QdpGauge> u(4);
+  QdpGauge g;
+  QdpGauge uf;
+  for (int mu = 0; mu < 4; mu++) {
+#if 1
+    uf = 1; // Unit gauge
+
+    Real factor = Real(0.09);
+    gaussian(g);
+    u[mu] = uf + factor * g;
+    reunit(u[mu]);
+#else
+    u[mu] = 1;
+#endif
+  }
+
+  for (int const t_bc : {1, -1}) {
+    testDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u,
+                                                                              t_bc);
+    testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+  }
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>

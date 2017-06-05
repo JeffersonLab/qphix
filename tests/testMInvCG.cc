@@ -24,70 +24,15 @@ using namespace QPhiX;
 
 #include "tparam_selector.h"
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
+#include "veclen.h"
+#include "tolerance.h"
 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-#include <immintrin.h>
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_DP 4
-
-#elif defined(QPHIX_SCALAR_SOURCE)
-#warning SCALAR_SOURCE
-#define VECLEN_SP 1
-#define VECLEN_DP 1
-
-#elif defined(QPHIX_QPX_SOURCE)
-#warning QPX_SOURCE
-#define VECLEN_SP 4
-#define VECLEN_DP 4
-
-#endif
-
-#if defined(QPHIX_SSE_SOURCE)
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-#endif
-
-// What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
 
-template <typename F>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-const Double tolerance<double>::small = Double(1.0e-13);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-4);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
+void TestMultishift::run() {
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
 
 template <typename FT,
           int veclen,
@@ -95,19 +40,12 @@ template <typename FT,
           bool compress12,
           typename QdpGauge,
           typename QdpSpinor>
-void MInvCGTester::operator()()
+void TestMultishift::operator()()
 {
-  const multi1d<int> &lattSize = Layout::subgridLattSize();
-  Nx = lattSize[0];
-  Ny = lattSize[1];
-  Nz = lattSize[2];
-  Nt = lattSize[3];
-
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
+  Nx = args_.nrow_in[0];
+  Ny = args_.nrow_in[1];
+  Nz = args_.nrow_in[2];
+  Nt = args_.nrow_in[3];
 
   QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
   // Make a random gauge field
@@ -130,7 +68,7 @@ void MInvCGTester::operator()()
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void MInvCGTester::testMInvCG(const multi1d<U> &u, int t_bc)
+void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -138,7 +76,7 @@ void MInvCGTester::testMInvCG(const multi1d<U> &u, int t_bc)
     typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
     typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
 
-    int threads_per_core = Sy * Sz;
+    int threads_per_core = args_.Sy * args_.Sz;
 
     QDPIO::cout << "In testMInvCG:" << endl;
 
@@ -153,14 +91,14 @@ void MInvCGTester::testMInvCG(const multi1d<U> &u, int t_bc)
     double t_boundary = (double)(t_bc);
 
     Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                     By,
-                                     Bz,
-                                     NCores,
-                                     Sy,
-                                     Sz,
-                                     PadXY,
-                                     PadXYZ,
-                                     MinCt);
+                                     args_.By,
+                                     args_.Bz,
+                                     args_.NCores,
+                                     args_.Sy,
+                                     args_.Sz,
+                                     args_.PadXY,
+                                     args_.PadXYZ,
+                                     args_.MinCt);
 
     // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
     // -- Allocate the gauge field
@@ -309,11 +247,4 @@ void MInvCGTester::testMInvCG(const multi1d<U> &u, int t_bc)
 
 #endif
   }
-}
-
-void MInvCGTester::run(void)
-{
-  RNG::savern(rng_seed);
-
-  call(*this, precision, soalen, compress12);
 }
