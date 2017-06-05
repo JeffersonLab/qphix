@@ -44,6 +44,8 @@ sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin cmake python3-jinja2
 
+python3 -m pip install --user jinja2
+
 ls -l /usr/lib/ccache
 fold_end update_gcc
 
