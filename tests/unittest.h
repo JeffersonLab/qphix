@@ -101,12 +101,13 @@ class TestRunner : public TestCase
   {
 
     QDP_initialize(argc, argv);
+
+    processArgs(*argc, *argv);
+
     multi1d<int> nrow(Nd);
     nrow = latdims;
     Layout::setLattSize(nrow);
     Layout::create();
-
-    processArgs(*argc, *argv);
 
     omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
                         some_user_args.getSz());
