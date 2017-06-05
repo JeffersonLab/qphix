@@ -89,7 +89,7 @@ installdir=$PWD/cmake_local
 
 pushd cmake_build
 CXX="$cxx" CXXFLAGS="$cxxflags" cmake ../generated/$isa -DCMAKE_INSTALL_PREFIX="$installdir"
-nice make -j "$(nproc)" VERBOSE=1
+nice make -j "$(nproc)"
 make install
 popd
 
