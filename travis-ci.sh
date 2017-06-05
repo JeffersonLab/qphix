@@ -321,15 +321,15 @@ case "$QPHIX_ARCH" in
         ;;
     AVX)
         archflag=-march=sandybridge
-        soalen=2
+        soalen=4
         ;;
     AVX2)
         archflag=-march=haswell
-        soalen=2
+        soalen=4
         ;;
     AVX512)
         archflag=-march=knl
-        soalen=4
+        soalen=8
         ;;
     *)
         echo "Unsupported QPHIX_ARCH"
