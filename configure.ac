@@ -31,13 +31,6 @@ AC_ARG_ENABLE(testing,
    [ build_tests=no ]
 )
 
-AC_ARG_ENABLE(soalen,
-   AC_HELP_STRING([--enable-soalen=N],
-     [Build using SOALEN=N where N=4,8,16 for MIC N=4,8 for AVX]),
-     [SOALEN=${enableval}],
-     [SOALEN=8]
-)
-
 AC_ARG_ENABLE(cean,
     AC_HELP_STRING([--enable-cean],
       [ Enable Cilk Array Notation extentions ]),
@@ -385,33 +378,6 @@ parscalar)
 	;;
 esac
 
-case ${SOALEN} in
-1)
-	AC_MSG_NOTICE([Building for SOALEN=1])
-	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[1], [SOALEN is 1])
-	;;
-2) 
-	AC_MSG_NOTICE([Building for SOALEN=2])
-	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[2], [SOALEN is 2])
-	;;
-
-4)
-	AC_MSG_NOTICE([Building for SOALEN=4])
-	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[4], [SOALEN is 4])
-	;;
-8)
-	AC_MSG_NOTICE([Building for SOALEN=8])
-	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[8], [SOALEN is 8])
-	;;
-16)
-	AC_MSG_NOTICE([Building for SOALEN=16])
-	AC_DEFINE_UNQUOTED(QPHIX_SOALEN,[16], [SOALEN is 16])
-	;;
-*)
-	AC_MSG_ERROR([Unsupported SOALEN])
-	;;
-esac
-
 case ${USE_CEAN} in
 yes)
         AC_MSG_NOTICE([Enabling Cilk Notation Use])
@@ -467,20 +433,12 @@ AVX|avx)
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 
 	AC_MSG_NOTICE([Configuring AVX Specializations ])
-	if test $SOALEN -gt 8;
-	then 
-	  AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX]);
-	fi		       	    
 ;;
 AVX2|avx2)
         AC_DEFINE([QPHIX_AVX2_SOURCE],[1], [ Generate AVX2 Specializations ])
         AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [64], [ L2 Cache alignment ] )
 
         AC_MSG_NOTICE([Configuring AVX2 Specializations ])
-        if test $SOALEN -gt 8;
-        then
-          AC_MSG_ERROR([Cannot have SOALEN more than 8 for AVX2]);
-        fi
 ;;
 AVX512|avx512)
         AC_DEFINE([QPHIX_AVX512_SOURCE],[1], [ Generate AVX512 Specializations ])
@@ -492,10 +450,6 @@ SSE|sse)
 	AC_DEFINE([QPHIX_SSE_SOURCE],[1], [ Generate SSE4 Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN],[64], [ L2 Cache alignment ])
 	AC_MSG_NOTICE([Configuring SSE4 Specializations])
-	if test $SOALEN -gt 4;
-        then
-	  AC_MSG_ERROR([Cannot have SOALEN more than 4 for SSE])
-        fi
 ;;
 MIC|mic)
 	AC_DEFINE([QPHIX_MIC_SOURCE],[1], [ Generate MIC Specializations ])
@@ -512,10 +466,6 @@ QPX|qpx)
 	AC_DEFINE([QPHIX_QPX_SOURCE],[1], [ Generate QPX Specializations ])
 	AC_DEFINE([QPHIX_LLC_CACHE_ALIGN], [128], [ L2 Cache alignment ] )
 	AC_MSG_NOTICE([Configuring QPX Specializations ])
-	if test $SOALEN -ne 4;
-	then
-	  AC_MSG_ERROR([Cannot have SOALEN not equal to 4 for QPX]);
-	fi
 	build_qpx="yes"
 ;;
 *)
