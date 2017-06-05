@@ -42,7 +42,7 @@ cd ..
 fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin
+sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin cmake python3-jinja2
 
 ls -l /usr/lib/ccache
 fold_end update_gcc
@@ -306,21 +306,9 @@ make-make-install
 popd
 
 ###############################################################################
-#                                    QPhiX                                    #
+#                            QPhiX Code Generator                             #
 ###############################################################################
 
-repo=qphix
-print-fancy-heading $repo
-
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags $openmp_flags $qphix_flags"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
-autoreconf-if-needed
-popd
-fold_end $repo.download
-
-fold_start $repo.configure
 case "$QPHIX_ARCH" in
     SCALAR)
         archflag=
@@ -343,6 +331,36 @@ case "$QPHIX_ARCH" in
         exit 1;
 esac
 
+repo=qphix-codegen
+print-fancy-heading $repo
+clone-if-needed https://github.com/JeffersonLab/qphix-codegen.git $repo twisted-bc
+
+pushd $repo
+cflags="$base_cflags $openmp_flags $qphix_flags"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
+if ! [[ -f build-succeeded ]]; then
+    ./generate-and-compile "${QPHIX_ARCH,,}" "$cxx_name" "$cxxflags $archflag"
+    touch build-succeeded
+fi
+popd
+
+###############################################################################
+#                                    QPhiX                                    #
+###############################################################################
+
+repo=qphix
+print-fancy-heading $repo
+
+fold_start $repo.autoreconf
+pushd $repo
+cflags="$base_cflags $openmp_flags $qphix_flags"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
+autoreconf-if-needed
+popd
+fold_end $repo.download
+
+fold_start $repo.configure
+
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
@@ -357,6 +375,7 @@ if ! [[ -f Makefile ]]; then
             --enable-openmp \
             --enable-mm-malloc \
             --enable-parallel-arch=parscalar \
+            --with-codegen=../qphix-codegen/cmake_local \
             --with-qdp="$prefix" \
             CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
         cat config.log
