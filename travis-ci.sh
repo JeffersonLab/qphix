@@ -49,7 +49,7 @@ python3 -m pip install --user jinja2
 ls -l /usr/lib/ccache
 fold_end update_gcc
 
-basedir=$PWD
+basedir="$PWD"
 
 cc_name=mpicc
 cxx_name=mpic++
