@@ -106,6 +106,14 @@ clone-if-needed() {
 make_smp_template="-j $(nproc)"
 make_smp_flags="${SMP-$make_smp_template}"
 
+# XXX There is some issue with the memory within the virtual machine. The
+# AVX512 compilation takes more memory than the machine has. We work around
+# this by just using one process at a time. Once the changes in the build
+# system from the `twisted-bc` branch are in, this is no longer needed.
+if [[ "$QPHIX_ARCH" = AVX512 ]]; then
+    make_smp_flags=
+fi
+
 # Runs `make && make install` with appropriate flags that make compilation
 # parallel on multiple cores. A sentinel file is created such that `make` is
 # not invoked once it has correctly built.
