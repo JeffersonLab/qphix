@@ -9,6 +9,6 @@ int main(int argc, char **argv)
   QmpContext qmp_context(argc, argv);
   auto args = processArgs(argc, argv, true);
 
-  TimeTWMDslash test(qmp_context.args());
+  TimeTMDslash test(qmp_context.args());
   test.run();
 }

@@ -15,43 +15,24 @@
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
+#include "veclen.h"
+#include "tolerance.h"
+#include "tparam_selector.h"
 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-#endif
+void TimeTMDslash::run()
+{
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-#define VECLEN_SP 8
-#define VECLEN_HP 8
-#define VECLEN_DP 4
-#endif
+template <typename FT, int V, int S, bool compress, typename QdpGauge, typename QdpSpinor>
+void TimeTMDslash::operator()()
+{
+    runTest<FT, V, S, compress>();
+}
 
-#if defined(QPHIX_SCALAR_SOURCE)
-#define VECLEN_SP 1
-#define VECLEN_DP 1
-#endif
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-4);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
 
 template <typename FT, int V, int S, bool compress>
-void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
+void TimeTMDslash::runTest()
 {
 
   typedef typename Geometry<FT, V, S, compress>::SU3MatrixBlock Gauge;
@@ -62,15 +43,15 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   // Work out local lattice size
   int subLattSize[4];
   for (int mu = 0; mu < 4; mu++) {
-    subLattSize[mu] = lattSize[mu] / qmp_geom[mu];
+    subLattSize[mu] = args_.nrow_in[mu] / args_.qmp_geometry[mu];
   }
 
   // Work out the size of checkerboarded X-dimension
-  int X1h = lattSize[0] / 2;
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
+  int X1h = args_.nrow_in[0] / 2;
+  int Nx = args_.nrow_in[0];
+  int Ny = args_.nrow_in[1];
+  int Nz = args_.nrow_in[2];
+  int Nt = args_.nrow_in[3];
 
   int lX1h = subLattSize[0] / 2;
   int lY = subLattSize[1];
@@ -81,7 +62,7 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   masterPrintf("VECLEN=%d SOALEN=%d\n", V, S);
   masterPrintf("Global Lattice Size = ");
   for (int mu = 0; mu < 4; mu++) {
-    masterPrintf(" %d", lattSize[mu]);
+    masterPrintf(" %d", args_.nrow_in[mu]);
   }
   masterPrintf("\n");
 
@@ -91,11 +72,10 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   }
   masterPrintf("\n");
 
-  masterPrintf("Block Sizes: By= %d Bz=%d\n", By, Bz);
-  masterPrintf("Cores = %d\n", NCores);
-  masterPrintf("SMT Grid: Sy=%d Sz=%d\n", Sy, Sz);
-  masterPrintf("Pad Factors: PadXY=%d PadXYZ=%d\n", PadXY, PadXYZ);
-  masterPrintf("Threads_per_core = %d\n", N_simt);
+  masterPrintf("Block Sizes: args_.By= %d args_.Bz=%d\n", args_.By, args_.Bz);
+  masterPrintf("Cores = %d\n", args_.NCores);
+  masterPrintf("SMT Grid: args_.Sy=%d args_.Sz=%d\n", args_.Sy, args_.Sz);
+  masterPrintf("Pad Factors: args_.PadXY=%d args_.PadXYZ=%d\n", args_.PadXY, args_.PadXYZ);
 
   masterPrintf("Initializing TMDslash\n");
 
@@ -113,7 +93,7 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
   // Create Scalar Dslash Class
   Geometry<FT, V, S, compress> geom(
-      subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+      subLattSize, args_.By, args_.Bz, args_.NCores, args_.Sy, args_.Sz, args_.PadXY, args_.PadXYZ, args_.MinCt);
   TMDslash<FT, V, S, compress> D32(
       &geom, t_boundary, coeff_s, coeff_t, Mass, TwistedMass);
 
@@ -426,7 +406,7 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       for (int repeat = 0; repeat < 3; repeat++) {
         double start = omp_get_wtime();
 
-        for (int i = 0; i < iters; i++) {
+        for (int i = 0; i < args_.iters; i++) {
           // Apply Optimized Dslash
           D32.dslash(chi_s[target_cb],
                      psi_s[source_cb],
@@ -441,9 +421,9 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
         time /= (double)CommsUtils::numNodes();
 
         masterPrintf("\t timing %d of 3\n", repeat);
-        masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-        masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)iters);
-        double Gflops = (1320.0f + 72.0f) * (double)(iters) *
+        masterPrintf("\t %d iterations in %e seconds\n", args_.iters, time);
+        masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)args_.iters);
+        double Gflops = (1320.0f + 72.0f) * (double)(args_.iters) *
                         (double)(X1h * Ny * Nz * Nt) / 1.0e9;
         double perf = Gflops / time;
         masterPrintf("\t Performance: %g GFLOPS total\n", perf);
@@ -467,7 +447,7 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     for (int repeat = 0; repeat < 3; repeat++) {
       double start = omp_get_wtime();
 
-      for (int i = 0; i < iters; i++) {
+      for (int i = 0; i < args_.iters; i++) {
         // Apply Optimized Dslash
         M(chi_s[0], psi_s[0], isign);
       }
@@ -479,11 +459,11 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       time /= (double)CommsUtils::numNodes();
 
       masterPrintf("\t timing %d of 3\n", repeat);
-      masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-      masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)iters);
+      masterPrintf("\t %d iterations in %e seconds\n", args_.iters, time);
+      masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)args_.iters);
       double flops_per_iter = (1320.0f + 72.0f) * 2.0 + 24.0 * 3.0;
       double Gflops =
-          flops_per_iter * (double)(iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
+          flops_per_iter * (double)(args_.iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
       double perf = Gflops / time;
       masterPrintf("\t Performance: %g GFLOPS total\n", perf);
       masterPrintf("\t              %g GFLOPS / node\n",
@@ -653,59 +633,4 @@ void timeTWMDslashNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   geom.free(p_odd);
   geom.free(c_even);
   geom.free(c_odd);
-}
-
-void timeTWMDslashNoQDP::run(const int lattSize[], const int qmp_geom[])
-{
-
-  if (precision == FLOAT_PREC) {
-    if (QPHIX_SOALEN > VECLEN_SP) {
-      masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_SP);
-      abort();
-    }
-
-    masterPrintf("TIMING IN SINGLE PRECISION \n");
-    if (compress12) {
-      runTest<float, VECLEN_SP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<float, VECLEN_SP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-  }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_AVX512_SOURCE)
-  if (precision == HALF_PREC) {
-    if (QPHIX_SOALEN > VECLEN_HP) {
-      masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_SP);
-      abort();
-    }
-
-    masterPrintf("TIMING IN HALF PRECISION \n");
-    if (compress12) {
-      runTest<half, VECLEN_HP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<half, VECLEN_HP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-  }
-#endif
-
-  if (precision == DOUBLE_PREC) {
-    if (QPHIX_SOALEN > VECLEN_DP) {
-      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_DP);
-      abort();
-    }
-
-    masterPrintf("TIMING IN DOUBLE PRECISION \n");
-    if (compress12) {
-      runTest<double, VECLEN_DP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<double, VECLEN_DP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-  }
 }
