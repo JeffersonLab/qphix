@@ -147,15 +147,6 @@ print-fancy-heading() {
     fi
 }
 
-# I have not fully understood this here. I *feel* that there is some cyclic
-# dependency between `automake --add-missing` and the `autoreconf`. It does not
-# make much sense. Perhaps one has to split up the `autoreconf` call into the
-# parts that make it up. Using this weird dance, it works somewhat reliably.
-autotools-dance() {
-    #automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
-    autoreconf -vif
-}
-
 # Invokes the various commands that are needed to update the GNU Autotools
 # build system. Since the submodules are also Autotools projects, these
 # commands need to be invoked from the bottom up, recursively. The regular `git
@@ -170,14 +161,14 @@ autoreconf-if-needed() {
                 pushd "$module"
                 if [[ -f configure.ac ]]; then
                     aclocal
-                    autotools-dance
+                    autoreconf -vif
                 fi
                 popd
             done
         fi
 
         aclocal
-        autotools-dance
+        autoreconf -vif
     fi
 }
 
