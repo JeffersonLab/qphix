@@ -16,16 +16,7 @@ int main(int argc, char **argv)
 {
   TestRunner tests(&argc, &argv, nrow_in);
 
-  tests.addTest(new testClovInvertFromFile(By_user,
-                                           Bz_user,
-                                           NCores_user,
-                                           Sy_user,
-                                           Sz_user,
-                                           PadXY_user,
-                                           PadXYZ_user,
-                                           MinCt_user,
-                                           compress12,
-                                           prec_user),
+  tests.addTest(new testClovInvertFromFile(tests.args()),
                 "testClovInvertFromFile");
 
   tests.run();

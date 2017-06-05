@@ -1,4 +1,5 @@
 #include "timeClovNoQDP.h"
+
 #include <omp.h>
 
 #include "qphix/clover_dslash_def.h"
@@ -15,53 +16,16 @@
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
+#include "veclen.h"
+#include "tolerance.h"
 
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-#endif
+void TimeClover::run()
+{
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-#define VECLEN_HP 8
-#define VECLEN_SP 8
-#define VECLEN_DP 4
-#endif
-
-#if defined(QPHIX_SCALAR_SOURCE)
-#define VECLEN_SP 1
-#define VECLEN_DP 1
-#endif
-
-#if defined(QPHIX_QPX_SOURCE)
-#define VECLEN_SP 4
-#define VECLEN_DP 4
-#endif
-
-#if defined(QPHIX_SSE_SOURCE)
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-#endif
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-4);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-13);
-
-template <typename FT, int V, int S, bool compress>
-void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
+template <typename FT, int V, int S, bool compress, typename QdpGauge, typename QdpSpinor>
+void TimeClover::operator()()
 {
 
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
@@ -72,15 +36,15 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   // Work out local lattice size
   int subLattSize[4];
   for (int mu = 0; mu < 4; mu++) {
-    subLattSize[mu] = lattSize[mu] / qmp_geom[mu];
+    subLattSize[mu] = args_.nrow_in[mu] / args_.qmp_geometry[mu];
   }
 
   // Work out the size of checkerboarded X-dimension
-  int X1h = lattSize[0] / 2;
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
+  int X1h = args_.nrow_in[0] / 2;
+  int Nx = args_.nrow_in[0];
+  int Ny = args_.nrow_in[1];
+  int Nz = args_.nrow_in[2];
+  int Nt = args_.nrow_in[3];
 
   int lX1h = subLattSize[0] / 2;
   int lY = subLattSize[1];
@@ -95,7 +59,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
   // Create Scalar Dslash Class
   Geometry<FT, V, S, compress> geom(
-      subLattSize, By, Bz, NCores, Sy, Sz, PadXY, PadXYZ, MinCt);
+      subLattSize, args_.By, args_.Bz, args_.NCores, args_.Sy, args_.Sz, args_.PadXY, args_.PadXYZ, args_.MinCt);
   ClovDslash<FT, V, S, compress> D32(&geom, t_boundary, coeff_s, coeff_t);
 
   // Allocate data for the gauges
@@ -450,7 +414,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   EvenOddCloverOperator<FT, V, S, compress> M(
       u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
 
-  if (do_dslash) {
+  if (args_.do_dslash) {
 
     // Go through the test cases -- apply SSE dslash versus, QDP Dslash
     for (int isign = 1; isign >= -1; isign -= 2) {
@@ -466,7 +430,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
           double start = omp_get_wtime();
 
-          for (int i = 0; i < iters; i++) {
+          for (int i = 0; i < args_.iters; i++) {
             // Apply Optimized Dslash
             D32.dslash(chi_s[target_cb],
                        psi_s[source_cb],
@@ -482,10 +446,10 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
           time /= (double)CommsUtils::numNodes();
 
           // masterPrintf("\t timing %d of 3\n", repeat);
-          masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-          masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)iters);
+          masterPrintf("\t %d iterations in %e seconds\n", args_.iters, time);
+          masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)args_.iters);
           double Gflops =
-              1824.0f * (double)(iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
+              1824.0f * (double)(args_.iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
           double perf = Gflops / time;
           masterPrintf("\t Performance: %g GFLOPS total\n", perf);
           masterPrintf("\t              %g GFLOPS / node\n",
@@ -496,7 +460,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
     } // cb
   } // do dslash
 
-  if (do_m) {
+  if (args_.do_m) {
 
     // Go through the test cases -- apply SSE dslash versus, QDP Dslash
     for (int isign = 1; isign >= -1; isign -= 2) {
@@ -506,7 +470,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       for (int repeat = 0; repeat < 3; repeat++) {
         double start = omp_get_wtime();
 
-        for (int i = 0; i < iters; i++) {
+        for (int i = 0; i < args_.iters; i++) {
           // Apply Optimized Dslash
           M(chi_s[0], psi_s[0], isign);
         }
@@ -518,11 +482,11 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
         time /= (double)CommsUtils::numNodes();
 
         masterPrintf("\t timing %d of 3\n", repeat);
-        masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-        masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)iters);
+        masterPrintf("\t %d iterations in %e seconds\n", args_.iters, time);
+        masterPrintf("\t %e usec/iteration\n", 1.0e6 * time / (double)args_.iters);
         double flops_per_iter = 3696.0f;
         double Gflops =
-            flops_per_iter * (double)(iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
+            flops_per_iter * (double)(args_.iters) * (double)(X1h * Ny * Nz * Nt) / 1.0e9;
         double perf = Gflops / time;
         masterPrintf("\t Performance: %g GFLOPS total\n", perf);
         masterPrintf("\t              %g GFLOPS / node\n",
@@ -536,7 +500,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   int niters;
   double rsd_final;
 
-  if (do_cg) {
+  if (args_.do_cg) {
 
     InvCG<FT, V, S, compress> solver(M, max_iters);
 
@@ -596,13 +560,13 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
       unsigned long num_cb_sites = X1h * Ny * Nz * Nt;
       unsigned long total_flops = (site_flops + (3696) * mv_apps) * num_cb_sites;
 
-      masterPrintf("Solver iters=%d\n", niters);
+      masterPrintf("Solver args_.iters=%d\n", niters);
       masterPrintf("Solver Time=%g(s)\n", (end - start));
       masterPrintf("CG GFLOPS=%g\n", 1.0e-9 * (double)(total_flops) / (end - start));
     }
   }
 
-  if (do_bicgstab) {
+  if (args_.do_bicgstab) {
 
     InvBiCGStab<FT, V, S, compress> solver2(M, max_iters);
 
@@ -660,7 +624,7 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
 
       unsigned long num_cb_sites = X1h * Ny * Nz * Nt;
       unsigned long total_flops = (site_flops + (3696) * mv_apps) * num_cb_sites;
-      masterPrintf("Solver iters=%d\n", niters);
+      masterPrintf("Solver args_.iters=%d\n", niters);
       masterPrintf("Solver Time=%g(s)\n", (end - start));
       masterPrintf("BICGSTAB GFLOPS=%g\n",
                    1.0e-9 * (double)(total_flops) / (end - start));
@@ -677,62 +641,4 @@ void timeClovNoQDP::runTest(const int lattSize[], const int qmp_geom[])
   geom.free(c_odd);
   geom.free(A_cb0);
   geom.free(A_inv_cb1);
-}
-
-void timeClovNoQDP::run(const int lattSize[], const int qmp_geom[])
-{
-
-  if (precision == FLOAT_PREC) {
-    if (QPHIX_SOALEN > VECLEN_SP) {
-      masterPrintf("SOALEN=%d is greater than the single prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_SP);
-      abort();
-    }
-
-    if (compress12) {
-      runTest<float, VECLEN_SP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<float, VECLEN_SP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-  }
-
-  if (precision == HALF_PREC) {
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_AVX2_SOURCE)
-    if (QPHIX_SOALEN > VECLEN_HP) {
-      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_DP);
-      abort();
-    }
-
-    if (compress12) {
-      runTest<half, VECLEN_HP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<half, VECLEN_HP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-#else
-    masterPrintf("HALF precision is not supported for this architecture. "
-                 "Currently only available for MIC\n");
-#endif
-  }
-
-#if 1
-  if (precision == DOUBLE_PREC) {
-    if (QPHIX_SOALEN > VECLEN_DP) {
-      masterPrintf("SOALEN=%d is greater than the double prec VECLEN=%d\n",
-                   QPHIX_SOALEN,
-                   VECLEN_DP);
-      abort();
-    }
-
-    if (compress12) {
-      runTest<double, VECLEN_DP, QPHIX_SOALEN, true>(lattSize, qmp_geom);
-    } else {
-      runTest<double, VECLEN_DP, QPHIX_SOALEN, false>(lattSize, qmp_geom);
-    }
-  }
-#endif
 }

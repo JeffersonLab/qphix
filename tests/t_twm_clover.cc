@@ -16,8 +16,7 @@ int main(int argc, char **argv)
 {
   TestRunner tests(&argc, &argv, nrow_in);
 
-  tests.addTest(new testTWMCloverFull(some_user_args, compress12, prec_user),
-                "testTWMCloverFull");
+  tests.addTest(new testTWMCloverFull(tests.args()), "testTWMCloverFull");
 
   tests.run();
   tests.summary();

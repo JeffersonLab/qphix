@@ -15,8 +15,7 @@ int main(int argc, char **argv)
 {
   TestRunner tests(&argc, &argv, nrow_in);
 
-  tests.addTest(new testClovDslashFull(some_user_args, compress12, prec_user),
-                "testClovDslashFull");
+  tests.addTest(new testClovDslashFull(tests.args()), "testClovDslashFull");
 
   tests.run();
   tests.summary();

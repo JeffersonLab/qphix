@@ -95,13 +95,15 @@ class TestRunner : public TestCase
 
   std::vector<TestItem *> tests;
 
+  CliArgs args_;
+
  public:
   TestRunner(int *argc, char ***argv, const int latdims[])
       : num_success(0), num_failed(0), num_unexpected_failed(0), num_tried(0)
   {
     QDP_initialize(argc, argv);
 
-    processArgs(*argc, *argv);
+    args_ = processArgs(*argc, *argv);
 
     multi1d<int> nrow(Nd);
     nrow = latdims;
@@ -111,6 +113,8 @@ class TestRunner : public TestCase
     omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
                         some_user_args.getSz());
   }
+
+  CliArgs &args() { return args_; }
 
   void run(void)
   {
