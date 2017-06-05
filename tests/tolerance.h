@@ -1,5 +1,9 @@
 #pragma once
 
+#include "qdp.h"
+
+using namespace QDP;
+
 template <typename T>
 struct tolerance {
   static const Double small; // Always fail
