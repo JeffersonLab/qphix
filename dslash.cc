@@ -607,10 +607,6 @@ void generate_code(void)
                         filename << letter;
                     }
 
-                    cout << "GENERATING " << tm_prefix << kernel
-                         << "_" << plusminus << "_"
-                         << "vec body" << endl;
-
                     // Generate instructions
                     generateL2Prefetches(l2prefs,
                                          compress12,
@@ -671,9 +667,6 @@ void generate_code(void)
                        << GaugeTypeName << "_v" << VECLEN << "_s"
                        << SOALEN << "_" << num_components;
 
-              cout << "GENERATING face unpack file "
-                   << filename.str() << endl;
-
               // Generate instructions
               generateFaceUnpackL2Prefetches(
                   l2prefs,
@@ -715,9 +708,6 @@ void generate_code(void)
                  << dimchar[dim] << "_" << plusminus << "_"
                  << SpinorTypeName << "_" << GaugeTypeName << "_v"
                  << VECLEN << "_s" << SOALEN;
-
-        cout << "GENERATING face pack file " << filename.str()
-             << endl;
 
         // Generate instructions
         generateFacePackL2Prefetches(l2prefs, 2 * dim + dir);

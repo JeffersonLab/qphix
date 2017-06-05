@@ -19,7 +19,6 @@ void mergeIvectorWithL2Prefetches(InstVector &ivector,
                                   InstVector &l2prefs)
 {
   if (l2prefs.size() == 0) {
-    cout << "No L2 Prefetches. Returning ivector unchanged" << endl;
   } else {
 
     if (ivector.size() == 0) {
