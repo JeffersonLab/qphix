@@ -15,6 +15,4 @@ dpkg-query -L python3-jinja2
 
 export PYTHONPATH=/usr/lib/python3/dist-packages
 
-mkdir -p qphix-output/.git
-
-./generate-and-copy-to-qphix scalar qphix-output
+./generate-and-compile avx g++ "-march=sandybridge -O2"
