@@ -381,7 +381,7 @@ if ! [[ -f Makefile ]]; then
             --enable-openmp \
             --enable-mm-malloc \
             --enable-parallel-arch=parscalar \
-            --with-codegen=../qphix-codegen/cmake_local \
+            --with-codegen=../../sources/qphix-codegen/cmake_local \
             --with-qdp="$prefix" \
             CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
         cat config.log
