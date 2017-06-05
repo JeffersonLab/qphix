@@ -174,9 +174,4 @@ class Dslash
 }; // Class
 
 } // Namespace
-#include "qphix/dslash_body.h"
-
-#ifdef QPHIX_DO_COMMS
-#include "qphix/face.h"
-#endif
 #endif

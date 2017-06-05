@@ -197,10 +197,4 @@ class TMClovDslash
 
 } // Namespace
 
-#include "qphix/tm_clov_dslash_body.h"
-
-#ifdef QPHIX_DO_COMMS
-#include "qphix/tm_clov_dslash_face.h"
-#endif
-
 #endif // Include guard

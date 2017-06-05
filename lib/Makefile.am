@@ -15,3 +15,22 @@ libqphix_solver_a_SOURCES += bgq_threadbind.cc
 else
 libqphix_solver_a_SOURCES += generic_threadbind.cc
 endif
+
+
+###############################################################################
+#                      Explicit Template Instantiations                       #
+###############################################################################
+
+libqphix_solver_a_SOURCES += Dslash_instantiation.cpp
+
+if QPHIX_BUILD_CLOVER
+libqphix_solver_a_SOURCES += ClovDslash_instantiation.cpp
+endif
+
+if QPHIX_BUILD_TWISTED_MASS
+libqphix_solver_a_SOURCES += TMDslash_instantiation.cpp
+endif
+
+if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
+libqphix_solver_a_SOURCES += TMClovDslash_instantiation.cpp
+endif
