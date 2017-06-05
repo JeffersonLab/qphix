@@ -342,12 +342,6 @@ print-fancy-heading $repo
 clone-if-needed https://github.com/JeffersonLab/qphix-codegen.git $repo twisted-bc
 
 pushd $repo
-git branch -v
-ls
-
-cat Makefile
-cat generate-and-compile
-
 cflags="$base_cflags $openmp_flags $qphix_flags"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 if ! [[ -f build-succeeded ]]; then
