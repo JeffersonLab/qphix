@@ -1,6 +1,4 @@
-// -*- C++ -*-
-#ifndef MESFIELD_H
-#define MESFIELD_H
+#pragma once
 
 #include "qdp.h"
 
@@ -32,5 +30,3 @@ void mesField(QDP::multi1d<QDP::LatticeColorMatrixF> &f,
 void mesField(QDP::multi1d<QDP::LatticeColorMatrixD> &f,
               const QDP::multi1d<QDP::LatticeColorMatrixD> &u);
 }
-
-#endif
