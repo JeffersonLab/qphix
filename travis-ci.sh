@@ -98,7 +98,10 @@ clone-if-needed() {
         git clone "$url" --recursive -b "$branch"
 
         pushd "$dir"
-        rm -f configure Makefile
+        if [[ -f Makefile.am ]]; then
+            rm -f Makefile
+        fi
+        rm -f configure
         popd
     fi
 }
