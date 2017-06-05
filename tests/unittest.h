@@ -4,6 +4,8 @@
 #include "qdp.h"
 #include <vector>
 
+#include "cli_args.h"
+
 #include <qphix/qphix_config.h>
 using namespace QDP;
 using namespace std;
@@ -97,11 +99,17 @@ class TestRunner : public TestCase
   TestRunner(int *argc, char ***argv, const int latdims[])
       : num_success(0), num_failed(0), num_unexpected_failed(0), num_tried(0)
   {
+    QDP_initialize(argc, argv);
+
+    processArgs(*argc, *argv);
 
     multi1d<int> nrow(Nd);
     nrow = latdims;
     Layout::setLattSize(nrow);
     Layout::create();
+
+    omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
+                        some_user_args.getSz());
   }
 
   void run(void)
