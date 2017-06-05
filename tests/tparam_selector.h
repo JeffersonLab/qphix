@@ -8,6 +8,8 @@
 #include <qdp.h>
 #include <qphix_codegen/decl_common.h>
 
+using namespace QDP;
+
 template <typename FT>
 struct QdpTypes {
 };
