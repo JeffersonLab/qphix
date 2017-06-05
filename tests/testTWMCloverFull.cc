@@ -1,11 +1,6 @@
 #include "unittest.h"
 #include "testTWMCloverFull.h"
 
-// Stupid compiler thing
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
-
 #include "qphix/tm_clov_dslash_def.h"
 #include "qphix/tm_clov_dslash_body.h"
 

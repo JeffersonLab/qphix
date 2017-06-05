@@ -7,10 +7,6 @@
 #ifdef QPHIX_DO_COMMS
 #ifdef QPHIX_QMP_COMMS
 
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
-
 #include <qmp.h>
 #include <mpi.h>
 

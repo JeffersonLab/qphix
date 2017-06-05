@@ -1,11 +1,6 @@
 #include "unittest.h"
 #include "testClovDslashFull.h"
 
-// Stupid compiler thing
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
-
 #include "qphix/clover_dslash_def.h"
 #include "qphix/clover_dslash_body.h"
 

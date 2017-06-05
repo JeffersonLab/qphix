@@ -9,7 +9,6 @@
 #endif
 
 #include <cstdlib>
-
 using namespace std;
 using namespace QPhiX;
 
