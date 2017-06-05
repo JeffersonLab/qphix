@@ -331,6 +331,7 @@ case "$QPHIX_ARCH" in
     *)
         echo "Unsupported QPHIX_ARCH"
         exit 1;
+        ;;
 esac
 
 repo=qphix-codegen
