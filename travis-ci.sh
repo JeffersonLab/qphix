@@ -42,7 +42,7 @@ cd ..
 fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev
+sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin
 
 ls -l /usr/lib/ccache
 fold_end update_gcc
