@@ -9,6 +9,6 @@ int main(int argc, char **argv)
   QmpContext qmp_context(argc, argv);
   auto args = processArgs(argc, argv, true);
 
-  timeTWMClover test(qmp_context.args());
+  TimeTWMClover test(qmp_context.args());
   test.run();
 }

@@ -12,8 +12,6 @@ using namespace QDP;
 #include "qphix/geometry.h"
 #include "qphix/qdp_packer.h"
 #include "qphix/blas_new_c.h"
-// Disabling Full M and CG tests until vectorized dslash
-// works better
 #include "qphix/wilson.h"
 #include "qphix/invcg.h"
 #include "qphix/invbicgstab.h"
@@ -23,124 +21,61 @@ using namespace QDP;
 #endif
 
 #include <omp.h>
-#if 0
-#include "qphix/memmap.h"
-#endif
 
 using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
-#ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-
-#define VECLEN_SP 16
-#define VECLEN_HP 16
-#define VECLEN_DP 8
-#include <immintrin.h>
-
-#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-
-#define VECLEN_SP 8
-#define VECLEN_HP 8
-#define VECLEN_DP 4
-
-#elif defined(QPHIX_SSE_SOURCE)
-#define VECLEN_SP 4
-#define VECLEN_DP 2
-
-#elif defined(QPHIX_SCALAR_SOURCE)
-#warning SCALAR_SOURCE
-#define VECLEN_SP 1
-#define VECLEN_DP 1
-
-#elif defined(QPHIX_QPX_SOURCE)
-#warning QPX_SOURCE
-#define VECLEN_SP 4
-#define VECLEN_DP 4
-
-#endif
-
+#include "veclen.h"
+#include "tolerance.h"
 #include "tparam_selector.h"
 
-// What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
 
-template <typename F>
-struct tolerance {
-  static const Double small; // Always fail
-};
-
-template <>
-const Double tolerance<half>::small = Double(5.0e-3);
-
-template <>
-const Double tolerance<float>::small = Double(1.0e-6);
-
-template <>
-const Double tolerance<double>::small = Double(1.0e-7);
-
-template <typename T>
-struct rsdTarget {
-  static const double value;
-};
-
-template <>
-const double rsdTarget<half>::value = (double)(1.0e-4);
-
-template <>
-const double rsdTarget<float>::value = (double)(1.0e-7);
-
-template <>
-const double rsdTarget<double>::value = (double)(1.0e-12);
-
-  template <typename FT,
-            int veclen,
-            int soalen,
-            bool compress12,
-            typename QdpGauge,
-            typename QdpSpinor>
-  void testDslashFull::operator()()
-  {
-    RNG::savern(rng_seed);
-
-    QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-    // Make a random gauge field
-    multi1d<QdpGauge> u(4);
-    QdpGauge g;
-    QdpGauge uf;
-    for (int mu = 0; mu < 4; mu++) {
-#if 1
-      uf = 1; // Unit gauge
-
-      Real factor = Real(0.09);
-      gaussian(g);
-      u[mu] = uf + factor * g;
-      reunit(u[mu]);
-#else
-      u[mu] = 1;
-#endif
-    }
-
-    for (int const t_bc : {1, -1}) {
-      testDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-      testDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(
-          u, t_bc);
-      testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-      testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-      testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
-    }
-  }
-
-void testDslashFull::run(void)
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+void TestDslash::operator()()
 {
   RNG::savern(rng_seed);
 
-  call(*this, precision, soalen, compress12);
+  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
+  // Make a random gauge field
+  multi1d<QdpGauge> u(4);
+  QdpGauge g;
+  QdpGauge uf;
+  for (int mu = 0; mu < 4; mu++) {
+#if 1
+    uf = 1; // Unit gauge
+
+    Real factor = Real(0.09);
+    gaussian(g);
+    u[mu] = uf + factor * g;
+    reunit(u[mu]);
+#else
+    u[mu] = 1;
+#endif
+  }
+
+  for (int const t_bc : {1, -1}) {
+    testDslash<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testDslashAChiMBDPsi<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u,
+                                                                              t_bc);
+    testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+  }
+}
+
+void TestDslash::run(void)
+{
+  RNG::savern(rng_seed);
+
+  call(*this, args_.prec, args_.soalen, args_.compress12);
 
   /*
   {
@@ -182,7 +117,7 @@ void testDslashFull::run(void)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testDslash(const multi1d<U> &u, int t_bc)
+void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
 {
   QDPIO::cout << "RNG seeed = " << rng_seed << std::endl;
   RNG::setrn(rng_seed);
@@ -203,14 +138,14 @@ void testDslashFull::testDslash(const multi1d<U> &u, int t_bc)
   gaussian(psi);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
   Dslash<T, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
@@ -375,7 +310,7 @@ void testDslashFull::testDslash(const multi1d<U> &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc)
+void TestDslash::testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -391,14 +326,14 @@ void testDslashFull::testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc)
   gaussian(psi);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
   Dslash<T, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
@@ -513,7 +448,7 @@ void testDslashFull::testDslashAChiMBDPsi(const multi1d<U> &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testM(const multi1d<U> &u, int t_bc)
+void TestDslash::testM(const multi1d<U> &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -529,14 +464,14 @@ void testDslashFull::testM(const multi1d<U> &u, int t_bc)
   gaussian(psi);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
   Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
@@ -650,7 +585,7 @@ void testDslashFull::testM(const multi1d<U> &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testCG(const multi1d<U> &u, int t_bc)
+void TestDslash::testCG(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -671,14 +606,14 @@ void testDslashFull::testCG(const multi1d<U> &u, int t_bc)
     double t_boundary = (double)(t_bc);
 
     Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                     By,
-                                     Bz,
-                                     NCores,
-                                     Sy,
-                                     Sz,
-                                     PadXY,
-                                     PadXYZ,
-                                     MinCt);
+                                     args_.By,
+                                     args_.Bz,
+                                     args_.NCores,
+                                     args_.Sy,
+                                     args_.Sz,
+                                     args_.PadXY,
+                                     args_.PadXYZ,
+                                     args_.MinCt);
 
     // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
     Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
@@ -801,7 +736,7 @@ void testDslashFull::testCG(const multi1d<U> &u, int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testDslashFull::testBiCGStab(const multi1d<U> &u, int t_bc)
+void TestDslash::testBiCGStab(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -822,14 +757,14 @@ void testDslashFull::testBiCGStab(const multi1d<U> &u, int t_bc)
     gaussian(psi);
 
     Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                     By,
-                                     Bz,
-                                     NCores,
-                                     Sy,
-                                     Sz,
-                                     PadXY,
-                                     PadXYZ,
-                                     MinCt);
+                                     args_.By,
+                                     args_.Bz,
+                                     args_.NCores,
+                                     args_.Sy,
+                                     args_.Sz,
+                                     args_.PadXY,
+                                     args_.PadXYZ,
+                                     args_.MinCt);
 
     // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
 
@@ -926,7 +861,7 @@ void testDslashFull::testBiCGStab(const multi1d<U> &u, int t_bc)
         unsigned long num_cb_sites = Layout::vol() / 2;
         unsigned long total_flops =
             (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
-        masterPrintf("BICGSTAB Solve isign=%d, iters=%d MV apps=%lu "
+        masterPrintf("BICGSTAB Solve isign=%d, args_.iters=%d MV apps=%lu "
                      "Site flops=%lu\n",
                      isign,
                      niters,
@@ -957,7 +892,7 @@ template <typename T1,
           int SOA2,
           typename U,
           typename Phi>
-void testDslashFull::testRichardson(const multi1d<U> &u, int t_bc)
+void TestDslash::testRichardson(const multi1d<U> &u, int t_bc)
 {
 
   for (int cb = 0; cb < 2; ++cb) {
@@ -980,24 +915,24 @@ void testDslashFull::testRichardson(const multi1d<U> &u, int t_bc)
     gaussian(psi);
 
     Geometry<T1, VEC1, SOA1, compress> geom_outer(Layout::subgridLattSize().slice(),
-                                                  By,
-                                                  Bz,
-                                                  NCores,
-                                                  Sy,
-                                                  Sz,
-                                                  PadXY,
-                                                  PadXYZ,
-                                                  MinCt);
+                                                  args_.By,
+                                                  args_.Bz,
+                                                  args_.NCores,
+                                                  args_.Sy,
+                                                  args_.Sz,
+                                                  args_.PadXY,
+                                                  args_.PadXYZ,
+                                                  args_.MinCt);
 
     Geometry<T2, VEC2, SOA2, compress> geom_inner(Layout::subgridLattSize().slice(),
-                                                  By,
-                                                  Bz,
-                                                  NCores,
-                                                  Sy,
-                                                  Sz,
-                                                  PadXY,
-                                                  PadXYZ,
-                                                  MinCt);
+                                                  args_.By,
+                                                  args_.Bz,
+                                                  args_.NCores,
+                                                  args_.Sy,
+                                                  args_.Sz,
+                                                  args_.PadXY,
+                                                  args_.PadXYZ,
+                                                  args_.MinCt);
 
     // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
 

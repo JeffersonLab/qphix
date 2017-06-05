@@ -1,5 +1,4 @@
-#ifndef UNITTEST_H
-#define UNITTEST_H
+#pragma once
 
 #include "qdp.h"
 #include <vector>
@@ -98,7 +97,7 @@ class TestRunner : public TestCase
   CliArgs args_;
 
  public:
-  TestRunner(int *argc, char ***argv, const int latdims[])
+  TestRunner(int *argc, char ***argv)
       : num_success(0), num_failed(0), num_unexpected_failed(0), num_tried(0)
   {
     QDP_initialize(argc, argv);
@@ -106,12 +105,13 @@ class TestRunner : public TestCase
     args_ = processArgs(*argc, *argv);
 
     multi1d<int> nrow(Nd);
-    nrow = latdims;
+    for (int i = 0; i < Nd; ++i) {
+      nrow[i] = args_.nrow_in[i];
+    }
     Layout::setLattSize(nrow);
     Layout::create();
 
-    omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
-                        some_user_args.getSz());
+    omp_set_num_threads(args_.NCores * args_.Sy * args_.Sz);
   }
 
   CliArgs &args() { return args_; }
@@ -218,5 +218,3 @@ class TestRunner : public TestCase
 
  private:
 };
-
-#endif

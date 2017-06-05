@@ -29,7 +29,10 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 
-void testClovDslashFull::run() { call(*this, precision, g_soalen, compress12); }
+void TestClover::run()
+{
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
 
 template <typename FT,
           int V,
@@ -37,7 +40,7 @@ template <typename FT,
           bool compress,
           typename QdpGauge,
           typename QdpSpinor>
-void testClovDslashFull::operator()()
+void TestClover::operator()()
 {
 
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
@@ -47,22 +50,20 @@ void testClovDslashFull::operator()()
   bool verbose = true;
   QDPIO::cout << endl << "ENTERING CLOVER DSLASH TEST" << endl;
 
-  // Diagnostic information:
-  const multi1d<int> &lattSize = Layout::subgridLattSize();
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
+  int Nx = args_.nrow_in[0];
+  int Ny = args_.nrow_in[1];
+  int Nz = args_.nrow_in[2];
+  int Nt = args_.nrow_in[3];
 
   Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                    By,
-                                    Bz,
-                                    NCores,
-                                    Sy,
-                                    Sz,
-                                    PadXY,
-                                    PadXYZ,
-                                    MinCt);
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt);
 
   RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
 
