@@ -27,7 +27,7 @@ int main(int argc, char **argv)
                                    MinCt_user,
                                    compress12,
                                    prec_user,
-                                   QPHIX_SOALEN),
+                                   g_soalen),
                   "MinvCGTester\n");
   }
 

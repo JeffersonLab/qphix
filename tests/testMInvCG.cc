@@ -22,6 +22,8 @@ using namespace Assertions;
 using namespace std;
 using namespace QPhiX;
 
+#include "tparam_selector.h"
+
 #ifndef QPHIX_SOALEN
 #error "QPHIX_SOALEN is not defined"
 #endif
@@ -87,8 +89,48 @@ const double rsdTarget<float>::value = (double)(1.0e-7);
 template <>
 const double rsdTarget<double>::value = (double)(1.0e-12);
 
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpGauge,
+          typename QdpSpinor>
+void MInvCGTester::operator()()
+{
+  const multi1d<int> &lattSize = Layout::subgridLattSize();
+  Nx = lattSize[0];
+  Ny = lattSize[1];
+  Nz = lattSize[2];
+  Nt = lattSize[3];
+
+  QDPIO::cout << "Lattice Size: ";
+  for (int mu = 0; mu < lattSize.size(); mu++) {
+    QDPIO::cout << " " << lattSize[mu];
+  }
+  QDPIO::cout << endl;
+
+  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
+  // Make a random gauge field
+  multi1d<QdpGauge> u(4);
+  QdpGauge g;
+  QdpGauge uf;
+  for (int mu = 0; mu < 4; mu++) {
+    uf = 1; // Unit gauge
+
+    Real factor = Real(0.09);
+    gaussian(g);
+    u[mu] = uf + factor * g;
+    reunit(u[mu]);
+  }
+
+  testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, 1);
+  if (!compress12) {
+    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, -1);
+  }
+}
+
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void MInvCGTester::testMInvCG(const U &u, int t_bc)
+void MInvCGTester::testMInvCG(const multi1d<U> &u, int t_bc)
 {
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
@@ -164,7 +206,7 @@ void MInvCGTester::testMInvCG(const U &u, int t_bc)
     QDPIO::cout << "T BCs = " << t_boundary << endl;
 
     QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-    U u_test(Nd);
+    multi1d<U> u_test(Nd);
     for (int mu = 0; mu < Nd; mu++) {
       Real factor = Real(aniso_fac_s);
       if (mu == Nd - 1) {
@@ -273,139 +315,5 @@ void MInvCGTester::run(void)
 {
   RNG::savern(rng_seed);
 
-  typedef multi1d<LatticeColorMatrixF> UF;
-  typedef multi1d<LatticeColorMatrixD> UD;
-  typedef LatticeDiracFermionF PhiF;
-  typedef LatticeDiracFermionD PhiD;
-
-  // Diagnostic information:
-  const multi1d<int> &lattSize = Layout::subgridLattSize();
-  Nx = lattSize[0];
-  Ny = lattSize[1];
-  Nz = lattSize[2];
-  Nt = lattSize[3];
-
-  QDPIO::cout << "Lattice Size: ";
-  for (int mu = 0; mu < lattSize.size(); mu++) {
-    QDPIO::cout << " " << lattSize[mu];
-  }
-  QDPIO::cout << endl;
-
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-  // Make a random gauge field
-  multi1d<LatticeColorMatrix> u(4);
-  LatticeColorMatrix g;
-  LatticeColorMatrix uf;
-  for (int mu = 0; mu < 4; mu++) {
-    uf = 1; // Unit gauge
-
-    Real factor = Real(0.09);
-    gaussian(g);
-    u[mu] = uf + factor * g;
-    reunit(u[mu]);
-  }
-
-#if 1 // Save build time
-  if (precision == FLOAT_PREC) {
-
-    multi1d<LatticeColorMatrixF> u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-
-    {
-
-      if (soalen == 1) {
-#if defined(QPHIX_SCALAR_SOURCE)
-        testMInvCGWrapper<float, VECLEN_SP, 1, UF, PhiF>(u_in);
-#endif
-      }
-
-#if 1
-      if (soalen == 4) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testMInvCGWrapper<float, VECLEN_SP, 4, UF, PhiF>(u_in);
-#endif
-      }
-#endif
-
-      if (soalen == 8) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testMInvCGWrapper<float, VECLEN_SP, 8, UF, PhiF>(u_in);
-#endif
-      }
-
-      if (soalen == 16) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testMInvCGWrapper<float, VECLEN_SP, 16, UF, PhiF>(u_in);
-#else
-        masterPrintf("SOALEN=16 not available");
-        return;
-#endif
-      }
-    }
-  }
-
-#endif // FLOAT PREC
-
-#if 1
-  if (precision == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    multi1d<LatticeColorMatrixF> u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-    {
-      if (soalen == 4) {
-        testMInvCGWrapper<half, VECLEN_HP, 4, UF, PhiF>(u_in);
-      }
-
-      if (soalen == 8) {
-        testMInvCGWrapper<half, VECLEN_HP, 8, UF, PhiF>(u_in);
-      }
-
-      if (soalen == 16) {
-        testMInvCGWrapper<half, VECLEN_HP, 16, UF, PhiF>(u_in);
-      }
-    }
-#else
-    QDPIO::cout << " Half Prec is only supported on MIC Targets just now " << endl;
-#endif
-  }
-#endif // If HALF-PREC
-
-#if 1
-  if (precision == DOUBLE_PREC) {
-    UD u_in(4);
-    for (int mu = 0; mu < Nd; mu++) {
-      u_in[mu] = u[mu];
-    }
-
-    {
-      if (soalen == 1) {
-#if defined(QPHIX_SCALAR_SOURCE)
-        testMInvCGWrapper<double, VECLEN_DP, 1, UD, PhiD>(u_in);
-#endif
-      }
-
-      if (soalen == 2) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-        testMInvCGWrapper<double, VECLEN_DP, 2, UD, PhiD>(u_in);
-#endif
-      }
-
-      if (soalen == 4) {
-        testMInvCGWrapper<double, VECLEN_DP, 4, UD, PhiD>(u_in);
-      }
-
-      if (soalen == 8) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-        testMInvCGWrapper<double, VECLEN_DP, 8, UD, PhiD>(u_in);
-#endif
-      }
-    }
-  }
-#endif // If DOUBLE-PREC
+  call(*this, precision, soalen, compress12);
 }

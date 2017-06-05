@@ -26,6 +26,14 @@ class MInvCGTester : public TestFixture
   }
   void run(void);
 
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()();
+
  private:
   const int By;
   const int Bz;
@@ -41,20 +49,8 @@ class MInvCGTester : public TestFixture
   const int soalen;
   Seed rng_seed;
 
-  template <typename T, int V, int S, typename U, typename Phi>
-  void testMInvCGWrapper(const U &u)
-  {
-    for (int t_bc = -1; t_bc <= +1; t_bc += 2) {
-      if (compress12) {
-        testMInvCG<T, V, S, true, U, Phi>(u, t_bc);
-      } else {
-        testMInvCG<T, V, S, false, U, Phi>(u, t_bc);
-      }
-    }
-  }
-
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testMInvCG(const U &u, int t_bc);
+  void testMInvCG(const multi1d<U> &u, int t_bc);
 };
 
 #endif
