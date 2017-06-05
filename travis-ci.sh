@@ -340,6 +340,7 @@ clone-if-needed https://github.com/JeffersonLab/qphix-codegen.git $repo twisted-
 
 pushd $repo
 git branch -v
+ls
 
 cflags="$base_cflags $openmp_flags $qphix_flags"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
