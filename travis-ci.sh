@@ -168,8 +168,10 @@ autoreconf-if-needed() {
         if [[ -f .gitmodules ]]; then
             for module in $(git submodule foreach --quiet --recursive pwd | tac); do
                 pushd "$module"
-                aclocal
-                autotools-dance
+                if [[ -f configure.ac ]]; then
+                    aclocal
+                    autotools-dance
+                fi
                 popd
             done
         fi
