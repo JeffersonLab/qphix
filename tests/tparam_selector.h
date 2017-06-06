@@ -75,13 +75,18 @@ void call_1(TestClass &instance, int soalen, bool compress12)
   } else if (soalen == veclen_half) {
     Call2<veclen_half>::template call_2<TestClass, FT>(instance, compress12);
   }
+  // On AVX512, we also have a `soalen == 4` variant for `half` and `double`.
+  // Enable this as well.
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-  else if (soalen == veclen_quarter) {
+  else if (soalen == veclen_quarter && sizeof(FT) != sizeof(double)) {
     Call2<veclen_quarter>::template call_2<TestClass, FT>(instance, compress12);
   }
 #endif
   else {
-    QPhiX::masterPrintf("soalen %d is not implemented.\n", soalen);
+    QPhiX::masterPrintf(
+        "soalen %d is not implemented for a floating point type of size %d.\n",
+        soalen,
+        sizeof(FT));
     std::abort();
   }
 }
