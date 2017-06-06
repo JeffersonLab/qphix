@@ -68,12 +68,19 @@ void call_1(TestClass &instance, int soalen, bool compress12)
 {
   constexpr int veclen = get_veclen<FT>();
   constexpr int veclen_half = veclen / 2;
+  constexpr int veclen_quarter = veclen / 2;
 
   if (soalen == veclen) {
     Call2<veclen>::template call_2<TestClass, FT>(instance, compress12);
   } else if (soalen == veclen_half) {
     Call2<veclen_half>::template call_2<TestClass, FT>(instance, compress12);
-  } else {
+  }
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+  else if (soalen == veclen_quarter) {
+    Call2<veclen_quarter>::template call_2<TestClass, FT>(instance, compress12);
+  }
+#endif
+  else {
     QPhiX::masterPrintf("soalen %d is not implemented.\n", soalen);
     std::abort();
   }
