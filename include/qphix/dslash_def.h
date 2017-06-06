@@ -104,13 +104,13 @@ class Dslash
            const FourSpinorBlock *psi,
            FourSpinorBlock *res,
            const SU3MatrixBlock *u,
-           bool is_plus,
+           bool const is_plus,
            int cb);
 
   void DPsi(const SU3MatrixBlock *u,
             const FourSpinorBlock *psi_in,
             FourSpinorBlock *res_out,
-            bool is_plus,
+            bool const is_plus,
             int cb);
 
   void DyzAChiMinusBDPsi(int tid,
@@ -120,7 +120,7 @@ class Dslash
                          const SU3MatrixBlock *u,
                          double alpha,
                          double beta,
-                         bool is_plus,
+                         bool const is_plus,
                          int cb);
 
   void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
@@ -129,7 +129,7 @@ class Dslash
                           FourSpinorBlock *res_out,
                           double alpha,
                           double beta,
-                          bool is_plus,
+                          bool const is_plus,
                           int cb);
 
 #ifdef QPHIX_DO_COMMS

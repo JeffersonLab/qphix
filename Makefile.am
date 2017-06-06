@@ -7,7 +7,9 @@ all-am: generate_code
 all-hook: generate_code
 all-recursive: generate_code
 
-install-data-local:
+install-data-local: install-codegen
+
+install-codegen:
 	mkdir -p $(DESTDIR)$(libdir)/
 	cp -r @top_srcdir@/codegen/cmake_local/lib/* $(DESTDIR)$(libdir)/
 	mkdir -p $(DESTDIR)$(includedir)/
