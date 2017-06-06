@@ -68,18 +68,17 @@ void call_1(TestClass &instance, int soalen, bool compress12)
 {
   constexpr int veclen = get_veclen<FT>();
   constexpr int veclen_half = veclen / 2;
-  constexpr int veclen_quarter = veclen / 4;
 
   if (soalen == veclen) {
     Call2<veclen>::template call_2<TestClass, FT>(instance, compress12);
   } else if (soalen == veclen_half) {
     Call2<veclen_half>::template call_2<TestClass, FT>(instance, compress12);
   }
-  // On AVX512, we also have a `soalen == 4` variant for `half` and `double`.
-  // Enable this as well.
+  // On AVX512, we also have a `soalen == 4` variant for `half` and `double`,
+  // where `veclen == 16`. Enable this as well.
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-  else if (soalen == veclen_quarter && sizeof(FT) != sizeof(double)) {
-    Call2<veclen_quarter>::template call_2<TestClass, FT>(instance, compress12);
+  else if (veclen == 16 && soalen == 4) {
+    Call2<4>::template call_2<TestClass, FT>(instance, compress12);
   }
 #endif
   else {
