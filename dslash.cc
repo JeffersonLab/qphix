@@ -1,3 +1,5 @@
+
+#include "output_dir.h"
 #include "twisted_mass_enum.h"
 #include "unsupported_values.h"
 
@@ -592,8 +594,8 @@ void generate_code(void)
                         (kernel == "dslash_achimbdpsi") ? true
                                                         : false;
 
-                    filename
-                        << "generated/" << ARCH_NAME
+                    filename << output_dir
+                        << "/generated/" << ARCH_NAME
                         << "/generated/" << tm_prefix << clov_prefix
                         << kernel << "_" << plusminus << "_"
                         << "body"
@@ -659,7 +661,7 @@ void generate_code(void)
               std::string plusminus = isPlus ? "plus" : "minus";
               int num_components = compress12 ? 12 : 18;
 
-              filename << "generated/" << ARCH_NAME << "/generated/"
+              filename << output_dir << "/generated/" << ARCH_NAME << "/generated/"
                        << tm_prefix << clov_prefix
                        << "dslash_face_unpack_from_" << dirname[dir]
                        << "_" << dimchar[dim] << "_" << plusminus
@@ -703,7 +705,7 @@ void generate_code(void)
 
         string plusminus = isPlus ? "plus" : "minus";
 
-        filename << "generated/" << ARCH_NAME << "/generated/"
+        filename << output_dir << "/generated/" << ARCH_NAME << "/generated/"
                  << "dslash_face_pack_to_" << dirname[dir] << "_"
                  << dimchar[dim] << "_" << plusminus << "_"
                  << SpinorTypeName << "_" << GaugeTypeName << "_v"

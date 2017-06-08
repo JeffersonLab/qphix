@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(QPhiX-Codegen)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 function(setup_defs target precision soalen lowprec)
 
@@ -112,6 +114,16 @@ MESSAGE(INFO, "Deflist2 is ${deflist}")
 target_compile_definitions(${target} PRIVATE ${yesnolist} PRIVATE ${deflist} )
 endfunction()
 
+
+MESSAGE(INFO, "Looking for Python")
+find_package(PythonLibs 3.0 REQUIRED)
+find_package(PythonInterp 3.0 REQUIRED)
+MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
+
+MESSAGE(INFO, "Copying JINJA Directory")
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
 LIST(APPEND codegen_sources codegen.cc
 	    data_types.cc
 	    dslash.cc
@@ -176,7 +188,7 @@ elseif( ${isa} STREQUAL "avx512" )
 
 elseif( ${isa} STREQUAL "sse" ) 
 
-    set( SERIAL_SPIN  FALSE)
+    set( SERIAL_SPIN  TRUE)
     set( PREF_L1_SPINOR_IN  FALSE)
     set( PREF_L2_SPINOR_IN  FALSE )
     set( PREF_L1_SPINOR_OUT FALSE )
@@ -198,7 +210,7 @@ elseif( ${isa} STREQUAL "sse" )
 
 elseif( ${isa} STREQUAL "scalar" )
 
-    set( SERIAL_SPIN  FALSE)
+    set( SERIAL_SPIN  TRUE)
     set( PREF_L1_SPINOR_IN  FALSE)
     set( PREF_L2_SPINOR_IN  FALSE )
     set( PREF_L1_SPINOR_OUT FALSE )
@@ -220,8 +232,10 @@ elseif( ${isa} STREQUAL "scalar" )
 
 endif()
 
-
-file(MAKE_DIRECTORY  ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/generated)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/generated)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h.in ${CMAKE_CURRENT_BINARY_DIR}/output_dir.h)
+LIST(APPEND ${codegen_sources} ${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if( ${isa} STREQUAL "avx")
 
@@ -322,15 +336,15 @@ elseif( ${isa} STREQUAL "avx512" )
         list(APPEND target_list ${target})
 
 elseif( ${isa} STREQUAL "sse" ) 
-	set(target, sse_PRECISION-2)
+	set(target  sse_PRECISION-2)
 	add_executable(${target} ${codegen_sources})
-	setup_defs(${target} 2 2 TRUE)
+	setup_defs(${target} 2 2 FALSE)
         list(APPEND target_list ${target})
 
 
-	set(target, sse_PRECISION-1)
+	set(target  sse_PRECISION-1)
 	add_executable(${target} ${codegen_sources})
-	setup_defs(${target} 1 2 TRUE)
+	setup_defs(${target} 1 4 FALSE)
         list(APPEND target_list ${target})
 
 elseif( ${isa} STREQUAL "scalar" )
@@ -352,8 +366,27 @@ endif()
 
 export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Copy some headers over
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
+    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/decl_common.h)
+    				
+if ( ${isa} STREQUAL "avx" )
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
+					${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/avx_utils.h)
+elseif( ${isa} STREQUAL "sse" )
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/sse_utils.h
+    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/sse_utils.h)
+elseif( ${isa} STREQUAL "qpx" ) 
+	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/qpx_utils.h
+    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/qpx_utils.h)
+endif()
 
 
+
+#add_custom_command(OUTPUT generated/${isa}/CMakeLists.txt
+#				   COMMAND ${PYTHON_EXECUTABLE} generate_files.py ${isa}
+#				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja )
+				   
+#add_custom_target(OUTPUT ./build_local/l 
 
 
