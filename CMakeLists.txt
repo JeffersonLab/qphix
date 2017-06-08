@@ -141,6 +141,9 @@ LIST(APPEND codegen_sources codegen.cc
 	    instructions.h)
 
 OPTION( isa  "select ISA to generate for" )
+OPTION( target_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
+OPTION( target_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
+
 
 if( ${isa} STREQUAL "avx" OR ${isa} STREQUAL "avx2" )
 
@@ -233,6 +236,8 @@ elseif( ${isa} STREQUAL "scalar" )
 endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/generated)
+
+# Set the output directory for the code generator to be in the build dir and add that to the include path
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h.in ${CMAKE_CURRENT_BINARY_DIR}/output_dir.h)
 LIST(APPEND ${codegen_sources} ${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -339,14 +344,14 @@ elseif( ${isa} STREQUAL "sse" )
 	set(target  sse_PRECISION-2)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 2 2 FALSE)
-        list(APPEND target_list ${target})
-
-
+    list(APPEND target_list ${target})
+	
+	
 	set(target  sse_PRECISION-1)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 1 4 FALSE)
-        list(APPEND target_list ${target})
-
+    list(APPEND target_list ${target})
+	
 elseif( ${isa} STREQUAL "scalar" )
 
 
@@ -364,9 +369,22 @@ else()
 	MESSAGE( ERROR, "Unknown isa: ${isa}")
 endif()
 
+# FOR EACH BUILT TARGET: run the build target
+foreach(targ ${target_list})
+	add_custom_target( codegen_${targ} ALL ${targ} DEPENDS ${targ} COMMENT "Generating code with ${targ}")
+	LIST(APPEND codegen_targets codegen_${targ})
+endforeach()
+
+# 
+add_custom_target( jinja ALL 
+				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/jinja/generate_files.py ${isa}
+				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
+				   COMMENT "Generating function body source code: with generate_files.py ${isa}"
+				   DEPENDS ${codegen_targets})
+				   
 export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
-# Copy some headers over
+# Copy some headers over into the directory for the generated code
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
     				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/decl_common.h)
     				
@@ -381,7 +399,17 @@ elseif( ${isa} STREQUAL "qpx" )
     				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/qpx_utils.h)
 endif()
 
+# Create a build directory
 
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
+add_custom_target( codegen_lib ALL 
+				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
+				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install_lib
+				   COMMAND ${CMAKE_MAKE_PROGRAM}
+				   COMMAND ${CMAKE_MAKE_PROGRAM} install
+				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
+				   DEPENDS jinja)
+					
 
 #add_custom_command(OUTPUT generated/${isa}/CMakeLists.txt
 #				   COMMAND ${PYTHON_EXECUTABLE} generate_files.py ${isa}
