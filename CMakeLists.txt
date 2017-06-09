@@ -399,22 +399,17 @@ elseif( ${isa} STREQUAL "qpx" )
     				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/qpx_utils.h)
 endif()
 
-# Create a build directory
-
+# Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
+
+# This custom target executes 
 add_custom_target( codegen_lib ALL 
 				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
-				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/install_lib
+				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/qphix_codegen
 				   COMMAND ${CMAKE_MAKE_PROGRAM}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
 				   DEPENDS jinja)
-					
 
-#add_custom_command(OUTPUT generated/${isa}/CMakeLists.txt
-#				   COMMAND ${PYTHON_EXECUTABLE} generate_files.py ${isa}
-#				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja )
-				   
-#add_custom_target(OUTPUT ./build_local/l 
 
 
