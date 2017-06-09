@@ -407,7 +407,7 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BI
 # This custom target executes 
 add_custom_target( codegen_lib ALL 
 				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
-				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/qphix_codegen
+				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib

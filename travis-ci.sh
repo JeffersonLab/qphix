@@ -26,5 +26,5 @@ mkdir -p ${BUILDDIR}
 mkdir -p ${INSTALLDIR}
 
 pushd ${BUILDDIR}
-CXX=g++ CXXFLAGS="-g -O2" cmake -Disa=avx -Dtarget_cxx=g++ -Dtarget_cxxflags="-march=corei7-avx -O3" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} ${SRCDIR}
-make VERBOSE=1 -j 10 
+CXX=g++ CXXFLAGS="-g -O2" cmake -Disa=avx -Dtarget_cxx=g++ -Dtarget_cxxflags="-march=corei7-avx -O3"  -Dtarget_jN=4 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} ${SRCDIR}
+make VERBOSE=1 -j 4 
