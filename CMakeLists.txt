@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.1)
 project(QPhiX-Codegen)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
+OPTION( isa  "select ISA to generate for" )
+OPTION( target_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
+OPTION( target_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
+OPTION( target_jN "select -j parameter for making target" 1)
 
 function(setup_defs target precision soalen lowprec)
 
@@ -123,6 +127,8 @@ MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
 MESSAGE(INFO, "Copying JINJA Directory")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+#MESSAGE(INFO, "Copying Include Directory")
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 LIST(APPEND codegen_sources codegen.cc
 	    data_types.cc
@@ -139,10 +145,6 @@ LIST(APPEND codegen_sources codegen.cc
 	    data_types.h 
 	    dslash.h 
 	    instructions.h)
-
-OPTION( isa  "select ISA to generate for" )
-OPTION( target_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
-OPTION( target_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
 
 
 if( ${isa} STREQUAL "avx" OR ${isa} STREQUAL "avx2" )
@@ -386,17 +388,17 @@ export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
 # Copy some headers over into the directory for the generated code
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
-    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/decl_common.h)
+ 		   				${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
     				
 if ( ${isa} STREQUAL "avx" )
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
-					${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/avx_utils.h)
+					${CMAKE_CURRENT_BINARY_DIR}/include/avx_utils.h)
 elseif( ${isa} STREQUAL "sse" )
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/sse_utils.h
-    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/sse_utils.h)
+   				${CMAKE_CURRENT_BINARY_DIR}/include/sse_utils.h)
 elseif( ${isa} STREQUAL "qpx" ) 
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/qpx_utils.h
-    				${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}/qpx_utils.h)
+    				${CMAKE_CURRENT_BINARY_DIR}/include/qpx_utils.h)
 endif()
 
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
@@ -406,8 +408,8 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BI
 add_custom_target( codegen_lib ALL 
 				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
 				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/qphix_codegen
-				   COMMAND ${CMAKE_MAKE_PROGRAM}
-				   COMMAND ${CMAKE_MAKE_PROGRAM} install
+				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
+				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
 				   DEPENDS jinja)
 
