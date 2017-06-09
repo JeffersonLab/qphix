@@ -27,4 +27,4 @@ mkdir -p ${INSTALLDIR}
 
 pushd ${BUILDDIR}
 CXX=g++ CXXFLAGS="-g -O2" cmake -Disa=avx -Dtarget_cxx=g++ -Dtarget_cxxflags="-march=sandybridge -O3" -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} ${SRCDIR}
-make -j 10
+make VERBOSE=1 -j 10 
