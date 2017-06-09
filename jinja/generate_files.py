@@ -124,7 +124,7 @@ def main():
             for fptype, fptype_data in sorted(isa_data['fptypes'].items()):
                 veclen = fptype_data['veclen']
                 for soalen in fptype_data['soalens']:
-                    print('Working on kernel `{}` for ISA `{}` ...'.format(kernel, isa))
+                    print('Working on kernel `{}` for ISA `{}` for soalen {} ...'.format(kernel, isa, soalen))
                     for compress12 in ['true', 'false']:
                         template_param = {
                             'FPTYPE': fptype,
