@@ -40,6 +40,7 @@ if( QDPXX_DIR )
      LIST(APPEND EXT_LIBS ${QDPXX_CXX_LIBRARIES})
      set( QPHIX_USE_QDPXX TRUE)
      if( qdpalloc ) 
+ 	message(INFO "Using QDPAlloc for memory allocation")
 	set( QPHIX_USE_QDPXX_ALLOC 1 )
      endif()
   endif( QDPXX_CXX_FOUND )
@@ -72,7 +73,6 @@ if( QPHIX_USE_QDPXX )
   SET( parallel_arch ${QDPXX_PARALLEL_ARCH} )
 endif()
 
-
 if( parallel_arch STREQUAL "scalar" )
    # set in configure file
    set(QPHIX_SCALAR 1)
@@ -83,8 +83,13 @@ if( parallel_arch STREQUAL "scalar" )
       set( QPHIX_FAKE_COMMS 1)
    endif()
 elseif( parallel_arch STREQUAL "parscalar")
+
    message(INFO "Parscalar comms mode (QMP + OpenMP)")
    set( QPHIX_PARSCALAR 1)
+
+   if( (NOT QDPXX_CXX_FOUND) AND (NOT QMP_C_FOUND) 
+      message(ERROR "Parscalar arch requested but neither QMP nor QDPXX specified")
+   endif()
 
    if( fake_comms ) 
 	message(ERROR "Cannot do fake comms in parscalar mode")
@@ -100,29 +105,37 @@ else()
 endif()
 
 if ( cean )
+   message(INFO "Setting CEAN")
    set( QPHIX_USE_CEAN 1)
 endif()
 
+if( NOT QPHIX_USE_QDPXX_ALLOC )
 if ( mm_malloc )
+   message(INFO "Setting use mm_malloc")
    set( QPHIX_USE_MM_MALLOC 1)
+else()
+   message(INFO "Posix Memalign allocator will be used")
+endif()
 endif()
 
+
 if( clover ) 
+   message(INFO "Enabling Clover")
    set( QPHIX_BUILD_CLOVER 1)
 endif()
 
 if( twisted_mass ) 
+   message(INFO "Enabling Twisted-Mass")
    set( QPHIX_BUILD_TWISTED_MASS 1)
 endif()
 
 if( tm_clover )
+   message(INFO "Enabling Twisted-Mass with Clover")
    set( QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER 1)
 endif()
 
-set( build_qpx FALSE )
-set( ISA ${isa}
+set( ISA ${isa} )
 set( QPHIX_LLC_CACHE_ALIGN 64)
-
 if( ${isa} STREQUAL "avx" )
   message(INFO "Building for AVX" )
   set( QPHIX_AVX_SOURCE 1 )
@@ -145,7 +158,6 @@ elseif( ${isa} STREQUAL "qpx" )
   message(INFO "Building for QPX (BG/Q)")
   set( QPHIX_QPX_SOURCE 1)
   set( QPHIX_LLC_CACHE_ALIGN 128 )
-  set( build_qpx TRUE )
 endif()
 
 set( build_qdpjit_clover FALSE )
@@ -172,6 +184,7 @@ else()
 endif()
 
 if (extra_messages) 
+   message(INFO "Setting Extra Messages")
    set( QPHIX_EMIT_MESSAGES 1)
 endif()
 
@@ -186,12 +199,15 @@ endif()
 
 configure_file(
 	${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
-	${PROJECT_BINARY_DIR}/include/qphix/qphix_config.h 
+	${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h 
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
 
-add_subdirectory(include)
+add_subdirectory(include/qphix)
 add_subdirectory(lib)
 add_subdirectory(tests)
+
+# Someone needs to figure this out
+# add_subdirectory(tests-gtest)
