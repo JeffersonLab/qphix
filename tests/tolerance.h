@@ -27,4 +27,3 @@ const double rsdTarget<float>::value = (double)(1.0e-7);
 
 template <>
 const double rsdTarget<double>::value = (double)(1.0e-12);
-

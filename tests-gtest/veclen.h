@@ -6,8 +6,8 @@
 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
-#define VECLEN_SP 16 
-#define VECLEN_HP 16 
+#define VECLEN_SP 16
+#define VECLEN_HP 16
 #define VECLEN_DP 8
 
 #elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)

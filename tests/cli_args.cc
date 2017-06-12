@@ -33,7 +33,8 @@ int Sy_user = -1;
 int Sz_user = -1;
 int MinCt_user = 1;
 
-void printArgHelp(bool const is_timing) {
+void printArgHelp(bool const is_timing)
+{
   masterPrintf("Lattice size:\n"
                "  -x Lx              lattice size in X [default: %i]\n"
                "  -y Ly              lattice size in Y [default: %i]\n"
@@ -59,11 +60,12 @@ void printArgHelp(bool const is_timing) {
                compress12 ? "given" : "not given");
 
   if (is_timing) {
-      printTimingCaseHelp();
+    printTimingCaseHelp();
   }
 }
 
-void printTimingCaseHelp() {
+void printTimingCaseHelp()
+{
   masterPrintf("Timing case selection (select at least one):\n"
                "  -dslash            Dslash\n"
                "  -mmat              Even-odd linear operator\n"

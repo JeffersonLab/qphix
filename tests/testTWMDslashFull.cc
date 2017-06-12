@@ -421,8 +421,7 @@ void testTWMDslashFull::testTWMM(int t_bc)
                          isign,
                          target_cb);
 
-      expect_near(
-          hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
@@ -513,10 +512,26 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   // 2. Multiply back with QDP + TM term
   // ===================================
   // chi2 = M chi
-  qdp_apply_operator(hs_qdp1.qdp(), hs_qphix1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, 1, source_target_cb);
+  qdp_apply_operator(hs_qdp1.qdp(),
+                     hs_qphix1.qdp(),
+                     gauge.u_aniso,
+                     Mu,
+                     MuInv,
+                     alpha,
+                     beta,
+                     1,
+                     source_target_cb);
 
   // chi3 = M^\dagger chi2
-  qdp_apply_operator(hs_qdp2.qdp(), hs_qdp1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, -1, source_target_cb);
+  qdp_apply_operator(hs_qdp2.qdp(),
+                     hs_qdp1.qdp(),
+                     gauge.u_aniso,
+                     Mu,
+                     MuInv,
+                     alpha,
+                     beta,
+                     -1,
+                     source_target_cb);
 
   // 3. Assert difference & GFLOP/s
   // ===================================
@@ -532,7 +547,6 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
   expect_near(hs_qdp2, hs_source, 1e-6, geom, source_target_cb, "CG");
-
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
@@ -979,8 +993,8 @@ void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
                                    int const isign,
                                    int const target_cb)
 {
-    dslash(out, u_aniso, in, isign, target_cb);
-    applyInvTwist<>(out, Mu, MuInv, isign, target_cb);
+  dslash(out, u_aniso, in, isign, target_cb);
+  applyInvTwist<>(out, Mu, MuInv, isign, target_cb);
 }
 
 template <typename QdpGauge, typename QdpSpinor>
@@ -995,15 +1009,15 @@ void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
                                        int const isign,
                                        int const target_cb)
 {
-    int const other_cb = 1 - target_cb;
+  int const other_cb = 1 - target_cb;
 
-    QdpSpinor D_psi = zero;
-    dslash(D_psi, u_aniso, psi, isign, target_cb);
+  QdpSpinor D_psi = zero;
+  dslash(D_psi, u_aniso, psi, isign, target_cb);
 
-    QdpSpinor A_chi = chi;
-    applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
+  QdpSpinor A_chi = chi;
+  applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
 
-    out[rb[target_cb]] = A_chi - beta * D_psi;
+  out[rb[target_cb]] = A_chi - beta * D_psi;
 }
 
 template <typename QdpGauge, typename QdpSpinor>
@@ -1017,12 +1031,11 @@ void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
                                            int const isign,
                                            int const target_cb)
 {
-    int const other_cb = 1 - target_cb;
+  int const other_cb = 1 - target_cb;
 
+  QdpSpinor A_inv_D_psi = zero;
+  qdp_dslash(A_inv_D_psi, in, u_aniso, Mu, MuInv, isign, other_cb);
 
-    QdpSpinor A_inv_D_psi = zero;
-    qdp_dslash(A_inv_D_psi, in, u_aniso, Mu, MuInv, isign, other_cb);
-
-    qdp_achimbdpsi(
-        out, in, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
+  qdp_achimbdpsi(
+      out, in, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
 }

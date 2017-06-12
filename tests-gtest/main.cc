@@ -12,21 +12,21 @@ int nrow_in[4] = {4, 4, 4, 4};
 void processArgs(int argc, char *argv[])
 {
 
-    int i = 1;
-    while (i < argc) {
-        if (std::string(argv[i]).compare("-x") == 0) {
-            nrow_in[0] = atoi(argv[i + 1]);
-            i += 2;
-        } else if (std::string(argv[i]).compare("-y") == 0) {
-            nrow_in[1] = atoi(argv[i + 1]);
-            i += 2;
-        } else if (std::string(argv[i]).compare("-z") == 0) {
-            nrow_in[2] = atoi(argv[i + 1]);
-            i += 2;
-        } else if (std::string(argv[i]).compare("-t") == 0) {
-            nrow_in[3] = atoi(argv[i + 1]);
-            i += 2;
-        }
+  int i = 1;
+  while (i < argc) {
+    if (std::string(argv[i]).compare("-x") == 0) {
+      nrow_in[0] = atoi(argv[i + 1]);
+      i += 2;
+    } else if (std::string(argv[i]).compare("-y") == 0) {
+      nrow_in[1] = atoi(argv[i + 1]);
+      i += 2;
+    } else if (std::string(argv[i]).compare("-z") == 0) {
+      nrow_in[2] = atoi(argv[i + 1]);
+      i += 2;
+    } else if (std::string(argv[i]).compare("-t") == 0) {
+      nrow_in[3] = atoi(argv[i + 1]);
+      i += 2;
+    }
 #if 0 // Not implemented yet.
         else if (std::string(argv[i]).compare("-i") == 0) {
             iters = atoi(argv[i + 1]);
@@ -49,33 +49,34 @@ void processArgs(int argc, char *argv[])
             i += 2;
         }
 #endif
-        else {
-            i++;
-        }
+    else {
+      i++;
     }
+  }
 }
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
 
-    processArgs(argc, argv);
-    some_user_args.init(argc, argv);
+  processArgs(argc, argv);
+  some_user_args.init(argc, argv);
 
-    omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
-                        some_user_args.getSz());
+  omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
+                      some_user_args.getSz());
 
-    QDP::QDP_initialize(&argc, &argv);
-    QDP::multi1d<int> nrow(QDP::Nd);
-    nrow = static_cast<const int *>(nrow_in);
-    QDP::Layout::setLattSize(nrow);
-    QDP::Layout::create();
+  QDP::QDP_initialize(&argc, &argv);
+  QDP::multi1d<int> nrow(QDP::Nd);
+  nrow = static_cast<const int *>(nrow_in);
+  QDP::Layout::setLattSize(nrow);
+  QDP::Layout::create();
 
-    const QDP::multi1d<int>& localLattSize = QDP::Layout::subgridLattSize();
-    for (int i = 0; i < 4; ++i) {
-        std::cout << localLattSize[i] << std::endl;
-    }
+  const QDP::multi1d<int> &localLattSize = QDP::Layout::subgridLattSize();
+  for (int i = 0; i < 4; ++i) {
+    std::cout << localLattSize[i] << std::endl;
+  }
 
-    return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 
-    QDP::QDP_finalize();
+  QDP::QDP_finalize();
 }

@@ -18,7 +18,6 @@ using namespace std;
 
 #include "cli_args.h"
 
-
 #if 0
 /******************************************************************************/
 // Bind the openmp threads to hardware threads

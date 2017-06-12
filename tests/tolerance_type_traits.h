@@ -2,7 +2,7 @@
 
 template <typename T>
 struct tolerance {
-    static const Double small; // Always fail
+  static const Double small; // Always fail
 };
 
 template <>
@@ -19,7 +19,7 @@ const Double tolerance<double>::small = Double(1.0e-7);
 
 template <typename T>
 struct rsdTarget {
-    static const double value;
+  static const double value;
 };
 
 template <>

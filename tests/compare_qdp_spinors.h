@@ -56,7 +56,8 @@ void expect_near(QdpSpinor &spinor_a,
   if (message != nullptr) {
     QDPIO::cout << "Spinor comparison: " << message << ": ";
   }
-  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err << std::endl;
+  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err
+              << std::endl;
 
   if (QDP::toBool(diff_norm < abs_err)) {
     return;
@@ -101,9 +102,10 @@ void expect_near(QdpSpinor &spinor_a,
                 ++printed_out;
 
                 if (printed_out > 100) {
-                    masterPrintf("More elements are not printed in order to make the output readable.\n");
-                    assertion(false);
-                    break;
+                  masterPrintf("More elements are not printed in order to make the "
+                               "output readable.\n");
+                  assertion(false);
+                  break;
                 }
               }
             }
@@ -122,6 +124,7 @@ void expect_near(HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor
                  double const abs_err,
                  QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
                  int const target_cb,
-                 char const *const message = nullptr) {
+                 char const *const message = nullptr)
+{
   expect_near(spinor_a.qdp(), spinor_b.qdp(), abs_err, geom, target_cb, message);
 }
