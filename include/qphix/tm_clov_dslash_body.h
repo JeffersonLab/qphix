@@ -36,9 +36,7 @@ namespace QPhiX
 
       //printf("log2veclen = %d\n", log2veclen);
 
-
       // Get the shift table set up
-
 
       int Nxh = s->Nxh();
       int Ny = s->Ny();
@@ -49,33 +47,35 @@ namespace QPhiX
       amIPtMax = comms->amIPtMax();
       // We must have Nxh be divisible by soalen
       if( Nxh % soalen != 0 ) {
-        printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n", Nxh, soalen);
+    printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n",
+           Nxh,
+           soalen);
         abort();
       }
 
       // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
       int ngy = s->nGY();
       if( Ny % ngy != 0) {
-        printf("Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n",
-            Ny, ngy);
+    printf(
+        "Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n", Ny, ngy);
         abort();
       }
-
 
       if ( Sy > By/ngy ) {
         printf ("Warning Sy > By/nyg. Some threads may be idle\n");
       }
 
-
       // sanity: we ought to have at least 'expected_no of threads available'
 
       int expected_threads = NCores * n_threads_per_core;
       if ( expected_threads != omp_get_max_threads() ) {
-        cout << "Expected (Cores per Socket x Threads per Core)=" << expected_threads << " but found " << omp_get_max_threads() << "..." << endl;
-        cout << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the CORES_PER_SOCKET and THREADS_PER_CORE env variables" << endl;
+    cout << "Expected (Cores per Socket x Threads per Core)=" << expected_threads
+         << " but found " << omp_get_max_threads() << "..." << endl;
+    cout << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the "
+            "CORES_PER_SOCKET and THREADS_PER_CORE env variables"
+         << endl;
         abort();
       }
-
 
       int nvecs = s->nVecs();
       int num_cores = s->getNumCores();
@@ -101,7 +101,8 @@ namespace QPhiX
         for(int ph=0; ph < num_phases; ph++) {
           const CorePhase& phase = s->getCorePhase(ph);
           int nActiveCores = phase.Cyz * phase.Ct;
-          if( cid >= nActiveCores ) continue;
+      if (cid >= nActiveCores)
+        continue;
           int cid_t = cid/phase.Cyz;
           int ngroup = phase.Cyz*Sy*Sz;
           int group_tid = tid % ngroup;
@@ -112,7 +113,8 @@ namespace QPhiX
       // Set up block info array. These are thread local
       // Indices run as (phases fastest and threads slowest)
       int num_blockinfo = num_phases*s->getNumCores()*n_threads_per_core;
-      block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo*sizeof(BlockPhase),QPHIX_LLC_CACHE_ALIGN);
+  block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo * sizeof(BlockPhase),
+                                            QPHIX_LLC_CACHE_ALIGN);
       if( block_info == 0x0 ) {
         fprintf(stderr, "Could not allocate Block Info array\n");
         abort();
@@ -132,7 +134,8 @@ namespace QPhiX
           BlockPhase& binfo = block_info[num_phases*tid+ph];
 
           int nActiveCores = phase.Cyz * phase.Ct;
-          if( cid > nActiveCores )  continue;
+      if (cid > nActiveCores)
+        continue;
           binfo.cid_t = cid / phase.Cyz;
           binfo.cid_yz = cid - binfo.cid_t * phase.Cyz;
           int syz = phase.startBlock + binfo.cid_yz;
@@ -188,8 +191,10 @@ namespace QPhiX
 
         int nvec = s->nVecs();
         int nyg = s->nGY();
-        const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge scanline, in floats
-        const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor scanline, in floats
+    const int gauge_line_in_floats =
+        sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge scanline, in floats
+    const int spinor_line_in_floats =
+        sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor scanline, in floats
 
         if(tid == 0) {
           // Initialize masks
@@ -212,14 +217,15 @@ namespace QPhiX
             xbOffs_xodd[y1][ind] = X + x - 1;
             if(x == 0) {
               if( comms->localX() ) {
-                xbOffs_x0_xodd[y1][ind] -= (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
-              }
-              else {
-                xbOffs_x0_xodd[y1][ind] += soalen; // This lane is disabled, just set it within same cache line
-                if(tid == 0) xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
+            xbOffs_x0_xodd[y1][ind] -=
+                (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
+          } else {
+            xbOffs_x0_xodd[y1][ind] +=
+                soalen; // This lane is disabled, just set it within same cache line
+            if (tid == 0)
+              xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
               }
               xbOffs_xodd[y1][ind]    -= (spinor_line_in_floats - soalen);
-
             }
             xfOffs_xodd[y1][ind] = X + x;
             xfOffs_xn_xodd[y1][ind] = X + x;
@@ -231,43 +237,46 @@ namespace QPhiX
             if(x == soalen - 1) {
               xfOffs_xodd[y2][ind] += (spinor_line_in_floats - soalen);
               if( comms->localX() ) {
-                xfOffs_xn_xodd[y2][ind] += (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
-              }
-              else {
-                xfOffs_xn_xodd[y2][ind] -= soalen; // This lane is disabled, just set it within same cache line
-                if(tid == 0) xfmask_xn_xodd[y2] &= ~(1 << ind); // reset the ind bit in the mask
+            xfOffs_xn_xodd[y2][ind] +=
+                (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
+          } else {
+            xfOffs_xn_xodd[y2][ind] -=
+                soalen; // This lane is disabled, just set it within same cache line
+            if (tid == 0)
+              xfmask_xn_xodd[y2] &= ~(1 << ind); // reset the ind bit in the mask
               }
             }
 
-            ybOffs_y0[ind] = X - nvecs*spinor_line_in_floats + x; // previous y-neighbor site offsets
+        ybOffs_y0[ind] = X - nvecs * spinor_line_in_floats +
+                         x; // previous y-neighbor site offsets
             if(y == 0) {
               if( comms->localY() ) {
                 ybOffs_y0[ind] += Ny*nvecs*spinor_line_in_floats;
+          } else {
+            ybOffs_y0[ind] =
+                X + x; // This lane is disabled, just set it within same cache line
+            if (tid == 0)
+              ybmask_y0 &= ~(1 << ind); // reset the ind bit in the mask
               }
-              else {
-                ybOffs_y0[ind] = X + x; // This lane is disabled, just set it within same cache line
-                if(tid == 0) ybmask_y0 &= ~(1 << ind); // reset the ind bit in the mask
               }
-            }
 
-
-
-            ybOffs_yn0[ind] = X - nvecs*spinor_line_in_floats + x; // previous y-neighbor site offsets
-            yfOffs_yn[ind] = X +  nvecs*spinor_line_in_floats + x; // next y-neighbor site offsets
+        ybOffs_yn0[ind] = X - nvecs * spinor_line_in_floats +
+                          x; // previous y-neighbor site offsets
+        yfOffs_yn[ind] =
+            X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
             if(y == nyg - 1) {
               if ( comms->localY() ) {
                 yfOffs_yn[ind] -= Ny*nvecs*spinor_line_in_floats;
+          } else {
+            yfOffs_yn[ind] =
+                X + x; // This lane is disabled, just set it within same cache line
+            if (tid == 0)
+              yfmask_yn &= ~(1 << ind); // reset the ind bit in the mask
               }
-              else {
-                yfOffs_yn[ind] = X + x; // This lane is disabled, just set it within same cache line
-                if(tid == 0) yfmask_yn &= ~(1 << ind); // reset the ind bit in the mask
-              }
-
             }
 
-
-
-            yfOffs_ynn[ind] = X +  nvecs*spinor_line_in_floats + x; // next y-neighbor site offsets
+        yfOffs_ynn[ind] =
+            X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
             offs[ind] = X + x;  // site offsets for z & t neighbors
 
             gOffs[ind] = ind; // this not used really
@@ -280,7 +289,6 @@ namespace QPhiX
       if( compress12 ) {
         masterPrintf("WILL Use 12 compression\n");
       }
-
     }
 
   /* Constructor */
@@ -289,19 +297,21 @@ namespace QPhiX
         Geometry<FT,veclen,soalen,compress12>* geom_,
         double t_boundary_,
         double dslash_aniso_s_,
-        double dslash_aniso_t_) :
-      s(geom_), comms(new Comms<FT,veclen,soalen,compress12>(geom_)), By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
-      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()), PadXYZ(geom_->getPadXYZ()),
-      MinCt(geom_->getMinCt()), n_threads_per_core(geom_->getSy()*geom_->getSz()), t_boundary(t_boundary_),
+    double dslash_aniso_t_)
+    : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
+      By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
+      Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
+      PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
+      n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
       aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
   {
     init();
   }
 
-
   // Destructor: Free tables etc
   template<typename FT, int veclen, int soalen, bool compress12>
-    TMClovDslash<FT,veclen,soalen,compress12>::~TMClovDslash() {
+TMClovDslash<FT, veclen, soalen, compress12>::~TMClovDslash()
+{
       delete gBar;
 
       for(int ph=0; ph < s->getNumPhases(); ph++) {
@@ -319,15 +329,13 @@ namespace QPhiX
       delete comms;
     }
 
-
-
   // The operator() that the user sees
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen, soalen, compress12>::dslash(FourSpinorBlock* res,
+void TMClovDslash<FT, veclen, soalen, compress12>::dslash(
+    FourSpinorBlock *res,
         const FourSpinorBlock* psi,
         const SU3MatrixBlock* u, /* Gauge field suitably packed */
         const FullCloverBlock* const invclov[2], /* The clover inverse on the opposite checkerboard suitably packed */
-
         int isign,
         int cb)
     {
@@ -340,18 +348,17 @@ namespace QPhiX
       if(isign == -1) {
         DPsiMinus(u, invclov[1], psi, res, cb);
       }
-
     }
-
-
 
   // The operator() that the user sees
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::dslashAChiMinusBDPsi(FourSpinorBlock* res,
+void TMClovDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
+    FourSpinorBlock *res,
         const FourSpinorBlock* psi,
         const FourSpinorBlock* chi,
         const SU3MatrixBlock* u, /* Gauge field suitably packed */
-        const FullCloverBlock* clov[2], /* The clover term on the target checkerboard, packed */
+    const FullCloverBlock
+        *clov[2], /* The clover term on the target checkerboard, packed */
         double beta,
         int isign,
         int cb)
@@ -365,15 +372,14 @@ namespace QPhiX
       if(isign == -1) {
         DPsiMinusAChiMinusBDPsi(u, clov[1], psi, chi, res, beta, cb);
       }
-
     }
 
-
-
-  // This Essentially threads over Y and Z with each thread doing a 'scanline' of X at a time
+// This Essentially threads over Y and Z with each thread doing a 'scanline' of X at
+// a time
   //    void DyzPlus(size_t lo, size_t hi, int tid, const void *a)
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen, soalen,compress12>::DyzPlus(int tid,
+void TMClovDslash<FT, veclen, soalen, compress12>::DyzPlus(
+    int tid,
         const FourSpinorBlock* psi,
         FourSpinorBlock* res,
         const SU3MatrixBlock* u,
@@ -394,8 +400,6 @@ namespace QPhiX
       const int Pxy = s->getPxy();
       const int Pxyz = s->getPxyz();
 
-
-
       // Get Core ID and SIMT ID
       int cid = tid/n_threads_per_core;
       int smtid = tid - n_threads_per_core*cid;
@@ -407,8 +411,10 @@ namespace QPhiX
       unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
-      const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
-      const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
+  const int gauge_line_in_floats =
+      sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge soavector
+  const int spinor_line_in_floats =
+      sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
 
       // Indexing constants
       const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
@@ -430,9 +436,11 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * tid]);
 #else
-      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -463,7 +471,8 @@ namespace QPhiX
         const BlockPhase& binfo = block_info[tid*num_phases + ph];
 
         int nActiveCores = phase.Cyz * phase.Ct;
-        if ( cid >= nActiveCores ) continue;
+    if (cid >= nActiveCores)
+      continue;
 
         int ph_next = ph;
         int Nct = binfo.nt;
@@ -480,8 +489,7 @@ namespace QPhiX
           if( t == 0 ) {
             if( ! comms->localT() ) {
               accumulate[6] = 0;
-            }
-            else {
+        } else {
               if ( amIPtMin ) {
                 back_t_coeff *= t_boundary;
               }
@@ -492,14 +500,12 @@ namespace QPhiX
           if( t == Nt - 1 ) {
             if( ! comms->localT() ) {
               accumulate[7] = 0;
-            }
-            else {
+        } else {
               if ( amIPtMax ) {
                 forw_t_coeff *= t_boundary;
               }
             }
           }
-
 
           int ct_next = ct;
 
@@ -512,24 +518,33 @@ namespace QPhiX
             if( ! comms->localZ() ) {
               if( z == 0 ) {
                 accumulate[4] = 0;
-              }
-              else {
+          } else {
                 accumulate[4] = -1;
               }
 
               if( z == Nz-1 ) {
                 accumulate[5] = 0;
-              }
-              else {
+          } else {
                 accumulate[5] = -1;
               }
             }
 
-            const FourSpinorBlock *xyBase = &psi[t*Pxyz+z*Pxy]; // base address for x & y neighbours
-            const FourSpinorBlock *zbBase = &psi[t*Pxyz] + (z == 0 ? (Nz-1)*Pxy : (z-1)*Pxy); // base address for prev z neighbour
-            const FourSpinorBlock *zfBase = &psi[t*Pxyz] + (z==Nz-1 ? 0 : (z+1)*Pxy); // base address for next z neighbour
-            const FourSpinorBlock *tbBase = &psi[z*Pxy] + (t == 0 ? (Nt-1)*Pxyz : (t-1)*Pxyz); // base address for prev t neighbour
-            const FourSpinorBlock *tfBase = &psi[z*Pxy] + (t==Nt-1 ? 0 : (t+1)*Pxyz); // base address for next t neighbour
+        const FourSpinorBlock *xyBase =
+            &psi[t * Pxyz + z * Pxy]; // base address for x & y neighbours
+        const FourSpinorBlock *zbBase =
+            &psi[t * Pxyz] +
+            (z == 0 ? (Nz - 1) * Pxy
+                    : (z - 1) * Pxy); // base address for prev z neighbour
+        const FourSpinorBlock *zfBase =
+            &psi[t * Pxyz] +
+            (z == Nz - 1 ? 0 : (z + 1) * Pxy); // base address for next z neighbour
+        const FourSpinorBlock *tbBase =
+            &psi[z * Pxy] +
+            (t == 0 ? (Nt - 1) * Pxyz
+                    : (t - 1) * Pxyz); // base address for prev t neighbour
+        const FourSpinorBlock *tfBase =
+            &psi[z * Pxy] +
+            (t == Nt - 1 ? 0 : (t + 1) * Pxyz); // base address for next t neighbour
             FourSpinorBlock *oBase = &res[t*Pxyz+z*Pxy];
 
             // Loop over y. Start at smtid_y and work up to Ncy
@@ -544,11 +559,21 @@ namespace QPhiX
                 int ind = 0;
                 int cx_next = cx + 1;
 
-                if(cx_next == nvecs) { cx_next = 0; cy_next += nyg*Sy;
-                  if(cy_next >= By) { cy_next = nyg*smtid_y; cz_next += Sz;
-                    if(cz_next >= Bz) { cz_next = smtid_z; ct_next++;
-                      if(ct_next == Nct) { ct_next = 0; ph_next ++;
-                        if(ph_next == num_phases) { ph_next = 0; }
+            if (cx_next == nvecs) {
+              cx_next = 0;
+              cy_next += nyg * Sy;
+              if (cy_next >= By) {
+                cy_next = nyg * smtid_y;
+                cz_next += Sz;
+                if (cz_next >= Bz) {
+                  cz_next = smtid_z;
+                  ct_next++;
+                  if (ct_next == Nct) {
+                    ct_next = 0;
+                    ph_next++;
+                    if (ph_next == num_phases) {
+                      ph_next = 0;
+                    }
                       }
                     }
                   }
@@ -559,16 +584,28 @@ namespace QPhiX
                 int z_next = cz_next + binfo_next.bz;
                 int t_next = ct_next + binfo_next.bt;
 
-                int off_next = (t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs+(cx_next-cx);
+            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
+                           (yi_next - yi) * nvecs + (cx_next - cx);
                 int si_off_next = off_next * spinor_line_in_floats;
 
-                const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                int g_off_next  =(((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * gauge_line_in_floats;
+            const SU3MatrixBlock *gBase =
+                &u[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            int g_off_next = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             gauge_line_in_floats;
 
-
-                const FullCloverBlock *clBase = &invclov[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                const int clov_line_in_floats = sizeof(FullCloverBlock)/sizeof(FT); // One gauge scanline, in floats
-                int clprefdist =(((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * clov_line_in_floats;
+            const FullCloverBlock *clBase =
+                &invclov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const int clov_line_in_floats =
+                sizeof(FullCloverBlock) /
+                sizeof(FT); // One gauge scanline, in floats
+            int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             clov_line_in_floats;
 
                 int X=nvecs*yi+cx;
 
@@ -602,7 +639,6 @@ namespace QPhiX
                 }
 #endif
 
-
                 if( soalen == veclen ) {
                   if(! comms->localY() ) {
                     accumulate[2] = (yi == 0 ? 0 : -1);
@@ -614,8 +650,7 @@ namespace QPhiX
                 FT forw_t_coeff_T =rep<FT,double>(forw_t_coeff);
                 FT back_t_coeff_T =rep<FT,double>(back_t_coeff);
 
-                tm_clov_dslash_plus_vec<FT,veclen,soalen,compress12>(
-                    xyBase+X,
+            tm_clov_dslash_plus_vec<FT, veclen, soalen, compress12>(xyBase + X,
                     zbBase+X,
                     zfBase+X,
                     tbBase+X,
@@ -623,9 +658,12 @@ namespace QPhiX
                     oBase+X,
                     gBase,
                     clBase,
-                    xbOffs, xfOffs,
-                    ybOffs, yfOffs,
-                    offs, gOffs,
+                                                                    xbOffs,
+                                                                    xfOffs,
+                                                                    ybOffs,
+                                                                    yfOffs,
+                                                                    offs,
+                                                                    gOffs,
                     si_off_next,
                     si_off_next,
                     si_off_next,
@@ -644,15 +682,16 @@ namespace QPhiX
             } // End for over scanlines y
           } // End for over scalines z
 
-          if( ct % BARRIER_TSLICES == 0 ) barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
+      if (ct % BARRIER_TSLICES == 0)
+        barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
 
         } // end for over t
       } // phases
     }
-
 
   template<typename FT, int veclen,int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DyzMinus(int tid,
+void TMClovDslash<FT, veclen, soalen, compress12>::DyzMinus(
+    int tid,
         const FourSpinorBlock* psi,
         FourSpinorBlock* res,
         const SU3MatrixBlock* u,
@@ -673,12 +712,9 @@ namespace QPhiX
       const int Pxy = s->getPxy();
       const int Pxyz = s->getPxyz();
 
-
-
       // Get Core ID and SIMT ID
       int cid = tid/n_threads_per_core;
       int smtid = tid - n_threads_per_core*cid;
-
 
       // Compute smt ID Y and Z indices
       int smtid_z = smtid / Sy;
@@ -687,8 +723,10 @@ namespace QPhiX
       unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
-      const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
-      const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
+  const int gauge_line_in_floats =
+      sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge soavector
+  const int spinor_line_in_floats =
+      sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
 
       // Indexing constants
       const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
@@ -710,9 +748,11 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * tid]);
 #else
-      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -743,7 +783,8 @@ namespace QPhiX
         const BlockPhase& binfo = block_info[tid*num_phases + ph];
 
         int nActiveCores = phase.Cyz * phase.Ct;
-        if ( cid >= nActiveCores ) continue;
+    if (cid >= nActiveCores)
+      continue;
 
         int ph_next = ph;
         int Nct = binfo.nt;
@@ -760,8 +801,7 @@ namespace QPhiX
           if( t == 0 ) {
             if( ! comms->localT() ) {
               accumulate[6] = 0;
-            }
-            else {
+        } else {
               if ( amIPtMin ) {
                 back_t_coeff *= t_boundary;
               }
@@ -772,15 +812,12 @@ namespace QPhiX
           if( t == Nt - 1 ) {
             if( ! comms->localT() ) {
               accumulate[7] = 0;
-            }
-            else {
+        } else {
               if ( amIPtMax ) {
                 forw_t_coeff *= t_boundary;
               }
             }
           }
-
-
 
           int ct_next = ct;
 
@@ -793,24 +830,33 @@ namespace QPhiX
             if( ! comms->localZ() ) {
               if( z == 0 ) {
                 accumulate[4] = 0;
-              }
-              else {
+          } else {
                 accumulate[4] = -1;
               }
 
               if( z == Nz-1 ) {
                 accumulate[5] = 0;
-              }
-              else {
+          } else {
                 accumulate[5] = -1;
               }
             }
 
-            const FourSpinorBlock *xyBase = &psi[t*Pxyz+z*Pxy]; // base address for x & y neighbours
-            const FourSpinorBlock *zbBase = &psi[t*Pxyz] + (z == 0 ? (Nz-1)*Pxy : (z-1)*Pxy); // base address for prev z neighbour
-            const FourSpinorBlock *zfBase = &psi[t*Pxyz] + (z==Nz-1 ? 0 : (z+1)*Pxy); // base address for next z neighbour
-            const FourSpinorBlock *tbBase = &psi[z*Pxy] + (t == 0 ? (Nt-1)*Pxyz : (t-1)*Pxyz); // base address for prev t neighbour
-            const FourSpinorBlock *tfBase = &psi[z*Pxy] + (t==Nt-1 ? 0 : (t+1)*Pxyz); // base address for next t neighbour
+        const FourSpinorBlock *xyBase =
+            &psi[t * Pxyz + z * Pxy]; // base address for x & y neighbours
+        const FourSpinorBlock *zbBase =
+            &psi[t * Pxyz] +
+            (z == 0 ? (Nz - 1) * Pxy
+                    : (z - 1) * Pxy); // base address for prev z neighbour
+        const FourSpinorBlock *zfBase =
+            &psi[t * Pxyz] +
+            (z == Nz - 1 ? 0 : (z + 1) * Pxy); // base address for next z neighbour
+        const FourSpinorBlock *tbBase =
+            &psi[z * Pxy] +
+            (t == 0 ? (Nt - 1) * Pxyz
+                    : (t - 1) * Pxyz); // base address for prev t neighbour
+        const FourSpinorBlock *tfBase =
+            &psi[z * Pxy] +
+            (t == Nt - 1 ? 0 : (t + 1) * Pxyz); // base address for next t neighbour
             FourSpinorBlock *oBase = &res[t*Pxyz+z*Pxy];
 
             // Loop over y. Start at smtid_y and work up to Ncy
@@ -825,11 +871,21 @@ namespace QPhiX
                 int ind = 0;
                 int cx_next = cx + 1;
 
-                if(cx_next == nvecs) { cx_next = 0; cy_next += nyg*Sy;
-                  if(cy_next >= By) { cy_next = nyg*smtid_y; cz_next += Sz;
-                    if(cz_next >= Bz) { cz_next = smtid_z; ct_next++;
-                      if(ct_next == Nct) { ct_next = 0; ph_next ++;
-                        if(ph_next == num_phases) { ph_next = 0; }
+            if (cx_next == nvecs) {
+              cx_next = 0;
+              cy_next += nyg * Sy;
+              if (cy_next >= By) {
+                cy_next = nyg * smtid_y;
+                cz_next += Sz;
+                if (cz_next >= Bz) {
+                  cz_next = smtid_z;
+                  ct_next++;
+                  if (ct_next == Nct) {
+                    ct_next = 0;
+                    ph_next++;
+                    if (ph_next == num_phases) {
+                      ph_next = 0;
+                    }
                       }
                     }
                   }
@@ -840,15 +896,28 @@ namespace QPhiX
                 int z_next = cz_next + binfo_next.bz;
                 int t_next = ct_next + binfo_next.bt;
 
-                int off_next = (t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs+(cx_next-cx);
+            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
+                           (yi_next - yi) * nvecs + (cx_next - cx);
                 int si_off_next = off_next * spinor_line_in_floats;
 
-                const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                int g_off_next = (((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * gauge_line_in_floats;
+            const SU3MatrixBlock *gBase =
+                &u[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            int g_off_next = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             gauge_line_in_floats;
 
-                const FullCloverBlock *clBase = &invclov[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                const int clov_line_in_floats = sizeof(FullCloverBlock)/sizeof(FT); // One gauge scanline, in floats
-                int clprefdist =(((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * clov_line_in_floats;
+            const FullCloverBlock *clBase =
+                &invclov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const int clov_line_in_floats =
+                sizeof(FullCloverBlock) /
+                sizeof(FT); // One gauge scanline, in floats
+            int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             clov_line_in_floats;
 
                 int X=nvecs*yi+cx;
 
@@ -873,7 +942,6 @@ namespace QPhiX
                 accumulate[3] = (yi == Ny - nyg ? yfmask_yn : -1);
 #endif
 
-
 #ifdef QPHIX_USE_CEAN
                 pfyOffs[0:veclen/2] = ybOffs[0:veclen/2];
                 pfyOffs[veclen/2:veclen/2] = yfOffs[veclen/2:veclen/2];
@@ -892,13 +960,11 @@ namespace QPhiX
                   }
                 }
 
-
                 FT aniso_coeff_S_T=rep<FT,double>(aniso_coeff_S);
                 FT forw_t_coeff_T =rep<FT,double>(forw_t_coeff);
                 FT back_t_coeff_T =rep<FT,double>(back_t_coeff);
 
-                tm_clov_dslash_minus_vec<FT,veclen,soalen,compress12>(
-                    xyBase+X,
+            tm_clov_dslash_minus_vec<FT, veclen, soalen, compress12>(xyBase + X,
                     zbBase+X,
                     zfBase+X,
                     tbBase+X,
@@ -906,9 +972,12 @@ namespace QPhiX
                     oBase+X,
                     gBase,
                     clBase,
-                    xbOffs, xfOffs,
-                    ybOffs, yfOffs,
-                    offs, gOffs,
+                                                                     xbOffs,
+                                                                     xfOffs,
+                                                                     ybOffs,
+                                                                     yfOffs,
+                                                                     offs,
+                                                                     gOffs,
                     si_off_next,
                     si_off_next,
                     si_off_next,
@@ -927,19 +996,20 @@ namespace QPhiX
             } // End for over scanlines y
           } // End for over scalines z
 
-          if( ct % BARRIER_TSLICES == 0 ) barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
+      if (ct % BARRIER_TSLICES == 0)
+        barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
 
         } // end for over t
       } // phases
     }
-
-
 
   // _aChiMinusBDPsi versions
-  // This Essentially threads over Y and Z with each thread doing a 'scanline' of X at a time
+// This Essentially threads over Y and Z with each thread doing a 'scanline' of X at
+// a time
   //    void DyzPlus(size_t lo, size_t hi, int tid, const void *a)
   template<typename FT, int veclen,int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DyzPlusAChiMinusBDPsi(int tid,
+void TMClovDslash<FT, veclen, soalen, compress12>::DyzPlusAChiMinusBDPsi(
+    int tid,
         const FourSpinorBlock* psi,
         const FourSpinorBlock* chi,
         FourSpinorBlock* res,
@@ -965,22 +1035,21 @@ namespace QPhiX
       double beta_s = beta*aniso_coeff_S;
       double beta_t = beta*aniso_coeff_T;
 
-
       // Get Core ID and SIMT ID
       int cid = tid/n_threads_per_core;
       int smtid = tid - n_threads_per_core*cid;
-
 
       // Compute smt ID Y and Z indices
       int smtid_z = smtid / Sy;
       int smtid_y = smtid - Sy * smtid_z;
 
-
       unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
-      const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
-      const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
+  const int gauge_line_in_floats =
+      sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge soavector
+  const int spinor_line_in_floats =
+      sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
 
       // Indexing constants
       const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
@@ -1002,9 +1071,11 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * tid]);
 #else
-      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1035,7 +1106,8 @@ namespace QPhiX
         const BlockPhase& binfo = block_info[tid*num_phases + ph];
 
         int nActiveCores = phase.Cyz * phase.Ct;
-        if ( cid >= nActiveCores ) continue;
+    if (cid >= nActiveCores)
+      continue;
 
         int ph_next = ph;
         int Nct = binfo.nt;
@@ -1052,8 +1124,7 @@ namespace QPhiX
           if( t == 0 ) {
             if( ! comms->localT() ) {
               accumulate[6] = 0;
-            }
-            else {
+        } else {
               if(  amIPtMin  ) {
                 beta_t_b *= t_boundary;
               }
@@ -1063,14 +1134,12 @@ namespace QPhiX
           if( t == Nt-1 ) {
             if( ! comms->localT() ) {
               accumulate[7] = 0;
-            }
-            else {
+        } else {
               if( amIPtMax ) {
                 beta_t_f *= t_boundary;
               }
             }
           }
-
 
           int ct_next = ct;
 
@@ -1083,24 +1152,33 @@ namespace QPhiX
             if( ! comms->localZ() ) {
               if( z == 0 ) {
                 accumulate[4] = 0;
-              }
-              else {
+          } else {
                 accumulate[4] = -1;
               }
 
               if( z == Nz-1 ) {
                 accumulate[5] = 0;
-              }
-              else {
+          } else {
                 accumulate[5] = -1;
               }
             }
 
-            const FourSpinorBlock *xyBase = &psi[t*Pxyz+z*Pxy]; // base address for x & y neighbours
-            const FourSpinorBlock *zbBase = &psi[t*Pxyz] + (z == 0 ? (Nz-1)*Pxy : (z-1)*Pxy); // base address for prev z neighbour
-            const FourSpinorBlock *zfBase = &psi[t*Pxyz] + (z==Nz-1 ? 0 : (z+1)*Pxy); // base address for next z neighbour
-            const FourSpinorBlock *tbBase = &psi[z*Pxy] + (t == 0 ? (Nt-1)*Pxyz : (t-1)*Pxyz); // base address for prev t neighbour
-            const FourSpinorBlock *tfBase = &psi[z*Pxy] + (t==Nt-1 ? 0 : (t+1)*Pxyz); // base address for next t neighbour
+        const FourSpinorBlock *xyBase =
+            &psi[t * Pxyz + z * Pxy]; // base address for x & y neighbours
+        const FourSpinorBlock *zbBase =
+            &psi[t * Pxyz] +
+            (z == 0 ? (Nz - 1) * Pxy
+                    : (z - 1) * Pxy); // base address for prev z neighbour
+        const FourSpinorBlock *zfBase =
+            &psi[t * Pxyz] +
+            (z == Nz - 1 ? 0 : (z + 1) * Pxy); // base address for next z neighbour
+        const FourSpinorBlock *tbBase =
+            &psi[z * Pxy] +
+            (t == 0 ? (Nt - 1) * Pxyz
+                    : (t - 1) * Pxyz); // base address for prev t neighbour
+        const FourSpinorBlock *tfBase =
+            &psi[z * Pxy] +
+            (t == Nt - 1 ? 0 : (t + 1) * Pxyz); // base address for next t neighbour
             const FourSpinorBlock *chiBase =&chi[t*Pxyz+z*Pxy];
             FourSpinorBlock *oBase = &res[t*Pxyz+z*Pxy];
 
@@ -1116,11 +1194,21 @@ namespace QPhiX
                 int ind = 0;
                 int cx_next = cx + 1;
 
-                if(cx_next == nvecs) { cx_next = 0; cy_next += nyg*Sy;
-                  if(cy_next >= By) { cy_next = nyg*smtid_y; cz_next += Sz;
-                    if(cz_next >= Bz) { cz_next = smtid_z; ct_next++;
-                      if(ct_next == Nct) { ct_next = 0; ph_next ++;
-                        if(ph_next == num_phases) { ph_next = 0; }
+            if (cx_next == nvecs) {
+              cx_next = 0;
+              cy_next += nyg * Sy;
+              if (cy_next >= By) {
+                cy_next = nyg * smtid_y;
+                cz_next += Sz;
+                if (cz_next >= Bz) {
+                  cz_next = smtid_z;
+                  ct_next++;
+                  if (ct_next == Nct) {
+                    ct_next = 0;
+                    ph_next++;
+                    if (ph_next == num_phases) {
+                      ph_next = 0;
+                    }
                       }
                     }
                   }
@@ -1131,15 +1219,28 @@ namespace QPhiX
                 int z_next = cz_next + binfo_next.bz;
                 int t_next = ct_next + binfo_next.bt;
 
-                int off_next = (t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs+(cx_next-cx);
+            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
+                           (yi_next - yi) * nvecs + (cx_next - cx);
                 int si_off_next = off_next * spinor_line_in_floats;
 
-                const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                int g_off_next = (((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * gauge_line_in_floats;
+            const SU3MatrixBlock *gBase =
+                &u[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            int g_off_next = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             gauge_line_in_floats;
 
-                const FullCloverBlock *clBase = &clov[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                const int clov_line_in_floats = sizeof(FullCloverBlock)/sizeof(FT); // One gauge scanline, in floats
-                int clprefdist =(((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * clov_line_in_floats;
+            const FullCloverBlock *clBase =
+                &clov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const int clov_line_in_floats =
+                sizeof(FullCloverBlock) /
+                sizeof(FT); // One gauge scanline, in floats
+            int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             clov_line_in_floats;
 
                 int X=nvecs*yi+cx;
 
@@ -1182,7 +1283,6 @@ namespace QPhiX
                   }
                 }
 
-
                 FT beta_s_T=rep<FT,double>(beta_s);
                 FT beta_t_f_T =rep<FT,double>(beta_t_f);
                 FT beta_t_b_T =rep<FT,double>(beta_t_b);
@@ -1197,9 +1297,12 @@ namespace QPhiX
                     oBase+X,
                     gBase,
                     clBase,
-                    xbOffs, xfOffs,
-                    ybOffs, yfOffs,
-                    offs, gOffs,
+                xbOffs,
+                xfOffs,
+                ybOffs,
+                yfOffs,
+                offs,
+                gOffs,
                     si_off_next,
                     si_off_next,
                     si_off_next,
@@ -1216,20 +1319,20 @@ namespace QPhiX
                     beta_t_f_T,
                     beta_t_b_T,
                     accumulate);
-
               }
             } // End for over scanlines y
           } // End for over scalines z
 
-          if( ct % BARRIER_TSLICES == 0 ) barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
+      if (ct % BARRIER_TSLICES == 0)
+        barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
 
         } // end for over t
       } // phases
     }
 
-
   template<typename FT, int veclen,int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DyzMinusAChiMinusBDPsi(int tid,
+void TMClovDslash<FT, veclen, soalen, compress12>::DyzMinusAChiMinusBDPsi(
+    int tid,
         const FourSpinorBlock* psi,
         const  FourSpinorBlock* chi,
         FourSpinorBlock* res,
@@ -1255,11 +1358,9 @@ namespace QPhiX
       double beta_s = beta*aniso_coeff_S;
       double beta_t = beta*aniso_coeff_T;
 
-
       // Get Core ID and SIMT ID
       int cid = tid/n_threads_per_core;
       int smtid = tid - n_threads_per_core*cid;
-
 
       // Compute smt ID Y and Z indices
       int smtid_z = smtid / Sy;
@@ -1268,8 +1369,10 @@ namespace QPhiX
       unsigned int accumulate[8] = { ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U };
       int nvecs = s->nVecs();
 
-      const int gauge_line_in_floats = sizeof(SU3MatrixBlock)/sizeof(FT); // One gauge soavector
-      const int spinor_line_in_floats = sizeof(FourSpinorBlock)/sizeof(FT); //  One spinor soavecto
+  const int gauge_line_in_floats =
+      sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge soavector
+  const int spinor_line_in_floats =
+      sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
 
       // Indexing constants
       const int V1 = 2*nvecs;  // No of vectors in x (without checkerboarding)
@@ -1291,9 +1394,11 @@ namespace QPhiX
       int soprefdist=0;
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*tid]);
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * tid]);
 #else
-      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*tid]);
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * tid]);
 #endif
 
       int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
@@ -1324,7 +1429,8 @@ namespace QPhiX
         const BlockPhase& binfo = block_info[tid*num_phases + ph];
 
         int nActiveCores = phase.Cyz * phase.Ct;
-        if ( cid >= nActiveCores ) continue;
+    if (cid >= nActiveCores)
+      continue;
 
         int ph_next = ph;
         int Nct = binfo.nt;
@@ -1341,8 +1447,7 @@ namespace QPhiX
             // We get our face from a comms buf, and it will have its beta dealt with it
             if( ! comms->localT() ) {
               accumulate[6] = 0;
-            }
-            else {
+        } else {
               // We are local in t so we need to deal with the face.
               if (  amIPtMin ) {
                 beta_t_b *= t_boundary;
@@ -1350,13 +1455,10 @@ namespace QPhiX
             }
           }
 
-
-
           if( t == Nt-1 ) {
             if( ! comms->localT() ) {
               accumulate[7] = 0;
-            }
-            else {
+        } else {
               if( amIPtMax ) {
                 beta_t_f *= t_boundary;
               }
@@ -1374,24 +1476,33 @@ namespace QPhiX
             if( ! comms->localZ() ) {
               if( z == 0 ) {
                 accumulate[4] = 0;
-              }
-              else {
+          } else {
                 accumulate[4] = -1;
               }
 
               if( z == Nz-1 ) {
                 accumulate[5] = 0;
-              }
-              else {
+          } else {
                 accumulate[5] = -1;
               }
             }
 
-            const FourSpinorBlock *xyBase = &psi[t*Pxyz+z*Pxy]; // base address for x & y neighbours
-            const FourSpinorBlock *zbBase = &psi[t*Pxyz] + (z == 0 ? (Nz-1)*Pxy : (z-1)*Pxy); // base address for prev z neighbour
-            const FourSpinorBlock *zfBase = &psi[t*Pxyz] + (z==Nz-1 ? 0 : (z+1)*Pxy); // base address for next z neighbour
-            const FourSpinorBlock *tbBase = &psi[z*Pxy] + (t == 0 ? (Nt-1)*Pxyz : (t-1)*Pxyz); // base address for prev t neighbour
-            const FourSpinorBlock *tfBase = &psi[z*Pxy] + (t==Nt-1 ? 0 : (t+1)*Pxyz); // base address for next t neighbour
+        const FourSpinorBlock *xyBase =
+            &psi[t * Pxyz + z * Pxy]; // base address for x & y neighbours
+        const FourSpinorBlock *zbBase =
+            &psi[t * Pxyz] +
+            (z == 0 ? (Nz - 1) * Pxy
+                    : (z - 1) * Pxy); // base address for prev z neighbour
+        const FourSpinorBlock *zfBase =
+            &psi[t * Pxyz] +
+            (z == Nz - 1 ? 0 : (z + 1) * Pxy); // base address for next z neighbour
+        const FourSpinorBlock *tbBase =
+            &psi[z * Pxy] +
+            (t == 0 ? (Nt - 1) * Pxyz
+                    : (t - 1) * Pxyz); // base address for prev t neighbour
+        const FourSpinorBlock *tfBase =
+            &psi[z * Pxy] +
+            (t == Nt - 1 ? 0 : (t + 1) * Pxyz); // base address for next t neighbour
             const FourSpinorBlock *chiBase =&chi[t*Pxyz+z*Pxy];
             FourSpinorBlock *oBase = &res[t*Pxyz+z*Pxy];
 
@@ -1407,11 +1518,21 @@ namespace QPhiX
                 int ind = 0;
                 int cx_next = cx + 1;
 
-                if(cx_next == nvecs) { cx_next = 0; cy_next += nyg*Sy;
-                  if(cy_next >= By) { cy_next = nyg*smtid_y; cz_next += Sz;
-                    if(cz_next >= Bz) { cz_next = smtid_z; ct_next++;
-                      if(ct_next == Nct) { ct_next = 0; ph_next ++;
-                        if(ph_next == num_phases) { ph_next = 0; }
+            if (cx_next == nvecs) {
+              cx_next = 0;
+              cy_next += nyg * Sy;
+              if (cy_next >= By) {
+                cy_next = nyg * smtid_y;
+                cz_next += Sz;
+                if (cz_next >= Bz) {
+                  cz_next = smtid_z;
+                  ct_next++;
+                  if (ct_next == Nct) {
+                    ct_next = 0;
+                    ph_next++;
+                    if (ph_next == num_phases) {
+                      ph_next = 0;
+                    }
                       }
                     }
                   }
@@ -1422,15 +1543,28 @@ namespace QPhiX
                 int z_next = cz_next + binfo_next.bz;
                 int t_next = ct_next + binfo_next.bt;
 
-                int off_next = (t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs+(cx_next-cx);
+            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
+                           (yi_next - yi) * nvecs + (cx_next - cx);
                 int si_off_next = off_next * spinor_line_in_floats;
 
-                const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                int g_off_next = (((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * gauge_line_in_floats;
+            const SU3MatrixBlock *gBase =
+                &u[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            int g_off_next = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             gauge_line_in_floats;
 
-                const FullCloverBlock *clBase = &clov[(t*Pxyz+z*Pxy+yi*nvecs)/nyg+cx];
-                const int clov_line_in_floats = sizeof(FullCloverBlock)/sizeof(FT); // One gauge scanline, in floats
-                int clprefdist =(((t_next - t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*nvecs)/nyg+(cx_next-cx)) * clov_line_in_floats;
+            const FullCloverBlock *clBase =
+                &clov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const int clov_line_in_floats =
+                sizeof(FullCloverBlock) /
+                sizeof(FT); // One gauge scanline, in floats
+            int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+                               (yi_next - yi) * nvecs) /
+                                  nyg +
+                              (cx_next - cx)) *
+                             clov_line_in_floats;
 
                 int X=nvecs*yi+cx;
                 xbOffs = (cx == 0 ? xbOffs_x0_xodd[xodd] : xbOffs_xodd[xodd]);
@@ -1465,7 +1599,6 @@ namespace QPhiX
                 }
 #endif
 
-
                 if( soalen == veclen ) {
                   if(! comms->localY() ) {
                     accumulate[2] = (yi == 0 ? 0 : -1);
@@ -1477,7 +1610,6 @@ namespace QPhiX
                 FT beta_t_f_T =rep<FT,double>(beta_t_f);
                 FT beta_t_b_T =rep<FT,double>(beta_t_b);
 
-
                 tm_clov_dslash_achimbdpsi_minus_vec<FT,veclen,soalen,compress12>(
                     xyBase+X,
                     zbBase+X,
@@ -1488,9 +1620,12 @@ namespace QPhiX
                     oBase+X,
                     gBase,
                     clBase,
-                    xbOffs, xfOffs,
-                    ybOffs, yfOffs,
-                    offs, gOffs,
+                xbOffs,
+                xfOffs,
+                ybOffs,
+                yfOffs,
+                offs,
+                gOffs,
                     si_off_next,
                     si_off_next,
                     si_off_next,
@@ -1507,33 +1642,38 @@ namespace QPhiX
                     beta_t_f_T,
                     beta_t_b_T,
                     accumulate);
-
               }
             } // End for over scanlines y
           } // End for over scalines z
 
-          if( ct % BARRIER_TSLICES == 0 ) barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
+      if (ct % BARRIER_TSLICES == 0)
+        barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
 
         } // end for over t
       } // phases
     }
 
-
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DPsiPlus(const SU3MatrixBlock *u,
+void TMClovDslash<FT, veclen, soalen, compress12>::DPsiPlus(
+    const SU3MatrixBlock *u,
         const FullCloverBlock *invclov,
         const FourSpinorBlock *psi_in,
-        FourSpinorBlock *res_out, int cb)
+    FourSpinorBlock *res_out,
+    int cb)
     {
       double beta_s = aniso_coeff_S;
       double beta_t_f = aniso_coeff_T;
       double beta_t_b = aniso_coeff_T;
 
       // Antiperiodic BCs on back links
-      if( amIPtMin ) { beta_t_b *= t_boundary; }
+  if (amIPtMin) {
+    beta_t_b *= t_boundary;
+  }
 
       // Antiperiodic BCs on forw links
-      if( amIPtMax ) { beta_t_f *= t_boundary; }
+  if (amIPtMax) {
+    beta_t_f *= t_boundary;
+  }
 
       TSC_tick t_start,t_end;
 #ifdef QPHIX_DO_COMMS
@@ -1577,17 +1717,27 @@ namespace QPhiX
             int tid=omp_get_thread_num();
 
             double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-            completeFaceDir(tid,comms->recvFromDir[d], res_out, u, invclov, bet, cb, d/2, d%2, 1);
-          }
-        }
-        else comms->recv_queue.push(d);
+        completeFaceDir(tid,
+                        comms->recvFromDir[d],
+                        res_out,
+                        u,
+                        invclov,
+                        bet,
+                        cb,
+                        d / 2,
+                        d % 2,
+                        1);
+      }
+    } else
+      comms->recv_queue.push(d);
       } // end for
 
 #endif	// QPHIX_DO_COMMS
     }
 
   template<typename FT, int veclen,int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DPsiMinus(const SU3MatrixBlock *u,
+void TMClovDslash<FT, veclen, soalen, compress12>::DPsiMinus(
+    const SU3MatrixBlock *u,
         const FullCloverBlock* invclov,
         const FourSpinorBlock *psi_in,
         FourSpinorBlock *res_out,
@@ -1599,10 +1749,14 @@ namespace QPhiX
       double beta_t_b = aniso_coeff_T;
 
       // Antiperiodic BCs on back links
-      if( amIPtMin ) { beta_t_b *= t_boundary; }
+  if (amIPtMin) {
+    beta_t_b *= t_boundary;
+  }
 
       // Antiperiodic BCs on forw links
-      if( amIPtMax ) { beta_t_f *= t_boundary; }
+  if (amIPtMax) {
+    beta_t_f *= t_boundary;
+  }
 #ifdef QPHIX_DO_COMMS
       // Pre-initiate all receives
 
@@ -1626,13 +1780,11 @@ namespace QPhiX
       }
 #endif   // QPHIX_DO_COMMS
 
-
 #pragma omp parallel
       {
         int tid = omp_get_thread_num();
         DyzMinus(tid, psi_in, res_out, u, invclov, cb);
       }
-
 
 #ifdef  QPHIX_DO_COMMS
       while(!comms->recv_queue.empty()){
@@ -1644,19 +1796,28 @@ namespace QPhiX
             int tid=omp_get_thread_num();
 
             double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-            completeFaceDir(tid,comms->recvFromDir[d], res_out, u, invclov, bet, cb, d/2, d%2, 0);
-          }
-        }
-        else comms->recv_queue.push(d);
+        completeFaceDir(tid,
+                        comms->recvFromDir[d],
+                        res_out,
+                        u,
+                        invclov,
+                        bet,
+                        cb,
+                        d / 2,
+                        d % 2,
+                        0);
+      }
+    } else
+      comms->recv_queue.push(d);
       } // end for
 
 #endif	// QPHIX_DO_COMMS
 
     }  // function
 
-
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
+void TMClovDslash<FT, veclen, soalen, compress12>::DPsiPlusAChiMinusBDPsi(
+    const SU3MatrixBlock *u,
         const FullCloverBlock* clov,
         const FourSpinorBlock *psi_in,
         const FourSpinorBlock* chi_in,
@@ -1668,9 +1829,12 @@ namespace QPhiX
       double beta_s = beta * aniso_coeff_S;
       double beta_t_f = beta * aniso_coeff_T;
       double beta_t_b = beta * aniso_coeff_T;
-      if( amIPtMin ) { beta_t_b *= t_boundary; }
-      if( amIPtMax ) { beta_t_f *= t_boundary; }
-
+  if (amIPtMin) {
+    beta_t_b *= t_boundary;
+  }
+  if (amIPtMax) {
+    beta_t_f *= t_boundary;
+  }
 
 #ifdef QPHIX_DO_COMMS
       // Pre-initiate all receives
@@ -1695,7 +1859,6 @@ namespace QPhiX
       }
 #endif   // QPHIX_DO_COMMS
 
-
 #pragma omp parallel
       {
         int tid = omp_get_thread_num();
@@ -1712,17 +1875,19 @@ namespace QPhiX
             int tid=omp_get_thread_num();
 
             double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-            completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 1);
+        completeFaceDirAChiMBDPsi(
+            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, 1);
           }
-        }
-        else comms->recv_queue.push(d);
+    } else
+      comms->recv_queue.push(d);
       } // end for
 
 #endif	// QPHIX_DO_COMMS
     }
 
   template<typename FT, int veclen, int soalen, bool compress12>
-    void TMClovDslash<FT,veclen,soalen,compress12>::DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
+void TMClovDslash<FT, veclen, soalen, compress12>::DPsiMinusAChiMinusBDPsi(
+    const SU3MatrixBlock *u,
         const FullCloverBlock* clov,
         const FourSpinorBlock *psi_in,
         const FourSpinorBlock* chi_in,
@@ -1734,8 +1899,12 @@ namespace QPhiX
       double beta_s = beta * aniso_coeff_S;
       double beta_t_f = beta * aniso_coeff_T;
       double beta_t_b = beta * aniso_coeff_T;
-      if( amIPtMin ) { beta_t_b *= t_boundary; }
-      if( amIPtMax ) { beta_t_f *= t_boundary; }
+  if (amIPtMin) {
+    beta_t_b *= t_boundary;
+  }
+  if (amIPtMax) {
+    beta_t_f *= t_boundary;
+  }
 
 #ifdef QPHIX_DO_COMMS
       // Pre-initiate all receives
@@ -1760,13 +1929,11 @@ namespace QPhiX
       }
 #endif   // QPHIX_DO_COMMS
 
-
 #pragma omp parallel
       {
         int tid = omp_get_thread_num();
         DyzMinusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, cb);
       }
-
 
 #ifdef  QPHIX_DO_COMMS
       while(!comms->recv_queue.empty()) {
@@ -1778,10 +1945,11 @@ namespace QPhiX
             int tid=omp_get_thread_num();
 
             double bet=(d/2==3 ? (d%2==0 ? beta_t_b : beta_t_f) : beta_s);
-            completeFaceDirAChiMBDPsi(tid,comms->recvFromDir[d], res_out, u, bet, cb, d/2, d%2, 0);
-          }
+        completeFaceDirAChiMBDPsi(
+            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, 0);
         }
-        else comms->recv_queue.push(d);
+    } else
+      comms->recv_queue.push(d);
       } // end while
 
 #endif	// QPHIX_DO_COMMS

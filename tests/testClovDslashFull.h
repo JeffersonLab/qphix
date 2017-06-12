@@ -3,30 +3,29 @@
 
 #include "unittest.h"
 
-enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
+#include "prec.h"
 
 #include <qphix/qphix_cli_args.h>
 using namespace QPhiX;
 
-class testClovDslashFull : public TestFixture { 
-public: 
- testClovDslashFull(const QPhiXCLIArgs& GeomArgs_, bool c12, Prec precision_) :
-	 By(GeomArgs_.getBy()),
-	 Bz(GeomArgs_.getBz()),
-	 NCores(GeomArgs_.getNCores()),
-	 Sy(GeomArgs_.getSy()),
-	 Sz(GeomArgs_.getSz()),
-	 PadXY(GeomArgs_.getPxy()),
-	 PadXYZ(GeomArgs_.getPxyz()),
-	 MinCt(GeomArgs_.getMinCt()),
-	 N_simt(Sy*Sz), compress12(c12), precision(precision_), GeomArgs(GeomArgs_)  {}
+class testClovDslashFull : public TestFixture
+{
+ public:
+  testClovDslashFull(const QPhiXCLIArgs &GeomArgs_, bool c12, Prec precision_)
+      : By(GeomArgs_.getBy()), Bz(GeomArgs_.getBz()), NCores(GeomArgs_.getNCores()),
+        Sy(GeomArgs_.getSy()), Sz(GeomArgs_.getSz()), PadXY(GeomArgs_.getPxy()),
+        PadXYZ(GeomArgs_.getPxyz()), MinCt(GeomArgs_.getMinCt()), N_simt(Sy * Sz),
+        compress12(c12), precision(precision_), GeomArgs(GeomArgs_)
+  {
+  }
 
   // Toplevel test function wrapper
-  void run(void); 
+  void run(void);
+
  private:
   // Templated test function
-  template<typename FT, int V, int S, bool compress, typename U, typename Phi>
-    void runTest(void);
+  template <typename FT, int V, int S, bool compress, typename U, typename Phi>
+  void runTest(void);
 
   const int By;
   const int Bz;

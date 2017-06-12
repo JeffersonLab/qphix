@@ -77,15 +77,9 @@ double tmp_3_im = 0.0;
 double tmp_4_re = 0.0;
 double tmp_4_im = 0.0;
 double zero = 0.0;
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+0) ), _MM_HINT_T1);
-
 zero = 0.0;
 double beta_vec = 0.0;
 beta_vec = (*(&beta));
-
- _mm_prefetch((const char *)( ((inbuf)+0) ), _MM_HINT_T0);
-
- _mm_prefetch((const char *)( ((inbuf)+8) ), _MM_HINT_T0);
 
 
 out_S0_C0_RE = *(((*oBase)[0][0][0] + offs[0]));
@@ -237,8 +231,6 @@ ub_S0_C1_IM = u_01_re * b_S0_C0_IM;
 ub_S0_C1_IM = ((u_01_im * b_S0_C0_RE) + ub_S0_C1_IM);
 ub_S0_C1_RE = ((u_11_re * b_S0_C1_RE) + ub_S0_C1_RE);
 ub_S0_C1_RE = ub_S0_C1_RE - (u_11_im * b_S0_C1_IM);
- _mm_prefetch((const char *)( (((inbuf) + hsprefdist)+8) ), _MM_HINT_T1);
-
 ub_S0_C1_IM = ((u_11_re * b_S0_C1_IM) + ub_S0_C1_IM);
 ub_S0_C1_IM = ((u_11_im * b_S0_C1_RE) + ub_S0_C1_IM);
 ub_S0_C1_RE = ((u_21_re * b_S0_C2_RE) + ub_S0_C1_RE);

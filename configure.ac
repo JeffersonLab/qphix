@@ -9,7 +9,7 @@ AC_PROG_CXX
 AC_PROG_RANLIB
 
 dnl initialise automake
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 dnl put defines in include sse/config.h
 AC_CONFIG_HEADERS([include/qphix/qphix_config_internal.h])
@@ -26,7 +26,9 @@ AC_ARG_ENABLE(parallel-arch,
 
 AC_ARG_ENABLE(testing,
    AC_HELP_STRING([--enable-testing],
-   [Enable make check to automatically run tests, rather than just build them]),   [ do_tests="${enableval}" ]
+   [ Build the tests (takes quite some time) ]),
+   [ build_tests=${enableval} ],
+   [ build_tests=no ]
 )
 
 AC_ARG_ENABLE(soalen,
@@ -127,6 +129,15 @@ AC_ARG_ENABLE(openmp,
    [ omp_enabled="no" ]
 )
 
+AC_ARG_ENABLE(extramessages,
+   AC_HELP_STRING(
+    [--enable-extra-messages],
+    [Emit extra messages during the compilation that indicate which preprocessor branches are used]
+   ),
+   [ extra_messages_enabled="yes" ],
+   [ extra_messages_enabled="no" ]
+)
+
 
 dnl with QDP -- QDP will override everything else
 dnl since a parallel QDP will know its architecture
@@ -152,7 +163,7 @@ AC_ARG_WITH(qdp,
 AC_ARG_ENABLE(proc,
    AC_HELP_STRING(
 	[--enable-proc=proc],
-	[ Build code specializations for proc. proc=NONE,SSE,AVX,AVX2,AVX512,MIC ]
+	[ Build code specializations for proc. proc=SCALAR,SSE,AVX,AVX2,AVX512,MIC ]
    ),
    [ proc="${enable_proc}" ],
    [ proc="NONE"]
@@ -192,6 +203,12 @@ if test "x${qdpalloc}x" = "xyesx"; then
 	AC_MSG_NOTICE([Will Use QDP++ Pool Allocator ])
 	AC_DEFINE(QPHIX_USE_QDPXX_ALLOC, [1], [ Use QDP Allocator ])
 fi
+
+if test "${extra_messages_enabled}" = "yes"; then
+	AC_MSG_NOTICE([Will emit pragma message ])
+	AC_DEFINE(QPHIX_EMIT_MESSAGES, [1], [ Emit compilation messages ])
+fi
+
 
 echo "Value of QDPXX_GIVEN is '${QDPXX_GIVEN}'"
 echo "Value of QDPXX_HOME is '${QDPXX_HOME}'"
@@ -522,6 +539,13 @@ yes|YES)
 ;;
 esac
 
+if test "x${build_tests}x" = "xyesx"; then
+  AC_MSG_NOTICE([Building tests])
+else
+  AC_MSG_NOTICE([Not building tests])
+fi
+AM_CONDITIONAL(QPHIX_BUILD_TESTS, [ test "${build_tests}" = "yes" ])
+
 AM_CONDITIONAL(QPHIX_BUILD_CLOVER, [ test "x${build_clover}x" = "xyesx" ])
 AM_CONDITIONAL(QPHIX_BUILD_QDPJIT_CLOVER, [ test "x${build_qdpjit_clover}x" = "xyesx" ])
 AM_CONDITIONAL(QPHIX_BUILD_QDP_CLOVER, [ test "x${build_qdpjit_clover}x" = "xnox" ])
@@ -547,4 +571,6 @@ AC_CONFIG_FILES(include/qphix/sse/Makefile)
 AC_CONFIG_FILES(include/qphix/mic/Makefile)
 AC_CONFIG_FILES(lib/Makefile)
 AC_CONFIG_FILES(tests/Makefile)
+AC_CONFIG_FILES(tests-gtest/Makefile)
+AC_CONFIG_FILES(tests-gtest/gtest/Makefile)
 AC_OUTPUT

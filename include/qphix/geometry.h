@@ -8,13 +8,15 @@
 #include <stdexcept>
 #include <iostream>
 
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
+    defined(QPHIX_AVX512_SOURCE)
 #include <immintrin.h>
 #endif
 
 using namespace std;
 
-namespace QPhiX {
+namespace QPhiX
+{
 
 	struct CorePhase {
 		int Ct;
@@ -25,30 +27,44 @@ namespace QPhiX {
 	typedef unsigned short half;
   
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-  inline float cvtHalf2Float(half val) {
+inline float cvtHalf2Float(half val)
+{
     float ret;
   #if defined(QPHIX_MIC_SOURCE)
-    _mm512_mask_packstorelo_ps(&ret, 0x1, _mm512_mask_extloadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
+  _mm512_mask_packstorelo_ps(
+      &ret,
+      0x1,
+      _mm512_mask_extloadunpacklo_ps(
+          _mm512_undefined_ps(), 0x1, &val, _MM_UPCONV_PS_FLOAT16, _MM_HINT_NONE));
   #elif defined(QPHIX_AVX512_SOURCE)
   _mm512_mask_storeu_ps(&ret, 0x1, _mm512_cvtph_ps(_mm256_set1_epi16(val)) );
-  #endif
+#endif // defined(QPHIX_MIC_SOURCE)
     return ret;
   }
   
-  inline half cvtFloat2Half(float val) {
+inline half cvtFloat2Half(float val)
+{
     half ret;
   #if defined(QPHIX_MIC_SOURCE)
-    _mm512_mask_extpackstorelo_ps(&ret, 0x1, _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val), _MM_DOWNCONV_PS_FLOAT16, _MM_HINT_NONE);
+  _mm512_mask_extpackstorelo_ps(
+      &ret,
+      0x1,
+      _mm512_mask_loadunpacklo_ps(_mm512_undefined_ps(), 0x1, &val),
+      _MM_DOWNCONV_PS_FLOAT16,
+      _MM_HINT_NONE);
   #elif defined(QPHIX_AVX512_SOURCE)
-    //ret = _mm256_extract_epi16( _mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT), 0);
+  // ret = _mm256_extract_epi16( _mm512_cvt_roundps_ph(_mm512_set1_ps(val),
+  // _MM_FROUND_TO_NEAREST_INT), 0);
     unsigned temp;
-    _mm512_mask_storeu_epi32(&temp, 0x01, _mm512_castsi256_si512(_mm512_cvt_roundps_ph(_mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT)) );
+  _mm512_mask_storeu_epi32(&temp,
+                           0x01,
+                           _mm512_castsi256_si512(_mm512_cvt_roundps_ph(
+                               _mm512_set1_ps(val), _MM_FROUND_TO_NEAREST_INT)));
     ret = (half)temp;
-  #endif
+#endif // defined(QPHIX_MIC_SOURCE)
     return ret;
   }
   
-
   // rep: cast 'in' of type T2 into a 'T1' and return it. 
   template <typename T1, typename T2>
   T1 rep(const T2& in) 
@@ -60,14 +76,14 @@ namespace QPhiX {
       else if(sizeof(T2) == 2) // we are converting half to float/double
   return (T1)cvtHalf2Float(in);
       else
-  return (T1)in; // we are converting between float and double so just cast is enough
-    }
-    else {
+      return (T1)in; // we are converting between float and double so just
+    // cast is enough
+  } else {
       return static_cast<T1>(in);  // both T1 and T2 are same
     }
   }
   
-#else 
+#else // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
   // rep: cast 'in' of type T2 into a 'T1' and return it. 
   template <typename T1, typename T2>
@@ -76,18 +92,42 @@ namespace QPhiX {
     return (T1)(in); 
   }
  
+#endif // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
-#endif
+template <typename FT>
+char const *type_name();
 
+template <>
+char const *type_name<double>()
+{
+  return "double";
+}
+
+template <>
+char const *type_name<float>()
+{
+  return "float";
+}
+
+template <>
+char const *type_name<half>()
+{
+  return "half";
+}
 
 	template<typename T, int V, int S, const bool compressP>
-	class Geometry {
+class Geometry
+{
 	public:
 		// Later change this to depend on compressP
 		typedef T  FourSpinorBlock[3][4][2][S];
 		typedef T  TwoSpinorBlock[3][2][2][V];
 		typedef T  SU3MatrixBlock[8][ ( compressP ? 2 : 3 ) ][3][2][V];
 
+  typedef T FT;
+  int constexpr static veclen = V;
+  int constexpr static soalen = S;
+  bool constexpr static compress12 = compressP;
 
 		struct CloverBlock {
       /**
@@ -117,7 +157,8 @@ namespace QPhiX {
       are in spin-space. Each of those, then has the following indices.
 
       - Combined spin and color index, length 6. The color part is faster, so
-      let the combined index be `sc`. Then the (two-spinor) spin index is computed with `s2 =
+    let the combined index be `sc`. Then the (two-spinor) spin index is
+    computed with `s2 =
       sc / 3` and the color index with `c = sc % 3`. A four-spinor spin index
       would be `s4 = 2 * block + s2`, where `block` is either 0 or 1, depending
       on whether `block1` or `block2` has been chosen.
@@ -130,8 +171,10 @@ namespace QPhiX {
       - SIMD vector, iterates through the \$f x \f$ coordinate, length `V`.
       */
 		struct FullCloverBlock {
-			T block1[6][6][2][V];  // Full complex, non-hermitian clover block 1
-			T block2[6][6][2][V];  // Full complex, non-hermitian clover block 2
+    /// Full complex, non-hermitian clover block 1
+    T block1[6][6][2][V];
+    /// Full complex, non-hermitian clover block 2
+    T block2[6][6][2][V];
 		};
 
 		Geometry(const int latt_size[],
@@ -143,7 +186,9 @@ namespace QPhiX {
 		int PadXY_,
 		int PadXYZ_,
 		int MinCt_)
-			: Nd(4),  By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_*Sz_),  num_threads(NCores_*Sy_*Sz_)
+      : Nd(4), By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_),
+        PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_ * Sz_),
+        num_threads(NCores_ * Sy_ * Sz_)
 		{   
 			Nx_ = latt_size[0];
 			Ny_ = latt_size[1];
@@ -158,10 +203,12 @@ namespace QPhiX {
       }
       
 			nvecs_ = Nxh()/ S;
-			if (Nxh()% S != 0) nvecs_++;
+    if (Nxh() % S != 0)
+      nvecs_++;
       
 			if ( V % S != 0 ) { 
-				cerr << "Error: Geometry constructor: SOALEN="<< S <<" does not divide V=" << V << endl;
+      cerr << "Error: Geometry constructor: SOALEN=" << S
+           << " does not divide V=" << V << endl;
 				abort();
 			}
 			ngy_ = V/S;
@@ -170,7 +217,6 @@ namespace QPhiX {
 			Pxy = (nvecs_*Ny_+ PadXY);
 			Pxyz = (Pxy*Nz_+ PadXYZ);
       
-       
 			// Allos sizes 
 			spinor_bytes = (Pxyz * Nt_ + 1)*sizeof(FourSpinorBlock);
 			gauge_bytes = ((Pxyz*Nt_*S)/V)*sizeof(SU3MatrixBlock);
@@ -190,30 +236,82 @@ namespace QPhiX {
 				CorePhase& p = getCorePhase(n_phases);
 				p.Ct = (ctu <= 4 ? ctu : ctd)*MinCt;
 				p.Cyz = num_cores / p.Ct;
-				if(p.Cyz > rem) p.Cyz = rem;
+      if (p.Cyz > rem)
+        p.Cyz = rem;
 				p.startBlock = stblk;
 				stblk += p.Cyz;
 				rem -= p.Cyz;
-				//	masterPrintf("Phase %d: Cyz = %d Ct = %d, start = %d\n", n_phases, p.Cyz, p.Ct, p.startBlock);
+      //	masterPrintf("Phase %d: Cyz = %d Ct = %d, start = %d\n",
+      // n_phases, p.Cyz, p.Ct, p.startBlock);
 				n_phases++;
 			}
-		}
     
+    masterPrintf("Constructed a new Geometry object.\n"
+                 "  Template parameters are:\n"
+                 "    FT          %s\n"
+                 "    veclen      %d\n"
+                 "    soalen      %d\n"
+                 "    compress12  %s\n",
+                 type_name<T>(),
+                 veclen,
+                 soalen,
+                 compress12 ? "true" : "false");
+    masterPrintf(
+        "  The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n"
+        "    Spinor:     %10ld\n"
+        "    Gauge:      %10ld\n"
+        "    Clover:     %10ld\n"
+        "    FullClover: %10ld\n",
+        spinor_bytes / 1024 / 1024,
+        gauge_bytes / 1024 / 1024,
+        clover_bytes / 1024 / 1024,
+        full_clover_bytes / 1024 / 1024);
+
+    masterPrintf("  Geometry properties are:\n");
+    masterPrintf("    Local Lattice size %d %d %d %d\n", Nx_, Ny_, Nz_, Nt_);
+    masterPrintf("    number of vectors  %d\n", nvecs_);
+    masterPrintf("    Blocking           %d %d\n", By, Bz);
+    masterPrintf("    nGY                %d\n", ngy_);
+    masterPrintf("    PadXY PadXYZ       %d %d\n", PadXY, PadXYZ);
+    masterPrintf("    MinCt              %d\n", MinCt);
+    masterPrintf("    Phases             %d\n", n_phases);
+    masterPrintf("  Threading options are:\n");
+    masterPrintf("    Cores              %d\n", num_cores);
+    masterPrintf("    Sy Sz              %d %d\n", Sy, Sz);
+    masterPrintf("    Total threads      %d\n", num_threads);
+  }
     
 		~Geometry() {}
 
-		inline   int Nxh() const   { return Nxh_; } // Keep
-		inline   int Nx()  const   { return Nx_; } // Keep
-		inline   int Ny()  const   { return Ny_; } // Keep
-		inline   int Nz()  const   { return Nz_; } // Keep
-		inline   int Nt()  const   { return Nt_; }  //Keep
-		inline int nVecs() const { return nvecs_; }
-		inline int nGY() const { return ngy_; }
+  int Nxh() const { return Nxh_; }
+  int Nx() const { return Nx_; }
+  int Ny() const { return Ny_; }
+  int Nz() const { return Nz_; }
+  int Nt() const { return Nt_; }
+  int nVecs() const { return nvecs_; }
+  int nGY() const { return ngy_; }
+
+  int getBy() const { return By; }
+  int getBz() const { return Bz; }
+  int getSy() const { return Sy; }
+  int getSz() const { return Sz; }
+  int getPadXY() const { return PadXY; }
+  int getPadXYZ() const { return PadXYZ; }
+  int getPxy() const { return Pxy; }
+  int getPxyz() const { return Pxyz; }
+  int getNSIMT() const { return nsimt; }
+  int getNumThreads() const { return num_threads; }
+  int getNumCores() const { return num_cores; }
+  int getMinCt() const { return MinCt; }
+  int getVolCB() const { return Nxh_ * Ny_ * Nz_ * Nt_; }
+  int getNumPhases() const { return n_phases; }
 
     size_t get_num_blocks () const {
         return Nt_ * Nz_ * Ny_ * nvecs_;
     }
 
+  CorePhase &getCorePhase(int i) { return phase[i]; }
+  const CorePhase &getCorePhase(int i) const { return phase[i]; }
 
 		/*! \brief Checkerboarded FourSpinor Allocator
 		*
@@ -245,8 +343,6 @@ namespace QPhiX {
 			return ret_val+1;
 		}
 
-
-    
 		void free(FourSpinorBlock* p) 
 		{
 			FourSpinorBlock* freeme=p-1;
@@ -285,10 +381,7 @@ namespace QPhiX {
 			return ret_val;
 		}
 
-		void free(SU3MatrixBlock *p)
-		{
-			BUFFER_FREE(p, gauge_bytes);
-		}
+  void free(SU3MatrixBlock *p) { BUFFER_FREE(p, gauge_bytes); }
 
 		CloverBlock* allocCBClov()
 		{
@@ -317,14 +410,12 @@ namespace QPhiX {
 			return ret_val;
 		}
 
-		void free(CloverBlock* p) 
-		{
-			BUFFER_FREE(p,clover_bytes);
-		}
+  void free(CloverBlock *p) { BUFFER_FREE(p, clover_bytes); }
 
 		FullCloverBlock* allocCBFullClov()
 		{
-			FullCloverBlock *ret_val = (FullCloverBlock*) BUFFER_MALLOC(full_clover_bytes, 128);
+    FullCloverBlock *ret_val =
+        (FullCloverBlock *)BUFFER_MALLOC(full_clover_bytes, 128);
 			if ( ret_val == (FullCloverBlock *)0x0 ) {
 				masterPrintf("Failed to allocate FullCloverBlock\n");
 				abort();
@@ -349,31 +440,9 @@ namespace QPhiX {
 			return ret_val;
 		}
 
-		void free(FullCloverBlock* p)
-		{
-			BUFFER_FREE(p, full_clover_bytes);
-		}
+  void free(FullCloverBlock *p) { BUFFER_FREE(p, full_clover_bytes); }
 
-
-		int getBy() const { return By; }
-		int getBz() const { return Bz; }
-		int getSy() const { return Sy; }
-		int getSz() const { return Sz; }
-		int getPadXY() const { return PadXY; }
-		int getPadXYZ() const { return PadXYZ; }
-		int getPxy() const { return Pxy; }
-		int getPxyz() const { return Pxyz; }
-		int getNSIMT() const { return nsimt; }
-		int getNumThreads() const { return num_threads; }
-		int getNumCores() const { return num_cores; }
-		int getMinCt() const { return MinCt; }
-		int getVolCB() const { return Nxh_*Ny_*Nz_*Nt_ ; }
-		CorePhase& getCorePhase(int i) { return phase[i]; }
-		const CorePhase& getCorePhase(int i) const { return phase[i]; }
-		int getNumPhases() const { return n_phases; }
 	private:
-    
-
 		int Nxh_;
 		int Nx_;
 		int Ny_;
@@ -402,9 +471,6 @@ namespace QPhiX {
 		const int num_threads;
 		const int num_cores;
 
-
-
-
 		int nvecs_;
 		int ngy_;
 
@@ -418,6 +484,107 @@ namespace QPhiX {
 		size_t clover_bytes;
 		size_t full_clover_bytes;
 	};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class FourSpinorHandle
+{
+ public:
+  typedef Geometry<FT, veclen, soalen, compress12> Geom;
+  typedef typename Geom::FourSpinorBlock ValueType;
+
+  FourSpinorHandle(Geom &geom) : value(geom.allocCBFourSpinor()), geom(geom) {}
+
+  ~FourSpinorHandle() { geom.free(value); }
+
+  ValueType *get() const { return value; }
+
+ private:
+  ValueType *value;
+  Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+FourSpinorHandle<FT, veclen, soalen, compress12>
+makeFourSpinorHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+  return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class GaugeHandle
+{
+ public:
+  typedef Geometry<FT, veclen, soalen, compress12> Geom;
+  typedef typename Geom::SU3MatrixBlock ValueType;
+
+  GaugeHandle(Geom &geom) : value(geom.allocCBGauge()), geom(geom) {}
+
+  ~GaugeHandle() { geom.free(value); }
+
+  ValueType *get() const { return value; }
+
+ private:
+  ValueType *value;
+  Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+GaugeHandle<FT, veclen, soalen, compress12>
+makeGaugeHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+  return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class CloverHandle
+{
+ public:
+  typedef Geometry<FT, veclen, soalen, compress12> Geom;
+  typedef typename Geom::CloverBlock ValueType;
+
+  CloverHandle(Geom &geom) : value(geom.allocCBClov()), geom(geom) {}
+
+  ~CloverHandle() { geom.free(value); }
+
+  ValueType *get() const { return value; }
+
+ private:
+  ValueType *value;
+  Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+CloverHandle<FT, veclen, soalen, compress12>
+makeCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+  return {geom};
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+class FullCloverHandle
+{
+ public:
+  typedef Geometry<FT, veclen, soalen, compress12> Geom;
+  typedef typename Geom::FullCloverBlock ValueType;
+
+  FullCloverHandle(Geom &geom) : value(geom.allocCBFullClov()), geom(geom) {}
+
+  ~FullCloverHandle() { geom.free(value); }
+
+  ValueType *get() const { return value; }
+
+ private:
+  ValueType *value;
+  Geom &geom;
+};
+
+template <typename FT, int veclen, int soalen, bool compress12>
+FullCloverHandle<FT, veclen, soalen, compress12>
+makeFullCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
+{
+  return {geom};
+}
+
 } // Namespace
 
 #endif

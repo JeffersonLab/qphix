@@ -6,11 +6,18 @@
 
 #include <immintrin.h>
 
-namespace QPhiX { 
+namespace QPhiX
+{
 
 template<>
-inline
-  void xmyNorm2Spinor<float,16>(float*   res, float*   x, float*   y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
+inline void xmyNorm2Spinor<float, 16>(float *res,
+                                      float *x,
+                                      float *y,
+                                      double &n2res,
+                                      int n,
+                                      int n_cores,
+                                      int n_simt,
+                                      int n_blas_simt)
 {
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
   double norm2res=0 __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
@@ -23,8 +30,6 @@ inline
     // Self ID
     int tid = omp_get_thread_num();
 
-    
-    
     int cid = tid / n_simt;
     int smtid = tid - n_simt*cid;
     int bthreads = n_cores*n_blas_simt;
@@ -32,11 +37,12 @@ inline
     
     if ( smtid < n_blas_simt ) { 
       int btid = smtid  + n_blas_simt*cid;
-      for(int i=0; i < 8;i++) norm_array[btid][i] = 0; // Every thread zeroes      
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
       // No of vectors per thread
       int n_per_thread= nvec / bthreads;
-      if ( nvec % bthreads != 0 ) n_per_thread++;
-
+      if (nvec % bthreads != 0)
+        n_per_thread++;
 
       int low=btid*n_per_thread ;
       int next = (btid + 1)*n_per_thread;
@@ -75,7 +81,6 @@ inline
 	permute = _mm512_permute4f128_ps(resvec, _MM_PERM_DCDC);
 	_mm512_storenrngo_ps(&res[i], resvec);
 
-
 	hi_part = _mm512_cvtpslo_pd(resvec);
 	local_norm = _mm512_fmadd_pd( hi_part, hi_part, local_norm);
 
@@ -85,7 +90,6 @@ inline
       
       _mm512_store_pd( &norm_array[btid][0], local_norm );
     }
-
  }
 
  __m512d accum=_mm512_setzero_pd();
@@ -100,8 +104,16 @@ inline
 }
 
  template<>
-inline
-void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, double& cp, float*    x, float*   p,int n, int n_cores, int n_simt, int n_blas_simt) 
+inline void rmammpNorm2rxpap<float, 16>(float *r,
+                                        const float ar,
+                                        float *mmp,
+                                        double &cp,
+                                        float *x,
+                                        float *p,
+                                        int n,
+                                        int n_cores,
+                                        int n_simt,
+                                        int n_blas_simt)
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -117,8 +129,6 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
     // Self ID
     int tid = omp_get_thread_num();
 
-    
-    
     int cid = tid / n_simt;
     int smtid = tid - n_simt*cid;
     int bthreads = n_cores*n_blas_simt;
@@ -126,11 +136,12 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
     
     if ( smtid < n_blas_simt ) { 
       int btid = smtid  + n_blas_simt*cid;
-      for(int i=0; i < 8;i++) norm_array[btid][i] = 0; // Every thread zeroes      
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
       // No of vectors per thread
       int n_per_thread= nvec / bthreads;
-      if ( nvec % bthreads != 0 ) n_per_thread++;
-
+      if (nvec % bthreads != 0)
+        n_per_thread++;
 
       int low=btid*n_per_thread ;
       int next = (btid + 1)*n_per_thread;
@@ -147,12 +158,12 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
       __m512 resvec;
       __m512 permute;
 
-      __m512 arvec = _mm512_extload_ps(&ar, _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+      __m512 arvec = _mm512_extload_ps(
+          &ar, _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
       __m512 rvec;
       __m512 mmpvec;
       __m512 xvec;
       __m512 pvec;
-
 
       // L1dist is the distance in cache-lines to fetch ahead from L1
       //      const int L1dist = 1;
@@ -161,7 +172,6 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
       for(int i = low; i < hi; i+=16) {
 	_mm_prefetch((const char *)( &x[i + L2dist*384]), _MM_HINT_T1);
 	_mm_prefetch((const char *) (&p[i + L2dist*384]), _MM_HINT_T1);
-
 
 	// x[i] += ar * p[i]
 	xvec = _mm512_load_ps(&x[i]);
@@ -179,19 +189,16 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
 	rvec = _mm512_fnmadd_ps( arvec, mmpvec, rvec);
 	_mm512_store_ps( &r[i], rvec);
 
-
 	permute = _mm512_permute4f128_ps(rvec, _MM_PERM_DCDC);
 	lo_part = _mm512_cvtpslo_pd(rvec);
 	local_norm = _mm512_fmadd_pd( lo_part, lo_part, local_norm);
 
 	hi_part = _mm512_cvtpslo_pd(permute);
 	local_norm = _mm512_fmadd_pd( hi_part, hi_part, local_norm);
-
       }
       
       _mm512_store_pd( &norm_array[btid][0], local_norm );
     }
-
  }
 
  __m512d accum=_mm512_setzero_pd();
@@ -205,10 +212,9 @@ void rmammpNorm2rxpap<float,16>(float*   r, const float ar, float*    mmp, doubl
   cp = norm2res;
 }
 
-
 template<>
-inline
-double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n_blas_simt)
+inline double
+norm2Spinor<float, 16>(float *res, int n, int n_cores, int n_simt, int n_blas_simt)
 {
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -223,7 +229,6 @@ double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n
     // Self ID
     int tid = omp_get_thread_num();
 
-    
     int cid = tid / n_simt;
     int smtid = tid - n_simt*cid;
     int bthreads = n_cores*n_blas_simt;
@@ -231,11 +236,13 @@ double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n
     
     if ( smtid < n_blas_simt ) { 
       int btid = smtid  + n_blas_simt*cid;
-      for(int i=0; i < 8; i++) norm_array[btid][i] = 0; // Every thread zeroes      
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
       // Divide N by the number cores
       int n_per_thread= nvec / bthreads;
       
-      if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
       int low=btid*n_per_thread ;
       int next = (btid + 1)*n_per_thread;
@@ -271,12 +278,9 @@ double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n
 	
 	hi_part = _mm512_cvtpslo_pd(permute);
 	local_norm = _mm512_fmadd_pd( hi_part, hi_part, local_norm);
-	
       }
       _mm512_store_pd( &norm_array[btid][0], local_norm );
-      
     }
-    
   }
   
   __m512d accum=_mm512_setzero_pd();
@@ -289,12 +293,15 @@ double norm2Spinor<float,16>(float*   res, int n, int n_cores, int n_simt, int n
   return norm2res;
 }
 
-
-
 // Messed about with
 template<>
-inline
-void aypx<float,16>(float a, float*   x, float*   y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+inline void aypx<float, 16>(float a,
+                            float *x,
+                            float *y,
+                            int n,
+                            int n_cores,
+                            int threads_per_core,
+                            int blas_threads_per_core)
 {
   const int veclen = 16;
 #pragma omp parallel
@@ -307,7 +314,8 @@ void aypx<float,16>(float a, float*   x, float*   y, int n, int n_cores, int thr
     int nvec = n/veclen;
     
     if ( smtid < blas_threads_per_core ) { 
-      __m512 avec = _mm512_extload_ps(&a, _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
+      __m512 avec = _mm512_extload_ps(
+          &a, _MM_UPCONV_PS_NONE, _MM_BROADCAST_1X16, _MM_HINT_NONE);
 
       int btid = smtid  + blas_threads_per_core*cid;
       
@@ -315,7 +323,8 @@ void aypx<float,16>(float a, float*   x, float*   y, int n, int n_cores, int thr
       int n_per_thread= nvec / bthreads;
       
       // Add extra vector
-      if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
       // low vector
       int low=btid*n_per_thread ;
@@ -341,15 +350,18 @@ void aypx<float,16>(float a, float*   x, float*   y, int n, int n_cores, int thr
 	_mm512_store_ps(&y[i], yvec);
       }
     }
-
   }
 }
 
 #if 1
 // Messed about with
 template<>
-inline
-void copySpinor<float,16>(float*   res, float*   src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+inline void copySpinor<float, 16>(float *res,
+                                  float *src,
+                                  int n,
+                                  int n_cores,
+                                  int threads_per_core,
+                                  int blas_threads_per_core)
 {
   const int veclen = 16;
 #pragma omp parallel
@@ -369,7 +381,8 @@ void copySpinor<float,16>(float*   res, float*   src, int n, int n_cores, int th
       int n_per_thread= nvec / bthreads;
       
       // Add extra vector
-      if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
       // low vector
       int low=btid*n_per_thread ;
@@ -391,7 +404,6 @@ void copySpinor<float,16>(float*   res, float*   src, int n, int n_cores, int th
 	_mm512_storenrngo_ps(&res[i],vec);
       }
     }
-
   }
 }
 #endif
@@ -399,4 +411,3 @@ void copySpinor<float,16>(float*   res, float*   src, int n, int n_cores, int th
 } // Namespace
 
 #endif
-

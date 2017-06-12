@@ -16,11 +16,11 @@ public:
     static constexpr uint8_t num_flav = 1;
 
     virtual void
-    operator()(FourSpinorBlock *res, const FourSpinorBlock *in, int isign) = 0;
+    operator()(FourSpinorBlock *res, const FourSpinorBlock *in, int isign int target_cb = 1) const = 0;
 
 #ifdef __INTEL_COMPILER
     virtual void
-    operator()(FourSpinorBlock *res[1], FourSpinorBlock *const in[1], int isign)
+    operator()(FourSpinorBlock *res[1], FourSpinorBlock *const in[1], int isign, int target_cb = 1) const
     {
         (*this)(res[0], in[0], isign);
     };
@@ -28,7 +28,7 @@ public:
 
     virtual void operator()(FourSpinorBlock *res[1],
                             const FourSpinorBlock *const in[1],
-                            int isign)
+                            int isign, int target_cb = 1) const
     {
         (*this)(res[0], in[0], isign);
     };
@@ -55,7 +55,7 @@ public:
 
     virtual void operator()(FourSpinorBlock *res[2],
                             const FourSpinorBlock *const in[2],
-                            int isign) = 0;
+                            int isign, int target_cb = 1) = 0;
 
     virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
 };

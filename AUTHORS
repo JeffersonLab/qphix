@@ -1,16 +1,1 @@
-Original Authors:
-
-Balint Joo, Jefferson Lab           email: bjoo AT jab.org
-Dhiraj D. Kalamkar, Intel Parallel Computing Labs, Bangalore, India   email: dhiraj.d.kalamkar AT intel.com
-Karthikeyan Vaidyanathan, Intel Parallel Computing Labs, Bangalore, India  email:  karthikeyan.vaidyanathan AT intel.com
-Mikhail Smelyanskiy, Intel Parallel Computing Labs, Santa Clara, USA   email: mikhail.smelianskiy AT intel.com
-
-Contributors:
-*) Thorsten Kurth (LBL) 
-*) Aaron Walden (ODU) - for integrating the AVX512 output from the code-generator and testing in Intel SDE
-
-*) Mario Schroeck (INFN) (mario.schroeck AT roma3.infn.it) and Alexei Strelchenko (FNAL, astrel AT fnal.gov) - for work on the Twisted Mass Fermion (qphix-tmf) branch
-
-*) Diptorup Deb, RENCI University of North Carolina Chapel Hill (diptorup AT cs.unc.edu)-is working on portability to other compilers
-
-*) Thanks to Kiran Pamnany, Intel Parallel Computing Labs, Bangalore, India  for the MIC Barrier routine (Barrier_mic.h) email: kiran.pamndany AT intel.com
+See AUTHORS.markdown.

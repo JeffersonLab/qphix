@@ -31,28 +31,23 @@ endif
 check_PROGRAMS += time_twm_clover
 endif
 
-if QPHIX_BUILD_ND_TWISTED_MASS
-if QPHIX_BUILD_WITH_QDP
-check_PROGRAMS += t_ndtm_dslash
-endif
-check_PROGRAMS += time_ndtm_noqdp
-endif
-
 if QPHIX_BUILD_ND_TWISTED_MASS_WITH_CLOVER
 if QPHIX_BUILD_WITH_QDP
-check_PROGRAMS += t_ndtm_clover t_ndtm_vs_tm_clover t_ndtm_invert_from_file
+check_PROGRAMS += t_ndtm_vs_tm_clover t_ndtm_invert_from_file
 endif
-check_PROGRAMS += time_ndtm_clover
 endif
 
+if QPHIX_BUILD_TESTS
 bin_PROGRAMS = $(check_PROGRAMS)
+endif
 
 FRAMEWORK_SRCS =  unittest.h \
 	dslashm_w.h \
 	dslashm_w.cc \
 	reunit.h \
 	invbicgstab_test.h \
-	reunit.cc
+	reunit.cc \
+	cli_args.cc
 
 ###############################################################################
 #                                Plain Wilson                                 #
@@ -63,12 +58,11 @@ t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testDslashFull.cc \
 	t_dslash.cc
 
-
-
 time_dslash_noqdp_SOURCES= \
 	time_dslash_noqdp.cc \
 	timeDslashNoQDP.h \
-	timeDslashNoQDP.cc
+	timeDslashNoQDP.cc \
+	cli_args.cc
 
 t_minvcg_SOURCES = $(FRAMEWORK_SRCS) \
 	testMInvCG.h \
@@ -110,7 +104,8 @@ t_clov_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
 time_clov_noqdp_SOURCES= \
 	time_clov_noqdp.cc \
 	timeClovNoQDP.h \
-	timeClovNoQDP.cc
+	timeClovNoQDP.cc \
+	cli_args.cc
 
 t_clov_dslash_DEPENDENCIES = build_lib
 t_clov_invert_from_file_DEPENDENCIES = build_lib
@@ -126,7 +121,9 @@ if QPHIX_BUILD_TWISTED_MASS
 t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testTWMDslashFull.h \
 	testTWMDslashFull.cc \
-	t_twm_dslash.cc
+	t_twm_dslash.cc \
+	mesfield.h \
+	mesfield.cc
 
 time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 	time_twm_noqdp.cc \
@@ -136,7 +133,6 @@ time_twm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
 t_twm_dslash_DEPENDENCIES = build_lib
 time_twm_noqdp_DEPENDENCIES = build_lib
 endif
-
 
 if QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER
 

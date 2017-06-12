@@ -12,7 +12,8 @@
 
 #include <omp.h>
 
-namespace QPhiX { 
+namespace QPhiX
+{
 
   template<typename FT, int V, int S, bool compress>
   void copySpinor( typename Geometry<FT,V,S,compress>::FourSpinorBlock*   res,
@@ -21,7 +22,8 @@ namespace QPhiX {
 		   int n_blas_simt) 
   {
     CopyFunctor<FT,V,S,compress> f(res, src);
-    siteLoopNoReduction<FT,V,S,compress,CopyFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, CopyFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   /**
@@ -55,7 +57,8 @@ namespace QPhiX {
 		   int n_blas_simt) 
   {
     ZeroFunctor<FT,V,S,compress> f(res);
-    siteLoopNoReduction<FT,V,S,compress,ZeroFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, ZeroFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   template <typename FT, int V, int S, bool compress, uint8_t num_flav>
@@ -78,7 +81,8 @@ namespace QPhiX {
   {
     
     AXYFunctor<FT,V,S,compress> f(alpha, x,y);
-    siteLoopNoReduction<FT,V,S,compress, AXYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, AXYFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
   
   template<typename FT, int V, int S, bool compress>
@@ -89,7 +93,8 @@ namespace QPhiX {
 	    int n_blas_simt) 
   {
     AYPXFunctor<FT,V,S,compress> f(alpha, x,y );
-    siteLoopNoReduction<FT,V,S,compress, AYPXFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, AYPXFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   /**
@@ -126,7 +131,8 @@ namespace QPhiX {
   {
     
     AXPYFunctor<FT,V,S,compress> f(alpha, x,y );
-    siteLoopNoReduction<FT,V,S,compress, AXPYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, AXPYFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   /**
@@ -165,10 +171,10 @@ namespace QPhiX {
   {
     
     AXPBYFunctor<FT,V,S,compress> f(alpha, x, beta, y );
-    siteLoopNoReduction<FT,V,S,compress, AXPBYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, AXPBYFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
   
-
   template<typename FT, int V, int S, bool compress>
   void norm2Spinor(double& n2,
 		   const typename Geometry<FT,V,S,compress>::FourSpinorBlock* x,
@@ -176,7 +182,8 @@ namespace QPhiX {
 		   int n_blas_simt) 
   {
     Norm2Functor<FT,V,S,compress> f(x);
-    siteLoop1Reduction<FT,V,S,compress, Norm2Functor<FT,V,S,compress> >(f,n2,geom,n_blas_simt);
+  siteLoop1Reduction<FT, V, S, compress, Norm2Functor<FT, V, S, compress>>(
+      f, n2, geom, n_blas_simt);
   }
 
   /**
@@ -217,10 +224,9 @@ namespace QPhiX {
 		   int n_blas_simt) 
   {
     AXPYNorm2Functor<FT,V,S,compress> f(alpha,x,y);
-    siteLoop1Reduction<FT,V,S,compress, AXPYNorm2Functor<FT,V,S,compress> >(f,norm2y,geom,n_blas_simt);
+  siteLoop1Reduction<FT, V, S, compress, AXPYNorm2Functor<FT, V, S, compress>>(
+      f, norm2y, geom, n_blas_simt);
   } // End of Function. 
-
-
 
   template<typename FT, int V, int S, bool compress>
   void xmyNorm2Spinor(typename Geometry<FT,V,S,compress>::FourSpinorBlock*   res,
@@ -231,7 +237,8 @@ namespace QPhiX {
 		      int n_blas_simt) 
   {
     XMYNorm2Functor<FT,V,S,compress> f(res,x,y);
-    siteLoop1Reduction<FT,V,S,compress, XMYNorm2Functor<FT,V,S,compress> >(f,n2res,geom,n_blas_simt);
+  siteLoop1Reduction<FT, V, S, compress, XMYNorm2Functor<FT, V, S, compress>>(
+      f, n2res, geom, n_blas_simt);
   } // End of Function.
 
   /**
@@ -265,8 +272,7 @@ namespace QPhiX {
   }
 
   template<typename FT, int V, int S, bool compress>
-  void rmammpNorm2rxpap(
-			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
+void rmammpNorm2rxpap(typename Geometry<FT, V, S, compress>::FourSpinorBlock *r,
 			const double& ar, 
 			typename Geometry<FT,V,S,compress>::FourSpinorBlock*   mmp,
 			double& cp, 
@@ -276,7 +282,12 @@ namespace QPhiX {
 			int n_blas_simt) 
   {
     RmammpNorm2rxpapFunctor<FT,V,S,compress> f(ar,r,mmp,x,p);
-    siteLoop1Reduction<FT,V,S, compress, RmammpNorm2rxpapFunctor<FT,V,S,compress> >(f,cp,geom,n_blas_simt);
+  siteLoop1Reduction<FT,
+                     V,
+                     S,
+                     compress,
+                     RmammpNorm2rxpapFunctor<FT, V, S, compress>>(
+      f, cp, geom, n_blas_simt);
   } // End of Function.
 
   template <typename FT, int V, int S, bool compress, uint8_t num_flav>
@@ -310,7 +321,12 @@ namespace QPhiX {
 			int n_blas_simt) 
   {
     RichardsonRXUpdateNormRFunctor<FT,V,S,compress> f(x,r,delta_x,delta_r);
-    siteLoop1Reduction<FT,V,S,compress, RichardsonRXUpdateNormRFunctor<FT,V,S,compress> >(f,cp,geom,n_blas_simt);
+  siteLoop1Reduction<FT,
+                     V,
+                     S,
+                     compress,
+                     RichardsonRXUpdateNormRFunctor<FT, V, S, compress>>(
+      f, cp, geom, n_blas_simt);
   } // End of Function.
 
   /**
@@ -356,7 +372,8 @@ namespace QPhiX {
 		       int n_blas_simt) 
   {
     XMYFunctor<FT,V,S,compress> f(x,y);
-    siteLoopNoReduction<FT,V,S,compress, XMYFunctor<FT,V,S,compress> >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT, V, S, compress, XMYFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   } // End of Function.
 
   /**
@@ -394,7 +411,8 @@ namespace QPhiX {
 		      int n_blas_simt) 
   {
     InnerProductFunctor<FT,V,S,compress> f(x,y);
-    siteLoop2Reductions<FT,V,S,compress, InnerProductFunctor<FT, V, S,compress> >(f, results, geom, n_blas_simt);
+  siteLoop2Reductions<FT, V, S, compress, InnerProductFunctor<FT, V, S, compress>>(
+      f, results, geom, n_blas_simt);
   }
 
   /**
@@ -434,17 +452,22 @@ namespace QPhiX {
   }
 
   template<typename FT, int V, int S, bool compress>
-    void 
-    bicgstab_p_update(		     
+void bicgstab_p_update(
 		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
 		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   p,
 		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   v,
 		      double beta[2],
 		      double omega[2],
 		      const Geometry<FT,V,S,compress>& geom, 
-		      int n_blas_simt) {
+    int n_blas_simt)
+{
     BiCGStabPUpdateFunctor<FT,V,S,compress> f(r, p, v, beta, omega);
-    siteLoopNoReduction<FT,V,S,compress, BiCGStabPUpdateFunctor<FT,V,S,compress>  >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT,
+                      V,
+                      S,
+                      compress,
+                      BiCGStabPUpdateFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   /**
@@ -483,15 +506,20 @@ namespace QPhiX {
 
 
   template<typename FT, int V, int S, bool compress>
-    void 
-    bicgstab_s_update(
+void bicgstab_s_update(
 		      double alpha[2],		     
 		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   s,
 		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   v,
 		      const Geometry<FT,V,S,compress>& geom, 
-		      int n_blas_simt) {
+    int n_blas_simt)
+{
     BiCGStabSUpdateFunctor<FT,V,S,compress> f(alpha,s,v);
-    siteLoopNoReduction<FT,V,S,compress, BiCGStabSUpdateFunctor<FT,V,S,compress>  >(f,geom,n_blas_simt);
+  siteLoopNoReduction<FT,
+                      V,
+                      S,
+                      compress,
+                      BiCGStabSUpdateFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
   }
 
   /**
@@ -523,8 +551,7 @@ namespace QPhiX {
   }
 
   template<typename FT, int V, int S, bool compress>
-    void 
-    bicgstab_rxupdate(
+void bicgstab_rxupdate(
 		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   x,
 		      typename Geometry<FT,V,S,compress>::FourSpinorBlock*   r,
 		      const typename Geometry<FT,V,S,compress>::FourSpinorBlock*   t,
@@ -535,7 +562,12 @@ namespace QPhiX {
 		      const Geometry<FT,V,S,compress>& geom, 
 		      int n_blas_simt) {
     BiCGStabRXUpdateFunctor<FT,V,S,compress> f(x,r,t,p,omega,alpha);
-    siteLoop1Reduction<FT,V,S,compress, BiCGStabRXUpdateFunctor<FT,V,S,compress>  >(f,r_norm,geom,n_blas_simt);
+  siteLoop1Reduction<FT,
+                     V,
+                     S,
+                     compress,
+                     BiCGStabRXUpdateFunctor<FT, V, S, compress>>(
+      f, r_norm, geom, n_blas_simt);
   }
 
   /**
@@ -617,7 +649,8 @@ namespace QPhiX {
 	      for(int spin=0; spin < 4; spin++) { 
 		for(int x=0; x < SOut; x++) { 
 		  
-		  int ind_out = t*Pxyz_out+z*Pxy_out+y*nvecs_out+s; //((t*Nz+z)*Ny+y)*nvecs+s;
+                int ind_out = t * Pxyz_out + z * Pxy_out + y * nvecs_out +
+                              s; //((t*Nz+z)*Ny+y)*nvecs+s;
 		  int x_coord = s*SOut + x;
 		  
 		  int s_in  = x_coord / SIn;
@@ -627,19 +660,15 @@ namespace QPhiX {
 		    
 		  spinor_out[ind_out][col][spin][0][x] = 
 		    rep<FTOut, typename ArithType<FTOut>::Type >(
-			   rep<typename ArithType<FTOut>::Type,double>(scale_factor)
-			   * rep<typename ArithType<FTOut>::Type, FTIn >( spinor_in[ind_in][col][spin][0][x_in] )
-								 );
+                        rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
+                        rep<typename ArithType<FTOut>::Type, FTIn>(
+                            spinor_in[ind_in][col][spin][0][x_in]));
 
 		  spinor_out[ind_out][col][spin][1][x] = 
 		    rep<FTOut, typename ArithType<FTOut>::Type >(
-			   rep<typename ArithType<FTOut>::Type,double>(scale_factor)
-			   * rep<typename ArithType<FTOut>::Type, FTIn >( spinor_in[ind_in][col][spin][1][x_in] )
-								 );
-
-
-
-		  
+                        rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
+                        rep<typename ArithType<FTOut>::Type, FTIn>(
+                            spinor_in[ind_in][col][spin][1][x_in]));
 		}
 	      }
 	    }

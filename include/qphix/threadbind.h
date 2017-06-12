@@ -3,11 +3,8 @@
 
 namespace QPhiX
 {
-  void setThreadAffinity(int nCores, int threadsPerCore);
-  void reportAffinity(void);
+void setThreadAffinity(int nCores, int threadsPerCore);
+void reportAffinity(void);
 }
-
-
-
 
 #endif

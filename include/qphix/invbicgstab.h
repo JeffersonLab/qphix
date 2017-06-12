@@ -5,15 +5,11 @@
 #define QPHIX_VERBOSE_BICGSTAB
 #define QPHIX_TIMING_BICGSTAB
 
-
-
-
 #include "qphix/linearOp.h"
 #include "qphix/blas_new_c.h"
 #include "qphix/print_utils.h"
 #include "qphix/tsc.h"
 #include "qphix/abs_solver.h"
-
 
 namespace QPhiX
 {
@@ -88,7 +84,8 @@ public:
                     unsigned long &site_flops,
                     unsigned long &mv_apps,
                     int isign,
-                    bool verbose)
+                  bool verbose,
+                  int cb = 1) const
     {
       site_flops = 0;
       mv_apps = 0;
@@ -99,9 +96,9 @@ public:
           rhs_sq, rhs, geom, norm2Threads);
       site_flops +=4*12 * num_flav;
 
-      
       double rsd_sq = rhs_sq * RsdTarget*RsdTarget;
-      if( verbose ) masterPrintf("BICGSTAB: ||b||^2 = %e Target Rsd= %e\n", rhs_sq, rsd_sq);
+    if (verbose)
+      masterPrintf("BICGSTAB: ||b||^2 = %e Target Rsd= %e\n", rhs_sq, rsd_sq);
 
       // Compute r=r0=rhs - A x
       // A(r0,psi,isign)
@@ -166,7 +163,7 @@ public:
         site_flops += 16*12 * num_flav;
 
 	// v = Ap
-	M(v,p,isign);
+      M(v, p, isign, cb);
 	mv_apps++;
 
         innerProduct<FT, V, S, compress12, num_flav>(
@@ -197,7 +194,7 @@ public:
         site_flops += 8*12 * num_flav;
 
 	// t = As
-	M(t,r,isign); 
+      M(t, r, isign, cb);
 	mv_apps++;
 
 	double t_norm=0;
@@ -227,7 +224,9 @@ public:
             x, r, t, p, omega_c, alpha_c, r_norm, geom, rxUpdateThreads);
         site_flops += 28*12 * num_flav;
 
-	if( verbose ) masterPrintf("BICGSTAB: iter %d r_norm = %e  target = %e \n" , k,r_norm, rsd_sq);
+      if (verbose)
+        masterPrintf(
+            "BICGSTAB: iter %d r_norm = %e  target = %e \n", k, r_norm, rsd_sq);
 	if( r_norm < rsd_sq ) { 
 	  notConvP = false; // Converged
 	}
@@ -241,61 +240,25 @@ public:
 	masterPrintf("Solver did not converge in %d iterations\n", k);
       }
       return;
-      
     }
 
-
-    void tune(void) 
-    {
-      int iters=100;
-#if 0
-      tuneZeroThreads(iters); 
-      tuneNorm2Threads(iters);
-      tuneXMYThreads(iters);
-      tuneCopyThreads(iters);
-      tuneInnerProductThreads(iters);
-      tunePUpdateThreads(iters);
-      tuneSUpdateThreads(iters);
-      tuneRXUpdateThreads(iters);
-#endif
-      reportTuning();
-    }
-
-    void reportTuning()
-    {
-      masterPrintf("TuningResults: \n");
-      masterPrintf("\t zeroThreads=%d threads\n", zeroThreads);
-      masterPrintf("\t copyThreads=%d threads\n", copyThreads);
-      masterPrintf("\t xmyThreads=%d threads\n", xmyThreads);
-      masterPrintf("\t norm2Threads=%d threads\n", norm2Threads);
-      masterPrintf("\t innerProductThreads=%d threads\n", innerProductThreads);
-      masterPrintf("\t pUpdateThreads=%d threads\n", pUpdateThreads);
-      masterPrintf("\t sUpdateThreads=%d threads\n", sUpdateThreads);
-      masterPrintf("\t rxUpdateThreads=%d threads\n", rxUpdateThreads);
-    }
-
-    Geometry<FT,V,S,compress12>& getGeometry(){
-      return geom;
-    }
-
+  Geometry<FT, V, S, compress12> &getGeometry() { return geom; }
 
     private:
     EvenOddLinearOperatorBase& M;
     Geometry<FT,V,S,compress12>& geom;
     int MaxIters;
 
-    inline
-    void complex_div(double res[2], double l[2], double r[2])
+  inline void complex_div(double res[2], const double l[2], const double r[2]) const
     {
       double tmp = (double)1/(r[0]*r[0] + r[1]*r[1]);
 
       res[0] = (l[0]*r[0] + l[1]*r[1])*tmp;
       res[1] = (l[1]*r[0] - l[0]*r[1])*tmp;
-
     }
 
-    inline
-    void complex_mul(double res[2], double mul1[2], double mul2[2]) 
+  inline void
+  complex_mul(double res[2], const double mul1[2], const double mul2[2]) const
     {
       res[0]=mul1[0]*mul2[0] - mul1[1]*mul2[1];
       res[1]=mul1[0]*mul2[1] + mul1[1]*mul2[0];
@@ -308,7 +271,6 @@ public:
     Spinor *v[num_flav];
     Spinor *t[num_flav];
 
-
     int norm2Threads;
     int xmyThreads;
     int copyThreads;
@@ -318,7 +280,8 @@ public:
     int sUpdateThreads;
     int rxUpdateThreads;
 
-    void tuneNorm2Threads(int iters) {
+  void tuneNorm2Threads(int iters)
+  {
       if( r != 0x0 ) { 
 	// Do first with 1 thread
 	double rnorm;
@@ -330,7 +293,9 @@ public:
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneNorm2Threads: threads = %d, current_time=%g (s)\n", norm2Threads,  best_time);
+      masterPrintf("tuneNorm2Threads: threads = %d, current_time=%g (s)\n",
+                   norm2Threads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
@@ -339,7 +304,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneNorm2Threads: threads = %d, current_time = %g (s), best=%g (s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneNorm2Threads: threads = %d, current_time = %g (s), best=%g (s)\n",
+            threads,
+            current_time,
+            best_time);
 
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
@@ -363,7 +332,9 @@ public:
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneXMYThreads: threads = %d, current_time=%g (s)\n", xmyThreads, best_time);
+      masterPrintf("tuneXMYThreads: threads = %d, current_time=%g (s)\n",
+                   xmyThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
@@ -372,7 +343,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneXMYThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneXMYThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    xmyThreads=threads;
@@ -396,7 +371,9 @@ public:
 	
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneCopyThreads: threads = %d, current_time=%g (s)\n", copyThreads, best_time);
+      masterPrintf("tuneCopyThreads: threads = %d, current_time=%g (s)\n",
+                   copyThreads,
+                   best_time);
 
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
@@ -406,7 +383,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneCopyThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneCopyThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    copyThreads=threads;
@@ -426,7 +407,9 @@ public:
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneZeroThreads: threads = %d, current_time=%g (s)\n", zeroThreads, best_time);
+      masterPrintf("tuneZeroThreads: threads = %d, current_time=%g (s)\n",
+                   zeroThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
@@ -435,17 +418,21 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneZeroThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneZeroThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    zeroThreads=threads;
 	  }
 	}
       }
-    
     }
 
-    void  tuneInnerProductThreads(int iters) {
+  void tuneInnerProductThreads(int iters)
+  {
      if( r != 0x0 && v != 0 ) { 
 	// Do first with 1 thread
 	
@@ -459,7 +446,9 @@ public:
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneInnerProductThreads: threads = %d, current_time=%g (s)\n", innerProductThreads, best_time);
+      masterPrintf("tuneInnerProductThreads: threads = %d, current_time=%g (s)\n",
+                   innerProductThreads,
+                   best_time);
 
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
@@ -469,7 +458,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneInnerProductThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf("tuneInnerProductThreads: threads = %d, current_time = %g (s), "
+                     "best=%g(s)\n",
+                     threads,
+                     current_time,
+                     best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    innerProductThreads=threads;
@@ -489,23 +482,30 @@ public:
 	double omega_cr[2]={(double)2.0, (double)-0.5};
 	double start_time=omp_get_wtime();
 	for(int i=0; i < iters; i++) {
-	  bicgstab_p_update<FT,V,S,compress12>(r,p,v,beta_cr,omega_cr,geom, pUpdateThreads);
+        bicgstab_p_update<FT, V, S, compress12>(
+            r, p, v, beta_cr, omega_cr, geom, pUpdateThreads);
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
 
-	masterPrintf("tunePUpdateThreads: threads = %d, current_time=%g (s)\n", pUpdateThreads, best_time);
+      masterPrintf("tunePUpdateThreads: threads = %d, current_time=%g (s)\n",
+                   pUpdateThreads,
+                   best_time);
 	
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
-	    bicgstab_p_update<FT,V,S,compress12>(r,p,v,beta_cr,omega_cr,geom, threads);
+          bicgstab_p_update<FT, V, S, compress12>(
+              r, p, v, beta_cr, omega_cr, geom, threads);
 	  }
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-
-	  masterPrintf("tunePUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tunePUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    pUpdateThreads=threads;
@@ -523,12 +523,15 @@ public:
 	double alpha_cr[2]={(double)1.0, (double)0.5};
 	double start_time=omp_get_wtime();
 	for(int i=0; i < iters; i++) {
-	  bicgstab_s_update<FT,V,S,compress12>(alpha_cr, r, v, geom, sUpdateThreads);
+        bicgstab_s_update<FT, V, S, compress12>(
+            alpha_cr, r, v, geom, sUpdateThreads);
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
 
-	masterPrintf("tuneSUpdateThreads: threads = %d, current_time=%g (s)\n", sUpdateThreads, best_time);
+      masterPrintf("tuneSUpdateThreads: threads = %d, current_time=%g (s)\n",
+                   sUpdateThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
@@ -537,7 +540,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneSUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneSUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    sUpdateThreads=threads;
@@ -545,7 +552,6 @@ public:
 	}
       }
     }
-
 
     void tuneRXUpdateThreads(int iters) 
     {
@@ -560,21 +566,29 @@ public:
 	double omega_cr[2]={(double)-1.0, (double)-0.25};
 	double start_time=omp_get_wtime();
 	for(int i=0; i < iters; i++) {
-	  bicgstab_rxupdate<FT,V,S,compress12>(r, v, t, p, omega_cr,alpha_cr, r_norm, geom, rxUpdateThreads);
+        bicgstab_rxupdate<FT, V, S, compress12>(
+            r, v, t, p, omega_cr, alpha_cr, r_norm, geom, rxUpdateThreads);
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
 
-	masterPrintf("tuneRXUpdateThreads: threads = %d, current_time=%g (s)\n", rxUpdateThreads, best_time);
+      masterPrintf("tuneRXUpdateThreads: threads = %d, current_time=%g (s)\n",
+                   rxUpdateThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
-	    bicgstab_rxupdate<FT,V,S,compress12>(r, v, t, p, omega_cr,alpha_cr, r_norm, geom, threads);
+          bicgstab_rxupdate<FT, V, S, compress12>(
+              r, v, t, p, omega_cr, alpha_cr, r_norm, geom, threads);
 	  }
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneRXUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneRXUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    rxUpdateThreads=threads;
@@ -582,15 +596,7 @@ public:
 	}
       }
     }
-
   };
-
-
-
-
-
 };
-
-
 
 #endif

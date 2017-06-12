@@ -8,13 +8,16 @@
 namespace QPhiX
 {
   template<typename FT, int veclen, int soalen, bool compress12>
-  class TMDslash {
+class TMDslash
+{
 
   public:
-
-    typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock  SU3MatrixBlock;
-    typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
-    typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock TwoSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+      SU3MatrixBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+      FourSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::TwoSpinorBlock
+      TwoSpinorBlock;
     
     TMDslash(Geometry<FT,veclen, soalen,compress12>* geom_,
 	   double t_boundary_,
@@ -64,7 +67,6 @@ namespace QPhiX
             return (*s); }
 
   private:
-
     Geometry<FT,veclen,soalen,compress12>* s;
     Comms<FT,veclen,soalen,compress12>* comms;
 
@@ -176,7 +178,10 @@ namespace QPhiX
     void packTMFaceDir(int tid,
 		     const FourSpinorBlock *psi,
 		     FT *res,
-		     int cb, int dir, int fb, int isPlus);
+                     int cb,
+                     int dir,
+                     int fb,
+                     int isPlus);
 
     //  RECEIVE AND COMPLETE FACE 
     void completeTMFaceDir(int tid,
@@ -184,7 +189,10 @@ namespace QPhiX
 			 FourSpinorBlock* res,
 			 const SU3MatrixBlock* u,
 			 const double beta,
-			 int cb, int dir, int fb, int isPlus);
+                         int cb,
+                         int dir,
+                         int fb,
+                         int isPlus);
 
     //  RECEIVE AND COMPLETE FACE
     void completeFaceDirAChiMBDPsi(int tid,
@@ -192,11 +200,12 @@ namespace QPhiX
 				   FourSpinorBlock* res,
 				   const SU3MatrixBlock* u,
 				   const double beta ,
-				   int cb, int dir, int fb, int isPlus);
+                                 int cb,
+                                 int dir,
+                                 int fb,
+                                 int isPlus);
 #endif
   }; // Class
-
-
 
 } // Namespace
 #include "qphix/tm_dslash_body.h"

@@ -6,10 +6,10 @@
 #include "qphix/qphix_config.h"
 
 using namespace std;
-namespace  QPhiX 
+namespace QPhiX
 {
-  void masterPrintf(const char * format, ... );
-  void localPrintf(const char * format, ... );
+void masterPrintf(const char *format, ...);
+void localPrintf(const char *format, ...);
 };
 
 #endif

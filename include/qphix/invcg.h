@@ -6,7 +6,6 @@
 
 #define CGDEBUG
 
-
 #include "qphix/linearOp.h"
 #include "qphix/print_utils.h"
 #include "qphix/blas_new_c.h"
@@ -89,7 +88,8 @@ public:
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verboseP) override
+                  bool verboseP,
+                  int cb = 1) const override
     {
         if (verboseP) {
             masterPrintf("Entering the CG inverter with num_flav=%u\n",
@@ -134,15 +134,12 @@ public:
       TSC_tick rmammp_end;
       TSC_tick rmammp_time =0;
 
-
-
       TSC_tick missing_time;
 #endif
 
       int n_cores;
       int n_simt;
       double cp;
-      
       
 #ifdef TIMING_CG
       CLOCK_NOW(cg_start);
@@ -185,8 +182,7 @@ public:
 #ifdef TIMING_CG
       CLOCK_NOW(lstart);
 #endif
-
-      M(mp,x,isign);
+    M(mp, x, isign, cb);
 
 #ifdef CGDEBUG
       norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
@@ -194,7 +190,7 @@ public:
       masterPrintf("M p = %lf \n", tmp_d);
 #endif
 
-      M(mmp,mp,-isign);
+    M(mmp, mp, -isign, cb);
 
 #ifdef CGDEBUG
       norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
@@ -208,12 +204,10 @@ public:
 #endif
       mv_apps += 2;
       
-      
       // r = chi_internal - mmp,   cp=norm2(r)
 #ifdef TIMING_CG
       CLOCK_NOW(xmyNorm_start);
 #endif
-
       xmyNorm2Spinor<FT, veclen, soalen, compress12, num_flav>(
           r, rhs, mmp, cp, geom, xmyNormThreads);
 
@@ -235,19 +229,35 @@ public:
 	cg_time = cg_end - cg_start;
 
 	masterPrintf("CG Total time: %ld ticks", cg_time );
-	masterPrintf("Linop Total time: %ld ticks %u applications, %g percent of CG\n", ltime, mv_apps, 100.0*((double)ltime)/((double)cg_time));
+      masterPrintf("Linop Total time: %ld ticks %u applications, %g percent of CG\n",
+                   ltime,
+                   mv_apps,
+                   100.0 * ((double)ltime) / ((double)cg_time));
 	blas_time = norm2_time + xmyNorm_time + aypx_time + copy_time + rmammp_time;
-	masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",  blas_time, 100.0*((double)blas_time)/((double)cg_time));
-	masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n", norm2_time, 100.0*((double)norm2_time)/((double)cg_time));
-	masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n", xmyNorm_time, 100.0*((double)xmyNorm_time)/((double)cg_time));
-	masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n", aypx_time, 100.0*((double)aypx_time)/((double)cg_time));
-	masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n", rmammp_time, 100.0*((double)rmammp_time)/((double)cg_time));
-	masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n", copy_time, 100.0*((double)copy_time)/((double)cg_time));
+      masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",
+                   blas_time,
+                   100.0 * ((double)blas_time) / ((double)cg_time));
+      masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n",
+                   norm2_time,
+                   100.0 * ((double)norm2_time) / ((double)cg_time));
+      masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n",
+                   xmyNorm_time,
+                   100.0 * ((double)xmyNorm_time) / ((double)cg_time));
+      masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n",
+                   aypx_time,
+                   100.0 * ((double)aypx_time) / ((double)cg_time));
+      masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n",
+                   rmammp_time,
+                   100.0 * ((double)rmammp_time) / ((double)cg_time));
+      masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n",
+                   copy_time,
+                   100.0 * ((double)copy_time) / ((double)cg_time));
 	missing_time = cg_time - ltime -blas_time;
-	masterPrintf("Missing time = %ld ticks = %g percent of CG\n", missing_time, 100.0* (double)(missing_time)/ ((double)cg_time));
+      masterPrintf("Missing time = %ld ticks = %g percent of CG\n",
+                   missing_time,
+                   100.0 * (double)(missing_time) / ((double)cg_time));
 #endif
 	return;
-
       }
 
 #ifdef TIMING_CG
@@ -269,8 +279,8 @@ public:
 #ifdef TIMING_CG 
 	CLOCK_NOW(lstart);
 #endif
-	M(mp,p, isign);
-	M(mmp,mp,-isign);
+      M(mp, p, isign, cb);
+      M(mmp, mp, -isign, cb);
 
 #ifdef TIMING_CG
 	CLOCK_NOW(lend);
@@ -278,7 +288,6 @@ public:
 #endif
 	mv_apps +=2;
 	
-
 #ifdef TIMING_CG
 	CLOCK_NOW(norm2_start);
 #endif
@@ -322,15 +331,16 @@ public:
 #endif
 	site_flops += 12*12 * num_flav;
 
-	if (verboseP) masterPrintf("CG: iter %d:  r2 = %g   target = %g \n", k, cp, rsd_sq);	  
+      if (verboseP)
+        masterPrintf("CG: iter %d:  r2 = %g   target = %g \n", k, cp, rsd_sq);
 
 	if( cp < rsd_sq ) { 
 	  n_iters = k;
 
 #ifdef TIMING_CG
 	  CLOCK_NOW(lstart);
-	  M(mp,x,isign);
-	  M(mmp,mp,-isign);
+        M(mp, x, isign, cb);
+        M(mmp, mp, -isign, cb);
 	  CLOCK_NOW(lend);
 	  ltime += (lend -lstart);
 	  mv_apps += 2;
@@ -346,18 +356,42 @@ public:
 	  CLOCK_NOW(cg_end);
 	  cg_time = cg_end - cg_start;
 
-	  masterPrintf("Iters=%d Final Rsd = %e Final RsdSq=%e Final ResidRelSq=%e Final ResidRel=%e\n", n_iters, sqrt(rsd_sq_final), rsd_sq_final, rsd_sq_final/chi_sq, sqrt(rsd_sq_final/chi_sq));
+        masterPrintf("Iters=%d Final Rsd = %e Final RsdSq=%e Final ResidRelSq=%e "
+                     "Final ResidRel=%e\n",
+                     n_iters,
+                     sqrt(rsd_sq_final),
+                     rsd_sq_final,
+                     rsd_sq_final / chi_sq,
+                     sqrt(rsd_sq_final / chi_sq));
 	  masterPrintf("CG Total time: %ld ticks\n", cg_time);
-	  masterPrintf("Linop Total time: %ld ticks %u applications, %g percent of CG\n", ltime, mv_apps, 100.0*((double)ltime)/((double)cg_time));
+        masterPrintf(
+            "Linop Total time: %ld ticks %u applications, %g percent of CG\n",
+            ltime,
+            mv_apps,
+            100.0 * ((double)ltime) / ((double)cg_time));
 	  blas_time = norm2_time + xmyNorm_time + aypx_time + copy_time + rmammp_time;
-	  masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",  blas_time, 100.0*((double)blas_time)/((double)cg_time));
-	  masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n", norm2_time, 100.0*((double)norm2_time)/((double)cg_time));
-	  masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n", xmyNorm_time, 100.0*((double)xmyNorm_time)/((double)cg_time));
-	  masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n", aypx_time, 100.0*((double)aypx_time)/((double)cg_time));
-	  masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n", rmammp_time, 100.0*((double)rmammp_time)/((double)cg_time));
-	  masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n", copy_time, 100.0*((double)copy_time)/((double)cg_time));
+        masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",
+                     blas_time,
+                     100.0 * ((double)blas_time) / ((double)cg_time));
+        masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n",
+                     norm2_time,
+                     100.0 * ((double)norm2_time) / ((double)cg_time));
+        masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n",
+                     xmyNorm_time,
+                     100.0 * ((double)xmyNorm_time) / ((double)cg_time));
+        masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n",
+                     aypx_time,
+                     100.0 * ((double)aypx_time) / ((double)cg_time));
+        masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n",
+                     rmammp_time,
+                     100.0 * ((double)rmammp_time) / ((double)cg_time));
+        masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n",
+                     copy_time,
+                     100.0 * ((double)copy_time) / ((double)cg_time));
 	  missing_time = cg_time - ltime -blas_time;
-	  masterPrintf("Missing time = %ld ticks = %g percent of CG \n", missing_time, 100.0*(double)(missing_time)/ ((double)cg_time));
+        masterPrintf("Missing time = %ld ticks = %g percent of CG \n",
+                     missing_time,
+                     100.0 * (double)(missing_time) / ((double)cg_time));
 #endif
 
 	  return;
@@ -378,7 +412,6 @@ public:
 	site_flops += 4*12 * num_flav;
       }
       
-
       n_iters = MaxIters;
       rsd_sq_final = cp;
  
@@ -387,21 +420,37 @@ public:
       cg_time=cg_end - cg_start;
 
       masterPrintf("CG Total time: %ld ticks\n", cg_time);
-      masterPrintf("Linop Total time: %ld ticks %u applications, %g percent of CG\n", ltime, mv_apps, 100.0*((double)ltime)/((double)cg_time));
+    masterPrintf("Linop Total time: %ld ticks %u applications, %g percent of CG\n",
+                 ltime,
+                 mv_apps,
+                 100.0 * ((double)ltime) / ((double)cg_time));
       blas_time = norm2_time + xmyNorm_time + aypx_time + copy_time + rmammp_time;
-      masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",  blas_time, 100.0*((double)blas_time)/((double)cg_time));
-      masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n", norm2_time, 100.0*((double)norm2_time)/((double)cg_time));
-      masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n", xmyNorm_time, 100.0*((double)xmyNorm_time)/((double)cg_time));
-      masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n", aypx_time, 100.0*((double)aypx_time)/((double)cg_time));
-      masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n", rmammp_time, 100.0*((double)rmammp_time)/((double)cg_time));
-      masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n", copy_time, 100.0*((double)copy_time)/((double)cg_time));
+    masterPrintf("BLAS Total time: %ld ticks, %g percent of CG\n",
+                 blas_time,
+                 100.0 * ((double)blas_time) / ((double)cg_time));
+    masterPrintf("\t norm2_time: %ld ticks,   %g percent of CG\n",
+                 norm2_time,
+                 100.0 * ((double)norm2_time) / ((double)cg_time));
+    masterPrintf("\t xmyNorm_time: %ld ticks,   %g percent of CG\n",
+                 xmyNorm_time,
+                 100.0 * ((double)xmyNorm_time) / ((double)cg_time));
+    masterPrintf("\t aypx_time: %ld ticks,   %g percent of CG\n",
+                 aypx_time,
+                 100.0 * ((double)aypx_time) / ((double)cg_time));
+    masterPrintf("\t rmammp_norm2r_xpap_time: %ld ticks,   %g percent of CG\n",
+                 rmammp_time,
+                 100.0 * ((double)rmammp_time) / ((double)cg_time));
+    masterPrintf("\t copy_time: %ld ticks,   %g percent of CG\n",
+                 copy_time,
+                 100.0 * ((double)copy_time) / ((double)cg_time));
       missing_time = cg_time - ltime -blas_time;
-      masterPrintf("Missing time = %ld ticks = %g percent of CG\n", missing_time, 100.0* (double)(missing_time)/ ((double)cg_time));
+    masterPrintf("Missing time = %ld ticks = %g percent of CG\n",
+                 missing_time,
+                 100.0 * (double)(missing_time) / ((double)cg_time));
 #endif
       return;
     }
 
-    
     void setCopyThreads(int c) { copyThreads = c; }
     void setAypxThreads(int c) { aypxThreads = c; }
     void setXmyNormThreads(int c) { xmyNormThreads = c; }
@@ -414,33 +463,8 @@ public:
     int getRmammpNorm2rxpapThreads(void) { return rmammpNorm2rxpapThreads; }
     int getNorm2Threads(void) { return norm2Threads; }
 
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() { return geom; }
 
-    void tune()
-    {
-      int iters=100;
-#if 0
-      tuneCopyThreads(iters);
-      tuneAypxThreads(iters);
-      tuneNorm2Threads(iters);
-      tuneXMYNorm2Threads(iters);
-      tuneRXUpdateThreads(iters);
-
-      reportTuning();
-#endif
-    }
-
-    Geometry<FT,veclen,soalen,compress12>& getGeometry() {
-      return geom;
-    }
-
-    void reportTuning() {
-	masterPrintf("TuningResults: \n");
-	masterPrintf("\t copyThreads=%d threads\n", copyThreads);
-	masterPrintf("\t aypxThreads=%d threads\n", aypxThreads);
-	masterPrintf("\t xmyNormThreads=%d threads\n", xmyNormThreads);
-	masterPrintf("\t rmammpNorm2rxpapThreads=%d threads\n", rmammpNorm2rxpapThreads);
-	masterPrintf("\t norm2Threads=%d threads\n", norm2Threads);
-    }
     private:
 
     EvenOddLinearOperatorBase& M;
@@ -452,14 +476,11 @@ public:
     Spinor *p[num_flav];
     Spinor *r[num_flav];
 
-
     int copyThreads;
     int aypxThreads;
     int xmyNormThreads;
     int rmammpNorm2rxpapThreads;
     int norm2Threads;
-
-
 
     void  tuneCopyThreads(int iters)
     {
@@ -476,7 +497,9 @@ public:
 	
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneCopyThreads: threads = %d, current_time=%g (s)\n", copyThreads, best_time);
+      masterPrintf("tuneCopyThreads: threads = %d, current_time=%g (s)\n",
+                   copyThreads,
+                   best_time);
 
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
@@ -486,7 +509,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneCopyThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneCopyThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    copyThreads=threads;
@@ -512,7 +539,9 @@ public:
 	
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneAypxThreads: threads = %d, current_time=%g (s)\n", aypxThreads, best_time);
+      masterPrintf("tuneAypxThreads: threads = %d, current_time=%g (s)\n",
+                   aypxThreads,
+                   best_time);
 
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
@@ -522,7 +551,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneAypxThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneAypxThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    aypxThreads=threads;
@@ -531,7 +564,8 @@ public:
       }
     }
 
-    void tuneNorm2Threads(int iters) {
+  void tuneNorm2Threads(int iters)
+  {
       if( r != 0x0 ) { 
 	// Do first with 1 thread
 	double rnorm;
@@ -543,7 +577,9 @@ public:
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneNorm2Threads: threads = %d, current_time=%g (s)\n", norm2Threads,  best_time);
+      masterPrintf("tuneNorm2Threads: threads = %d, current_time=%g (s)\n",
+                   norm2Threads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
@@ -552,7 +588,11 @@ public:
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneNorm2Threads: threads = %d, current_time = %g (s), best=%g (s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneNorm2Threads: threads = %d, current_time = %g (s), best=%g (s)\n",
+            threads,
+            current_time,
+            best_time);
 
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
@@ -575,20 +615,28 @@ public:
 
 	double start_time=omp_get_wtime();	
 	for(int i=0; i < iters; i++) {
-	  xmyNorm2Spinor<FT,veclen,soalen,compress12>(r,p,mmp, reduction, geom, xmyNormThreads);
+        xmyNorm2Spinor<FT, veclen, soalen, compress12>(
+            r, p, mmp, reduction, geom, xmyNormThreads);
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
-	masterPrintf("tuneXmyNorm2Threads: threads = %d, current_time=%g (s)\n", xmyNormThreads, best_time);
+      masterPrintf("tuneXmyNorm2Threads: threads = %d, current_time=%g (s)\n",
+                   xmyNormThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) {
-	    xmyNorm2Spinor<FT,veclen,soalen,compress12>(r,p,mmp, reduction, geom, threads); 
+          xmyNorm2Spinor<FT, veclen, soalen, compress12>(
+              r, p, mmp, reduction, geom, threads);
 	  }
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneXMYThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneXMYThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    xmyNormThreads=threads;
@@ -609,21 +657,29 @@ public:
 	int rmammpNorm2rxpapThreads=1;
 	double start_time=omp_get_wtime();
 	for(int i=0; i < iters; i++) {
-	  rmammpNorm2rxpap<FT,veclen,soalen,compress12>(r,a,mmp,r_norm,mp,p,geom, rmammpNorm2rxpapThreads);
+        rmammpNorm2rxpap<FT, veclen, soalen, compress12>(
+            r, a, mmp, r_norm, mp, p, geom, rmammpNorm2rxpapThreads);
 	}
 	double stop_time=omp_get_wtime();
 	double best_time=stop_time - start_time;
 
-	masterPrintf("tuneRXUpdateThreads: threads = %d, current_time=%g (s)\n",rmammpNorm2rxpapThreads , best_time);
+      masterPrintf("tuneRXUpdateThreads: threads = %d, current_time=%g (s)\n",
+                   rmammpNorm2rxpapThreads,
+                   best_time);
 	for(int threads = 2; threads <=geom.getNSIMT(); threads++) { 
 	  start_time=omp_get_wtime();
 	  for(int i=0; i < iters; i++) { 
-	    rmammpNorm2rxpap<FT,veclen,soalen,compress12>(r,a,mmp,r_norm,mp,p,geom, rmammpNorm2rxpapThreads);
+          rmammpNorm2rxpap<FT, veclen, soalen, compress12>(
+              r, a, mmp, r_norm, mp, p, geom, rmammpNorm2rxpapThreads);
 	  }
 	  stop_time=omp_get_wtime();
 	  double current_time=stop_time-start_time;
 	  
-	  masterPrintf("tuneRXUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n", threads, current_time, best_time);
+        masterPrintf(
+            "tuneRXUpdateThreads: threads = %d, current_time = %g (s), best=%g(s)\n",
+            threads,
+            current_time,
+            best_time);
 	  if ( current_time < best_time ) { 
 	    best_time = current_time;
 	    rmammpNorm2rxpapThreads=threads;

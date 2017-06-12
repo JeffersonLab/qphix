@@ -7,8 +7,18 @@ set -e
 set -u
 set -x
 
+fold_start() {
+echo -en 'travis_fold:start:'$1'\\r'
+}
+
+fold_end() {
+echo -en 'travis_fold:end:'$1'\\r'
+}
+
+fold_start more_cpu_info
 lscpu
 cat /proc/cpuinfo
+fold_end more_cpu_info
 
 # The submodules are downloaded via SSH. This means that there has to be some
 # SSH key registered with GitHub. The Travis CI virtual machine does not have
@@ -17,27 +27,37 @@ cat /proc/cpuinfo
 # this key to authenticate against GitHub. Only then it can download the public
 # readable submodules. Another approach would be to switch to HTTPS for the
 # submodules.
+fold_start get_ssh_key
 wget -O ~/.ssh/id_rsa https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy
 wget -O ~/.ssh/id_rsa.pub https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy.pub
 chmod 0600 ~/.ssh/id_rsa
 chmod 0600 ~/.ssh/id_rsa.pub
+fold_end get_ssh_key
 
 cd ..
 
 # There is `#pragma omp simd` in the code. That needs OpenMP 4.0. That is
 # supported from GCC 4.9. In Ubuntu Trusty, which is used by Travis CI, there
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
+fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-4.9 g++-4.9
+sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin
+
+ls -l /usr/lib/ccache
+fold_end update_gcc
 
 basedir=$PWD
 
-cc_name=gcc-4.9
-cxx_name=g++-4.9
+cc_name=mpicc
+cxx_name=mpic++
+
+export OMPI_CC=gcc-6
+export OMPI_CXX=g++-6
+
 color_flags=""
 openmp_flags="-fopenmp"
-base_flags="-O2 -finline-limit=50000 -fmax-errors=1 $color_flags -mavx"
+base_flags="-O2 -finline-limit=50000 $color_flags"
 cxx11_flags="--std=c++11"
 disable_warnings_flags="-Wno-all -Wno-pedantic"
 qphix_flags="-Drestrict=__restrict__"
@@ -86,13 +106,27 @@ clone-if-needed() {
 make_smp_template="-j $(nproc)"
 make_smp_flags="${SMP-$make_smp_template}"
 
+# XXX There is some issue with the memory within the virtual machine. The
+# AVX512 compilation takes more memory than the machine has. We work around
+# this by just using one process at a time. Once the changes in the build
+# system from the `twisted-bc` branch are in, this is no longer needed.
+if [[ "$QPHIX_ARCH" = AVX512 ]]; then
+    make_smp_flags=
+fi
+
 # Runs `make && make install` with appropriate flags that make compilation
 # parallel on multiple cores. A sentinel file is created such that `make` is
 # not invoked once it has correctly built.
 make-make-install() {
     if ! [[ -f build-succeeded ]]; then
-        nice make $make_smp_flags
+        fold_start $repo.make
+        make $make_smp_flags
+        fold_end $repo.make
+
+        fold_start $repo.make_install
         make install
+        fold_end $repo.make_install
+
         touch build-succeeded
         pushd $prefix/lib
         rm -f *.so *.so.*
@@ -121,8 +155,8 @@ print-fancy-heading() {
 # make much sense. Perhaps one has to split up the `autoreconf` call into the
 # parts that make it up. Using this weird dance, it works somewhat reliably.
 autotools-dance() {
-    automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
-    autoreconf -f
+    #automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
+    autoreconf -vif
 }
 
 # Invokes the various commands that are needed to update the GNU Autotools
@@ -154,10 +188,14 @@ cd "$sourcedir"
 #                                   libxml2                                   #
 ###############################################################################
 
+
 repo=libxml2
+fold_start $repo.download
 print-fancy-heading $repo
 clone-if-needed https://git.gnome.org/browse/libxml2 $repo v2.9.4
+fold_end $repo.download
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags"
 cxxflags="$base_cxxflags"
@@ -169,7 +207,9 @@ if ! [[ -f configure ]]; then
     NOCONFIGURE=yes ./autogen.sh
 fi
 popd
+fold_end $repo.autoreconf
 
+fold_start $repo.configure
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
@@ -198,6 +238,40 @@ if ! [[ -f Makefile ]]; then
         exit 1
     fi
 fi
+fold_end $repo.configure
+make-make-install
+popd
+
+###############################################################################
+#                                     QMP                                     #
+###############################################################################
+
+repo=qmp
+fold_start $repo.download
+print-fancy-heading $repo
+clone-if-needed https://github.com/usqcd-software/qmp.git $repo master
+fold_end $repo.download
+
+fold_start $repo.autoreconf
+pushd $repo
+cflags="$base_cflags $openmp_flags --std=c99"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
+autoreconf-if-needed
+popd
+fold_end $repo.autoreconf
+
+fold_start $repo.configure
+mkdir -p "$build/$repo"
+pushd "$build/$repo"
+if ! [[ -f Makefile ]]; then
+    if ! $sourcedir/$repo/configure $base_configure \
+            --with-qmp-comms-type=MPI \
+            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+        cat config.log
+        exit 1
+    fi
+fi
+fold_end $repo.configure
 make-make-install
 popd
 
@@ -206,29 +280,36 @@ popd
 ###############################################################################
 
 repo=qdpxx
+fold_start $repo.download
 print-fancy-heading $repo
 clone-if-needed https://github.com/usqcd-software/qdpxx.git $repo devel
+fold_end $repo.download
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags $openmp_flags --std=c99"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
 autoreconf-if-needed
 popd
+fold_end $repo.autoreconf
 
+fold_start $repo.configure
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             --enable-openmp \
             --enable-sse --enable-sse2 \
-            --enable-parallel-arch=scalar \
+            --enable-parallel-arch=parscalar \
             --enable-precision=double \
+            --with-qmp="$prefix" \
             --with-libxml2="$prefix/bin/xml2-config" \
             CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
         cat config.log
         exit 1
     fi
 fi
+fold_end $repo.configure
 make-make-install
 popd
 
@@ -239,44 +320,83 @@ popd
 repo=qphix
 print-fancy-heading $repo
 
+fold_start $repo.autoreconf
 pushd $repo
 cflags="$base_cflags $openmp_flags $qphix_flags"
 cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 autoreconf-if-needed
 popd
+fold_end $repo.download
+
+fold_start $repo.configure
+case "$QPHIX_ARCH" in
+    SCALAR)
+        archflag=
+        soalen=1
+        ;;
+    AVX)
+        archflag=-march=sandybridge
+        soalen=2
+        ;;
+    AVX2)
+        archflag=-march=haswell
+        soalen=2
+        ;;
+    AVX512)
+        archflag=-march=knl
+        soalen=4
+        ;;
+    *)
+        echo "Unsupported QPHIX_ARCH"
+        exit 1;
+esac
 
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
     if ! $sourcedir/$repo/configure $base_configure \
             $qphix_configure \
-            --disable-testing \
-            --enable-proc=AVX \
-            --enable-soalen=2 \
+            --enable-testing \
+            --enable-proc=$QPHIX_ARCH \
+            --enable-soalen=$soalen \
             --enable-clover \
             --enable-twisted-mass \
             --enable-tm-clover \
             --enable-openmp \
             --enable-mm-malloc \
-            --enable-parallel-arch=scalar \
+            --enable-parallel-arch=parscalar \
             --with-qdp="$prefix" \
-            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
         cat config.log
         exit 1
     fi
 fi
+fold_end $repo.configure
 make-make-install
 popd
 
-
 ###############################################################################
 
-export OMP_NUM_THREADS=4
+# Only run the tests on architectures that are supported by Travis CI.
+case "$QPHIX_ARCH" in
+    SCALAR)
+        ;;
+    AVX)
+        ;;
+    AVX2)
+        exit 0
+        ;;
+    AVX512)
+        exit 0
+        ;;
+esac
+
+export OMP_NUM_THREADS=2
 
 pushd $build/qphix/tests
 
 l=16
-args="-by 8 -bz 8 -c 4 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -dslash -mmat"
+args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f -geom 1 1 1 2"
 
 tests=(
 t_clov_dslash
@@ -287,6 +407,8 @@ t_twm_clover
 
 for runner in "${tests[@]}"
 do
-    ./$runner $args
+    fold_start testing.$runner
+    mpirun -n 2 ./$runner $args
+    fold_end testing.$runner
 done
 

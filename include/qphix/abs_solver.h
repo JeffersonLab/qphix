@@ -3,7 +3,8 @@
 
 #include "qphix/geometry.h"
 
-namespace QPhiX {
+namespace QPhiX
+{
 
 /**
   Base class for solvers.
@@ -44,7 +45,7 @@ public:
                             unsigned long &site_flops,
                             unsigned long &mv_apps,
                             int isign,
-                            bool verboseP)
+                            bool verboseP, int target_cb = 1)
     {
         Spinor *x_array[1] = {x};
         const Spinor *rhs_array[1] = {rhs};
@@ -56,7 +57,7 @@ public:
                 site_flops,
                 mv_apps,
                 isign,
-                verboseP);
+                verboseP, target_cb);
     }
 
     /**
@@ -78,7 +79,7 @@ public:
                unsigned long &site_flops,
                unsigned long &mv_apps,
                int isign,
-               bool verboseP) = 0;
+               bool verboseP, int target_cb = 1) = 0;
 
 #ifdef __INTEL_COMPILER
     /**
@@ -96,7 +97,7 @@ public:
                unsigned long &site_flops,
                unsigned long &mv_apps,
                int isign,
-               bool verboseP) {
+               bool verboseP, int target_cb = 1) {
         (*this)(x,
                 const_cast<Spinor const *const *>(rhs),
                 RsdTarget,
@@ -105,11 +106,10 @@ public:
                 site_flops,
                 mv_apps,
                 isign,
-                verboseP);
+                verboseP, target_cb);
     }
 #endif
 
-    virtual void tune() = 0;
     virtual Geometry<FT, V, S, compress12> &getGeometry() = 0;
 };
 
@@ -139,12 +139,11 @@ public:
 			    unsigned long& site_flops,
 			    unsigned long& mv_apps,
 			    int isign,
-			    bool verboseP) = 0;
+                          bool verboseP,
+                          int cb = 1) const = 0;
 
-    virtual void tune() = 0;
     virtual  Geometry<FT,V,S,compress12>& getGeometry() =  0;
   };
-
 }
 
 #endif

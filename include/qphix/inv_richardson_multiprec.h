@@ -50,7 +50,8 @@ public:
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verbose)
+                  bool verbose,
+                  int cb = 1) const
     {
       int iter=0;
       int mv_apps_outer = 0;
@@ -67,7 +68,7 @@ public:
       // This is the target residuum
       double rsd_t = RsdTarget*RsdTarget*rhs_sq;
 
-      m_outer(tmp, x, isign);
+    m_outer(tmp, x, isign, cb);
       mv_apps_outer++;
 
       // r = rhs - M x
@@ -75,7 +76,10 @@ public:
           r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
       site_flops_outer += 24+24+23; // (24 -,  24 square, 23 adds)
 
-      masterPrintf("RICHARDSON: Initial || r ||^2 = %16.8e   Target || r ||^2 = %16.8e\n", r_norm_sq, rsd_t );
+    masterPrintf(
+        "RICHARDSON: Initial || r ||^2 = %16.8e   Target || r ||^2 = %16.8e\n",
+        r_norm_sq,
+        rsd_t);
 
       if( r_norm_sq < rsd_t ) {
        
@@ -84,9 +88,12 @@ public:
 	mv_apps = mv_apps_outer + mv_apps_inner_total;
 	site_flops = site_flops_outer + site_flops_inner_total * num_flav;
 	masterPrintf("RICHARDSON: Solver converged at iter 0\n");
-	masterPrintf("RICHARDSON: Inner MV Apps=%lu Outer MV Apps=%lu Inner Site Flops=%lu Outer Site Flops=%lu\n",
-		     mv_apps_inner_total, mv_apps_outer, site_flops_inner_total, site_flops_outer
-		     );
+      masterPrintf("RICHARDSON: Inner MV Apps=%lu Outer MV Apps=%lu Inner Site "
+                   "Flops=%lu Outer Site Flops=%lu\n",
+                   mv_apps_inner_total,
+                   mv_apps_outer,
+                   site_flops_inner_total,
+                   site_flops_outer);
 
 	return;
       }
@@ -102,12 +109,16 @@ public:
 	double delta_finish = sqrt( rsd_t / r_norm_sq );
 	double delta_use = (delta_finish > delta) ? delta_finish : delta;
 	if ( verbose ) { 
-	  masterPrintf("RICHARDSON: iter=%d Delta = %16.8e  Delta Finish=%16.8e Delta_use=%16.8e\n", 
-		       iter, delta, delta_finish, delta_use);
+        masterPrintf("RICHARDSON: iter=%d Delta = %16.8e  Delta Finish=%16.8e "
+                     "Delta_use=%16.8e\n",
+                     iter,
+                     delta,
+                     delta_finish,
+                     delta_use);
 	}
 
-	
-	// Down Convert r to inner precision. Normalize along the way. Don't count these flops? (Not useful?)
+      // Down Convert r to inner precision. Normalize along the way. Don't count
+      // these flops? (Not useful?)
 	double r_norm = sqrt(r_norm_sq);
 	double scale_factor = ((double)1)/r_norm;
         convert<FTInner,
@@ -126,7 +137,7 @@ public:
             dx_inner, geom_inner, zeroThreads);
 
         solver_inner(dx_inner, r_inner, delta_use, n_iters_inner,
-		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, isign, verbose);
+		     rsd_sq_final_inner,site_flops_inner, mv_apps_inner, isign, verbose, cb);
 	
 	mv_apps_inner_total += mv_apps_inner;
 	site_flops_inner_total += site_flops_inner;
@@ -143,17 +154,21 @@ public:
                 num_flav>(
             delta_x, r_norm, dx_inner, geom, geom_inner, convertFromThreads);
 
-        m_outer(tmp,delta_x, isign);
+      m_outer(tmp, delta_x, isign, cb);
 	mv_apps_outer++;
 
         richardson_rxupdateNormR<FT, V, S, Compress, num_flav>(
             x, r, delta_x, tmp, r_norm_sq, geom, rxUpdateThreads);
         site_flops_outer += 8*12;
-	if( verbose ) masterPrintf("RICHARDSON: Iter %d   r_norm_sq=%e   Target=%e\n", iter, r_norm_sq, rsd_t);
+      if (verbose)
+        masterPrintf("RICHARDSON: Iter %d   r_norm_sq=%e   Target=%e\n",
+                     iter,
+                     r_norm_sq,
+                     rsd_t);
 
 	if ( r_norm_sq < rsd_t ) { 
 	  // Converged. Compute final residuum. 
-	  m_outer(tmp, x, isign);
+        m_outer(tmp, x, isign, cb);
 	  mv_apps_outer++;
 
           xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
@@ -170,12 +185,10 @@ public:
 		       );
 	  return;
 	}
-
       }
 
-
       // Not Converged. Compute final residuum. 
-      m_outer(tmp, x, isign);
+    m_outer(tmp, x, isign, cb);
       mv_apps_outer++;
 
       xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
@@ -195,11 +208,14 @@ public:
       return;
     }
 
-    InvRichardsonMultiPrec( EvenOddLinearOperator<FT,V,S,Compress>& m_outer_,
+  InvRichardsonMultiPrec(
+      EvenOddLinearOperator<FT, V, S, Compress> &m_outer_,
 			    AbstractSolver<FTInner,VInner,SInner,CompressInner>& solver_inner_,
 			    const double delta_,
 			    const int max_iters_ )
-	:  m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_), max_iters(max_iters_), geom(m_outer_.getGeometry()), geom_inner(solver_inner_.getGeometry())
+      : m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_),
+        max_iters(max_iters_), geom(m_outer_.getGeometry()),
+        geom_inner(solver_inner_.getGeometry())
     {
         for (uint8_t f = 0; f < num_flav; ++f)
             r[f] = (Spinor *)geom.allocCBFourSpinor();
@@ -243,7 +259,6 @@ public:
     }
     
   private:
-    
     EvenOddLinearOperator<FT,V,S,Compress>& m_outer;
     AbstractSolver<FTInner,VInner,SInner,CompressInner, num_flav>& solver_inner;
     const double delta;
@@ -267,7 +282,6 @@ public:
     Geometry<FT,V,S,Compress>& geom;
     Geometry<FTInner,VInner,SInner,CompressInner>& geom_inner;
   };
-
 };
 
 #endif

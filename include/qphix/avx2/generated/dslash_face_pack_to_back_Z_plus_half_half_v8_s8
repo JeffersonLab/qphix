@@ -108,27 +108,27 @@ psi_S1_IM = _mm256_cvtph_ps(_mm_load_si128((__m128i*)((*xyBase)[2][3][1] + offs[
 
 b_S1_C2_RE = _mm256_sub_ps( psi_S0_RE , psi_S1_IM );
 b_S1_C2_IM = _mm256_add_ps( psi_S0_IM , psi_S1_RE );
-_mm_stream_si128((__m128i *)((outbuf)+0), _mm256_cvtps_ph(b_S0_C0_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+0), _mm256_cvtps_ph(b_S0_C0_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+8), _mm256_cvtps_ph(b_S0_C0_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+8), _mm256_cvtps_ph(b_S0_C0_IM, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+16), _mm256_cvtps_ph(b_S0_C1_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+16), _mm256_cvtps_ph(b_S0_C1_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+24), _mm256_cvtps_ph(b_S0_C1_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+24), _mm256_cvtps_ph(b_S0_C1_IM, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+32), _mm256_cvtps_ph(b_S0_C2_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+32), _mm256_cvtps_ph(b_S0_C2_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+40), _mm256_cvtps_ph(b_S0_C2_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+40), _mm256_cvtps_ph(b_S0_C2_IM, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+48), _mm256_cvtps_ph(b_S1_C0_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+48), _mm256_cvtps_ph(b_S1_C0_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+56), _mm256_cvtps_ph(b_S1_C0_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+56), _mm256_cvtps_ph(b_S1_C0_IM, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+64), _mm256_cvtps_ph(b_S1_C1_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+64), _mm256_cvtps_ph(b_S1_C1_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+72), _mm256_cvtps_ph(b_S1_C1_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+72), _mm256_cvtps_ph(b_S1_C1_IM, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+80), _mm256_cvtps_ph(b_S1_C2_RE, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+80), _mm256_cvtps_ph(b_S1_C2_RE, _MM_FROUND_TO_NEAREST_INT));
 
-_mm_stream_si128((__m128i *)((outbuf)+88), _mm256_cvtps_ph(b_S1_C2_IM, _MM_FROUND_CUR_DIRECTION));
+_mm_stream_si128((__m128i *)((outbuf)+88), _mm256_cvtps_ph(b_S1_C2_IM, _MM_FROUND_TO_NEAREST_INT));
 

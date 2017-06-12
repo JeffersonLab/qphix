@@ -5,17 +5,25 @@
 #include <qphix/geometry.h>
 #include <qphix/comm.h>
 
-namespace QPhiX {
+namespace QPhiX
+{
 
-  template <typename FT, int veclen, int soalen, bool compress12>  /* The teplate is the floating point type */
-    class TMClovDslash {
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12> /* The teplate is the floating point type */
+class TMClovDslash
+{
 
       public:
-
-        typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock  SU3MatrixBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock  TwoSpinorBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::FullCloverBlock FullCloverBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+      SU3MatrixBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+      FourSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::TwoSpinorBlock
+      TwoSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock
+      FullCloverBlock;
 
         // Constructor
         TMClovDslash(Geometry<FT,veclen,soalen,compress12>* geom_,
@@ -245,9 +253,7 @@ namespace QPhiX {
 
         Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
 
-
       private:
-
         Geometry<FT,veclen,soalen,compress12>* s;
         Comms<FT,veclen,soalen,compress12>* comms;
 
@@ -351,7 +357,10 @@ namespace QPhiX {
         void packFaceDir(int tid,
             const FourSpinorBlock *psi,
             FT *res,
-            int cb, int dir, int fb, int isPlus);
+                   int cb,
+                   int dir,
+                   int fb,
+                   int isPlus);
 
         //  RECEIVE AND COMPLETE FACE
         void completeFaceDir(int tid,
@@ -360,7 +369,10 @@ namespace QPhiX {
             const SU3MatrixBlock* u,
             const FullCloverBlock* invclov,
             double beta,
-            int cb, int dir, int fb, int isPlus);
+                       int cb,
+                       int dir,
+                       int fb,
+                       int isPlus);
 
         //  RECEIVE AND COMPLETE FACE
         void completeFaceDirAChiMBDPsi(int tid,
@@ -368,7 +380,10 @@ namespace QPhiX {
             FourSpinorBlock* res,
             const SU3MatrixBlock* u,
             const double beta ,
-            int cb, int dir, int fb, int isPlus);
+                                 int cb,
+                                 int dir,
+                                 int fb,
+                                 int isPlus);
 #endif
 
     }; // Class

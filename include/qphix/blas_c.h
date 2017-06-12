@@ -7,13 +7,11 @@
 
 #include <omp.h>
 
-namespace QPhiX { 
-
-
+namespace QPhiX
+{
 
 	template<typename FT, int veclen>
-	inline
-		void copySpinor(FT*   res, FT*   src, int n)
+inline void copySpinor(FT *res, FT *src, int n)
 	{
 
 		//#pragma prefetch src
@@ -22,12 +20,10 @@ namespace QPhiX {
 		for(int i=0; i < n; i++){ 
 			res[i]=src[i];
 		}
-  
 	}
 
 	template<typename FT, int veclen>
-	inline
-		void xmyNorm2Spinor(FT*   res, FT*   x, FT*   y, double& n2res, int n) 
+inline void xmyNorm2Spinor(FT *res, FT *x, FT *y, double &n2res, int n)
 	{
      
 		double norm2res=0;
@@ -49,8 +45,7 @@ namespace QPhiX {
 	}
 
 	template<typename FT, int veclen>
-	inline
-		double norm2Spinor(FT*   res, int n)
+inline double norm2Spinor(FT *res, int n)
 	{
 		double norm2res=0;
 
@@ -66,33 +61,28 @@ namespace QPhiX {
 	}
 
 	template<typename FT, int veclen>
-	inline
-		void rmammpNorm2rxpap(FT*   r, FT ar, FT*    mmp, double& cp, FT*    x, FT*   p,int n)
+inline void rmammpNorm2rxpap(FT *r, FT ar, FT *mmp, double &cp, FT *x, FT *p, int n)
 	{
 		double cp_internal = 0;
 
-
 		//#pragma prefetch x,p,r,mmp
-#pragma omp parallel for simd aligned(p,x,r,mmp:veclen) reduction(+:cp_internal)
+#pragma omp parallel for simd aligned(p, x, r, mmp : veclen)                        \
+                                          reduction(+ : cp_internal)
 		for(int i=0; i < n; i++) { 
 			x[i] += ar*p[i];
 			float tmp = r[i] - ar*mmp[i];
 			double tmpd=(double)tmp;
 			cp_internal += tmpd * tmpd;
 			r[i] = tmp;
-
 		}
-  
   
 		CommsUtils::sumDouble(&cp_internal);
 		cp= cp_internal;
 	}
 
-
 	// Original
 	template<typename FT, int veclen>
-	inline
-		void aypx(FT a, FT*   x, FT*   y, int n) 
+inline void aypx(FT a, FT *x, FT *y, int n)
 	{
 
 		//#pragma prefetch x,y
@@ -102,20 +92,23 @@ namespace QPhiX {
 		}
 	}
 
-
-
-
-
 	// Actually this is a MIC-ism (8 doubles=1 cacheline)
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-	static double norm_array[MAX_THREADS][8] __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)));
+static double norm_array[MAX_THREADS][8]
+    __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
 #else
 	__declspec(align(QPHIX_LLC_CACHE_ALIGN)) static double norm_array[MAX_THREADS][8];
 #endif
 
 	template<typename FT, int veclen>
-	inline
-		void xmyNorm2Spinor(FT*   res, FT*   x, FT*   y, double& n2res, int n, int n_cores, int n_simt, int n_blas_simt) 
+inline void xmyNorm2Spinor(FT *res,
+                           FT *x,
+                           FT *y,
+                           double &n2res,
+                           int n,
+                           int n_cores,
+                           int n_simt,
+                           int n_blas_simt)
 	{
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -129,8 +122,6 @@ namespace QPhiX {
 			// Self ID
 			int tid = omp_get_thread_num();
 
-    
-    
 			int cid = tid / n_simt;
 			int smtid = tid - n_simt*cid;
 			int bthreads = n_cores*n_blas_simt;
@@ -138,12 +129,13 @@ namespace QPhiX {
     
 			if ( smtid < n_blas_simt ) { 
 				int btid = smtid  + n_blas_simt*cid;
-				for(int i=0; i < 8;i++) norm_array[btid][i] = 0; // Every thread zeroes
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
 
 				// No of vectors per thread
 				int n_per_thread= nvec / bthreads;
-				if ( nvec % bthreads != 0 ) n_per_thread++;
-
+      if (nvec % bthreads != 0)
+        n_per_thread++;
 
 				int low=btid*n_per_thread ;
 				int next = (btid + 1)*n_per_thread;
@@ -154,7 +146,6 @@ namespace QPhiX {
 
 				double lnorm=0;
       
-
 				//#pragma prefetch x,y,res
 				//#pragma vector aligned(x,y,res)
 #pragma omp simd aligned(res,x,y:veclen) reduction(+:lnorm) //by thorsten
@@ -165,7 +156,6 @@ namespace QPhiX {
 				}
             
 				norm_array[btid][0]=lnorm;
-
 			}
 		}
   
@@ -177,10 +167,8 @@ namespace QPhiX {
 		n2res = norm2res;
 	}
  
-
 	template<typename FT, int veclen>
-	inline
-		double norm2Spinor(FT*   res, int n, int n_cores, int n_simt, int n_blas_simt)
+inline double norm2Spinor(FT *res, int n, int n_cores, int n_simt, int n_blas_simt)
 	{
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -194,7 +182,6 @@ namespace QPhiX {
 			// Self ID
 			int tid = omp_get_thread_num();
 
-    
 			int cid = tid / n_simt;
 			int smtid = tid - n_simt*cid;
 			int bthreads = n_cores*n_blas_simt;
@@ -202,11 +189,13 @@ namespace QPhiX {
     
 			if ( smtid < n_blas_simt ) { 
 				int btid = smtid  + n_blas_simt*cid;
-				for(int i=0; i < 8; i++) norm_array[btid][i] = 0; // Every thread zeroes      
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
 				// Divide N by the number cores
 				int n_per_thread= nvec / bthreads;
       
-				if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
 				int low=btid*n_per_thread ;
 				int next = (btid + 1)*n_per_thread;
@@ -226,7 +215,6 @@ namespace QPhiX {
     
 				norm_array[btid][0] = lnorm;
 			}
-   
 		}
  
 		for(int i=0; i < n_cores*n_blas_simt; i++) {
@@ -237,10 +225,17 @@ namespace QPhiX {
 		return norm2res;
 	}
 
- 
 	template<typename FT, int veclen>
-	inline
-		void rmammpNorm2rxpap(FT*   r, const FT ar, FT*    mmp, double& cp, FT*    x, FT*   p,int n, int n_cores, int n_simt, int n_blas_simt) 
+inline void rmammpNorm2rxpap(FT *r,
+                             const FT ar,
+                             FT *mmp,
+                             double &cp,
+                             FT *x,
+                             FT *p,
+                             int n,
+                             int n_cores,
+                             int n_simt,
+                             int n_blas_simt)
 	{
  
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -254,7 +249,6 @@ namespace QPhiX {
 			// Self ID
 			int tid = omp_get_thread_num();
 
-    
 			int cid = tid / n_simt;
 			int smtid = tid - n_simt*cid;
 			int bthreads = n_cores*n_blas_simt;
@@ -262,11 +256,13 @@ namespace QPhiX {
     
 			if ( smtid < n_blas_simt ) { 
 				int btid = smtid  + n_blas_simt*cid;
-				for(int i=0; i < 8;i++) norm_array[btid][i] = 0; // Every thread zeroes      
+      for (int i = 0; i < 8; i++)
+        norm_array[btid][i] = 0; // Every thread zeroes
 				// Divide N by the number cores
 				int n_per_thread= nvec / bthreads;
       
-				if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
 				int low=btid*n_per_thread ;
 				int next = (btid + 1)*n_per_thread;
@@ -298,17 +294,19 @@ namespace QPhiX {
 		cp = norm2res;
 	}
 
-
 	// Messed about with
 	template<typename FT, int veclen>
-	inline
-		void copySpinor(FT*   res, FT*   src, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+inline void copySpinor(FT *res,
+                       FT *src,
+                       int n,
+                       int n_cores,
+                       int threads_per_core,
+                       int blas_threads_per_core)
 	{
 
 #pragma omp parallel
 		{
 			int orig_nthreads=omp_get_num_threads();
-
 
 			// Self ID
 			int tid = omp_get_thread_num();
@@ -324,7 +322,8 @@ namespace QPhiX {
 				int n_per_thread= nvec / bthreads;
       
 				// Add extra vector
-				if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
 				// low vector
 				int low=btid*n_per_thread ;
@@ -345,20 +344,23 @@ namespace QPhiX {
 					res[i] = src[i];
 				}
 			}
-
 		}
 	}
 
 	// Messed about with
 	template<typename FT, int veclen>
-	inline
-		void aypx(FT a, FT*   x, FT*   y, int n, int n_cores, int threads_per_core, int blas_threads_per_core) 
+inline void aypx(FT a,
+                 FT *x,
+                 FT *y,
+                 int n,
+                 int n_cores,
+                 int threads_per_core,
+                 int blas_threads_per_core)
 	{
 
 #pragma omp parallel
 		{
 			int orig_nthreads=omp_get_num_threads();
-
 
 			// Self ID
 			int tid = omp_get_thread_num();
@@ -374,7 +376,8 @@ namespace QPhiX {
 				int n_per_thread= nvec / bthreads;
       
 				// Add extra vector
-				if ( nvec % bthreads != 0 ) n_per_thread++;
+      if (nvec % bthreads != 0)
+        n_per_thread++;
       
 				// low vector
 				int low=btid*n_per_thread ;
@@ -395,10 +398,8 @@ namespace QPhiX {
 					y[i] = a * y[i] + x[i];
 				}
 			}
-
 		}
 	}
-
 };
 
 #endif
