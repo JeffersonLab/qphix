@@ -10,7 +10,7 @@
 #undef PACKAGE_VERSION
 #undef VERSION
 
-#include "qphix_config_internal.h"
+#include "qphix/qphix_config_internal.h"
 
 /* Prefix everything with SSE */
 #define QPHIX_PACKAGE PACKAGE

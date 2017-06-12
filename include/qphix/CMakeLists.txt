@@ -1,4 +1,4 @@
-list(APPEND ${header_files} qphix_config.h dslash_utils.h
+list(APPEND header_files qphix_config.h dslash_utils.h
         abs_solver.h
         geometry.h
         comm.h
@@ -28,20 +28,20 @@ list(APPEND ${header_files} qphix_config.h dslash_utils.h
         diagnostics.h)
 
 if( ${QDP_QDPXX_FOUND} ) 
-	list(APPEND ${header_files} qdp_packer.h qdp_packer_parscalar.h qdp_packer_qdpjit.h)
+	list(APPEND header_files qdp_packer.h qdp_packer_parscalar.h qdp_packer_qdpjit.h)
 endif()
 
 if( ${clover} )
-	list(APPEND ${header_files} clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h)
+	list(APPEND header_files clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h)
 endif()
 
 if( ${twisted_mass} ) 
-	list(APPEND ${header_files} twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
+	list(APPEND header_files twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
 endif()
 
 if( ${tm_clover} )
-	list(APPEND ${header_files} twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
+	list(APPEND header_files twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
 endif()
 
-list(APPEND ${header_files} ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h)
+list(APPEND header_files ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h)
 install( FILES ${header_files} DESTINATION include/qphix )

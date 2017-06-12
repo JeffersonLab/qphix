@@ -1,3 +1,7 @@
+CMakeBuild
+  - test the CMake Build More thoroughly 
+  - modify the travis_ci.sh build to use the CMake Build
+
 To do with QDPJIT:
   - Thorough testing for SOA combinations (initially done with 4)
   - Bullet proofing assertions that data is in OCSRI layout or make the code generically figure out the right layout.
