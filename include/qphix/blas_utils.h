@@ -1,6 +1,8 @@
 #ifndef QPHIX_BLAS_UTILS_H
 #define QPHIX_BLAS_UTILS_H
 
+#include "qphix/arith_type.h"
+
 namespace QPhiX {
 
 	namespace BLASUtils { 

@@ -1,9 +1,6 @@
 #ifndef QPHIX_BLAS_H
 #define QPHIX_BLAS_H
 
-#include "qphix/qphix_config.h"
-#include "qphix/comm.h"
-
 // Generic OpenMP templated
 #include "qphix/blas_c.h"
 #include "qphix/blas_new_c.h"

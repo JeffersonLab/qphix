@@ -1,28 +1,64 @@
 #ifndef QPHIX_LINEAR_OPERATOR_H
 #define QPHIX_LINEAR_OPERATOR_H
 
-
 #include <qphix/geometry.h>
 
-namespace QPhiX { 
+namespace QPhiX
+{
 
-  template<typename FT, int veclen, int soalen, bool compress> 
-  class EvenOddLinearOperator {
-  public:
-    typedef typename Geometry<FT,veclen,soalen,compress>::FourSpinorBlock FourSpinorBlock;
-    virtual void operator()(FourSpinorBlock *res, const FourSpinorBlock* in, int isign) = 0;
+template <typename FT, int veclen, int soalen, bool compress>
+class EvenOddLinearOperator
+{
+public:
+    typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
+        FourSpinorBlock;
 
-    virtual Geometry<FT,veclen,soalen,compress>& getGeometry(void)=0;
+    static constexpr uint8_t num_flav = 1;
 
-  };
+    virtual void
+    operator()(FourSpinorBlock *res, const FourSpinorBlock *in, int isign) = 0;
 
+#ifdef __INTEL_COMPILER
+    virtual void
+    operator()(FourSpinorBlock *res[1], FourSpinorBlock *const in[1], int isign)
+    {
+        (*this)(res[0], in[0], isign);
+    };
+#endif
 
+    virtual void operator()(FourSpinorBlock *res[1],
+                            const FourSpinorBlock *const in[1],
+                            int isign)
+    {
+        (*this)(res[0], in[0], isign);
+    };
 
+    virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
+};
 
+template <typename FT, int veclen, int soalen, bool compress>
+class TwoFlavEvenOddLinearOperator
+{
+public:
+    typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
+        FourSpinorBlock;
 
+    static constexpr uint8_t num_flav = 2;
 
+#ifdef __INTEL_COMPILER
+    virtual void
+    operator()(FourSpinorBlock *res[2], FourSpinorBlock *const in[2], int isign)
+    {
+        (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign);
+    }
+#endif
+
+    virtual void operator()(FourSpinorBlock *res[2],
+                            const FourSpinorBlock *const in[2],
+                            int isign) = 0;
+
+    virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
+};
 }
-
-
 
 #endif

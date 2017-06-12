@@ -2,6 +2,10 @@
 #define QPHIX_BLAS_C_H
 
 #include "qphix/thread_limits.h"
+#include "qphix/qphix_config.h"
+#include "qphix/comm.h"
+
+#include <omp.h>
 
 namespace QPhiX { 
 

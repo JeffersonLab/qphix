@@ -36,14 +36,32 @@ namespace QPhiX
 			         const FourSpinorBlock* psi, 
 			         const FourSpinorBlock* chi,
 			         const SU3MatrixBlock* u,
-//                                 double mu,
 			         double alpha, 
 			         double beta,
 			         int isign,
 			         int cb);
 
-        Geometry<FT, veclen, soalen, compress12>& getGeometry(void) { return (*s); }
+        void two_flav(FourSpinorBlock *res[2],
+                      const FourSpinorBlock *const psi[2],
+                      const SU3MatrixBlock *u,
+                      double mu,
+                      double mu_inv,
+                      int isign,
+                      int cb);
 
+        void two_flav_achimbdpsi(FourSpinorBlock *res[2],
+                                 const FourSpinorBlock *const psi[2],
+                                 const FourSpinorBlock *const chi[2],
+                                 const SU3MatrixBlock *u,
+                                 double alpha,
+                                 double beta,
+                                 double epsilon,
+                                 int isign,
+                                 int cb);
+
+        Geometry<FT, veclen, soalen, compress12> &getGeometry(void)
+        {
+            return (*s); }
 
   private:
 

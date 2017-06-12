@@ -72,6 +72,21 @@ AC_ARG_ENABLE(tm_clover,
      [ build_tm_clov="no" ]
 )
 
+AC_ARG_ENABLE(ndtm,
+   AC_HELP_STRING([--enable-ndtm],
+     [ Enable building of non-degenerate twisted mass. (default: no) ]),
+     [ build_ndtm=${enableval}],
+     [ build_ndtm="no" ]
+)
+
+AC_ARG_ENABLE(ndtm_clover,
+   AC_HELP_STRING([--enable-ndtm-clover],
+     [ Enable building of non-degenerate twisted mass with clover term. (default: no) ]),
+     [ build_ndtm_clover=${enableval}],
+     [ build_ndtm_clover="no" ]
+)
+
+
 dnl check for QMP -- needed for parallel configures
 AC_ARG_WITH(qmp,
   AC_HELP_STRING(
@@ -515,6 +530,9 @@ AM_CONDITIONAL(QPHIX_BUILD_QPX, [ test "x${build_qpx}x" = "xyesx"])
 
 AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS, [ test "x${build_twisted}x" = "xyesx" ])
 AM_CONDITIONAL(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER, [ test "x${build_tm_clov}x" = "xyesx" ])
+
+AM_CONDITIONAL(QPHIX_BUILD_ND_TWISTED_MASS, [ test "x${build_ndtm}x" = "xyesx" ])
+AM_CONDITIONAL(QPHIX_BUILD_ND_TWISTED_MASS_WITH_CLOVER, [ test "x${build_ndtm_clover}x" = "xyesx" ])
 
 dnl dnl produce output
 AC_CONFIG_FILES(Makefile)

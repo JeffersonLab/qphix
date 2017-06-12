@@ -4,7 +4,7 @@
 ///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
 #define QPHIX_TIMING_CG
 
-#define CGEBUG
+#define CGDEBUG
 
 
 #include "qphix/linearOp.h"
@@ -16,56 +16,88 @@
 namespace  QPhiX
 {
 
-  // FIXME!!!: passing compress12 as a template to solver breaks 'delegation of responsibilities rule.
-  // Solution may be to take it out of geometry and create a fields class. Geometry can then deal
-  // exclusively with the blocking and stuff...
-  //
-  // That will be a second refactor step when everything works
-  template<typename FT, int veclen, int soalen, bool compress12>
-    class InvCG : public AbstractSolver<FT,veclen,soalen,compress12> {
-  public: 
+// FIXME!!!: passing compress12 as a template to solver breaks 'delegation of
+// responsibilities rule.
+// Solution may be to take it out of geometry and create a fields class.
+// Geometry can then deal
+// exclusively with the blocking and stuff...
+//
+// That will be a second refactor step when everything works
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename EvenOddLinearOperatorBase =
+              EvenOddLinearOperator<FT, veclen, soalen, compress12>>
+class InvCG : public AbstractSolver<FT,
+                                    veclen,
+                                    soalen,
+                                    compress12,
+                                    EvenOddLinearOperatorBase::num_flav>
+{
+public: 
     typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock Spinor;
-    InvCG(EvenOddLinearOperator<FT,veclen,soalen,compress12>& M_,
-	  int MaxIters_) : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_)
+
+    static constexpr uint8_t num_flav = EvenOddLinearOperatorBase::num_flav;
+
+    InvCG(EvenOddLinearOperatorBase &M_, int MaxIters_)
+        : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_)
     {
-      
       // Length of vectors in floats, including PADs
       masterPrintf("Initializing CG Solver: Nvec=%d Ny=%d Nz=%d Nt=%d\n", geom.nVecs(), geom.Ny(), geom.Nz(), geom.Nt());
       
+      for (uint8_t f = 0; f < num_flav; ++f)
+          mp[f] = (Spinor *)geom.allocCBFourSpinor();
+      for (uint8_t f = 0; f < num_flav; ++f)
+          mmp[f] = (Spinor *)geom.allocCBFourSpinor();
+      for (uint8_t f = 0; f < num_flav; ++f)
+          p[f] = (Spinor *)geom.allocCBFourSpinor();
+      for (uint8_t f = 0; f < num_flav; ++f)
+          r[f] = (Spinor *)geom.allocCBFourSpinor();
       
-      mp = (Spinor *)geom.allocCBFourSpinor();
-      mmp = (Spinor *)geom.allocCBFourSpinor();
-      p = (Spinor *)geom.allocCBFourSpinor();
-      r = (Spinor *)geom.allocCBFourSpinor();
-      
-
       copyThreads=geom.getNSIMT();
       aypxThreads=geom.getNSIMT();
       xmyNormThreads=geom.getNSIMT();
       rmammpNorm2rxpapThreads=geom.getNSIMT(); 
       norm2Threads=geom.getNSIMT(); 
-      
-      
     }
 
     ~InvCG() {
-      geom.free(mp);
-      geom.free(mmp);
-      geom.free(p);
-      geom.free(r);
+      for (uint8_t f = 0; f < num_flav; ++f) {
+          geom.free(mp[f]);
+          geom.free(mmp[f]);
+          geom.free(p[f]);
+          geom.free(r[f]);
+      }
     }
-    
 
-    void operator()(Spinor *x, 
-		    const Spinor *rhs, 
+    // This class overrides the `operator()` from `AbstractSolver`. Due to “name
+    // hiding”, the overloads of `operator()` in the base class are no longer
+    // visible in this class. Therefore the single-flavor interface is not found
+    // when trying to use the solver like it has worked before, namely with an
+    // instance of this solver with automatic storage (i.e. no pointers). Here
+    // we do want the overload for a single spinor pointer to delegate back to
+    // the multi-flavor variant. The overloads need to be included explicitly
+    // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
+    using AbstractSolver<FT, veclen, soalen, compress12, num_flav>::operator();
+
+    virtual void operator()(Spinor *x[num_flav], 
+		    const Spinor *const rhs[num_flav], 
 		    const double RsdTarget,
 		    int& n_iters, 
 		    double& rsd_sq_final, 
 		    unsigned long& site_flops,
 		    unsigned long& mv_apps, 
 		    int isign,
-		    bool verboseP) 
+		    bool verboseP) override
     {
+        if (verboseP) {
+            masterPrintf("Entering the CG inverter with num_flav=%u\n",
+                         num_flav);
+        }
+
+
+
 #ifdef QPHIX_TIMING_CG
       TSC_tick cg_start;
       TSC_tick cg_end;
@@ -126,15 +158,17 @@ namespace  QPhiX
 #endif
       double chi_sq;
 
-
-      norm2Spinor<FT,veclen,soalen,compress12>(chi_sq, rhs, geom, norm2Threads);        
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          chi_sq, rhs, geom, norm2Threads);
       masterPrintf("Chi_sq=%g RsdTarget=%g\n", chi_sq, RsdTarget);
 
 #ifdef CGDEBUG
-      norm2Spinor<FT,veclen,soalen,compress12>(chi_sq, x, geom, norm2Threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          chi_sq, x, geom, norm2Threads);
       masterPrintf("||x||=%lf\n", chi_sq);
 
-      norm2Spinor<FT,veclen,soalen,compress12>(chi_sq, rhs, geom, norm2Threads);        
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          chi_sq, rhs, geom, norm2Threads);
       masterPrintf("Chi_sq=%g RsdTarget=%g\n", chi_sq, RsdTarget);
 #endif      
 
@@ -143,7 +177,7 @@ namespace  QPhiX
       norm2_time += (norm2_end-norm2_start);
 #endif
       
-      site_flops += 4*12;
+      site_flops += 4*12 * num_flav;
       double rsd_sq = (RsdTarget*RsdTarget)*chi_sq;
       
       double tmp_d;
@@ -151,17 +185,20 @@ namespace  QPhiX
 #ifdef TIMING_CG
       CLOCK_NOW(lstart);
 #endif
+
       M(mp,x,isign);
 
 #ifdef CGDEBUG
-      norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mp,geom,norm2Threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          tmp_d, mp, geom, norm2Threads);
       masterPrintf("M p = %lf \n", tmp_d);
 #endif
 
       M(mmp,mp,-isign);
 
 #ifdef CGDEBUG
-      norm2Spinor<FT,veclen,soalen,compress12>(tmp_d,mmp,geom,norm2Threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          tmp_d, mmp, geom, norm2Threads);
       masterPrintf("MM p = %lf \n", tmp_d);
 #endif
 
@@ -176,14 +213,16 @@ namespace  QPhiX
 #ifdef TIMING_CG
       CLOCK_NOW(xmyNorm_start);
 #endif
-      xmyNorm2Spinor<FT,veclen,soalen,compress12>(r,rhs,mmp, cp, geom, xmyNormThreads);
-      
+
+      xmyNorm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          r, rhs, mmp, cp, geom, xmyNormThreads);
+
 #ifdef TIMING_CG
       CLOCK_NOW(xmyNorm_end);
       xmyNorm_time += (xmyNorm_end - xmyNorm_start);
 #endif
-      site_flops += 6*12;
-      
+
+      site_flops += 6*12 * num_flav;
       
       if( verboseP ) masterPrintf("CG: r0 = %g   target = %g \n", cp, rsd_sq);
 
@@ -215,7 +254,8 @@ namespace  QPhiX
       CLOCK_NOW(copy_start);
 #endif
 
-      copySpinor<FT,veclen,soalen,compress12>(p,r, geom, copyThreads);
+      copySpinor<FT, veclen, soalen, compress12, num_flav>(
+          p, r, geom, copyThreads);
 
 #ifdef TIMING_CG
       CLOCK_NOW(copy_end);
@@ -243,14 +283,15 @@ namespace  QPhiX
 	CLOCK_NOW(norm2_start);
 #endif
 
-	norm2Spinor<FT,veclen,soalen,compress12>(d,mp,geom,norm2Threads);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            d, mp, geom, norm2Threads);
 
 #ifdef TIMING_CG
 	CLOCK_NOW(norm2_end);
 	norm2_time += (norm2_end - norm2_start);
 #endif
 
-	site_flops+=4*12;
+	site_flops+=4*12 * num_flav;
 
 	a = c/d;
 
@@ -262,21 +303,24 @@ namespace  QPhiX
 	CLOCK_NOW(rmammp_start);
 #endif
 
-	rmammpNorm2rxpap<FT,veclen,soalen,compress12>(r,a,mmp,cp,x,p,geom, rmammpNorm2rxpapThreads);
+        rmammpNorm2rxpap<FT, veclen, soalen, compress12, num_flav>(
+            r, a, mmp, cp, x, p, geom, rmammpNorm2rxpapThreads);
 
 #ifdef CGDEBUG
-	norm2Spinor<FT,veclen,soalen,compress12>(tmp_d, r, geom, norm2Threads);        
-	masterPrintf("CG:   iter %d: r2 = %lf \n", k, tmp_d);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            tmp_d, r, geom, norm2Threads);
+        masterPrintf("CG:   iter %d: r2 = %lf \n", k, tmp_d);
 
-	norm2Spinor<FT,veclen,soalen,compress12>(tmp_d, x, geom, norm2Threads);        
-	masterPrintf("CG:   iter %d: x2 = %lf \n", k, tmp_d);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            tmp_d, x, geom, norm2Threads);
+        masterPrintf("CG:   iter %d: x2 = %lf \n", k, tmp_d);
 #endif
 
 #ifdef TIMING_CG
 	CLOCK_NOW(rmammp_end);
 	rmammp_time += ( rmammp_end - rmammp_start);
 #endif
-	site_flops += 12*12;
+	site_flops += 12*12 * num_flav;
 
 	if (verboseP) masterPrintf("CG: iter %d:  r2 = %g   target = %g \n", k, cp, rsd_sq);	  
 
@@ -292,11 +336,12 @@ namespace  QPhiX
 	  mv_apps += 2;
 
 	  CLOCK_NOW(xmyNorm_start);
-	  xmyNorm2Spinor<FT,veclen,soalen,compress12>(r, rhs, mmp, cp, geom, xmyNormThreads);
-	  CLOCK_NOW(xmyNorm_end);
+          xmyNorm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+              r, rhs, mmp, cp, geom, xmyNormThreads);
+          CLOCK_NOW(xmyNorm_end);
 	  xmyNorm_time += (xmyNorm_end - xmyNorm_start);
 
-	  site_flops += 6*12;
+	  site_flops += 6*12 * num_flav;
 	  rsd_sq_final = cp ;
 	  CLOCK_NOW(cg_end);
 	  cg_time = cg_end - cg_start;
@@ -323,13 +368,14 @@ namespace  QPhiX
 #ifdef TIMING_CG
 	CLOCK_NOW(aypx_start);
 #endif
-	aypx<FT,veclen,soalen,compress12>(b,r,p, geom, aypxThreads);
+        aypx<FT, veclen, soalen, compress12, num_flav>(
+            b, r, p, geom, aypxThreads);
 
 #ifdef TIMING_CG
 	CLOCK_NOW(aypx_end);
 	aypx_time += (aypx_end - aypx_start);
 #endif
-	site_flops += 4*12;
+	site_flops += 4*12 * num_flav;
       }
       
 
@@ -397,14 +443,14 @@ namespace  QPhiX
     }
     private:
 
-    EvenOddLinearOperator<FT, veclen,soalen,compress12>& M;
+    EvenOddLinearOperatorBase& M;
     Geometry<FT, veclen,soalen,compress12>& geom;
     int MaxIters;
 
-    Spinor *mp;
-    Spinor *mmp;
-    Spinor *p;
-    Spinor *r;
+    Spinor *mp[num_flav];
+    Spinor *mmp[num_flav];
+    Spinor *p[num_flav];
+    Spinor *r[num_flav];
 
 
     int copyThreads;
@@ -586,15 +632,8 @@ namespace  QPhiX
       }
     }
 
-
   };
 
-
-
-
-
 };
-
-
 
 #endif

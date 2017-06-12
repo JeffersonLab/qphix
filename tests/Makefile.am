@@ -31,6 +31,20 @@ endif
 check_PROGRAMS += time_twm_clover
 endif
 
+if QPHIX_BUILD_ND_TWISTED_MASS
+if QPHIX_BUILD_WITH_QDP
+check_PROGRAMS += t_ndtm_dslash
+endif
+check_PROGRAMS += time_ndtm_noqdp
+endif
+
+if QPHIX_BUILD_ND_TWISTED_MASS_WITH_CLOVER
+if QPHIX_BUILD_WITH_QDP
+check_PROGRAMS += t_ndtm_clover t_ndtm_vs_tm_clover t_ndtm_invert_from_file
+endif
+check_PROGRAMS += time_ndtm_clover
+endif
+
 bin_PROGRAMS = $(check_PROGRAMS)
 
 FRAMEWORK_SRCS =  unittest.h \
@@ -39,6 +53,10 @@ FRAMEWORK_SRCS =  unittest.h \
 	reunit.h \
 	invbicgstab_test.h \
 	reunit.cc
+
+###############################################################################
+#                                Plain Wilson                                 #
+###############################################################################
 
 t_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testDslashFull.h \
@@ -100,6 +118,10 @@ time_clov_noqdp_DEPENDENCIES = build_lib
 
 endif
 
+###############################################################################
+#                                Twisted Mass                                 #
+###############################################################################
+
 if QPHIX_BUILD_TWISTED_MASS
 t_twm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
 	testTWMDslashFull.h \
@@ -143,6 +165,78 @@ time_twm_clover_SOURCES=$(FRAMEWORK_SRCS) \
 t_twm_clover_DEPENDENCIES = build_lib
 time_twm_clover_DEPENDENCIES = build_lib
 endif
+
+###############################################################################
+#                         Non-Degenerate Twisted Mass                         #
+###############################################################################
+
+if QPHIX_BUILD_ND_TWISTED_MASS
+t_ndtm_dslash_SOURCES = $(FRAMEWORK_SRCS) \
+	testNDTMDslashFull.h \
+	testNDTMDslashFull.cc \
+	t_ndtm_dslash.cc
+
+time_ndtm_noqdp_SOURCES=$(FRAMEWORK_SRCS) \
+	time_ndtm_noqdp.cc \
+	timeNDTMNoQDP.h \
+	timeNDTMNoQDP.cc
+
+t_ndtm_dslash_DEPENDENCIES = build_lib
+time_ndtm_noqdp_DEPENDENCIES = build_lib
+endif
+
+
+if QPHIX_BUILD_ND_TWISTED_MASS_WITH_CLOVER
+
+if QPHIX_BUILD_QDPJIT_CLOVER
+TM_CLOVER_SRCS = clover_term_llvm_w.h
+endif
+
+if QPHIX_BUILD_QDP_CLOVER
+TM_CLOVER_SRCS = clover_term_qdp_w.h
+endif
+
+t_ndtm_clover_SOURCES = $(FRAMEWORK_SRCS) \
+	testNDTMCloverFull.h \
+	testNDTMCloverFull.cc \
+	t_ndtm_clover.cc \
+	mesfield.h \
+	mesfield.cc \
+	$(TM_CLOVER_SRCS) \
+	clover_fermact_params_w.h
+
+t_ndtm_vs_tm_clover_SOURCES = $(FRAMEWORK_SRCS) \
+	testNDTMvsTMCloverFull.h \
+	testNDTMvsTMCloverFull.cc \
+	t_ndtm_vs_tm_clover.cc \
+	mesfield.h \
+	mesfield.cc \
+	$(TM_CLOVER_SRCS) \
+	clover_fermact_params_w.h \
+	packed_spinor.h
+
+t_ndtm_invert_from_file_SOURCES = $(FRAMEWORK_SRCS) \
+	testNDTMInvertFromFile.h \
+	testNDTMInvertFromFile.cc \
+	t_ndtm_invert_from_file.cc \
+	mesfield.h \
+	mesfield.cc \
+	$(TM_CLOVER_SRCS) \
+	clover_fermact_params_w.h \
+	packed_spinor.h
+
+time_ndtm_clover_SOURCES=$(FRAMEWORK_SRCS) \
+	time_ndtm_clover.cc \
+	timeNDTMClover.h \
+	timeNDTMClover.cc
+
+t_ndtm_clover_DEPENDENCIES = build_lib
+t_ndtm_vs_tm_clover_DEPENDENCIES = build_lib
+t_ndtm_invert_from_file_DEPENDENCIES = build_lib
+time_ndtm_clover_DEPENDENCIES = build_lib
+endif
+
+###############################################################################
 
 test_blas_SOURCES=$(FRAMEWORK_SRCS) \
 	test_blas.cc \

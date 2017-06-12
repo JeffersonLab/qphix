@@ -210,6 +210,10 @@ namespace QPhiX {
 		inline int nVecs() const { return nvecs_; }
 		inline int nGY() const { return ngy_; }
 
+    size_t get_num_blocks () const {
+        return Nt_ * Nz_ * Ny_ * nvecs_;
+    }
+
 
 		/*! \brief Checkerboarded FourSpinor Allocator
 		*

@@ -2,6 +2,7 @@
 #define QPHIX_COMPLEX_FUNCTORS_H
 
 #include "qphix/blas_utils.h"
+#include "qphix/arith_type.h"
 
 namespace QPhiX  { 
 
