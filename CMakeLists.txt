@@ -390,7 +390,7 @@ export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
  		   				${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
     				
-if ( ${isa} STREQUAL "avx" )
+if ( (${isa} STREQUAL "avx") OR (${isa} STREQUAL "avx2") )
 	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
 					${CMAKE_CURRENT_BINARY_DIR}/include/avx_utils.h)
 elseif( ${isa} STREQUAL "sse" )
