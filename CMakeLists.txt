@@ -16,6 +16,12 @@ option(isa "Enable use of code for particular isa. Allowed are: avx avx2 avx512 
 option(qdpjit "When QDP++ is used it is QDP-JIT so use QDP-JIT interfaces" OFF)
 option(qdpalloc "When QDP++ is used, use its memory allocator instead of mm_malloc or posix_memalign" OFF)
 
+
+# Codegen stuff
+OPTION( host_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
+OPTION( host_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
+OPTION( recusive_jN "select -j value for recursive make (defaults to 1)" 1)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
@@ -177,12 +183,48 @@ if( QPHIX_CODEGEN )
   add_library(qphix_codegen STATIC IMPORTED)
   set_property(TARGET qphix_codegen PROPERTY IMPORTED_LOCATION ${QPHIX_CODEGEN}/lib/libqphix_codegen.a)
 else()
-  message(STATUS, "This branch will in the future build libqphix_codegen.a on demand, but not quite yet")
+
+  
+  # A build directory for building qphix-codegen
+  file(MAKE_DIRECTORY  ${CMAKE_BINARY_DIR}/codegen )
+
+  #
+  # The custom command will make at least this libqphix_codegen.a 
+  # It will use the build directory (specified by the WORKING_DIRECTORY)
+  # When this command is executed, it will also install the library to CMAKE_INSTALL_PREFIX 
+  add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
+                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/codegen
+                   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
+                   COMMENT "Generating Libcodegen"
+                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
+
+  #
+  # now add a target which depends on this file existing. 
+  # This is kind of liek an alias. I can then make later targets depend on this
+  #
+  add_custom_target(build_codegen DEPENDS ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a )
+
+  #
+  # I want to be able to use the libqphix_codegen.a  library as proper CMake library
+  # so this defines a library as IMPORTED
+  add_library(qphix_codegen STATIC IMPORTED)
+
+  # This says where the library file is. So now adding target_link_libraries(foo libcodegen)
+  # will link exeutable foo against libqphix_codegen.a
+  set_property(TARGET qphix_codegen PROPERTY IMPORTED_LOCATION ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a)
+
+  # I will also make licodegen depend on the build_codegen target
+  # so if something depends on libcodegen, that will trigger the build_codegen target
+  # which will cause the libqphix_codegen.a library to be rebuilt if it does not yet exist.
+  add_dependencies(qphix_codegen build_codegen)
+  include_directories(${CMAKE_INSTALL_PREFIX}/include)
+
+
 endif()
 
 configure_file(
 	${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
-	${PROJECT_BINARY_DIR}/include/qphix_config_internal.h 
+	${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h 
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
