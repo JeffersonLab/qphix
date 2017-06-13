@@ -27,7 +27,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         qphix_cli_args.h
         diagnostics.h)
 
-if( ${QDP_QDPXX_FOUND} ) 
+if( ${QDPXX_CXX_FOUND} ) 
 	list(APPEND header_files qdp_packer.h qdp_packer_parscalar.h qdp_packer_qdpjit.h)
 endif()
 
