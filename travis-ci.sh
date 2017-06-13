@@ -313,18 +313,22 @@ case "$QPHIX_ARCH" in
     SCALAR)
         archflag=
         soalen=1
+	isa="scalar"
         ;;
     AVX)
         archflag=-march=sandybridge
         soalen=4
+	isa="avx"
         ;;
     AVX2)
         archflag=-march=haswell
         soalen=4
+	isa="avx2"
         ;;
     AVX512)
         archflag=-march=knl
         soalen=8
+	isa="avx512"
         ;;
     *)
         echo "Unsupported QPHIX_ARCH"
@@ -344,6 +348,8 @@ fold_start $repo.configure
 
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
+
+
 if ! [[ -f Makefile ]]; then
 #    if ! $sourcedir/$repo/configure $base_configure \
 #            $qphix_configure \
@@ -359,7 +365,7 @@ if ! [[ -f Makefile ]]; then
 #            --with-qdp="$prefix" \
 #            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
       if !  CXX=$(which $cxx_name) CXXFLAGS="$cxxflags $archflag" \
-            cmake -Disa=$QPHIX_ARCH \
+            cmake -Disa=${isa} \
 	      -Dhost_cxx="g++" \
 	      -Dhost_cxxflags="-g -O3 -std=c++11" \
 	      -Drecursive_jN=4 \
