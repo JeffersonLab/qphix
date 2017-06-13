@@ -358,7 +358,7 @@ if ! [[ -f Makefile ]]; then
 #            --enable-parallel-arch=parscalar \
 #            --with-qdp="$prefix" \
 #            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
-      if !  CXX=${which_cxx_name} CXXFLAGS="$cxxflags $archflag" \
+      if !  CXX=$(which $cxx_name) CXXFLAGS="$cxxflags $archflag" \
             cmake -Disa=$QPHIX_ARCH \
 	      -Dhost_cxx="g++" \
 	      -Dhost_cxxflags="-g -O3 -std=c++11" \
