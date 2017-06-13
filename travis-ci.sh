@@ -372,7 +372,7 @@ if ! [[ -f Makefile ]]; then
 	      -DCMAKE_INSTALL_PREFIX="$prefix/qphix_${QPHIX_ARCH}" \
 	      -DQDPXX_DIR="$prefix" \
 	      -Dclover=TRUE \
-	      -Dtwisted-mass=TRUE \
+	      -Dtwisted_mass=TRUE \
 	      -Dtm_clover=TRUE \
 	      -Dcean=FALSE \
 	      -Dmm_malloc=TRUE \
