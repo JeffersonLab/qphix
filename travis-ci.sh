@@ -376,7 +376,7 @@ if ! [[ -f Makefile ]]; then
 	      -Dtm_clover=TRUE \
 	      -Dcean=FALSE \
 	      -Dmm_malloc=TRUE \
-	      -Dtesting=TRUE ; then
+	      -Dtesting=TRUE $sourcedir/$repo ; then
         exit 1
     fi
 fi
