@@ -84,7 +84,6 @@ PATH=$prefix/bin:$PATH
 base_cxxflags="$base_flags"
 base_cflags="$base_flags"
 base_configure="--prefix=$prefix --disable-shared --enable-static CC=$(which $cc_name) CXX=$(which $cxx_name)"
-
 # Clones a git repository if the directory does not exist. It does not call
 # `git pull`. After cloning, it deletes the `configure` and `Makefile` that are
 # shipped by default such that they get regenerated in the next step.
@@ -346,20 +345,32 @@ fold_start $repo.configure
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            $qphix_configure \
-            --enable-testing \
-            --enable-proc=$QPHIX_ARCH \
-            --enable-soalen=$soalen \
-            --enable-clover \
-            --enable-twisted-mass \
-            --enable-tm-clover \
-            --enable-openmp \
-            --enable-mm-malloc \
-            --enable-parallel-arch=parscalar \
-            --with-qdp="$prefix" \
-            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
-        cat config.log
+#    if ! $sourcedir/$repo/configure $base_configure \
+#            $qphix_configure \
+#            --enable-testing \
+#            --enable-proc=$QPHIX_ARCH \
+#            --enable-soalen=$soalen \
+#            --enable-clover \
+#            --enable-twisted-mass \
+#            --enable-tm-clover \
+#            --enable-openmp \
+#            --enable-mm-malloc \
+#            --enable-parallel-arch=parscalar \
+#            --with-qdp="$prefix" \
+#            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
+      if !  CXX=${which_cxx_name} CXXFLAGS="$cxxflags $archflag" \
+            cmake -Disa=$QPHIX_ARCH \
+	      -Dhost_cxx="g++" \
+	      -Dhost_cxxflags="-g -O3 -std=c++11" \
+	      -Drecursive_jN=4 \
+	      -DCMAKE_INSTALL_PREFIX="$prefix/qphix_${QPHIX_ARCH}" \
+	      -DQDPXX_DIR="$prefix" \
+	      -Dclover=TRUE \
+	      -Dtwisted-mass=TRUE \
+	      -Dtm_clover=TRUE \
+	      -Dcean=FALSE \
+	      -Dmm_malloc=TRUE \
+	      -Dtesting=TRUE ; then
         exit 1
     fi
 fi
