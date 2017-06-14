@@ -166,12 +166,16 @@ CliArgs processArgs(int &argc, char **&argv, bool const is_timing)
       args.thread_bind = true;
       i++;
     } else {
+#if 0
       QPhiX::masterPrintf("ERROR: The option “%s” could not be parsed. Please have "
                           "a look at the supported options below.\n\n",
                           arg.c_str());
       args.some_user_args.printArgHelp();
       printArgHelp(args, is_timing);
       exit(1);
+#endif
+      /* Ignore unrecognized arguments -- they may be needed by other components */
+      i++;
     }
   }
 
