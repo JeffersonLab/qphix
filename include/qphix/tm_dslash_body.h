@@ -23,7 +23,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
     double Mass_,
     double TwistedMass_,
     bool use_tbc_[4],
-    FT tbc_phases_[4][2])
+    double tbc_phases_[4][2])
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
@@ -39,7 +39,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
       use_tbc[dim] = use_tbc_[dim];
 
       for (int dir : {0, 1}) {
-        tbc_phases[dim][dir] = tbc_phases_[dim][dir];
+        tbc_phases[dim][dir] = rep<FT, double>(tbc_phases_[dim][dir]);
       }
     }
   }

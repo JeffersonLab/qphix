@@ -28,7 +28,7 @@ class TMClovDslash
                double dslash_aniso_s_,
                double dslash_aniso_t_,
                bool use_tbc_[4] = nullptr,
-               FT tbc_phases_[4][2] = nullptr);
+               double tbc_phases_[4][2] = nullptr);
 
   // Destructor
   ~TMClovDslash();
