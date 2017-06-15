@@ -27,7 +27,7 @@ class TMDslash
            double Mass_,
            double TwistedMass_,
            bool use_tbc_[4] = nullptr,
-           FT tbc_phases_[4][2] = nullptr);
+           double tbc_phases_[4][2] = nullptr);
 
   ~TMDslash();
 
@@ -82,7 +82,6 @@ class TMDslash
                          {rep<FT, double>(1.0), rep<FT, double>(0.0)},
                          {rep<FT, double>(1.0), rep<FT, double>(0.0)},
                          {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
-
 
   // Wilson & Twisted Mass Parameters
   double Mass;

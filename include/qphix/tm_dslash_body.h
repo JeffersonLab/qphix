@@ -23,7 +23,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
     double Mass_,
     double TwistedMass_,
     bool use_tbc_[4],
-    FT tbc_phases_[4][2])
+    double tbc_phases_[4][2])
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
@@ -39,7 +39,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
       use_tbc[dim] = use_tbc_[dim];
 
       for (int dir : {0, 1}) {
-        tbc_phases[dim][dir] = tbc_phases_[dim][dir];
+        tbc_phases[dim][dir] = rep<FT, double>(tbc_phases_[dim][dir]);
       }
     }
   }
@@ -340,12 +340,11 @@ TMDslash<FT, veclen, soalen, compress12>::~TMDslash()
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::dslash(
-    FourSpinorBlock *res,
-    const FourSpinorBlock *psi,
-    const SU3MatrixBlock *u,
-    int isign,
-    int cb)
+void TMDslash<FT, veclen, soalen, compress12>::dslash(FourSpinorBlock *res,
+                                                      const FourSpinorBlock *psi,
+                                                      const SU3MatrixBlock *u,
+                                                      int isign,
+                                                      int cb)
 {
   TMDPsi(u, psi, res, isign == 1, cb);
 }
@@ -995,12 +994,11 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(
-    const SU3MatrixBlock *u,
-    const FourSpinorBlock *psi_in,
-    FourSpinorBlock *res_out,
-    bool const is_plus,
-    int cb)
+void TMDslash<FT, veclen, soalen, compress12>::TMDPsi(const SU3MatrixBlock *u,
+                                                      const FourSpinorBlock *psi_in,
+                                                      FourSpinorBlock *res_out,
+                                                      bool const is_plus,
+                                                      int cb)
 {
   double beta_s = -aniso_coeff_S;
   double beta_t_f = -aniso_coeff_T;

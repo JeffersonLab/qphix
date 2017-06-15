@@ -26,9 +26,11 @@ class EvenOddCloverOperator
                         Geometry<FT, veclen, soalen, compress12> *geom_,
                         double t_boundary,
                         double aniso_coeff_s,
-                        double aniso_coeff_t)
+                        double aniso_coeff_t,
+                        bool use_tbc_[4] = nullptr,
+                        double tbc_phases_[4][2] = nullptr)
       : D(new ClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     u[0] = u_[0];
@@ -41,9 +43,11 @@ class EvenOddCloverOperator
   EvenOddCloverOperator(Geometry<FT, veclen, soalen, compress12> *geom_,
                         double t_boundary,
                         double aniso_coeff_s,
-                        double aniso_coeff_t)
+                        double aniso_coeff_t,
+                        bool use_tbc_[4] = nullptr,
+                        double tbc_phases_[4][2] = nullptr)
       : D(new ClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();

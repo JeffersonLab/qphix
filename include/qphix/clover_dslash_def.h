@@ -33,7 +33,7 @@ class ClovDslash
              double dslash_aniso_s_,
              double dslash_aniso_t_,
              bool use_tbc_[4] = nullptr,
-             FT tbc_phases_[4][2] = nullptr);
+             double tbc_phases_[4][2] = nullptr);
 
   /* Destructor */
   ~ClovDslash();
@@ -122,11 +122,11 @@ class ClovDslash
                          int cb);
 
   void DPsi(const SU3MatrixBlock *u,
-                const CloverBlock *invclov,
-                const FourSpinorBlock *psi_in,
-                FourSpinorBlock *res_out,
-                bool const is_plus,
-                int cb);
+            const CloverBlock *invclov,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            bool const is_plus,
+            int cb);
 
   void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
                           const CloverBlock *clov,

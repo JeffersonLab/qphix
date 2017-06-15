@@ -30,7 +30,7 @@ class Dslash
          double aniso_coeff_S_,
          double aniso_coeff_T_,
          bool use_tbc_[4] = nullptr,
-         FT tbc_phases_[4][2] = nullptr);
+         double tbc_phases_[4][2] = nullptr);
 
   /* Destructor */
   ~Dslash();

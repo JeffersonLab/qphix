@@ -19,34 +19,30 @@ if( ${testing} )
         list(APPEND framework_headers clover_term_qdp_w.h)
        endif()
      endif()
-  endif()
-endif()
-add_library(testlib ${framework_sources})
-target_link_libraries(testlib qphix_codegen)
-
-add_executable(time_dslash_noqdp time_dslash_noqdp.cc timeDslashNoQDP.h timeDslashNoQDP.cc)
-target_link_libraries(time_dslash_noqdp testlib qphix_solver ${EXT_LIBS})
-list( APPEND built_targets time_dslash_noqdp)
-
-if( ${clover} )
-  add_executable(time_clov_noqdp time_clov_noqdp.cc timeClovNoQDP.h timeClovNoQDP.cc)
-  target_link_libraries(time_clov_noqdp testlib qphix_codegen qphix_solver ${EXT_LIBS})
-  list( APPEND built_targets time_clov_noqdp)
-endif()
-
-if( ${twisted_mass} )
- add_executable(time_twm_noqdp time_twm_noqdp.cc timeTWMNoQDP.h timeTWMNoQDP.cc)
- target_link_libraries(time_twm_noqdp testlib qphix_codegen qphix_solver ${EXT_LIBS})
- list( APPEND built_targets time_twm_noqdp)
-endif()
-
-if( ${tm_clover} )
-  add_executable(time_twm_clover time_twm_clover.cc timeTWMClover.h timeTWMClover.cc)
-  target_link_libraries(time_twm_clover testlib qphix_codegen qphix_solver ${EXT_LIBS})
-endif()
-
-if( ${testing} )
-  if( ${QDPXX_CXX_FOUND} )
+    
+     add_library(testlib ${framework_sources})
+    target_link_libraries(testlib qphix_codegen)
+    
+    add_executable(time_dslash_noqdp time_dslash_noqdp.cc timeDslashNoQDP.h timeDslashNoQDP.cc)
+    target_link_libraries(time_dslash_noqdp testlib qphix_solver ${EXT_LIBS})
+    list( APPEND built_targets time_dslash_noqdp)
+    
+    if( ${clover} )
+      add_executable(time_clov_noqdp time_clov_noqdp.cc timeClovNoQDP.h timeClovNoQDP.cc)
+      target_link_libraries(time_clov_noqdp testlib qphix_codegen qphix_solver ${EXT_LIBS})
+      list( APPEND built_targets time_clov_noqdp)
+    endif()
+    
+    if( ${twisted_mass} )
+     add_executable(time_twm_noqdp time_twm_noqdp.cc timeTWMNoQDP.h timeTWMNoQDP.cc)
+     target_link_libraries(time_twm_noqdp testlib qphix_codegen qphix_solver ${EXT_LIBS})
+     list( APPEND built_targets time_twm_noqdp)
+    endif()
+    
+    if( ${tm_clover} )
+      add_executable(time_twm_clover time_twm_clover.cc timeTWMClover.h timeTWMClover.cc)
+      target_link_libraries(time_twm_clover testlib qphix_codegen qphix_solver ${EXT_LIBS})
+    endif()
  
     add_executable(t_dslash t_dslash.cc testDslashFull.h testDslashFull.cc ${framework_headers})
     target_link_libraries(t_dslash testlib qphix_codegen qphix_solver ${EXT_LIBS})

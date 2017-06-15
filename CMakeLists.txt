@@ -47,7 +47,7 @@ if( QDPXX_DIR )
   set( QPHIX_USE_QDPXX FALSE)
 endif()
 
-if( ${QMP_DIR} )
+if( QMP_DIR )
   message(STATUS, "Looking for QMP")
   set( CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "${QMP_DIR}")
 
