@@ -334,13 +334,12 @@ ClovDslash<FT, veclen, soalen, compress12>::~ClovDslash()
 
 // The operator() that the user sees
 template <typename FT, int veclen, int soalen, bool compress12>
-void ClovDslash<FT, veclen, soalen, compress12>::dslash(
-    FourSpinorBlock *res,
-    const FourSpinorBlock *psi,
-    const SU3MatrixBlock *u,
-    const CloverBlock *invclov,
-    int isign,
-    int cb)
+void ClovDslash<FT, veclen, soalen, compress12>::dslash(FourSpinorBlock *res,
+                                                        const FourSpinorBlock *psi,
+                                                        const SU3MatrixBlock *u,
+                                                        const CloverBlock *invclov,
+                                                        int isign,
+                                                        int cb)
 {
   DPsi(u, invclov, psi, res, isign == 1, cb);
 }
@@ -1088,8 +1087,8 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 #endif // QPHIX_DO_COMMS
 }
 
-template<typename FT, int veclen, int soalen, bool compress12> void
-ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
+template <typename FT, int veclen, int soalen, bool compress12>
+void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     const SU3MatrixBlock *u,
     const CloverBlock *clov,
     const FourSpinorBlock *psi_in,
@@ -1157,7 +1156,6 @@ ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #endif // QPHIX_DO_COMMS
 }
-
 
 } // Namespace
 

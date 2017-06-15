@@ -122,11 +122,11 @@ class ClovDslash
                          int cb);
 
   void DPsi(const SU3MatrixBlock *u,
-                const CloverBlock *invclov,
-                const FourSpinorBlock *psi_in,
-                FourSpinorBlock *res_out,
-                bool const is_plus,
-                int cb);
+            const CloverBlock *invclov,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            bool const is_plus,
+            int cb);
 
   void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
                           const CloverBlock *clov,

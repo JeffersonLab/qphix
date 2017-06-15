@@ -25,9 +25,9 @@ class EvenOddWilsonOperator
                         double aniso_fac_t_,
                         bool use_tbc_[4] = nullptr,
                         double tbc_phases_[4][2] = nullptr)
-      : Mass(Mass_), D(new Dslash<FT, veclen, soalen, compress12>(
-                         geom_, t_boundary_, aniso_fac_s_, aniso_fac_t_,
-                         use_tbc_, tbc_phases_))
+      : Mass(Mass_),
+        D(new Dslash<FT, veclen, soalen, compress12>(
+            geom_, t_boundary_, aniso_fac_s_, aniso_fac_t_, use_tbc_, tbc_phases_))
   {
 
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();

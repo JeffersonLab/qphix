@@ -83,7 +83,6 @@ class TMDslash
                          {rep<FT, double>(1.0), rep<FT, double>(0.0)},
                          {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
 
-
   // Wilson & Twisted Mass Parameters
   double Mass;
   double TwistedMass;

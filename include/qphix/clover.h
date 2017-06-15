@@ -47,8 +47,7 @@ class EvenOddCloverOperator
                         bool use_tbc_[4] = nullptr,
                         double tbc_phases_[4][2] = nullptr)
       : D(new ClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t,
-            use_tbc_, tbc_phases_))
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
