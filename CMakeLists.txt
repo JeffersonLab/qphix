@@ -113,21 +113,21 @@ function(setup_defs target precision soalen lowprec)
 
 endif()
 
-MESSAGE(INFO, "Yesnolist  is ${yesnolist}")
-MESSAGE(INFO, "Deflist2 is ${deflist}")
+MESSAGE(STATUS "Yesnolist  is ${yesnolist}")
+MESSAGE(STATUS "Deflist2 is ${deflist}")
 target_compile_definitions(${target} PRIVATE ${yesnolist} PRIVATE ${deflist} )
 endfunction()
 
 
-MESSAGE(INFO, "Looking for Python")
+MESSAGE(STATUS "Looking for Python")
 find_package(PythonLibs 3.0 REQUIRED)
 find_package(PythonInterp 3.0 REQUIRED)
-MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
+MESSAGE(STATUS "Python interpreter is ${PYTHON_EXECUTABLE}")
 
-MESSAGE(INFO, "Copying JINJA Directory")
+MESSAGE(STATUS "Copying JINJA Directory")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-#MESSAGE(INFO, "Copying Include Directory")
+#MESSAGE(INFO "Copying Include Directory")
 #file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 LIST(APPEND codegen_sources codegen.cc
@@ -368,7 +368,7 @@ elseif( ${isa} STREQUAL "scalar" )
         list(APPEND target_list ${target})
 
 else()
-	MESSAGE( ERROR, "Unknown isa: ${isa}")
+	MESSAGE(ERROR "Unknown isa: ${isa}")
 endif()
 
 # FOR EACH BUILT TARGET: run the build target
