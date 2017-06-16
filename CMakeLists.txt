@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.1)
 project(QPhiX-Codegen)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
-OPTION( isa  "select ISA to generate for" )
-OPTION( target_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
-OPTION( target_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
-OPTION( target_jN "select -j parameter for making target" 1)
+
+set(isa "" CACHE STRING "select ISA to generate for")
+set(target_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a")
+set(target_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING "select target CXXFLAGS for building libqphix-codege.a")
+set(target_jN 1 CACHE STRING "select -j parameter for making target")
 
 function(setup_defs target precision soalen lowprec)
 
