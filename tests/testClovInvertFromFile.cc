@@ -167,7 +167,8 @@ void TestClovFile::runTest(double mass,
                                     args_.Sz,
                                     args_.PadXY,
                                     args_.PadXYZ,
-                                    args_.MinCt);
+                                    args_.MinCt,
+                                    true);
   Geometry<FT2, V2, SOA2, compress> geom_inner(Layout::subgridLattSize().slice(),
                                                args_.By,
                                                args_.Bz,
@@ -176,7 +177,8 @@ void TestClovFile::runTest(double mass,
                                                args_.Sz,
                                                args_.PadXY,
                                                args_.PadXYZ,
-                                               args_.MinCt);
+                                               args_.MinCt,
+                                               true);
 
   // Make a random source
   QDPIO::cout << "Initializing QDP++ input spinor" << endl;

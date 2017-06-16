@@ -60,8 +60,16 @@ void TimeDslash::runTest()
   double coeff_t = (FT)(1);
 
   // Create Scalar Dslash Class
-  Geometry<FT, V, S, compress> geom(
-      subLattSize, args_.By, args_.Bz, args_.NCores, args_.Sy, args_.Sz, args_.PadXY, args_.PadXYZ, args_.MinCt);
+  Geometry<FT, V, S, compress> geom(subLattSize,
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt,
+                                    true);
 
   Dslash<FT, V, S, compress> D32(&geom, t_boundary, coeff_s, coeff_t);
 

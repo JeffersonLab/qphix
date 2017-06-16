@@ -143,7 +143,8 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
                                    args_.Sz,
                                    args_.PadXY,
                                    args_.PadXYZ,
-                                   args_.MinCt);
+                                   args_.MinCt,
+                                   true);
   Dslash<T, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();

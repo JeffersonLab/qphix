@@ -62,8 +62,16 @@ void TimeTMClover::runTest()
   double coeff_t = (double)(1);
 
   // Create Scalar Dslash Class
-  Geometry<FT, V, S, compress> geom(
-      subLattSize, args_.By, args_.Bz, args_.NCores, args_.Sy, args_.Sz, args_.PadXY, args_.PadXYZ, args_.MinCt);
+  Geometry<FT, V, S, compress> geom(subLattSize,
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt,
+                                    true);
   TMClovDslash<FT, V, S, compress> D32(&geom, t_boundary, coeff_s, coeff_t);
 
   // Allocate data for the gauges

@@ -118,7 +118,8 @@ void TestTMClover::operator()()
                                     args_.Sz,
                                     args_.PadXY,
                                     args_.PadXYZ,
-                                    args_.MinCt);
+                                    args_.MinCt,
+                                    true);
   TMClovDslash<FT, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
   // Make a random source
