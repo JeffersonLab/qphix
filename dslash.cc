@@ -480,7 +480,7 @@ void recons_add_face_vec(InstVector &ivector,
                          bool clover,
                          bool twisted_mass,
                          bool isPlus,
-                         bool use_tbc)
+                         bool const use_tbc)
 {
 
   std::string in("inbuf");
@@ -531,6 +531,9 @@ void recons_add_face_vec(InstVector &ivector,
 #else
     int constexpr tbc_is_half = 0;
 #endif
+
+    stringstream dim_str;
+    dim_str << dim;
 
     loadBroadcastScalar(ivector,
                         tbc_phase[RE],
@@ -696,7 +699,7 @@ void generate_code(void)
                        << "_" << SpinorTypeName << "_"
                        << GaugeTypeName << "_v" << VECLEN << "_s"
                        << SOALEN << "_" << num_components << "_"
-                       << (tbc[i] ? 't' : 's');
+                       << (use_tbc ? 't' : 's');
 
               // Generate instructions
               generateFaceUnpackL2Prefetches(

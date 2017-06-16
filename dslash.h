@@ -122,7 +122,8 @@ void recons_add_face_from_dir_dim_vec(InstVector &ivector,
                                       int dir,
                                       int dim,
                                       bool clover,
-                                      bool twisted_mass);
+                                      bool twisted_mass,
+                                      bool const use_tbc);
 
 void dslash_body(InstVector &ivector,
                  bool compress12,
@@ -144,4 +145,5 @@ void recons_add_face_vec(InstVector &ivector,
                          int dim,
                          bool clover,
                          bool twisted_mass,
-                         bool isPlus);
+                         bool isPlus,
+                         bool const use_tbc);
