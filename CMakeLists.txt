@@ -405,6 +405,9 @@ endif()
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
 
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+message(STATUS "target_cxx: ${target_cxx}")
+
 # This custom target executes 
 add_custom_target( codegen_lib ALL 
 				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
