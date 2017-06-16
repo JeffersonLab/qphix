@@ -3,7 +3,7 @@
 {% set tbc_template = 'true' if tbc else 'false' %}
 {% set tbc_suffix = 't' if tbc else 's' %}
 template <>
-void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_suffix }}>(
+void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_template }}>(
     const FPTYPE *inbuf,
     const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
@@ -41,7 +41,7 @@ void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_suffi
 }
 
 template
-void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_suffix }}>(
+void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_template }}>(
     const FPTYPE *inbuf,
     const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
