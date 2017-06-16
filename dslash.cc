@@ -477,7 +477,8 @@ void recons_add_face_vec(InstVector &ivector,
                          int dim,
                          bool clover,
                          bool twisted_mass,
-                         bool isPlus)
+                         bool isPlus,
+                         bool use_tbc)
 {
 
   std::string in("inbuf");
@@ -519,6 +520,28 @@ void recons_add_face_vec(InstVector &ivector,
 
   loadGaugeDir(ivector, gauge_index, compress12);
   matMultVec(ivector, adjMul);
+
+  FVec tbc_phase[2] = {declareFVec(ivector, "tbc_phase_re"),
+                       declareFVec(ivector, "tbc_phase_im")};
+  if (use_tbc) {
+#if USE_LP_GAUGE
+    int constexpr tbc_is_half = 1;
+#else
+    int constexpr tbc_is_half = 0;
+#endif
+
+    loadBroadcastScalar(ivector,
+                        tbc_phase[RE],
+                        "tbc_phases[" + dim_str.str() + "][0]",
+                        tbc_is_half);
+    loadBroadcastScalar(ivector,
+                        tbc_phase[IM],
+                        "tbc_phases[" + dim_str.str() + "][1]",
+                        tbc_is_half);
+  }
+
+  applyTwistedBoundaryConditions(
+      ivector, adjMul, use_tbc, tbc_phase);
   recons_add(ivector, rops[dim], *outspinor, mask);
 
   if (clover && !twisted_mass)
@@ -651,6 +674,7 @@ void generate_code(void)
         for (int dim = 0; dim < 4; dim++) {
           for (auto isPlus : {true, false}) {
             for (auto compress12 : {true, false}) {
+                for (auto use_tbc : {false, true}) {
 
               InstVector ivector;
               InstVector l2prefs;
@@ -669,7 +693,8 @@ void generate_code(void)
                        << "_" << dimchar[dim] << "_" << plusminus
                        << "_" << SpinorTypeName << "_"
                        << GaugeTypeName << "_v" << VECLEN << "_s"
-                       << SOALEN << "_" << num_components;
+                       << SOALEN << "_" << num_components << "_"
+                       << (tbc[i] ? 't' : 's');
 
               // Generate instructions
               generateFaceUnpackL2Prefetches(
@@ -685,10 +710,11 @@ void generate_code(void)
                   dir,
                   dim,
                   clover,
-                  twisted_mass != TwistedMassVariant::none);
+                  twisted_mass != TwistedMassVariant::none,
+                  use_tbc);
               mergeIvectorWithL2Prefetches(ivector, l2prefs);
               dumpIVector(ivector, filename.str());
-
+                }
             } // gauge compression
           } // plus/minus
         } // dimension
