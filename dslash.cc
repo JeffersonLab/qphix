@@ -260,22 +260,26 @@ void dslash_body(InstVector &ivector,
         loadBroadcastScalar(
             ivector, beta_vec, beta_names[d], SpinorType);
 
-#if USE_LP_GAUGE
-        int constexpr tbc_is_half = 1;
-#else
-        int constexpr tbc_is_half = 0;
-#endif
-
         FVec tbc_phase[2] = {declareFVec(ivector, "tbc_phase_re"),
                              declareFVec(ivector, "tbc_phase_im")};
-        loadBroadcastScalar(ivector,
-                            tbc_phase[RE],
-                            "tbc_phases[" + dim_str.str() + "][0]",
-                            tbc_is_half);
-        loadBroadcastScalar(ivector,
-                            tbc_phase[IM],
-                            "tbc_phases[" + dim_str.str() + "][1]",
-                            tbc_is_half);
+        if (tbc[dim]) {
+#if USE_LP_GAUGE
+          int constexpr tbc_is_half = 1;
+#else
+          int constexpr tbc_is_half = 0;
+#endif
+
+          loadBroadcastScalar(ivector,
+                              tbc_phase[RE],
+                              "tbc_phases[" + dim_str.str() +
+                                  "][0]",
+                              tbc_is_half);
+          loadBroadcastScalar(ivector,
+                              tbc_phase[IM],
+                              "tbc_phases[" + dim_str.str() +
+                                  "][1]",
+                              tbc_is_half);
+        }
 
 #ifdef NO_HW_MASKING
 
