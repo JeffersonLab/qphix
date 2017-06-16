@@ -188,7 +188,8 @@ void TestTMDslash::testTWMDslash(int t_bc)
                                    args_.Sz,
                                    args_.PadXY,
                                    args_.PadXYZ,
-                                   args_.MinCt);
+                                   args_.MinCt,
+                                   true);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
