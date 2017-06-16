@@ -202,7 +202,7 @@ else()
   # It will use the build directory (specified by the WORKING_DIRECTORY)
   # When this command is executed, it will also install the library to CMAKE_INSTALL_PREFIX 
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
-                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/codegen
+      COMMAND cmake -DCMAKE_CXX_COMPILER=${host_cxx} -DCMAKE_CXX_FLAGS=${host_cxxflags}  -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/codegen
                    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
                    COMMENT "Generating Libcodegen"
                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
