@@ -58,7 +58,7 @@ void face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_template }
     const FPTYPE beta,
     unsigned int mask,
     int dir,
-    const FT tbc_phases[4][2]) {
+    const FPTYPE tbc_phases[4][2]) {
     if (dir == 0) {
         {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_back_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 1) {
@@ -94,6 +94,6 @@ void face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_template }
     const FPTYPE beta,
     unsigned int mask,
     int dir,
-    const FT tbc_phases[4][2]);
+    const FPTYPE tbc_phases[4][2]);
 {% endfor %}
 {% endfor %}
