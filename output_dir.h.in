@@ -1,0 +1,8 @@
+#ifndef _OUTPUT_DIR_H
+#define _OUTPUT_DIR_H
+
+#include <string>
+
+std::string output_dir = "@CMAKE_BINARY_DIR@" ;
+
+#endif

@@ -15,4 +15,16 @@ dpkg-query -L python3-jinja2
 
 export PYTHONPATH=/usr/lib/python3/dist-packages
 
-./generate-and-compile avx g++ "-march=sandybridge -O2"
+export SRCDIR=${PWD}
+export SANDBOX_PATH=${PWD}/sandbox
+echo Sandbox Path is ${SANDBOX_PATH}
+
+# AVX build
+export BUILDDIR=${SANDBOX_PATH}/build/avx
+export INSTALLDIR=${SANDBOX_PATH}/install/avx
+mkdir -p ${BUILDDIR}
+mkdir -p ${INSTALLDIR}
+
+pushd ${BUILDDIR}
+CXX=g++ CXXFLAGS="-g -O2" cmake -Disa=avx -Dtarget_cxx=g++ -Dtarget_cxxflags="-march=corei7-avx -O3"  -Dtarget_jN=4 -DCMAKE_INSTALL_PREFIX=${INSTALLDIR} ${SRCDIR}
+make VERBOSE=1 -j 4 
