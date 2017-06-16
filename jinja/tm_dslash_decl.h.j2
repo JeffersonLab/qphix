@@ -90,7 +90,7 @@ void tm_dslash_achimbdpsi_{{ isign }}_vec(
     const FT mu,
     const unsigned int accumulate[8]);
 
-template <typename FT, int veclen, int soalen, bool compress12>
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc = false>
 void tm_face_finish_dir_{{ isign }}(
     const FT *inbuf,
     const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
@@ -105,7 +105,8 @@ void tm_face_finish_dir_{{ isign }}(
     const FT mu,
     const FT muinv,
     unsigned int mask,
-    int dir);
+    int dir,
+    const FT tbc_phases[4][2]);
 {% endfor %}
 
 }

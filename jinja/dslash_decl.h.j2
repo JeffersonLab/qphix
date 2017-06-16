@@ -98,7 +98,7 @@ void face_proj_dir_{{ isign }}(
     unsigned int mask,
     int dir);
 
-template <typename FT, int veclen, int soalen, bool compress12>
+template <typename FT, int veclen, int soalen, bool compress12, bool tbc = false>
 void face_finish_dir_{{ isign }}(
     const FT *inbuf,
     const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
@@ -111,7 +111,8 @@ void face_finish_dir_{{ isign }}(
     const int soprefdist,
     const FT beta,
     unsigned int mask,
-    int dir);
+    int dir,
+    const FT tbc_phases[4][2]);
 {% endfor %}
 
 }

@@ -1872,7 +1872,8 @@ void recons_add_face_from_dir_dim_vec(InstVector &ivector,
                                       int dir,
                                       int dim,
                                       bool clover,
-                                      bool twisted_mass)
+                                      bool twisted_mass,
+                                      bool const use_tbc)
 {
   declare_b_Spins(ivector);
   declare_ub_Spins(ivector);
@@ -1909,5 +1910,6 @@ void recons_add_face_from_dir_dim_vec(InstVector &ivector,
                       dim,
                       clover,
                       twisted_mass,
-                      isPlus);
+                      isPlus,
+                      use_tbc);
 }

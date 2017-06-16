@@ -1,6 +1,9 @@
 {% for isign in ['plus', 'minus'] %}
+{% for tbc in [True, False] %}
+{% set tbc_template = 'true' if tbc else 'false' %}
+{% set tbc_suffix = 't' if tbc else 's' %}
 template <>
-void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
+void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_suffix }}>(
     const FPTYPE *inbuf,
     const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
@@ -13,23 +16,24 @@ void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE mu,
     const FPTYPE muinv,
     unsigned int mask,
-    int dir) {
+    int dir,
+    const FT tbc_phases[4][2]) {
     if (dir == 0) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_back_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 1) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_forw_X_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 2) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_back_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 3) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_forw_Y_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 4) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_back_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 5) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_forw_Z_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 6) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_back_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_back_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else if (dir == 7) {
-        {{ include_generated_kernel(ISA, kernel, "face_unpack_from_forw_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12) }}
+        {{ include_generated_kernel_ts(ISA, kernel, "face_unpack_from_forw_T_"+isign, FPTYPE, VEC, SOA, COMPRESS12, tbc_suffix) }}
     } else {
         ::std::cout << "Invalid dir for unpack boundary" << ::std::endl;
         ::std::exit(1);
@@ -37,7 +41,7 @@ void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
 }
 
 template
-void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
+void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_suffix }}>(
     const FPTYPE *inbuf,
     const Types<FPTYPE, VEC, SOA, COMPRESS12>::SU3MatrixBlock *gBase,
     Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
@@ -50,5 +54,7 @@ void tm_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12>(
     const FPTYPE mu,
     const FPTYPE muinv,
     unsigned int mask,
-    int dir);
+    int dir,
+    const FT tbc_phases[4][2]);
+{% endfor %}
 {% endfor %}
