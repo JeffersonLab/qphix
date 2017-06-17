@@ -368,7 +368,7 @@ if ! [[ -f Makefile ]]; then
             cmake -Disa=${isa} \
 	      -Dhost_cxx="g++" \
 	      -Dhost_cxxflags="-g -O3 -std=c++11" \
-	      -Drecursive_jN=4 \
+              -Drecursive_jN=$(nproc) \
 	      -DCMAKE_INSTALL_PREFIX="$prefix/qphix_${QPHIX_ARCH}" \
 	      -DQDPXX_DIR="$prefix" \
 	      -Dclover=TRUE \
