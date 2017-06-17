@@ -55,7 +55,6 @@ def main():
         loader=jinja2.FileSystemLoader('..')
     )
     complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
-    makefile_am = env.get_template('jinja/Makefile.am.j2')
     kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
 
     for kernel_pattern in kernel_patterns:
@@ -91,17 +90,6 @@ def main():
         for kernel_pattern in kernel_patterns:
             prefix = kernel_pattern % {'fptype_underscore': ''}
             generated_for_prefix[prefix] = get_kernel_files_for_isa(kernel_pattern, isa, isa_data['fptypes'].keys())
-
-        rendered = makefile_am.render(
-            generated_warning=generated_warning,
-            isa=isa,
-            extra_includes=[
-                os.path.relpath(extra_include, os.path.join('qphix', isa))
-                for extra_include in isa_data['extra_includes_local']],
-            generated_for_prefix=generated_for_prefix,
-        )
-        filename = os.path.join('../generated', isa, 'Makefile.am')
-        write_if_changed(filename, rendered)
 
         for kernel_pattern in kernel_patterns:
             kernel = kernel_pattern % {'fptype_underscore': ''}
