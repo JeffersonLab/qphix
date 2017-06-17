@@ -14,15 +14,6 @@ import socket
 import jinja2
 
 
-march = {
-    'scalar': 'TODO',
-    'sse': 'SSE',
-    'avx': 'sandybridge',
-    'avx2': 'haswell',
-    'avx512': 'knl',
-}
-
-
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
     generated_files = os.listdir(os.path.join('..', 'generated', isa,
                                               'generated'))
@@ -195,7 +186,6 @@ def main():
                 os.path.basename(source_file)
                 for source_file in source_files],
             header_files=header_files,
-            march=march[isa],
         )
         write_if_changed(filename_cmake, rendered)
 
