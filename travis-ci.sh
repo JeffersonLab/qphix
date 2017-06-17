@@ -336,35 +336,15 @@ case "$QPHIX_ARCH" in
         ;;
 esac
 
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags $openmp_flags $qphix_flags"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
-autoreconf-if-needed
-popd
-fold_end $repo.download
-
 fold_start $repo.configure
 
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
 
-
+cflags="$base_cflags $openmp_flags $qphix_flags"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 if ! [[ -f Makefile ]]; then
-#    if ! $sourcedir/$repo/configure $base_configure \
-#            $qphix_configure \
-#            --enable-testing \
-#            --enable-proc=$QPHIX_ARCH \
-#            --enable-soalen=$soalen \
-#            --enable-clover \
-#            --enable-twisted-mass \
-#            --enable-tm-clover \
-#            --enable-openmp \
-#            --enable-mm-malloc \
-#            --enable-parallel-arch=parscalar \
-#            --with-qdp="$prefix" \
-#            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
-      if !  CXX=$(which $cxx_name) CXXFLAGS="$cxxflags $archflag" \
+      if ! CXX=$(which $cxx_name) CXXFLAGS="$cxxflags $archflag" \
             cmake -Disa=${isa} \
 	      -Dhost_cxx="g++" \
 	      -Dhost_cxxflags="-g -O3 -std=c++11" \
@@ -420,4 +400,3 @@ do
     time mpirun -n 2 ./$runner $args
     fold_end testing.$runner
 done
-
