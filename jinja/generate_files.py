@@ -1,4 +1,4 @@
-#!/usr/bin/env @PYTHON_EXECUTABLE@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
