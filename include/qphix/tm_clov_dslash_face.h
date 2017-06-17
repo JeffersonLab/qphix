@@ -327,35 +327,28 @@ void TMClovDslash<FT, veclen, soalen, compress>::completeFaceDir(
     // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
     FT beta_T = rep<FT, double>(beta);
 
-    // These routines correspond to face_unpack_from_$dir_$dim_...
-    if (is_plus)
-      tm_clov_face_finish_dir_plus<FT, veclen, soalen, compress>(inbuf,
-                                                                 gBase,
-                                                                 oBase,
-                                                                 clBase,
-                                                                 gOffs,
-                                                                 offs,
-                                                                 hsprefdist,
-                                                                 gprefdist,
-                                                                 soprefdist,
-                                                                 clprefdist,
-                                                                 beta_T,
-                                                                 mask,
-                                                                 dir * 2 + fb);
-    else
-      tm_clov_face_finish_dir_minus<FT, veclen, soalen, compress>(inbuf,
-                                                                  gBase,
-                                                                  oBase,
-                                                                  clBase,
-                                                                  gOffs,
-                                                                  offs,
-                                                                  hsprefdist,
-                                                                  gprefdist,
-                                                                  soprefdist,
-                                                                  clprefdist,
-                                                                  beta_T,
-                                                                  mask,
-                                                                  dir * 2 + fb);
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(tm_clov_face_finish_dir_plus,
+                                           tm_clov_face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dir]);
+    kernel(inbuf,
+           gBase,
+           oBase,
+           clBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           clprefdist,
+           beta_T,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
 
   } // pkt for loop
 } // Function
