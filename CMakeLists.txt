@@ -37,6 +37,7 @@ if(QDPXX_DIR)
      LIST(APPEND EXT_LIBS ${QDPXX_CXX_LINK_FLAGS})
      LIST(APPEND EXT_LIBS ${QDPXX_CXX_LIBRARIES})
      set(QPHIX_USE_QDPXX TRUE)
+     SET(parallel_arch ${QDPXX_PARALLEL_ARCH})
      if(${qdpalloc}) 
  	message(INFO "Using QDPAlloc for memory allocation")
 	set(QPHIX_USE_QDPXX_ALLOC 1)
@@ -73,10 +74,6 @@ else()
   message(STATUS "Not Looking for QMP")
 endif()
 
-if(${QPHIX_USE_QDPXX}) 
-  # If we are using QDP++ Check the parallel arch
-  SET(parallel_arch ${QDPXX_PARALLEL_ARCH})
-endif()
 
 if(${parallel_arch} STREQUAL "scalar")
    # set in configure file
