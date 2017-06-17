@@ -4,6 +4,10 @@ project(QPhiX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+###############################################################################
+#                                User Options                                 #
+###############################################################################
+
 set(parallel_arch scalar CACHE STRING  "Build for parallel arch: scalar/parscalar")
 option(testing "Enable building of tests. This can take a long time" OFF)
 option(cean "Enable CILK array Notation" OFF)
@@ -22,10 +26,16 @@ set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for 
 set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
 set(recusive_jN 1 CACHE STRING  "select -j value for recursive make (defaults to 1)")
 
+###############################################################################
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
-# First Look for QDPXX
+
+###############################################################################
+#                                    QDP++                                    #
+###############################################################################
+
 if(QDPXX_DIR)
   message(STATUS "Looking for QDP++")
   set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "${QDPXX_DIR}")
@@ -48,6 +58,10 @@ if(QDPXX_DIR)
   set(QPHIX_USE_QDPXX FALSE)
 endif()
 
+###############################################################################
+#                                   OpenMP                                    #
+###############################################################################
+
 find_package(OpenMP)
 if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -56,6 +70,10 @@ else()
     add_definitions("-Wno-unknown-pragmas")
     message(ERROR "OpenMP not found")
 endif()
+
+###############################################################################
+#                                     QMP                                     #
+###############################################################################
 
 if(QMP_DIR)
   message(STATUS "Looking for QMP")
@@ -74,6 +92,9 @@ else()
   message(STATUS "Not Looking for QMP")
 endif()
 
+###############################################################################
+#                            Parallel Architecture                            #
+###############################################################################
 
 if(${parallel_arch} STREQUAL "scalar")
    # set in configure file
@@ -104,10 +125,14 @@ else()
    message(ERROR "Only scalar or parscalar modes supported")
 endif()
 
+###############################################################################
+
 if (${cean})
    message(STATUS "Setting CEAN")
    set(QPHIX_USE_CEAN 1)
 endif()
+
+###############################################################################
 
 if(NOT ${QPHIX_USE_QDPXX_ALLOC})
 if (${mm_malloc})
@@ -117,6 +142,10 @@ else()
    message(STATUS "Posix Memalign allocator will be used")
 endif()
 endif()
+
+###############################################################################
+#             Types of Action (Clover, Wilson, Twisted Mass, ...)             #
+###############################################################################
 
 if(${clover}) 
    message(STATUS "Enabling Clover")
@@ -132,6 +161,10 @@ if(${tm_clover})
    message(STATUS "Enabling Twisted-Mass with Clover")
    set(QPHIX_BUILD_TWISTED_MASS_WITH_CLOVER 1)
 endif()
+
+###############################################################################
+#                                     ISA                                     #
+###############################################################################
 
 set(ISA ${isa})
 set(QPHIX_LLC_CACHE_ALIGN 64)
@@ -159,6 +192,8 @@ elseif(${isa} STREQUAL "qpx")
   set(QPHIX_LLC_CACHE_ALIGN 128)
 endif()
 
+###############################################################################
+
 set(${build_qdpjit_clover} FALSE)
 if (${qdpjit}) 
   message(STATUS "Building with QDPJIT")
@@ -169,16 +204,24 @@ if (${qdpjit})
   endif()
 endif()
 
+###############################################################################
+
 if(${testing}) 
    message(STATUS "Building Tests")
 else()
    message(STATUS "Not Building Tests")
 endif()
 
+###############################################################################
+
 if (${extra_messages}) 
    message(STATUS "Setting Extra Messages")
    set(QPHIX_EMIT_MESSAGES 1)
 endif()
+
+###############################################################################
+#                            QPhiX Code Generator                             #
+###############################################################################
 
 if(QPHIX_CODEGEN) 
   message(STATUS "Importing QPhix Codegen from ${QPHIX_CODEGEN}")
@@ -217,6 +260,8 @@ else()
   add_dependencies(qphix_codegen build_codegen)
   include_directories(${CMAKE_INSTALL_PREFIX}/include)
 endif()
+
+###############################################################################
 
 configure_file(
 	${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
