@@ -36,3 +36,10 @@
                                    : k<F, v, s, c, false, false, true, false>)      \
                      : (use_tbc[3] ? k<F, v, s, c, false, false, false, true>       \
                                    : k<F, v, s, c, false, false, false, false>))))
+
+#define QPHIX_FACE_KERNEL_SELECT(                                                   \
+    kernel_plus, kernel_minus, FT, veclen, soalen, compress12, is_plus, use_tbc)    \
+  (is_plus ? (use_tbc ? kernel_plus<FT, veclen, soalen, compress12, true>           \
+                      : kernel_plus<FT, veclen, soalen, compress12, false>)         \
+           : (use_tbc ? kernel_minus<FT, veclen, soalen, compress12, true>          \
+                      : kernel_minus<FT, veclen, soalen, compress12, false>))

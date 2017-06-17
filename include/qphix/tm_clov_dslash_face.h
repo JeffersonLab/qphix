@@ -523,30 +523,26 @@ void TMClovDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
 
     // FIXME These correspond to unpack routines w/o clover!
     // Do we need twisted-mass here?
-    if (is_plus)
-      face_finish_dir_plus<FT, veclen, soalen, compress>(inbuf,
-                                                         gBase,
-                                                         oBase,
-                                                         gOffs,
-                                                         offs,
-                                                         hsprefdist,
-                                                         gprefdist,
-                                                         soprefdist,
-                                                         beta_T,
-                                                         mask,
-                                                         dir * 2 + fb);
-    else
-      face_finish_dir_minus<FT, veclen, soalen, compress>(inbuf,
-                                                          gBase,
-                                                          oBase,
-                                                          gOffs,
-                                                          offs,
-                                                          hsprefdist,
-                                                          gprefdist,
-                                                          soprefdist,
-                                                          beta_T,
-                                                          mask,
-                                                          dir * 2 + fb);
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_finish_dir_plus,
+                                           face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dim]);
+    kernel(inbuf,
+           gBase,
+           oBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           beta_T,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
   }
 } // Function
 
