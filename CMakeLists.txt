@@ -33,6 +33,19 @@ set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
 
 ###############################################################################
+#                                   OpenMP                                    #
+###############################################################################
+
+find_package(OpenMP)
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+else()
+    add_definitions("-Wno-unknown-pragmas")
+    message(ERROR "OpenMP not found")
+endif()
+
+###############################################################################
 #                                    QDP++                                    #
 ###############################################################################
 
@@ -56,19 +69,6 @@ if(QDPXX_DIR)
  else()
   message(STATUS "Not Looking for QDP++")
   set(QPHIX_USE_QDPXX FALSE)
-endif()
-
-###############################################################################
-#                                   OpenMP                                    #
-###############################################################################
-
-find_package(OpenMP)
-if(OPENMP_FOUND)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-else()
-    add_definitions("-Wno-unknown-pragmas")
-    message(ERROR "OpenMP not found")
 endif()
 
 ###############################################################################
