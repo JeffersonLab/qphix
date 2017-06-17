@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(QPhiX)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -15,7 +16,6 @@ option(extra_messages "Emit extram messages during compilation time" OFF)
 option(isa "Enable use of code for particular isa. Allowed are: avx avx2 avx512 sse scalar" OFF)
 option(qdpjit "When QDP++ is used it is QDP-JIT so use QDP-JIT interfaces" OFF)
 option(qdpalloc "When QDP++ is used, use its memory allocator instead of mm_malloc or posix_memalign" OFF)
-
 
 # Codegen stuff
 OPTION(host_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
@@ -73,8 +73,6 @@ else()
   message(STATUS "Not Looking for QMP")
 endif()
 
-
-
 if(${QPHIX_USE_QDPXX}) 
   # If we are using QDP++ Check the parallel arch
   SET(parallel_arch ${QDPXX_PARALLEL_ARCH})
@@ -122,7 +120,6 @@ else()
    message(STATUS "Posix Memalign allocator will be used")
 endif()
 endif()
-
 
 if(${clover}) 
    message(STATUS "Enabling Clover")
@@ -193,11 +190,9 @@ if(QPHIX_CODEGEN)
   set_property(TARGET qphix_codegen PROPERTY IMPORTED_LOCATION ${QPHIX_CODEGEN}/lib/libqphix_codegen.a)
 else()
 
-  
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY  ${CMAKE_BINARY_DIR}/codegen)
 
-  #
   # The custom command will make at least this libqphix_codegen.a 
   # It will use the build directory (specified by the WORKING_DIRECTORY)
   # When this command is executed, it will also install the library to CMAKE_INSTALL_PREFIX 
@@ -207,13 +202,10 @@ else()
                    COMMENT "Generating Libcodegen"
                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
-  #
   # now add a target which depends on this file existing. 
   # This is kind of liek an alias. I can then make later targets depend on this
-  #
   add_custom_target(build_codegen DEPENDS ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a)
 
-  #
   # I want to be able to use the libqphix_codegen.a  library as proper CMake library
   # so this defines a library as IMPORTED
   add_library(qphix_codegen STATIC IMPORTED)
@@ -227,8 +219,6 @@ else()
   # which will cause the libqphix_codegen.a library to be rebuilt if it does not yet exist.
   add_dependencies(qphix_codegen build_codegen)
   include_directories(${CMAKE_INSTALL_PREFIX}/include)
-
-
 endif()
 
 configure_file(
