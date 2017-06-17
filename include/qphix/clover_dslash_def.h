@@ -10,14 +10,10 @@ namespace QPhiX
 /* Specialize - Dslash of float */
 /* To note the clover block will already include anisotropy and probably also
  * boundaries */
-template <typename FT,
-          int veclen,
-          int soalen,
-          bool compress12> /* The teplate is the floating point type */
+template <typename FT, int veclen, int soalen, bool compress12>
 class ClovDslash
 {
  public:
-  // Pack gauges...
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
       SU3MatrixBlock;
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -33,10 +29,8 @@ class ClovDslash
              bool use_tbc_[4] = nullptr,
              double tbc_phases_[4][2] = nullptr);
 
-  /* Destructor */
   ~ClovDslash();
 
-  /* Apply the operator */
   void dslash(FourSpinorBlock *res,
               const FourSpinorBlock *psi,
               const SU3MatrixBlock *u,
@@ -101,6 +95,7 @@ class ClovDslash
 
   // Hide Free Constructor
   ClovDslash();
+
   void Dyz(int tid,
            const FourSpinorBlock *psi,
            FourSpinorBlock *res,
@@ -135,7 +130,6 @@ class ClovDslash
                           bool const is_plus,
                           int cb);
 
-// DISABLE COMMS FOR NOW
 #ifdef QPHIX_DO_COMMS
   void packFaceDir(int tid,
                    const FourSpinorBlock *psi,
@@ -145,7 +139,6 @@ class ClovDslash
                    int fb,
                    bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDir(int tid,
                        const FT *psi,
                        FourSpinorBlock *res,
@@ -157,7 +150,6 @@ class ClovDslash
                        int fb,
                        bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDirAChiMBDPsi(int tid,
                                  const FT *psi,
                                  FourSpinorBlock *res,
@@ -170,10 +162,10 @@ class ClovDslash
 #endif
 
 }; // Class
-
 } // Namespace
+
 #include "qphix/clover_dslash_body.h"
+
 #ifdef QPHIX_DO_COMMS
-// Disable comms for nokw
 #include "qphix/clov_face.h"
 #endif
