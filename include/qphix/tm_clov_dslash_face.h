@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOV_FACE_H
-#define QPHIX_TM_CLOV_FACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -552,5 +551,3 @@ void TMClovDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
 } // Function
 
 } // Namespace
-
-#endif // Include guard

@@ -1,6 +1,4 @@
-
-#ifndef QPHIX_CLOVER_DSLASH_DEF_H
-#define QPHIX_CLOVER_DSLASH_DEF_H
+#pragma once
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
@@ -178,6 +176,4 @@ class ClovDslash
 #ifdef QPHIX_DO_COMMS
 // Disable comms for nokw
 #include "qphix/clov_face.h"
-#endif
-
 #endif

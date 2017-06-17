@@ -1,5 +1,4 @@
-#ifndef QPHIX_GEOMETRY_H
-#define QPHIX_GEOMETRY_H
+#pragma once
 
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
@@ -538,5 +537,3 @@ makeFullCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
 }
 
 } // Namespace
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_COMM_H
-#define QPHIX_COMM_H
+#pragma once
 
 #include "qphix/geometry.h"
 #include "qphix/diagnostics.h"
@@ -594,5 +593,3 @@ inline int numNodes()
 
 #endif // ifndef QPHIX_DO_COMMS
 }; // Namespace
-
-#endif

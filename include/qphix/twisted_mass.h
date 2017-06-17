@@ -1,5 +1,4 @@
-#ifndef QPHIX_TWISTED_MASS_H
-#define QPHIX_TWISTED_MASS_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/tm_dslash_def.h"
@@ -88,5 +87,3 @@ class EvenOddTMWilsonOperator
 
 }; // Class
 }; // Namespace
-
-#endif

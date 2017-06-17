@@ -1,5 +1,4 @@
-#ifndef QPHIX_TMFACE_H
-#define QPHIX_TMFACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -556,4 +555,3 @@ void TMDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
 } // Function
 
 } // Namespace
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_CLOV_FACE_H
-#define QPHIX_CLOV_FACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -548,5 +547,3 @@ void ClovDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
 } // Function
 
 } // Namespace
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_DSLASH_DEF_H
-#define QPHIX_DSLASH_DEF_H
+#pragma once
 
 #include "qphix/diagnostics.h"
 #include "qphix/dslash_utils.h"
@@ -162,5 +161,4 @@ class Dslash
 
 #ifdef QPHIX_DO_COMMS
 #include "qphix/face.h"
-#endif
 #endif

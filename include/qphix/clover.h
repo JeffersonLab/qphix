@@ -1,5 +1,4 @@
-#ifndef QPHIX_CLOVER_H
-#define QPHIX_CLOVER_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/clover_dslash_def.h"
@@ -94,5 +93,3 @@ class EvenOddCloverOperator
   FourSpinorBlock *tmp;
 }; // Class
 }; // Namespace
-
-#endif

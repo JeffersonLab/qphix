@@ -1,5 +1,4 @@
-#ifndef QPHIX_LINEAR_OPERATOR_H
-#define QPHIX_LINEAR_OPERATOR_H
+#pragma once
 
 #include <qphix/geometry.h>
 
@@ -20,4 +19,3 @@ class EvenOddLinearOperator
 };
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_FACE_H
-#define QPHIX_FACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -349,4 +348,3 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir(int tid,
 } // Function
 
 } // Namespace
-#endif

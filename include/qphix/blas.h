@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_H
-#define QPHIX_BLAS_H
+#pragma once
 
 #include "qphix/qphix_config.h"
 #include "qphix/comm.h"
@@ -22,5 +21,4 @@
 #endif
 
 #ifdef QPHIX_AVX2_SOURCE
-#endif
 #endif

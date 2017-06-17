@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOVER_H
-#define QPHIX_TM_CLOVER_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/tm_clov_dslash_def.h"
@@ -112,5 +111,3 @@ class EvenOddTMCloverOperator
 
 }; // Class
 }; // Namespace
-
-#endif // Include guard

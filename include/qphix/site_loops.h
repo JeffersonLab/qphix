@@ -1,5 +1,4 @@
-#ifndef QPHIX_SITE_LOOPS_H
-#define QPHIX_SITE_LOOPS_H
+#pragma once
 
 #include <qphix/geometry.h>
 #include <qphix/comm.h>
@@ -262,5 +261,3 @@ void siteLoop2Reductions(Reduce2Functor theFunctor,
 }
 
 }; // Namespace
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_MIC_H
-#define QPHIX_BLAS_MIC_H
+#pragma once
 
 #include <immintrin.h>
 
@@ -406,5 +405,3 @@ inline void copySpinor<float, 16>(float *res,
 #endif
 
 } // Namespace
-
-#endif
