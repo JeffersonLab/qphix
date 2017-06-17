@@ -4,7 +4,7 @@ project(QPhiX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(parallel_arch "Build for parallel arch: scalar/parscalar" scalar)
+set(parallel_arch scalar CACHE STRING  "Build for parallel arch: scalar/parscalar")
 option(testing "Enable building of tests. This can take a long time" OFF)
 option(cean "Enable CILK array Notation" OFF)
 option(mm_malloc "Use mm_malloc to allocate memory (unless qdpalloc is enabled, in which case QDP++ allocator will be used" ON)
@@ -18,9 +18,9 @@ option(qdpjit "When QDP++ is used it is QDP-JIT so use QDP-JIT interfaces" OFF)
 option(qdpalloc "When QDP++ is used, use its memory allocator instead of mm_malloc or posix_memalign" OFF)
 
 # Codegen stuff
-OPTION(host_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
-OPTION(host_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
-OPTION(recusive_jN "select -j value for recursive make (defaults to 1)" 1)
+set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
+set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
+set(recusive_jN 1 CACHE STRING  "select -j value for recursive make (defaults to 1)")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
