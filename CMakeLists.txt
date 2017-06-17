@@ -231,7 +231,7 @@ if(QPHIX_CODEGEN)
 else()
 
   # A build directory for building qphix-codegen
-  file(MAKE_DIRECTORY  ${CMAKE_BINARY_DIR}/codegen)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
   # The custom command will make at least this libqphix_codegen.a 
   # It will use the build directory (specified by the WORKING_DIRECTORY)
