@@ -116,11 +116,11 @@ make_smp_flags="${SMP-$make_smp_template}"
 make-make-install() {
     if ! [[ -f build-succeeded ]]; then
         fold_start $repo.make
-        make $make_smp_flags
+        time make $make_smp_flags
         fold_end $repo.make
 
         fold_start $repo.make_install
-        make install
+        time make install
         fold_end $repo.make_install
 
         touch build-succeeded
@@ -417,7 +417,7 @@ t_twm_clover
 for runner in "${tests[@]}"
 do
     fold_start testing.$runner
-    mpirun -n 2 ./$runner $args
+    time mpirun -n 2 ./$runner $args
     fold_end testing.$runner
 done
 
