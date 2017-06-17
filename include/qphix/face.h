@@ -327,7 +327,7 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir(int tid,
                                            soalen,
                                            compress,
                                            is_plus,
-                                           use_tbc[dim]);
+                                           use_tbc[dir]);
     kernel(inbuf,
            gBase,
            oBase,

@@ -530,7 +530,7 @@ void TMClovDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
                                            soalen,
                                            compress,
                                            is_plus,
-                                           use_tbc[dim]);
+                                           use_tbc[dir]);
     kernel(inbuf,
            gBase,
            oBase,
