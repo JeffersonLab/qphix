@@ -184,6 +184,11 @@ if( QPHIX_CODEGEN )
   set_property(TARGET qphix_codegen PROPERTY IMPORTED_LOCATION ${QPHIX_CODEGEN}/lib/libqphix_codegen.a)
 else()
 
+  MESSAGE(INFO, "Looking for Python")
+  find_package(PythonLibs 3.0 REQUIRED)
+  find_package(PythonInterp 3.0 REQUIRED)
+  MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
+
   
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY  ${CMAKE_BINARY_DIR}/codegen )
@@ -193,7 +198,7 @@ else()
   # It will use the build directory (specified by the WORKING_DIRECTORY)
   # When this command is executed, it will also install the library to CMAKE_INSTALL_PREFIX 
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
-                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/codegen
+                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE} -DPYTHON_LIBRARY=${PYTHON_LIBRARY} -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/codegen
                    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
                    COMMENT "Generating Libcodegen"
                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
