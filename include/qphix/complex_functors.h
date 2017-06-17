@@ -1,5 +1,4 @@
-#ifndef QPHIX_COMPLEX_FUNCTORS_H
-#define QPHIX_COMPLEX_FUNCTORS_H
+#pragma once
 
 #include "qphix/blas_utils.h"
 
@@ -301,5 +300,3 @@ class BiCGStabRXUpdateFunctor
 };
 
 }; // Namespace
-
-#endif

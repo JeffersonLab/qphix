@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_MIC_NEW_H
-#define QPHIX_BLAS_MIC_NEW_H
+#pragma once
 
 #include <qphix/geometry.h>
 #include <qphix/comm.h>
@@ -329,5 +328,3 @@ void convert(
 }
 
 }; // Namespace
-
-#endif

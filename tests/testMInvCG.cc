@@ -98,7 +98,7 @@ void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
                                      args_.Sz,
                                      args_.PadXY,
                                      args_.PadXYZ,
-                                     args_.MinCt);
+                                     args_.MinCt, true);
 
     // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
     // -- Allocate the gauge field

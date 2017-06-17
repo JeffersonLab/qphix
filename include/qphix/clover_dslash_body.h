@@ -1,5 +1,4 @@
-#ifndef QPHIX_CLOVER_DSLASH_BODY_H
-#define QPHIX_CLOVER_DSLASH_BODY_H
+#pragma once
 
 #include <iostream>
 #include <omp.h>
@@ -1158,5 +1157,3 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 }
 
 } // Namespace
-
-#endif

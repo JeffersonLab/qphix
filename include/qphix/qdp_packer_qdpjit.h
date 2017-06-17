@@ -1,9 +1,8 @@
-#ifndef QPHIX_QDP_PACKER_QDPJIT_H
-#define QPHIX_QDP_PACKER_QDPJIT_H
+#pragma once
 
 #include "qphix/diagnostics.h"
 
-QPHIX_MESSAGE("" building with QDPJIT packers "")
+QPHIX_MESSAGE("building with QDPJIT packers")
 
 #include "qdp.h"
 #include "qphix/geometry.h"
@@ -513,5 +512,3 @@ void qdp_unpack_cb_spinor(
 #endif
 } // function
 };
-
-#endif

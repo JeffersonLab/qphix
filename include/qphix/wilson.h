@@ -1,5 +1,4 @@
-#ifndef QPHIX_WILSON_H
-#define QPHIX_WILSON_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/dslash_def.h"
@@ -78,5 +77,3 @@ class EvenOddWilsonOperator
   double mass_factor_beta;
 }; // Class
 }; // Namespace
-
-#endif

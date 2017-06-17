@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOVER_DSLASH_BODY_H
-#define QPHIX_TM_CLOVER_DSLASH_BODY_H
+#pragma once
 
 #include <iostream>
 #include "qphix/qphix_config.h"
@@ -1165,5 +1164,3 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 }
 
 } // Namespace
-
-#endif // Include guard

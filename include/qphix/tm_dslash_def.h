@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_DSLASH_DEF_H
-#define QPHIX_TM_DSLASH_DEF_H
+#pragma once
 
 #include "qphix/dslash_utils.h"
 #include "qphix/geometry.h"
@@ -177,5 +176,4 @@ class TMDslash
 
 #ifdef QPHIX_QMP_COMMS
 #include "qphix/tm_dslash_face.h"
-#endif
 #endif

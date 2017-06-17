@@ -63,7 +63,8 @@ void TestClover::operator()()
                                     args_.Sz,
                                     args_.PadXY,
                                     args_.PadXYZ,
-                                    args_.MinCt);
+                                    args_.MinCt,
+                                    true);
 
   RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
 

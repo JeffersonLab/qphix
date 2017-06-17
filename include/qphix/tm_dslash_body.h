@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_DSLASH_BODY_H
-#define QPHIX_TM_DSLASH_BODY_H
+#pragma once
 
 #include <iostream>
 #include "qphix/qphix_config.h"
@@ -1167,5 +1166,3 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 }
 
 } // Namespace
-
-#endif

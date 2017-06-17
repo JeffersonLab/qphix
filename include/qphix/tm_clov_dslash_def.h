@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOVER_DSLASH_DEF_H
-#define QPHIX_TM_CLOVER_DSLASH_DEF_H
+#pragma once
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
@@ -178,5 +177,3 @@ class TMClovDslash
 #ifdef QPHIX_DO_COMMS
 #include "qphix/tm_clov_dslash_face.h"
 #endif
-
-#endif // Include guard

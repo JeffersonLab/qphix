@@ -1,5 +1,4 @@
-#ifndef QPHIX_MEMMAP_H
-#define QPHIX_MEMMAP_H
+#pragma once
 
 #include "qphix/print_utils.h"
 #include <utility>
@@ -47,4 +46,3 @@ void print_maps()
   }
 }
 }; // namespace
-#endif

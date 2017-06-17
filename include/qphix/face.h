@@ -1,5 +1,4 @@
-#ifndef QPHIX_FACE_H
-#define QPHIX_FACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -151,13 +150,11 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir(int tid,
 
     // printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf,
     // outbuf-res);
-    // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
-    if (is_plus)
-      face_proj_dir_plus<FT, veclen, soalen, compress>(
-          xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
-    else
-      face_proj_dir_minus<FT, veclen, soalen, compress>(
-          xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
+
+    auto kernel = (is_plus ? face_proj_dir_plus<FT, veclen, soalen, compress>
+                           : face_proj_dir_minus<FT, veclen, soalen, compress>);
+
+    kernel(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
   }
 }
 
@@ -321,32 +318,27 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir(int tid,
     // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
     FT beta_T = rep<FT, double>(beta);
 
-    if (is_plus)
-      face_finish_dir_plus<FT, veclen, soalen, compress>(inbuf,
-                                                         gBase,
-                                                         oBase,
-                                                         gOffs,
-                                                         offs,
-                                                         hsprefdist,
-                                                         gprefdist,
-                                                         soprefdist,
-                                                         beta_T,
-                                                         mask,
-                                                         dir * 2 + fb);
-    else
-      face_finish_dir_minus<FT, veclen, soalen, compress>(inbuf,
-                                                          gBase,
-                                                          oBase,
-                                                          gOffs,
-                                                          offs,
-                                                          hsprefdist,
-                                                          gprefdist,
-                                                          soprefdist,
-                                                          beta_T,
-                                                          mask,
-                                                          dir * 2 + fb);
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_finish_dir_plus,
+                                           face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dir]);
+    kernel(inbuf,
+           gBase,
+           oBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           beta_T,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
   }
 } // Function
 
 } // Namespace
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_UTILS_H
-#define QPHIX_BLAS_UTILS_H
+#pragma once
 
 namespace QPhiX
 {
@@ -240,5 +239,3 @@ inline void streamOutSpinor<half, 16>(half *dst,
 
 }; // Namespace BLAS UTILS
 };
-
-#endif
