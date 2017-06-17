@@ -233,9 +233,10 @@ else()
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
-  # The custom command will make at least this libqphix_codegen.a 
-  # It will use the build directory (specified by the WORKING_DIRECTORY)
-  # When this command is executed, it will also install the library to CMAKE_INSTALL_PREFIX 
+  # The custom command will make at least this `libqphix_codegen.a`. It will
+  # use the build directory (specified by the `WORKING_DIRECTORY`) When this
+  # command is executed, it will also install the library to
+  # `CMAKE_INSTALL_PREFIX`.
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
       COMMAND cmake -DCMAKE_CXX_COMPILER=${host_cxx} -DCMAKE_CXX_FLAGS=${host_cxxflags}  -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/codegen
                    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
