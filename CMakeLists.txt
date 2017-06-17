@@ -83,7 +83,7 @@ if(QMP_DIR)
   find_package(QMP)
 
   # Check for QMP
-  if (${QMP_C_FOUND})
+  if(${QMP_C_FOUND})
     include_directories(${QMP_C_INCLUDE_PATH})
     list(APPEND ${EXT_LIBS} ${QMP_C_LINK_FLAGS})
     list(APPEND ${EXT_LIBS} ${QMP_C_LIBRARIES})
@@ -100,7 +100,7 @@ if(${parallel_arch} STREQUAL "scalar")
    # set in configure file
    set(QPHIX_SCALAR 1)
    message(STATUS "Scalar Comms Mode (single node)")
-   if (${fake_comms}) 
+   if(${fake_comms}) 
       message(STATUS "Fake Comms will be used") 
       set(QPHIX_DO_COMMS 1)
       set(QPHIX_FAKE_COMMS 1)
@@ -127,7 +127,7 @@ endif()
 
 ###############################################################################
 
-if (${cean})
+if(${cean})
    message(STATUS "Setting CEAN")
    set(QPHIX_USE_CEAN 1)
 endif()
@@ -135,7 +135,7 @@ endif()
 ###############################################################################
 
 if(NOT ${QPHIX_USE_QDPXX_ALLOC})
-if (${mm_malloc})
+if(${mm_malloc})
    message(STATUS "Setting use mm_malloc")
    set(QPHIX_USE_MM_MALLOC 1)
 else()
@@ -195,7 +195,7 @@ endif()
 ###############################################################################
 
 set(${build_qdpjit_clover} FALSE)
-if (${qdpjit}) 
+if(${qdpjit}) 
   message(STATUS "Building with QDPJIT")
   set(QPHIX_BUILD_QDPJIT 1)
   if(${clover})
@@ -214,7 +214,7 @@ endif()
 
 ###############################################################################
 
-if (${extra_messages}) 
+if(${extra_messages}) 
    message(STATUS "Setting Extra Messages")
    set(QPHIX_EMIT_MESSAGES 1)
 endif()
