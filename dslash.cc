@@ -189,42 +189,6 @@ void generateL2Prefetches(InstVector &ivector,
   PrefetchL2FullSpinorOut(ivector, outBase, "offs", "siprefdist4");
 }
 
-// XXX Some forward declarations because there is no proper header
-// file for this.
-extern FVec ub_spinor[2][3][2];
-void mulCVec(
-    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-void mulConjCVec(
-    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-
-void applyTwistedBoundaryConditions(InstVector &ivector,
-                                    bool const adjMul,
-                                    bool const has_tbc,
-                                    FVec *tbc_phase)
-{
-  string mask;
-
-  if (has_tbc) {
-    for (int s = 0; s < 2; s++) {
-      for (int c1 = 0; c1 < 3; c1++) {
-        if (!adjMul) {
-          mulCVec(ivector,
-                  ub_spinor[s][c1],
-                  tbc_phase,
-                  ub_spinor[s][c1],
-                  mask);
-        } else {
-          mulConjCVec(ivector,
-                      ub_spinor[s][c1],
-                      tbc_phase,
-                      ub_spinor[s][c1],
-                      mask);
-        }
-      }
-    }
-  }
-}
-
 #ifdef SERIAL_SPIN
 // FIXME These two functions share a bunch of code, but are two
 // complete copies. Better push that `#ifdef` further inside the

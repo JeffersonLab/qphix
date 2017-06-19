@@ -1480,6 +1480,42 @@ void twisted_term(InstVector &ivector, bool isPlus)
   } // color
 }
 
+void applyTwistedBoundaryConditions(InstVector &ivector,
+                                    bool const adjMul,
+                                    bool const has_tbc,
+                                    FVec *tbc_phase)
+{
+  string mask;
+  FVec tbc_tmp[2] = {tmp_1_re, tmp_1_im};
+  if (has_tbc) {
+    for (int s = 0; s < 2; s++) {
+      for (int c1 = 0; c1 < 3; c1++) {
+        if (!adjMul) {
+          mulCVec(ivector,
+                  tbc_tmp,
+                  tbc_phase,
+                  ub_spinor[s][c1],
+                  mask);
+          movCVec(ivector,
+                  ub_spinor[s][c1],
+                  tbc_tmp,
+                  mask);
+        } else {
+          mulConjCVec(ivector,
+                      tbc_tmp,
+                      tbc_phase,
+                      ub_spinor[s][c1],
+                      mask);
+          movCVec(ivector,
+                  ub_spinor[s][c1],
+                  tbc_tmp,
+                  mask);
+        }
+      }
+    }
+  }
+}
+
 #if 0
 void achiResult(InstVector& ivector, bool clover)
 {
