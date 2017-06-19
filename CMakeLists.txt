@@ -230,6 +230,10 @@ if(QPHIX_CODEGEN)
     ${QPHIX_CODEGEN}/lib/libqphix_codegen.a)
 else()
 
+  MESSAGE(INFO, "Looking for Python")
+  find_package(PythonLibs 3.0 REQUIRED)
+  find_package(PythonInterp 3.0 REQUIRED)
+  MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
@@ -238,25 +242,20 @@ else()
   # command is executed, it will also install the library to
   # `CMAKE_INSTALL_PREFIX`.
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
-    COMMAND cmake -DCMAKE_CXX_COMPILER=${host_cxx}
-            -DCMAKE_CXX_FLAGS=${host_cxxflags}
-            -Disa=${isa}
-            -Dtarget_cxx=${CMAKE_CXX_COMPILER}
-            -Dtarget_cxxflags=${CMAKE_CXX_FLAGS}
-            -Dtarget_jN=${recursive_jN}
-            -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-            ${CMAKE_SOURCE_DIR}/codegen
-    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
-    COMMENT "Generating Libcodegen"
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
+                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE} -DPYTHON_LIBRARY=${PYTHON_LIBRARY} -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/codegen
+                   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
+                   COMMENT "Generating Libcodegen"
+                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
 
-  # Add a target which depends on this file existing. This is kind of like an
-  # alias. I can then later make targets depend on this.
-  add_custom_target(build_codegen DEPENDS
-    ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a)
+  #
+  # now add a target which depends on this file existing. 
+  # This is kind of liek an alias. I can then make later targets depend on this
+  #
+  add_custom_target(build_codegen DEPENDS ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a )
 
-  # I want to be able to use the `libqphix_codegen.a` library as proper CMake
-  # library so this defines a library as `IMPORTED`.
+  #
+  # I want to be able to use the libqphix_codegen.a  library as proper CMake library
+  # so this defines a library as IMPORTED
   add_library(qphix_codegen STATIC IMPORTED)
 
   # This says where the library file is. So now adding
