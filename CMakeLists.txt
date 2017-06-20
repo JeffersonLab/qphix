@@ -17,7 +17,7 @@ option(twisted_mass "Enable building of twisted mass term. Default is OFF" OFF)
 option(tm_clover "Enable building of twisted mass + clover term. Default if OFF" OFF)
 option(fake_comms "Enable fake comms. Does face processing but no actual comms" OFF)
 option(extra_messages "Emit extram messages during compilation time" OFF)
-option(isa "Enable use of code for particular isa. Allowed are: avx avx2 avx512 sse scalar" OFF)
+set(isa avx CACHE STRING "Enable use of code for particular isa. Allowed are: avx avx2 avx512 sse scalar (defaults to avx)")
 option(qdpjit "When QDP++ is used it is QDP-JIT so use QDP-JIT interfaces" OFF)
 option(qdpalloc "When QDP++ is used, use its memory allocator instead of mm_malloc or posix_memalign" OFF)
 
