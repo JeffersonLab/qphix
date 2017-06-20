@@ -81,7 +81,6 @@ pushd jinja
 ./generate_files.py "$isa"
 popd
 
-rm -rf cmake_build cmake_local
 mkdir -p cmake_build
 mkdir -p cmake_local
 

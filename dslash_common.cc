@@ -7,7 +7,6 @@ using namespace std;
 #include "unsupported_values.h"
 
 extern string beta_names[8];
-extern string tbc_names[4][2];
 
 extern string alpha_name;
 extern string outBase;
@@ -399,6 +398,11 @@ FVec tmp_4_re("tmp_4_re");
 FVec tmp_4_im("tmp_4_im");
 
 FVec tmp[4] = {tmp_1_re, tmp_2_re, tmp_3_re, tmp_4_re};
+
+// for storing twisted boundary conditions phases
+FVec tbc_phase_re("tbc_phase_re");
+FVec tbc_phase_im("tbc_phase_im");
+FVec tbc_phase[2] = {tbc_phase_re, tbc_phase_im};
 
 FVec u_00_re("u_00_re");
 FVec u_00_im("u_00_im");
@@ -1480,6 +1484,41 @@ void twisted_term(InstVector &ivector, bool isPlus)
   } // color
 }
 
+void applyTwistedBoundaryConditions(InstVector &ivector,
+                                    bool const adjMul,
+                                    bool const has_tbc)
+{
+  string mask;
+  FVec tbc_tmp[2] = {tmp_1_re, tmp_1_im};
+  if (has_tbc) {
+    for (int s = 0; s < 2; s++) {
+      for (int c1 = 0; c1 < 3; c1++) {
+        if (!adjMul) {
+          mulCVec(ivector,
+                  tbc_tmp,
+                  tbc_phase,
+                  ub_spinor[s][c1],
+                  mask);
+          movCVec(ivector,
+                  ub_spinor[s][c1],
+                  tbc_tmp,
+                  mask);
+        } else {
+          mulConjCVec(ivector,
+                      tbc_tmp,
+                      tbc_phase,
+                      ub_spinor[s][c1],
+                      mask);
+          movCVec(ivector,
+                  ub_spinor[s][c1],
+                  tbc_tmp,
+                  mask);
+        }
+      }
+    }
+  }
+}
+
 #if 0
 void achiResult(InstVector& ivector, bool clover)
 {
@@ -1872,7 +1911,8 @@ void recons_add_face_from_dir_dim_vec(InstVector &ivector,
                                       int dir,
                                       int dim,
                                       bool clover,
-                                      bool twisted_mass)
+                                      bool twisted_mass,
+                                      bool const use_tbc)
 {
   declare_b_Spins(ivector);
   declare_ub_Spins(ivector);
@@ -1909,5 +1949,6 @@ void recons_add_face_from_dir_dim_vec(InstVector &ivector,
                       dim,
                       clover,
                       twisted_mass,
-                      isPlus);
+                      isPlus,
+                      use_tbc);
 }

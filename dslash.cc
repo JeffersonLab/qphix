@@ -86,6 +86,8 @@ string beta_names[8] = {"coeff_s",
                         "coeff_t_f"};
 
 extern FVec beta_vec;
+extern FVec tbc_phase_re;
+extern FVec tbc_phase_im;
 string beta_name("beta");
 string alpha_name("alpha");
 string outBase("oBase");
@@ -189,42 +191,6 @@ void generateL2Prefetches(InstVector &ivector,
   PrefetchL2FullSpinorOut(ivector, outBase, "offs", "siprefdist4");
 }
 
-// XXX Some forward declarations because there is no proper header
-// file for this.
-extern FVec ub_spinor[2][3][2];
-void mulCVec(
-    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-void mulConjCVec(
-    InstVector &ivector, FVec *r, FVec *s1, FVec *s2, string &mask);
-
-void applyTwistedBoundaryConditions(InstVector &ivector,
-                                    bool const adjMul,
-                                    bool const has_tbc,
-                                    FVec *tbc_phase)
-{
-  string mask;
-
-  if (has_tbc) {
-    for (int s = 0; s < 2; s++) {
-      for (int c1 = 0; c1 < 3; c1++) {
-        if (!adjMul) {
-          mulCVec(ivector,
-                  ub_spinor[s][c1],
-                  tbc_phase,
-                  ub_spinor[s][c1],
-                  mask);
-        } else {
-          mulConjCVec(ivector,
-                      ub_spinor[s][c1],
-                      tbc_phase,
-                      ub_spinor[s][c1],
-                      mask);
-        }
-      }
-    }
-  }
-}
-
 #ifdef SERIAL_SPIN
 // FIXME These two functions share a bunch of code, but are two
 // complete copies. Better push that `#ifdef` further inside the
@@ -237,9 +203,30 @@ void dslash_body(InstVector &ivector,
                  FVec outspinor[4][3][2],
                  bool const *const tbc)
 {
+  declareFVecFromFVec(ivector, tbc_phase_re);
+  declareFVecFromFVec(ivector, tbc_phase_im);
   for (int dim = 0; dim < 4; dim++) {
     stringstream dim_str;
     dim_str << dim;
+
+    if (tbc[dim]) {
+#if USE_LP_GAUGE
+      int constexpr tbc_is_half = 1;
+#else
+      int constexpr tbc_is_half = 0;
+#endif
+      loadBroadcastScalar(ivector,
+                          tbc_phase_re,
+                          "tbc_phases[" + dim_str.str() +
+                          "][0]",
+                          tbc_is_half);
+      loadBroadcastScalar(ivector,
+                          tbc_phase_im,
+                          "tbc_phases[" + dim_str.str() +
+                          "][1]",
+                          tbc_is_half);
+    }
+
     for (int dir = 0; dir < 2; dir++) {
       int d = dim * 2 + dir;
       stringstream d_str;
@@ -261,23 +248,6 @@ void dslash_body(InstVector &ivector,
         declareFVecFromFVec(ivector, beta_vec);
         loadBroadcastScalar(
             ivector, beta_vec, beta_names[d], SpinorType);
-
-#if USE_LP_GAUGE
-        int constexpr tbc_is_half = 1;
-#else
-        int constexpr tbc_is_half = 0;
-#endif
-
-        FVec tbc_phase[2] = {declareFVec(ivector, "tbc_phase_re"),
-                             declareFVec(ivector, "tbc_phase_im")};
-        loadBroadcastScalar(ivector,
-                            tbc_phase[RE],
-                            "tbc_phases[" + dim_str.str() + "][0]",
-                            tbc_is_half);
-        loadBroadcastScalar(ivector,
-                            tbc_phase[IM],
-                            "tbc_phases[" + dim_str.str() + "][1]",
-                            tbc_is_half);
 
 #ifdef NO_HW_MASKING
 
@@ -301,7 +271,7 @@ void dslash_body(InstVector &ivector,
 
               matMultVec(ivector, adjMul, s);
               applyTwistedBoundaryConditions(
-                  ivector, adjMul, tbc[dim], tbc_phase);
+                  ivector, adjMul, tbc[dim]);
               recons_add(ivector, rec_op, outspinor, mask, s);
             }
           }
@@ -333,7 +303,7 @@ void dslash_body(InstVector &ivector,
 
           matMultVec(ivector, adjMul, s);
           applyTwistedBoundaryConditions(
-              ivector, adjMul, tbc[dim], tbc_phase);
+              ivector, adjMul, tbc[dim]);
           recons_add(ivector, rec_op, outspinor, mask, s);
         }
 
@@ -358,9 +328,30 @@ void dslash_body(InstVector &ivector,
                  FVec outspinor[4][3][2],
                  bool const *const tbc)
 {
+  declareFVecFromFVec(ivector, tbc_phase_re);
+  declareFVecFromFVec(ivector, tbc_phase_im);
   for (int dim = 0; dim < 4; dim++) {
     stringstream dim_str;
     dim_str << dim;
+    
+    if (tbc[dim]) {
+#if USE_LP_GAUGE
+      int constexpr tbc_is_half = 1;
+#else
+      int constexpr tbc_is_half = 0;
+#endif
+      loadBroadcastScalar(ivector,
+                          tbc_phase_re,
+                          "tbc_phases[" + dim_str.str() +
+                          "][0]",
+                          tbc_is_half);
+      loadBroadcastScalar(ivector,
+                          tbc_phase_im,
+                          "tbc_phases[" + dim_str.str() +
+                          "][1]",
+                          tbc_is_half);
+    }
+
     for (int dir = 0; dir < 2; dir++) {
       int d = dim * 2 + dir;
       stringstream d_str;
@@ -394,7 +385,7 @@ void dslash_body(InstVector &ivector,
             loadGaugeDir(ivector, d, compress12);
             matMultVec(ivector, adjMul);
             applyTwistedBoundaryConditions(
-                ivector, adjMul, tbc[dim], tbc_phase);
+                ivector, adjMul, tbc[dim]);
             recons_add(ivector, rec_op, outspinor, mask);
           }
           elseStatement(ivector);
@@ -419,7 +410,7 @@ void dslash_body(InstVector &ivector,
         loadGaugeDir(ivector, d, compress12);
         matMultVec(ivector, adjMul);
         applyTwistedBoundaryConditions(
-            ivector, adjMul, tbc[dim], tbc_phase);
+            ivector, adjMul, tbc[dim]);
         recons_add(ivector, rec_op, outspinor, mask);
 #ifdef NO_HW_MASKING
 
@@ -475,7 +466,8 @@ void recons_add_face_vec(InstVector &ivector,
                          int dim,
                          bool clover,
                          bool twisted_mass,
-                         bool isPlus)
+                         bool isPlus,
+                         bool const use_tbc)
 {
 
   std::string in("inbuf");
@@ -498,6 +490,9 @@ void recons_add_face_vec(InstVector &ivector,
   declareFVecFromFVec(ivector, beta_vec);
   loadBroadcastScalar(ivector, beta_vec, beta_name, SpinorType);
 
+  declareFVecFromFVec(ivector, tbc_phase_re);
+  declareFVecFromFVec(ivector, tbc_phase_im);
+
   FVec(*outspinor)[4][3][2];
 
   if (clover || twisted_mass) {
@@ -517,6 +512,29 @@ void recons_add_face_vec(InstVector &ivector,
 
   loadGaugeDir(ivector, gauge_index, compress12);
   matMultVec(ivector, adjMul);
+
+  if (use_tbc) {
+#if USE_LP_GAUGE
+    int constexpr tbc_is_half = 1;
+#else
+    int constexpr tbc_is_half = 0;
+#endif
+
+    stringstream dim_str;
+    dim_str << dim;
+
+    loadBroadcastScalar(ivector,
+                        tbc_phase_re,
+                        "tbc_phases[" + dim_str.str() + "][0]",
+                        tbc_is_half);
+    loadBroadcastScalar(ivector,
+                        tbc_phase_im,
+                        "tbc_phases[" + dim_str.str() + "][1]",
+                        tbc_is_half);
+  }
+
+  applyTwistedBoundaryConditions(
+      ivector, adjMul, use_tbc);
   recons_add(ivector, rops[dim], *outspinor, mask);
 
   if (clover && !twisted_mass)
@@ -649,6 +667,7 @@ void generate_code(void)
         for (int dim = 0; dim < 4; dim++) {
           for (auto isPlus : {true, false}) {
             for (auto compress12 : {true, false}) {
+                for (auto use_tbc : {false, true}) {
 
               InstVector ivector;
               InstVector l2prefs;
@@ -667,7 +686,8 @@ void generate_code(void)
                        << "_" << dimchar[dim] << "_" << plusminus
                        << "_" << SpinorTypeName << "_"
                        << GaugeTypeName << "_v" << VECLEN << "_s"
-                       << SOALEN << "_" << num_components;
+                       << SOALEN << "_" << num_components << "_"
+                       << (use_tbc ? 't' : 's');
 
               // Generate instructions
               generateFaceUnpackL2Prefetches(
@@ -683,10 +703,11 @@ void generate_code(void)
                   dir,
                   dim,
                   clover,
-                  twisted_mass != TwistedMassVariant::none);
+                  twisted_mass != TwistedMassVariant::none,
+                  use_tbc);
               mergeIvectorWithL2Prefetches(ivector, l2prefs);
               dumpIVector(ivector, filename.str());
-
+                }
             } // gauge compression
           } // plus/minus
         } // dimension

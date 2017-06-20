@@ -3,7 +3,18 @@
 #pragma once
 
 {% for isa in isas %}
-#if defined (QPHIX_{{ isa|upper }}_SOURCE)
+#if defined(QPHIX_{{ isa|upper }}_SOURCE)
 #include "{{ 'qphix_codegen/%s_%s_decl.h'|format(kernel, isa) }}"
 #endif
 {% endfor %}
+
+#if !(
+    {%- for isa in isas -%}
+    {%- if not loop.first -%}
+    ||
+    {%- endif -%}
+    defined(QPHIX_{{ isa|upper }}_SOURCE)
+    {%- endfor -%}
+)
+#error "No ISA has been selected, this is an internal error of QPhiX. Please report at https://github.com/JeffersonLab/qphix/issues/new."
+#endif

@@ -14,15 +14,6 @@ import socket
 import jinja2
 
 
-march = {
-    'scalar': 'TODO',
-    'sse': 'SSE',
-    'avx': 'sandybridge',
-    'avx2': 'haswell',
-    'avx512': 'knl',
-}
-
-
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
     generated_files = os.listdir(os.path.join('..', 'generated', isa,
                                               'generated'))
@@ -64,7 +55,6 @@ def main():
         loader=jinja2.FileSystemLoader('..')
     )
     complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
-    makefile_am = env.get_template('jinja/Makefile.am.j2')
     kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
 
     for kernel_pattern in kernel_patterns:
@@ -101,17 +91,6 @@ def main():
             prefix = kernel_pattern % {'fptype_underscore': ''}
             generated_for_prefix[prefix] = get_kernel_files_for_isa(kernel_pattern, isa, isa_data['fptypes'].keys())
 
-        rendered = makefile_am.render(
-            generated_warning=generated_warning,
-            isa=isa,
-            extra_includes=[
-                os.path.relpath(extra_include, os.path.join('qphix', isa))
-                for extra_include in isa_data['extra_includes_local']],
-            generated_for_prefix=generated_for_prefix,
-        )
-        filename = os.path.join('../generated', isa, 'Makefile.am')
-        write_if_changed(filename, rendered)
-
         for kernel_pattern in kernel_patterns:
             kernel = kernel_pattern % {'fptype_underscore': ''}
 
@@ -125,7 +104,7 @@ def main():
             for fptype, fptype_data in sorted(isa_data['fptypes'].items()):
                 veclen = fptype_data['veclen']
                 for soalen in fptype_data['soalens']:
-                    print('Working on kernel `{}` for ISA `{}` ...'.format(kernel, isa))
+                    print('Working on kernel `{}` for ISA `{}` for soalen {} ...'.format(kernel, isa, soalen))
                     for compress12 in ['true', 'false']:
                         template_param = {
                             'FPTYPE': fptype,
@@ -195,7 +174,6 @@ def main():
                 os.path.basename(source_file)
                 for source_file in source_files],
             header_files=header_files,
-            march=march[isa],
         )
         write_if_changed(filename_cmake, rendered)
 

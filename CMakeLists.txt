@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.1)
 project(QPhiX-Codegen)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
-OPTION( isa  "select ISA to generate for" )
-OPTION( target_cxx "select target CXX Compiler for building libqphix-codegen.a" ${CMAKE_CXX_COMPILER})
-OPTION( target_cxxflags "select target CXXFLAGS for building libqphix-codege.a" ${CMAKE_CXX_FLAGS})
-OPTION( target_jN "select -j parameter for making target" 1)
+
+set(isa "" CACHE STRING "select ISA to generate for")
+set(target_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a")
+set(target_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING "select target CXXFLAGS for building libqphix-codege.a")
+set(target_jN 1 CACHE STRING "select -j parameter for making target")
 
 function(setup_defs target precision soalen lowprec)
 
@@ -404,10 +405,15 @@ endif()
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
 
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+message(STATUS "target_cxx: ${target_cxx}")
+
 # This custom target executes 
 add_custom_target( codegen_lib ALL 
-				   COMMAND CXX=${target_cxx} CXXFLAGS=${target_cxxflags} cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
+				   COMMAND cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
 				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                                                -DCMAKE_CXX_COMPILER=${target_cxx}
+                                                -DCMAKE_CXX_FLAGS=${target_cxxflags} 
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
