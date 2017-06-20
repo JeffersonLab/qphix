@@ -341,6 +341,12 @@ class Geometry
 
   void free(FourSpinorBlock *p)
   {
+    // The C standard `free` will be a no-operation when the null pointer is passed.
+    // This function should exhibit the same behavior.
+    if (p == nullptr) {
+      return;
+    }
+
     FourSpinorBlock *freeme = p - 1;
     BUFFER_FREE(freeme, spinor_bytes);
   }
