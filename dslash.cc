@@ -346,7 +346,7 @@ void dslash_body(InstVector &ivector,
                           "][0]",
                           tbc_is_half);
       loadBroadcastScalar(ivector,
-                          tbc_phase_re,
+                          tbc_phase_im,
                           "tbc_phases[" + dim_str.str() +
                           "][1]",
                           tbc_is_half);
