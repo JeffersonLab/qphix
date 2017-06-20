@@ -87,8 +87,7 @@ void inverse_twisted_term(InstVector &ivector,
                           string _mask = "");
 void applyTwistedBoundaryConditions(InstVector &ivector,
                                     bool const adjMul,
-                                    bool const has_tbc,
-                                    FVec *tbc_phase);
+                                    bool const has_tbc);
 // void achiResult(InstVector& ivector, bool clover);
 
 void achiResult(InstVector &ivector,

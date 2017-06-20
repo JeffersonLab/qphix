@@ -7,7 +7,6 @@ using namespace std;
 #include "unsupported_values.h"
 
 extern string beta_names[8];
-extern string tbc_names[4][2];
 
 extern string alpha_name;
 extern string outBase;
@@ -399,6 +398,11 @@ FVec tmp_4_re("tmp_4_re");
 FVec tmp_4_im("tmp_4_im");
 
 FVec tmp[4] = {tmp_1_re, tmp_2_re, tmp_3_re, tmp_4_re};
+
+// for storing twisted boundary conditions phases
+FVec tbc_phase_re("tbc_phase_re");
+FVec tbc_phase_im("tbc_phase_im");
+FVec tbc_phase[2] = {tbc_phase_re, tbc_phase_im};
 
 FVec u_00_re("u_00_re");
 FVec u_00_im("u_00_im");
@@ -1482,8 +1486,7 @@ void twisted_term(InstVector &ivector, bool isPlus)
 
 void applyTwistedBoundaryConditions(InstVector &ivector,
                                     bool const adjMul,
-                                    bool const has_tbc,
-                                    FVec *tbc_phase)
+                                    bool const has_tbc)
 {
   string mask;
   FVec tbc_tmp[2] = {tmp_1_re, tmp_1_im};
