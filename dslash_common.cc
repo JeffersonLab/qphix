@@ -1889,15 +1889,18 @@ void dslash_achimbdpsi_body(InstVector &ivector,
         // cases.
         if (isPlus ^ isLower) {
           fnmaddFVec(
-              ivector, out[RE], prec_mass_rho_vec, in[IM], in[RE]);
+              ivector, tmp_1_re, prec_mass_rho_vec, in[IM], in[RE]);
           fmaddFVec(
-              ivector, out[IM], prec_mass_rho_vec, in[RE], in[IM]);
+              ivector, tmp_1_im, prec_mass_rho_vec, in[RE], in[IM]);
         } else {
           fmaddFVec(
-              ivector, out[RE], prec_mass_rho_vec, in[IM], in[RE]);
+              ivector, tmp_1_re, prec_mass_rho_vec, in[IM], in[RE]);
           fnmaddFVec(
-              ivector, out[IM], prec_mass_rho_vec, in[RE], in[IM]);
+              ivector, tmp_1_im, prec_mass_rho_vec, in[RE], in[IM]);
         }
+
+        addFVec(ivector, out[RE], out[RE], tmp_1_re);
+        addFVec(ivector, out[IM], out[IM], tmp_1_im);
       }
     }
   }
