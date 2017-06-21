@@ -102,6 +102,8 @@ string clOffs("gOffs");
 string mu_name("mu");
 string mu_inv_name("muinv");
 
+string prec_mass_rho_name("prec_mass_rho");
+
 // Defines which dimensions are involved in SIMD blocking
 // Currently just X and Y
 bool requireAllOneCheck[4] = {true, true, false, false};

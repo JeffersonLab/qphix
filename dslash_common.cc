@@ -21,6 +21,8 @@ extern string clOffs;
 extern string mu_name;
 extern string mu_inv_name;
 
+extern string prec_mass_rho_name;
+
 FVec b_S0_C0_RE("b_S0_C0_RE");
 FVec b_S0_C0_IM("b_S0_C0_IM");
 FVec b_S0_C1_RE("b_S0_C1_RE");
@@ -377,6 +379,8 @@ FVec beta_vec("beta_vec");
 
 FVec mu_vec("mu_vec");
 FVec mu_inv_vec("mu_inv_vec");
+
+FVec mu_vec("prec_mass_rho_vec");
 
 FVec psi_S0_RE("psi_S0_RE");
 FVec psi_S0_IM("psi_S0_IM");
@@ -1865,6 +1869,32 @@ void dslash_achimbdpsi_body(InstVector &ivector,
 
   // Fill result with a*chi
   achiResult(ivector, clover, twisted_mass, isPlus);
+
+
+  // Add twisted preconditioning mass.
+  declareFVecFromFVec(ivector, prec_mass_rho_vec);
+  loadBroadcastScalar(ivector, prec_mass_rho_vec, prec_mass_rho_name, SpinorType);
+  for (int col = 0; col < 3; col++) {
+    for (int spin = 0; spin < 4; spin++) {
+      bool const isLower = spin >= 2;
+      FVec *in = chi_spinor[spin][col];
+      FVec *out = out_spinor[spin][col];
+
+      // The `\gamma_5` will give a minus sign to the lower spin
+      // components. Also if we do the adjoint version, we need a
+      // minus for the upper spin components. Therefore we need a
+      // plus sign if we do the normal version (`isPlus == true`)
+      // and we are on the upper component. The following exclusive
+      // or (XOR) operation should take care of both cases.
+      if (isPlus ^ isLower) {
+        fnmaddFVec(ivector, out[RE], prec_mass_rho_vec, in[IM], in[RE]);
+        fmaddFVec(ivector, out[im], prec_mass_rho_vec, in[RE], in[IM]);
+      } else {
+        fmaddFVec(ivector, out[RE], prec_mass_rho_vec, in[IM], in[RE]);
+        fnmaddFVec(ivector, out[IM], prec_mass_rho_vec, in[RE], in[IM]);
+      }
+    }
+  }
 
   proj_ops *p_ops;
   recons_ops *rec_ops_bw;
