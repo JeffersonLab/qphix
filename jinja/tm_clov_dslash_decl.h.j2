@@ -90,7 +90,8 @@ void tm_clov_dslash_achimbdpsi_{{ isign }}_vec(
     const FT coeff_t_f,
     const FT coeff_t_b,
     const FT tbc_phases[4][2],
-    const unsigned int accumulate[8]);
+    const unsigned int accumulate[8],
+    const FT prec_mass_rho);
 
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc = false>
 void tm_clov_face_finish_dir_{{ isign }}(
