@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_H
-#define QPHIX_BLAS_H
+#pragma once
 
 // Generic OpenMP templated
 #include "qphix/blas_c.h"
@@ -19,5 +18,4 @@
 #endif
 
 #ifdef QPHIX_AVX2_SOURCE
-#endif
 #endif

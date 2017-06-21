@@ -1,24 +1,14 @@
-#ifndef TEST_BLAS
-#define TEST_BLAS
+#pragma once
 
-#include "qphix/print_utils.h"
-class testBlas
+#include "cli_args.h"
+
+class TestBlas
 {
  public:
-  testBlas(int NCores_, int Sy_, int Sz_, int PadXY_, int PadXYZ_, int niters_)
-      : NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_),
-        iters(niters_)
-  {
-  }
-  void run(const int lattSize[], const int qmp_geom[]);
+  TestBlas(CliArgs &args) : args_(args) {}
+
+  void run();
 
  private:
-  const int NCores;
-  const int Sy;
-  const int Sz;
-  const int PadXY;
-  const int PadXYZ;
-  const int iters;
+  CliArgs &args_;
 };
-
-#endif

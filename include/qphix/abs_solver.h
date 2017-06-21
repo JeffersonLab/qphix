@@ -1,5 +1,4 @@
-#ifndef QPHIX_ABS_SOLVER_H
-#define QPHIX_ABS_SOLVER_H
+#pragma once
 
 #include "qphix/geometry.h"
 
@@ -149,5 +148,3 @@ class AbstractMultiSolver
   virtual Geometry<FT, V, S, compress12> &getGeometry() = 0;
 };
 }
-
-#endif

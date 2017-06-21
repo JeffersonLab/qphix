@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_MIC_H
-#define QPHIX_BLAS_MIC_H
+#pragma once
 
 #include "qphix/blas_c.h"
 #include "qphix/blas_new_c.h"
@@ -409,5 +408,3 @@ inline void copySpinor<float, 16>(float *res,
 #endif
 
 } // Namespace
-
-#endif

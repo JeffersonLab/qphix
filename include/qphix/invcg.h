@@ -1,10 +1,10 @@
-#ifndef QPHIX_INVCG2_H
-#define QPHIX_INVCG2_H
+#pragma once
 
-///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
+/**
+  \TODO user serviceable options -- should be moved to autoconf control
+  */
 #define QPHIX_TIMING_CG
-
-#define CGDEBUG
+// #define CGDEBUG
 
 #include "qphix/linearOp.h"
 #include "qphix/print_utils.h"
@@ -689,5 +689,3 @@ class InvCG : public AbstractSolver<FT,
   }
 };
 };
-
-#endif

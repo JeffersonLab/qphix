@@ -1,5 +1,4 @@
-#ifndef QPHIX_CLOVER_H
-#define QPHIX_CLOVER_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/clover_dslash_def.h"
@@ -26,9 +25,11 @@ class EvenOddCloverOperator
                         Geometry<FT, veclen, soalen, compress12> *geom_,
                         double t_boundary,
                         double aniso_coeff_s,
-                        double aniso_coeff_t)
+                        double aniso_coeff_t,
+                        bool use_tbc_[4] = nullptr,
+                        double tbc_phases_[4][2] = nullptr)
       : D(new ClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     u[0] = u_[0];
@@ -41,9 +42,11 @@ class EvenOddCloverOperator
   EvenOddCloverOperator(Geometry<FT, veclen, soalen, compress12> *geom_,
                         double t_boundary,
                         double aniso_coeff_s,
-                        double aniso_coeff_t)
+                        double aniso_coeff_t,
+                        bool use_tbc_[4] = nullptr,
+                        double tbc_phases_[4][2] = nullptr)
       : D(new ClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
@@ -84,11 +87,9 @@ class EvenOddCloverOperator
  private:
   double Mass;
   ClovDslash<FT, veclen, soalen, compress12> *D;
-  mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
-  mutable CloverBlock *clov; // Mutable because of setFields
-  mutable CloverBlock *invclov; // Mutable because of setFields
+  SU3MatrixBlock *u[2];
+  CloverBlock *clov;
+  CloverBlock *invclov;
   FourSpinorBlock *tmp;
 }; // Class
 }; // Namespace
-
-#endif

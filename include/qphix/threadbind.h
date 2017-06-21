@@ -1,10 +1,7 @@
-#ifndef QPHIX_THREADBIND_H
-#define QPHIX_THREADBIND_H
+#pragma once
 
 namespace QPhiX
 {
 void setThreadAffinity(int nCores, int threadsPerCore);
 void reportAffinity(void);
 }
-
-#endif

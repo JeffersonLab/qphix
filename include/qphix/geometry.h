@@ -1,8 +1,9 @@
-#ifndef QPHIX_GEOMETRY_H
-#define QPHIX_GEOMETRY_H
+#pragma once
 
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
+
+#include <qphix_codegen/decl_common.h>
 
 #include <cstdlib>
 #include <stdexcept>
@@ -23,8 +24,6 @@ struct CorePhase {
   int Cyz;
   int startBlock;
 };
-
-typedef unsigned short half;
 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 inline float cvtHalf2Float(half val)
@@ -95,87 +94,40 @@ T1 rep(const T2 &in)
 #endif // defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 template <typename FT>
-char const *type_name();
+inline char const *type_name();
 
 template <>
-char const *type_name<double>()
+inline char const *type_name<double>()
 {
   return "double";
 }
 
 template <>
-char const *type_name<float>()
+inline char const *type_name<float>()
 {
   return "float";
 }
 
 template <>
-char const *type_name<half>()
+inline char const *type_name<half>()
 {
   return "half";
 }
 
-template <typename T, int V, int S, const bool compressP>
+template <typename T, int V, int S, bool compressP>
 class Geometry
 {
  public:
-  // Later change this to depend on compressP
-  typedef T FourSpinorBlock[3][4][2][S];
-  typedef T TwoSpinorBlock[3][2][2][V];
-  typedef T SU3MatrixBlock[8][(compressP ? 2 : 3)][3][2][V];
-
   typedef T FT;
   int constexpr static veclen = V;
   int constexpr static soalen = S;
   bool constexpr static compress12 = compressP;
 
-  struct CloverBlock {
-    /**
-      Diagonal part of upper spin-block, real.
-
-      The indices are:
-
-      - Spin (slow) and spin (fast).
-      - SIMD length.
-      */
-    T diag1[6][V];
-
-    /**
-      Off-diagonal part of upper spin-block, complex.
-      */
-    T off_diag1[15][2][V];
-    T diag2[6][V]; // Real Diagonal part of block 2
-    T off_diag2[15][2][V]; // Complex, off diagonal part of block 2
-  };
-
-  /**
-    Clover structure suitable for twisted mass.
-
-    It has the following indices:
-
-    - The fields `block1` and `block2` refer to the half-spinors, the blocks
-    are in spin-space. Each of those, then has the following indices.
-
-    - Combined spin and color index, length 6. The color part is faster, so
-  let the combined index be `sc`. Then the (two-spinor) spin index is
-  computed with `s2 =
-    sc / 3` and the color index with `c = sc % 3`. A four-spinor spin index
-    would be `s4 = 2 * block + s2`, where `block` is either 0 or 1, depending
-    on whether `block1` or `block2` has been chosen.
-
-    - Same as the previous index, this is a block-diagonal matrix in
-    spin-color space and therefore has a second index of that kind.
-
-    - Real and imaginary part, length 2.
-
-    - SIMD vector, iterates through the \$f x \f$ coordinate, length `V`.
-    */
-  struct FullCloverBlock {
-    /// Full complex, non-hermitian clover block 1
-    T block1[6][6][2][V];
-    /// Full complex, non-hermitian clover block 2
-    T block2[6][6][2][V];
-  };
+  typedef typename Types<T, V, S, compressP>::FourSpinorBlock FourSpinorBlock;
+  typedef typename Types<T, V, S, compressP>::TwoSpinorBlock TwoSpinorBlock;
+  typedef typename Types<T, V, S, compressP>::SU3MatrixBlock SU3MatrixBlock;
+  typedef typename Types<T, V, S, compressP>::CloverBlock CloverBlock;
+  typedef typename Types<T, V, S, compressP>::FullCloverBlock FullCloverBlock;
 
   Geometry(const int latt_size[],
            int By_,
@@ -185,7 +137,8 @@ class Geometry
            int Sz_,
            int PadXY_,
            int PadXYZ_,
-           int MinCt_)
+           int MinCt_,
+           bool const verbose = false)
       : Nd(4), By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_),
         PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_ * Sz_),
         num_threads(NCores_ * Sy_ * Sz_)
@@ -246,39 +199,41 @@ class Geometry
       n_phases++;
     }
 
-    masterPrintf("Constructed a new Geometry object.\n"
-                 "  Template parameters are:\n"
-                 "    FT          %s\n"
-                 "    veclen      %d\n"
-                 "    soalen      %d\n"
-                 "    compress12  %s\n",
-                 type_name<T>(),
-                 veclen,
-                 soalen,
-                 compress12 ? "true" : "false");
-    masterPrintf(
-        "  The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n"
-        "    Spinor:     %10ld\n"
-        "    Gauge:      %10ld\n"
-        "    Clover:     %10ld\n"
-        "    FullClover: %10ld\n",
-        spinor_bytes / 1024 / 1024,
-        gauge_bytes / 1024 / 1024,
-        clover_bytes / 1024 / 1024,
-        full_clover_bytes / 1024 / 1024);
+    if (verbose) {
+      masterPrintf("Constructed a new Geometry object.\n"
+                   "  Template parameters are:\n"
+                   "    FT          %s\n"
+                   "    veclen      %d\n"
+                   "    soalen      %d\n"
+                   "    compress12  %s\n",
+                   type_name<T>(),
+                   veclen,
+                   soalen,
+                   compress12 ? "true" : "false");
+      masterPrintf(
+          "  The local sizes for QPhiX data structures in MibiByte (1024**2) are:\n"
+          "    Spinor:     %10ld\n"
+          "    Gauge:      %10ld\n"
+          "    Clover:     %10ld\n"
+          "    FullClover: %10ld\n",
+          spinor_bytes / 1024 / 1024,
+          gauge_bytes / 1024 / 1024,
+          clover_bytes / 1024 / 1024,
+          full_clover_bytes / 1024 / 1024);
 
-    masterPrintf("  Geometry properties are:\n");
-    masterPrintf("    Local Lattice size %d %d %d %d\n", Nx_, Ny_, Nz_, Nt_);
-    masterPrintf("    number of vectors  %d\n", nvecs_);
-    masterPrintf("    Blocking           %d %d\n", By, Bz);
-    masterPrintf("    nGY                %d\n", ngy_);
-    masterPrintf("    PadXY PadXYZ       %d %d\n", PadXY, PadXYZ);
-    masterPrintf("    MinCt              %d\n", MinCt);
-    masterPrintf("    Phases             %d\n", n_phases);
-    masterPrintf("  Threading options are:\n");
-    masterPrintf("    Cores              %d\n", num_cores);
-    masterPrintf("    Sy Sz              %d %d\n", Sy, Sz);
-    masterPrintf("    Total threads      %d\n", num_threads);
+      masterPrintf("  Geometry properties are:\n");
+      masterPrintf("    Local Lattice size %d %d %d %d\n", Nx_, Ny_, Nz_, Nt_);
+      masterPrintf("    number of vectors  %d\n", nvecs_);
+      masterPrintf("    Blocking           %d %d\n", By, Bz);
+      masterPrintf("    nGY                %d\n", ngy_);
+      masterPrintf("    PadXY PadXYZ       %d %d\n", PadXY, PadXYZ);
+      masterPrintf("    MinCt              %d\n", MinCt);
+      masterPrintf("    Phases             %d\n", n_phases);
+      masterPrintf("  Threading options are:\n");
+      masterPrintf("    Cores              %d\n", num_cores);
+      masterPrintf("    Sy Sz              %d %d\n", Sy, Sz);
+      masterPrintf("    Total threads      %d\n", num_threads);
+    }
   }
 
   ~Geometry() {}
@@ -584,5 +539,3 @@ makeFullCloverHandle(Geometry<FT, veclen, soalen, compress12> &geom)
 }
 
 } // Namespace
-
-#endif

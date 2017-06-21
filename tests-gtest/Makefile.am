@@ -1,8 +1,8 @@
 SUBDIRS = gtest
 
-INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include -I@top_srcdir@/tests-gtest/gtest/include
+INCFLAGS=-I@top_srcdir@/include -I@top_builddir@/include -I@top_srcdir@/tests-gtest/gtest/include -I@QPHIX_CODEGEN_HOME@/include
 AM_CXXFLAGS=$(INCFLAGS) @QPHIX_AUX_CFLAGS@
-AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@ -L@top_builddir@/tests-gtest/gtest/lib
+AM_LDFLAGS=-L@top_builddir@/lib @LDFLAGS@ @QPHIX_AUX_LDFLAGS@ -L@top_builddir@/tests-gtest/gtest/lib -L@QPHIX_CODEGEN_HOME@/lib
 
 check_PROGRAMS = tests-g
 
@@ -16,4 +16,4 @@ tests_g_SOURCES = main.cc \
 		  ../tests/mesfield.cc
 tests_g_CXXFLAGS = $(AM_CXXFLAGS)
 
-tests_g_LDADD = -lqphix_solver @LIBS@ @QPHIX_AUX_LIBS@ -lgtest
+tests_g_LDADD = -lqphix_solver -lqphix_codegen @LIBS@ @QPHIX_AUX_LIBS@ -lgtest

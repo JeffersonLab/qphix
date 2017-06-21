@@ -1,5 +1,4 @@
-#ifndef QPHIX_REAL_FUNCTORS_H
-#define QPHIX_REAL_FUNCTORS_H
+#pragma once
 
 #include "qphix/blas_c.h"
 #include "qphix/qphix_config.h"
@@ -788,5 +787,3 @@ class RichardsonRXUpdateNormRFunctor
 };
 
 }; // Namespace
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef QPHIX_COMM_H
-#define QPHIX_COMM_H
+#pragma once
 
 #include "qphix/geometry.h"
 #include "qphix/diagnostics.h"
@@ -214,7 +213,6 @@ inline int numNodes()
 #ifdef QPHIX_QMP_COMMS
 QPHIX_MESSAGE("Doing QMP Comms")
 
-#define QPHIX_MPI_COMMS_CALLS
 #ifdef QPHIX_MPI_COMMS_CALLS
 // Arbitrary tag
 #define QPHIX_DSLASH_MPI_TAG (12)
@@ -594,5 +592,3 @@ inline int numNodes()
 
 #endif // ifndef QPHIX_DO_COMMS
 }; // Namespace
-
-#endif

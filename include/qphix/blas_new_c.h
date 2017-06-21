@@ -1,5 +1,4 @@
-#ifndef QPHIX_BLAS_NEW_C_H
-#define QPHIX_BLAS_NEW_C_H
+#pragma once
 
 #include "qphix/geometry.h"
 #include "qphix/comm.h"
@@ -702,5 +701,3 @@ convert(typename Geometry<FTOut, VOut, SOut, CompressOut>::FourSpinorBlock
 }
 
 }; // Namespace
-
-#endif

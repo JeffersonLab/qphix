@@ -1,12 +1,4 @@
-/*
- * qphix_cli_args.h
- *
- *  Created on: Aug 1, 2016
- *      Author: bjoo
- */
-
-#ifndef INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
-#define INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_
+#pragma once
 
 #include <cstdlib>
 #include <iostream>
@@ -55,5 +47,3 @@ class QPhiXCLIArgs
   int MinCt;
 };
 }
-
-#endif /* INCLUDE_QPHIX_QPHIX_CLI_ARGS_H_ */

@@ -1,7 +1,8 @@
-#ifndef QPHIX_INVBICGSTAB_H
-#define QPHIX_INVBICGSTAB_H
+#pragma once
 
-///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
+/**
+ \TODO user serviceable options -- should be moved to autoconf control
+ */
 #define QPHIX_VERBOSE_BICGSTAB
 #define QPHIX_TIMING_BICGSTAB
 
@@ -594,5 +595,3 @@ class InvBiCGStab : public AbstractSolver<FT,
   }
 };
 };
-
-#endif

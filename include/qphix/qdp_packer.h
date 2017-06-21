@@ -1,5 +1,4 @@
-#ifndef QPHIX_QDP_PACKER_H
-#define QPHIX_QDP_PACKER_H
+#pragma once
 
 #include "qdp.h"
 #include "qphix/geometry.h"
@@ -281,5 +280,3 @@ void qdp_pack_clover(
 
 #endif // if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 };
-
-#endif

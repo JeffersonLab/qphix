@@ -1,6 +1,4 @@
-
-#ifndef QPHIX_CLOVER_DSLASH_DEF_H
-#define QPHIX_CLOVER_DSLASH_DEF_H
+#pragma once
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
@@ -12,14 +10,10 @@ namespace QPhiX
 /* Specialize - Dslash of float */
 /* To note the clover block will already include anisotropy and probably also
  * boundaries */
-template <typename FT,
-          int veclen,
-          int soalen,
-          bool compress12> /* The teplate is the floating point type */
+template <typename FT, int veclen, int soalen, bool compress12>
 class ClovDslash
 {
  public:
-  // Pack gauges...
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
       SU3MatrixBlock;
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -31,12 +25,12 @@ class ClovDslash
   ClovDslash(Geometry<FT, veclen, soalen, compress12> *geom_,
              double t_boundary_,
              double dslash_aniso_s_,
-             double dslash_aniso_t_);
+             double dslash_aniso_t_,
+             bool use_tbc_[4] = nullptr,
+             double tbc_phases_[4][2] = nullptr);
 
-  /* Destructor */
   ~ClovDslash();
 
-  /* Apply the operator */
   void dslash(FourSpinorBlock *res,
               const FourSpinorBlock *psi,
               const SU3MatrixBlock *u,
@@ -57,7 +51,6 @@ class ClovDslash
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
  private:
-  void init();
   Geometry<FT, veclen, soalen, compress12> *s;
   Comms<FT, veclen, soalen, compress12> *comms;
 
@@ -79,6 +72,12 @@ class ClovDslash
   const double aniso_coeff_S;
   const double aniso_coeff_T;
 
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
+
   bool amIPtMin;
   bool amIPtMax;
 
@@ -96,67 +95,41 @@ class ClovDslash
 
   // Hide Free Constructor
   ClovDslash();
-  void DyzPlus(int tid,
-               const FourSpinorBlock *psi,
-               FourSpinorBlock *res,
-               const SU3MatrixBlock *u,
-               const CloverBlock *invclov,
-               int cb);
 
-  void DyzMinus(int tid,
-                const FourSpinorBlock *psi,
-                FourSpinorBlock *res,
-                const SU3MatrixBlock *u,
-                const CloverBlock *invclov,
-                int cb);
+  void Dyz(int tid,
+           const FourSpinorBlock *psi,
+           FourSpinorBlock *res,
+           const SU3MatrixBlock *u,
+           const CloverBlock *invclov,
+           bool const is_plus,
+           int cb);
 
-  void DyzPlusAChiMinusBDPsi(int tid,
-                             const FourSpinorBlock *psi,
-                             const FourSpinorBlock *chi,
-                             FourSpinorBlock *res,
-                             const SU3MatrixBlock *u,
-                             const CloverBlock *clov,
-                             double beta,
-                             int cb);
+  void DyzAChiMinusBDPsi(int tid,
+                         const FourSpinorBlock *psi,
+                         const FourSpinorBlock *chi,
+                         FourSpinorBlock *res,
+                         const SU3MatrixBlock *u,
+                         const CloverBlock *clov,
+                         double beta,
+                         bool const is_plus,
+                         int cb);
 
-  void DyzMinusAChiMinusBDPsi(int tid,
-                              const FourSpinorBlock *psi,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res,
-                              const SU3MatrixBlock *u,
-                              const CloverBlock *clov,
-                              double beta,
-                              int cb);
+  void DPsi(const SU3MatrixBlock *u,
+            const CloverBlock *invclov,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            bool const is_plus,
+            int cb);
 
-  void DPsiPlus(const SU3MatrixBlock *u,
-                const CloverBlock *invclov,
-                const FourSpinorBlock *psi_in,
-                FourSpinorBlock *res_out,
-                int cb);
+  void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                          const CloverBlock *clov,
+                          const FourSpinorBlock *psi_in,
+                          const FourSpinorBlock *chi,
+                          FourSpinorBlock *res_out,
+                          double beta,
+                          bool const is_plus,
+                          int cb);
 
-  void DPsiMinus(const SU3MatrixBlock *u,
-                 const CloverBlock *invclov,
-                 const FourSpinorBlock *psi_in,
-                 FourSpinorBlock *res_out,
-                 int cb);
-
-  void DPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                              const CloverBlock *clov,
-                              const FourSpinorBlock *psi_in,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res_out,
-                              double beta,
-                              int cb);
-
-  void DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                               const CloverBlock *clov,
-                               const FourSpinorBlock *psi_in,
-                               const FourSpinorBlock *chi,
-                               FourSpinorBlock *rea_out,
-                               double beta,
-                               int cb);
-
-// DISABLE COMMS FOR NOW
 #ifdef QPHIX_DO_COMMS
   void packFaceDir(int tid,
                    const FourSpinorBlock *psi,
@@ -164,9 +137,8 @@ class ClovDslash
                    int cb,
                    int dir,
                    int fb,
-                   int isPlus);
+                   bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDir(int tid,
                        const FT *psi,
                        FourSpinorBlock *res,
@@ -176,9 +148,8 @@ class ClovDslash
                        int cb,
                        int dir,
                        int fb,
-                       int isPlus);
+                       bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDirAChiMBDPsi(int tid,
                                  const FT *psi,
                                  FourSpinorBlock *res,
@@ -187,16 +158,14 @@ class ClovDslash
                                  int cb,
                                  int dir,
                                  int fb,
-                                 int isPlus);
+                                 bool const is_plus);
 #endif
 
 }; // Class
-
 } // Namespace
-#include "qphix/clover_dslash_body.h"
-#ifdef QPHIX_DO_COMMS
-// Disable comms for nokw
-#include "qphix/clov_face.h"
-#endif
 
+#include "qphix/clover_dslash_body.h"
+
+#ifdef QPHIX_DO_COMMS
+#include "qphix/clov_face.h"
 #endif

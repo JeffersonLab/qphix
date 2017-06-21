@@ -42,12 +42,14 @@ cd ..
 fold_start update_gcc
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin
+sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin cmake python3-jinja2
+
+python3 -m pip install --user jinja2
 
 ls -l /usr/lib/ccache
 fold_end update_gcc
 
-basedir=$PWD
+basedir="$PWD"
 
 cc_name=mpicc
 cxx_name=mpic++
@@ -82,7 +84,6 @@ PATH=$prefix/bin:$PATH
 base_cxxflags="$base_flags"
 base_cflags="$base_flags"
 base_configure="--prefix=$prefix --disable-shared --enable-static CC=$(which $cc_name) CXX=$(which $cxx_name)"
-
 # Clones a git repository if the directory does not exist. It does not call
 # `git pull`. After cloning, it deletes the `configure` and `Makefile` that are
 # shipped by default such that they get regenerated in the next step.
@@ -96,7 +97,10 @@ clone-if-needed() {
         git clone "$url" --recursive -b "$branch"
 
         pushd "$dir"
-        rm -f configure Makefile
+        if [[ -f Makefile.am ]]; then
+            rm -f Makefile
+        fi
+        rm -f configure
         popd
     fi
 }
@@ -120,11 +124,11 @@ fi
 make-make-install() {
     if ! [[ -f build-succeeded ]]; then
         fold_start $repo.make
-        make $make_smp_flags
+        time make $make_smp_flags
         fold_end $repo.make
 
         fold_start $repo.make_install
-        make install
+        time make install
         fold_end $repo.make_install
 
         touch build-succeeded
@@ -150,15 +154,6 @@ print-fancy-heading() {
     fi
 }
 
-# I have not fully understood this here. I *feel* that there is some cyclic
-# dependency between `automake --add-missing` and the `autoreconf`. It does not
-# make much sense. Perhaps one has to split up the `autoreconf` call into the
-# parts that make it up. Using this weird dance, it works somewhat reliably.
-autotools-dance() {
-    #automake --add-missing --copy || autoreconf -f || automake --add-missing --copy
-    autoreconf -vif
-}
-
 # Invokes the various commands that are needed to update the GNU Autotools
 # build system. Since the submodules are also Autotools projects, these
 # commands need to be invoked from the bottom up, recursively. The regular `git
@@ -171,14 +166,16 @@ autoreconf-if-needed() {
         if [[ -f .gitmodules ]]; then
             for module in $(git submodule foreach --quiet --recursive pwd | tac); do
                 pushd "$module"
-                aclocal
-                autotools-dance
+                if [[ -f configure.ac ]]; then
+                    aclocal
+                    autoreconf -vif
+                fi
                 popd
             done
         fi
 
         aclocal
-        autotools-dance
+        autoreconf -vif
     fi
 }
 
@@ -320,54 +317,54 @@ popd
 repo=qphix
 print-fancy-heading $repo
 
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags $openmp_flags $qphix_flags"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
-autoreconf-if-needed
-popd
-fold_end $repo.download
-
-fold_start $repo.configure
 case "$QPHIX_ARCH" in
     SCALAR)
         archflag=
         soalen=1
+	isa="scalar"
         ;;
     AVX)
         archflag=-march=sandybridge
-        soalen=2
+        soalen=4
+	isa="avx"
         ;;
     AVX2)
         archflag=-march=haswell
-        soalen=2
+        soalen=4
+	isa="avx2"
         ;;
     AVX512)
         archflag=-march=knl
-        soalen=4
+        soalen=8
+	isa="avx512"
         ;;
     *)
         echo "Unsupported QPHIX_ARCH"
         exit 1;
+        ;;
 esac
+
+fold_start $repo.configure
 
 mkdir -p "$build/$repo"
 pushd "$build/$repo"
+
+cflags="$base_cflags $openmp_flags $qphix_flags"
+cxxflags="$base_cxxflags $openmp_flags $cxx11_flags $qphix_flags"
 if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            $qphix_configure \
-            --enable-testing \
-            --enable-proc=$QPHIX_ARCH \
-            --enable-soalen=$soalen \
-            --enable-clover \
-            --enable-twisted-mass \
-            --enable-tm-clover \
-            --enable-openmp \
-            --enable-mm-malloc \
-            --enable-parallel-arch=parscalar \
-            --with-qdp="$prefix" \
-            CFLAGS="$cflags $archflag" CXXFLAGS="$cxxflags $archflag"; then
-        cat config.log
+      if ! CXX=$(which $cxx_name) CXXFLAGS="$cxxflags $archflag" \
+            cmake -Disa=${isa} \
+	      -Dhost_cxx="g++" \
+	      -Dhost_cxxflags="-g -O3 -std=c++11" \
+              -Drecursive_jN=$(nproc) \
+	      -DCMAKE_INSTALL_PREFIX="$prefix/qphix_${QPHIX_ARCH}" \
+	      -DQDPXX_DIR="$prefix" \
+	      -Dclover=TRUE \
+	      -Dtwisted_mass=TRUE \
+	      -Dtm_clover=TRUE \
+	      -Dcean=FALSE \
+	      -Dmm_malloc=TRUE \
+	      -Dtesting=TRUE $sourcedir/$repo ; then
         exit 1
     fi
 fi
@@ -396,7 +393,7 @@ export OMP_NUM_THREADS=2
 pushd $build/qphix/tests
 
 l=16
-args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f -geom 1 1 1 2"
+args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f -geom 1 1 1 2 -soalen $soalen"
 
 tests=(
 t_clov_dslash
@@ -408,7 +405,6 @@ t_twm_clover
 for runner in "${tests[@]}"
 do
     fold_start testing.$runner
-    mpirun -n 2 ./$runner $args
+    time mpirun -n 2 ./$runner $args
     fold_end testing.$runner
 done
-

@@ -1,5 +1,4 @@
-#ifndef QPHIX_INV_RICHARDSON_MULTIPREC_H
-#define QPHIX_INV_RICHARDSON_MULTIPREC_H
+#pragma once
 
 #include "qphix/abs_solver.h"
 #include "qphix/linearOp.h"
@@ -276,5 +275,3 @@ class InvRichardsonMultiPrec
   Geometry<FTInner, VInner, SInner, CompressInner> &geom_inner;
 };
 };
-
-#endif

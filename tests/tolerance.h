@@ -1,18 +1,20 @@
 #pragma once
 
+#include "qdp.h"
+
 template <typename T>
 struct tolerance {
-  static const Double small; // Always fail
+  static const QDP::Double small; // Always fail
 };
 
 template <>
-const Double tolerance<half>::small = Double(5.0e-3);
+const QDP::Double tolerance<half>::small = QDP::Double(5.0e-3);
 
 template <>
-const Double tolerance<float>::small = Double(1.0e-6);
+const QDP::Double tolerance<float>::small = QDP::Double(1.0e-6);
 
 template <>
-const Double tolerance<double>::small = Double(1.0e-7);
+const QDP::Double tolerance<double>::small = QDP::Double(1.0e-7);
 
 template <typename T>
 struct rsdTarget {

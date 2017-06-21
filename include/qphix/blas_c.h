@@ -1,6 +1,6 @@
-#ifndef QPHIX_BLAS_C_H
-#define QPHIX_BLAS_C_H
+#pragma once
 
+#include "qphix/qphix_config.h"
 #include "qphix/thread_limits.h"
 #include "qphix/qphix_config.h"
 #include "qphix/comm.h"
@@ -401,5 +401,3 @@ inline void aypx(FT a,
   }
 }
 };
-
-#endif

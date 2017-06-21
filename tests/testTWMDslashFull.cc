@@ -32,29 +32,27 @@ using namespace QPhiX;
 #include "RandomGauge.h"
 #include "veclen.h"
 #include "tolerance.h"
+#include "tparam_selector.h"
 
-// What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
 
-void testTWMDslashFull::run(void)
+void TestTMDslash::run(void)
 {
   RNG::savern(rng_seed);
 
-  typedef LatticeColorMatrixF UF;
-  typedef LatticeColorMatrixD UD;
-  typedef LatticeDiracFermionF PhiF;
-  typedef LatticeDiracFermionD PhiD;
-
-  typedef multi1d<UF> MUF;
-  typedef multi1d<UD> MUD;
-
-  // Diagnostic information:
   const multi1d<int> &lattSize = Layout::subgridLattSize();
   Nx = lattSize[0];
   Ny = lattSize[1];
   Nz = lattSize[2];
   Nt = lattSize[3];
+
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+
+  /*
+
+  typedef multi1d<UF> MUF;
+  typedef multi1d<UD> MUD;
 
   // Make a random gauge field
   QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
@@ -79,10 +77,6 @@ void testTWMDslashFull::run(void)
 
 #if defined(QPHIX_SCALAR_SOURCE)
     if (soalen == 1) {
-      testTWMDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 1, MUF, PhiF>(u_in);
     }
 #endif
@@ -91,10 +85,6 @@ void testTWMDslashFull::run(void)
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_SSE_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 4, MUF, PhiF>(u_in);
 #endif
     }
@@ -102,20 +92,12 @@ void testTWMDslashFull::run(void)
     if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 8, MUF, PhiF>(u_in);
 #endif
     }
 
     if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 16, MUF, PhiF>(u_in);
 #else
       masterPrintf("SOALEN = 16 not available");
@@ -133,23 +115,14 @@ void testTWMDslashFull::run(void)
       u_in[mu] = u[mu];
     }
     if (soalen == 4) {
-      testTWMDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 4, MUF, PhiF>(u_in);
     }
 
     if (soalen == 8) {
-      testTWMDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 8, MUF, PhiF>(u_in);
     }
 
     if (soalen == 16) {
-      testTWMDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 16, MUF, PhiF>(u_in);
     }
 #else
@@ -166,10 +139,6 @@ void testTWMDslashFull::run(void)
 
     if (soalen == 2) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 2, MUD, PhiD>(u_in);
 #endif
     }
@@ -177,28 +146,21 @@ void testTWMDslashFull::run(void)
     if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 4, MUD, PhiD>(u_in);
 #endif
     }
 
     if (soalen == 8) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 8, MUD, PhiD>(u_in);
 #endif
     }
   } // DOUBLE_PREC
+  */
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMDslash(int t_bc)
+void TestTMDslash::testTWMDslash(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -219,14 +181,15 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt,
+                                   true);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -273,7 +236,7 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
+void TestTMDslash::testTWMDslashAChiMBDPsi(int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -298,14 +261,14 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -354,7 +317,7 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMM(int t_bc)
+void TestTMDslash::testTWMM(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -370,14 +333,14 @@ void testTWMDslashFull::testTWMM(int t_bc)
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -428,7 +391,7 @@ void testTWMDslashFull::testTWMM(int t_bc)
 
 // add twisted mass term.
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMCG(int t_bc)
+void TestTMDslash::testTWMCG(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -444,14 +407,14 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
   HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
@@ -550,7 +513,7 @@ void testTWMDslashFull::testTWMCG(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
+void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -576,14 +539,14 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
   Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
@@ -704,7 +667,7 @@ template <typename T1,
           int SOA2,
           typename U,
           typename Phi>
-void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
+void TestTMDslash::testTWMRichardson(const U &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T1, VEC1, SOA1, compress>::SU3MatrixBlock GaugeOuter;
@@ -723,24 +686,24 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
   gaussian(psi);
 
   Geometry<T1, VEC1, SOA1, compress> geom_outer(Layout::subgridLattSize().slice(),
-                                                By,
-                                                Bz,
-                                                NCores,
-                                                Sy,
-                                                Sz,
-                                                PadXY,
-                                                PadXYZ,
-                                                MinCt);
+                                                args_.By,
+                                                args_.Bz,
+                                                args_.NCores,
+                                                args_.Sy,
+                                                args_.Sz,
+                                                args_.PadXY,
+                                                args_.PadXYZ,
+                                                args_.MinCt);
 
   Geometry<T2, VEC2, SOA2, compress> geom_inner(Layout::subgridLattSize().slice(),
-                                                By,
-                                                Bz,
-                                                NCores,
-                                                Sy,
-                                                Sz,
-                                                PadXY,
-                                                PadXYZ,
-                                                MinCt);
+                                                args_.By,
+                                                args_.Bz,
+                                                args_.NCores,
+                                                args_.Sy,
+                                                args_.Sz,
+                                                args_.PadXY,
+                                                args_.PadXYZ,
+                                                args_.MinCt);
 
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
 
@@ -895,7 +858,7 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
 }
 
 template <typename QDPSpinor>
-void testTWMDslashFull::applyTwist(
+void TestTMDslash::applyTwist(
     QDPSpinor &psi, double Mu, double Alpha, int isign, int target_cb)
 {
   int Nxh = Nx / 2;
@@ -940,7 +903,7 @@ void testTWMDslashFull::applyTwist(
 }
 
 template <typename QDPSpinor>
-void testTWMDslashFull::applyInvTwist(
+void TestTMDslash::applyInvTwist(
     QDPSpinor &psi, double Mu, double MuInv, int isign, int target_cb)
 {
   int Nxh = Nx / 2;
@@ -985,7 +948,7 @@ void testTWMDslashFull::applyInvTwist(
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
+void TestTMDslash::qdp_dslash(QdpSpinor &out,
                                    QdpSpinor const &in,
                                    QDP::multi1d<QdpGauge> const &u_aniso,
                                    double const Mu,
@@ -998,7 +961,7 @@ void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
+void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
                                        QdpSpinor const &chi,
                                        QdpSpinor const &psi,
                                        QDP::multi1d<QdpGauge> const &u_aniso,
@@ -1021,7 +984,7 @@ void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
+void TestTMDslash::qdp_apply_operator(QdpSpinor &out,
                                            QdpSpinor const &in,
                                            QDP::multi1d<QdpGauge> const &u_aniso,
                                            double const Mu,

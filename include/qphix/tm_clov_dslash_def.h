@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOVER_DSLASH_DEF_H
-#define QPHIX_TM_CLOVER_DSLASH_DEF_H
+#pragma once
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
@@ -8,10 +7,7 @@
 namespace QPhiX
 {
 
-template <typename FT,
-          int veclen,
-          int soalen,
-          bool compress12> /* The teplate is the floating point type */
+template <typename FT, int veclen, int soalen, bool compress12>
 class TMClovDslash
 {
 
@@ -29,7 +25,9 @@ class TMClovDslash
   TMClovDslash(Geometry<FT, veclen, soalen, compress12> *geom_,
                double t_boundary_,
                double dslash_aniso_s_,
-               double dslash_aniso_t_);
+               double dslash_aniso_t_,
+               bool use_tbc_[4] = nullptr,
+               double tbc_phases_[4][2] = nullptr);
 
   // Destructor
   ~TMClovDslash();
@@ -274,6 +272,12 @@ class TMClovDslash
   const double aniso_coeff_S;
   const double aniso_coeff_T;
 
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
+
   bool amIPtMin;
   bool amIPtMax;
 
@@ -289,68 +293,41 @@ class TMClovDslash
   unsigned int ybmask_y0;
   unsigned int yfmask_yn;
 
-  void init();
   TMClovDslash(); // Hide Free Constructor
 
-  void DyzPlus(int tid,
-               const FourSpinorBlock *psi,
-               FourSpinorBlock *res,
-               const SU3MatrixBlock *u,
-               const FullCloverBlock *invclov,
-               int cb);
+  void Dyz(int tid,
+           const FourSpinorBlock *psi,
+           FourSpinorBlock *res,
+           const SU3MatrixBlock *u,
+           const FullCloverBlock *invclov,
+           bool const is_plus,
+           int cb);
 
-  void DyzMinus(int tid,
-                const FourSpinorBlock *psi,
-                FourSpinorBlock *res,
-                const SU3MatrixBlock *u,
-                const FullCloverBlock *invclov,
-                int cb);
+  void DyzAChiMinusBDPsi(int tid,
+                         const FourSpinorBlock *psi,
+                         const FourSpinorBlock *chi,
+                         FourSpinorBlock *res,
+                         const SU3MatrixBlock *u,
+                         const FullCloverBlock *clov,
+                         double beta,
+                         bool const is_plus,
+                         int cb);
 
-  void DyzPlusAChiMinusBDPsi(int tid,
-                             const FourSpinorBlock *psi,
-                             const FourSpinorBlock *chi,
-                             FourSpinorBlock *res,
-                             const SU3MatrixBlock *u,
-                             const FullCloverBlock *clov,
-                             double beta,
-                             int cb);
+  void DPsi(const SU3MatrixBlock *u,
+            const FullCloverBlock *invclov,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            bool const is_plus,
+            int cb);
 
-  void DyzMinusAChiMinusBDPsi(int tid,
-                              const FourSpinorBlock *psi,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res,
-                              const SU3MatrixBlock *u,
-                              const FullCloverBlock *clov,
-                              double beta,
-                              int cb);
-
-  void DPsiPlus(const SU3MatrixBlock *u,
-                const FullCloverBlock *invclov,
-                const FourSpinorBlock *psi_in,
-                FourSpinorBlock *res_out,
-                int cb);
-
-  void DPsiMinus(const SU3MatrixBlock *u,
-                 const FullCloverBlock *invclov,
-                 const FourSpinorBlock *psi_in,
-                 FourSpinorBlock *res_out,
-                 int cb);
-
-  void DPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                              const FullCloverBlock *clov,
-                              const FourSpinorBlock *psi_in,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res_out,
-                              double beta,
-                              int cb);
-
-  void DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                               const FullCloverBlock *clov,
-                               const FourSpinorBlock *psi_in,
-                               const FourSpinorBlock *chi,
-                               FourSpinorBlock *rea_out,
-                               double beta,
-                               int cb);
+  void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                          const FullCloverBlock *clov,
+                          const FourSpinorBlock *psi_in,
+                          const FourSpinorBlock *chi,
+                          FourSpinorBlock *res_out,
+                          double beta,
+                          bool const is_plus,
+                          int cb);
 
 // DISABLE COMMS FOR NOW
 #ifdef QPHIX_DO_COMMS
@@ -360,9 +337,8 @@ class TMClovDslash
                    int cb,
                    int dir,
                    int fb,
-                   int isPlus);
+                   bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDir(int tid,
                        const FT *psi,
                        FourSpinorBlock *res,
@@ -372,9 +348,8 @@ class TMClovDslash
                        int cb,
                        int dir,
                        int fb,
-                       int isPlus);
+                       bool const is_plus);
 
-  //  RECEIVE AND COMPLETE FACE
   void completeFaceDirAChiMBDPsi(int tid,
                                  const FT *psi,
                                  FourSpinorBlock *res,
@@ -383,7 +358,7 @@ class TMClovDslash
                                  int cb,
                                  int dir,
                                  int fb,
-                                 int isPlus);
+                                 bool const is_plus);
 #endif
 
 }; // Class
@@ -395,5 +370,3 @@ class TMClovDslash
 #ifdef QPHIX_DO_COMMS
 #include "qphix/tm_clov_dslash_face.h"
 #endif
-
-#endif // Include guard

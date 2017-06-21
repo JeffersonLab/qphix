@@ -1,5 +1,4 @@
-#ifndef QPHIX_TMFACE_H
-#define QPHIX_TMFACE_H
+#pragma once
 
 namespace QPhiX
 {
@@ -13,7 +12,7 @@ void TMDslash<FT, veclen, soalen, compress>::packTMFaceDir(
     int cb,
     int dir,
     int fb,
-    int isPlus)
+    bool const is_plus)
 {
   int Nxh = s->Nxh();
   int Ny = s->Ny();
@@ -160,7 +159,7 @@ void TMDslash<FT, veclen, soalen, compress>::packTMFaceDir(
     // printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf,
     // outbuf-res);
     // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
-    if (isPlus)
+    if (is_plus)
       face_proj_dir_plus<FT, veclen, soalen, compress>(
           xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
     else
@@ -181,7 +180,7 @@ void TMDslash<FT, veclen, soalen, compress>::completeTMFaceDir(
     int cb,
     int dir,
     int fb,
-    int isPlus)
+    bool const is_plus)
 {
   // This is the total number of veclen in the face.
   // Guaranteed to be good, since s->Nxh()*s->Ny() is a multiple
@@ -336,34 +335,28 @@ void TMDslash<FT, veclen, soalen, compress>::completeTMFaceDir(
     // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
     FT beta_T = rep<FT, double>(beta);
 
-    if (isPlus)
-      tm_face_finish_dir_plus<FT, veclen, soalen, compress>(inbuf,
-                                                            gBase,
-                                                            oBase,
-                                                            gOffs,
-                                                            offs,
-                                                            hsprefdist,
-                                                            gprefdist,
-                                                            soprefdist,
-                                                            beta_T,
-                                                            derived_mu,
-                                                            derived_mu_inv,
-                                                            mask,
-                                                            dir * 2 + fb);
-    else
-      tm_face_finish_dir_minus<FT, veclen, soalen, compress>(inbuf,
-                                                             gBase,
-                                                             oBase,
-                                                             gOffs,
-                                                             offs,
-                                                             hsprefdist,
-                                                             gprefdist,
-                                                             soprefdist,
-                                                             beta_T,
-                                                             derived_mu,
-                                                             derived_mu_inv,
-                                                             mask,
-                                                             dir * 2 + fb);
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(tm_face_finish_dir_plus,
+                                           tm_face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dir]);
+    kernel(inbuf,
+           gBase,
+           oBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           beta_T,
+           derived_mu,
+           derived_mu_inv,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
   }
 } // Function
 
@@ -379,7 +372,7 @@ void TMDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
     int cb,
     int dir,
     int fb,
-    int isPlus)
+    bool const is_plus)
 {
   // This is the total number of veclen in the face.
   // Guaranteed to be good, since s->Nxh()*s->Ny() is a multiple
@@ -528,32 +521,27 @@ void TMDslash<FT, veclen, soalen, compress>::completeFaceDirAChiMBDPsi(
     // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
     FT beta_T = rep<FT, double>(beta);
 
-    if (isPlus)
-      face_finish_dir_plus<FT, veclen, soalen, compress>(inbuf,
-                                                         gBase,
-                                                         oBase,
-                                                         gOffs,
-                                                         offs,
-                                                         hsprefdist,
-                                                         gprefdist,
-                                                         soprefdist,
-                                                         beta_T,
-                                                         mask,
-                                                         dir * 2 + fb);
-    else
-      face_finish_dir_minus<FT, veclen, soalen, compress>(inbuf,
-                                                          gBase,
-                                                          oBase,
-                                                          gOffs,
-                                                          offs,
-                                                          hsprefdist,
-                                                          gprefdist,
-                                                          soprefdist,
-                                                          beta_T,
-                                                          mask,
-                                                          dir * 2 + fb);
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_finish_dir_plus,
+                                           face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dir]);
+    kernel(inbuf,
+           gBase,
+           oBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           beta_T,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
   }
 } // Function
 
 } // Namespace
-#endif
