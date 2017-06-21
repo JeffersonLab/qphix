@@ -66,7 +66,7 @@ void TestClover::operator()()
                                     args_.MinCt,
                                     true);
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, 1.0, 0.0);
 
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
