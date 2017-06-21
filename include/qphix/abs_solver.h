@@ -45,7 +45,7 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1)
+                          int target_cb = 1) const
   {
     Spinor *x_array[1] = {x};
     const Spinor *rhs_array[1] = {rhs};
@@ -80,7 +80,7 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1) = 0;
+                          int target_cb = 1) const = 0;
 
 #ifdef __INTEL_COMPILER
   /**
@@ -98,7 +98,7 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1)
+                          int target_cb = 1) const
   {
     (*this)(x,
             const_cast<Spinor const *const *>(rhs),
