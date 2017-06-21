@@ -90,16 +90,35 @@ void mergeIvectorWithL2Prefetches(InstVector &ivector,
   }
 }
 
-// Dump an instruction stream into a file
+/**
+  Dump an instruction stream into a file if it has changed from the
+  previous content.
+  */
 void dumpIVector(InstVector &ivector, string filename)
 {
-  ofstream outfile(filename.c_str());
-
-  for (int i = 0; i < ivector.size(); i++) {
-    outfile << ivector[i]->serialize() << endl;
+  // Obtain the previous content of the file if possible.
+  ostringstream old_kernel;
+  {
+    // Load the old kernel if it exists. This is done in a scope
+    // such that the file is closed again. This is needed to
+    // overwrite it later on if needed.
+    ifstream old_file(filename);
+    if (old_file.is_open()) {
+      old_kernel << old_file.rdbuf();
+    }
   }
 
-  outfile.close();
+  // Dump the new version of the kernel into a string.
+  ostringstream new_kernel;
+  for (int i = 0; i < ivector.size(); i++) {
+    new_kernel << ivector[i]->serialize() << "\n";
+  }
+
+  // If something has changed, update the file.
+  if (old_kernel.str() != new_kernel.str()) {
+    ofstream outfile(filename);
+    outfile << new_kernel.str();
+  }
 }
 
 int main(int argc, char *argv[])
