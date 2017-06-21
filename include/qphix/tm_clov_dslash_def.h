@@ -27,7 +27,8 @@ class TMClovDslash
                double dslash_aniso_s_,
                double dslash_aniso_t_,
                bool use_tbc_[4] = nullptr,
-               double tbc_phases_[4][2] = nullptr);
+               double tbc_phases_[4][2] = nullptr,
+               double const prec_mass_rho = 0.0);
 
   // Destructor
   ~TMClovDslash();
@@ -99,6 +100,8 @@ class TMClovDslash
   unsigned int xfmask_xn_xodd[2];
   unsigned int ybmask_y0;
   unsigned int yfmask_yn;
+
+  double const prec_mass_rho;
 
   TMClovDslash(); // Hide Free Constructor
 

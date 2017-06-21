@@ -20,13 +20,15 @@ TMClovDslash<FT, veclen, soalen, compress12>::TMClovDslash(
     double dslash_aniso_s_,
     double dslash_aniso_t_,
     bool use_tbc_[4],
-    double tbc_phases_[4][2])
+    double tbc_phases_[4][2],
+    double const prec_mass_rho)
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
       PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
       n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
-      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_)
+      aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_),
+      prec_mass_rho(prec_mass_rho)
 {
   if (use_tbc_ != nullptr && tbc_phases_ != nullptr) {
     for (int dim = 0; dim < 4; ++dim) {
@@ -965,6 +967,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
             FT beta_s_T = rep<FT, double>(beta_s);
             FT beta_t_f_T = rep<FT, double>(beta_t_f);
             FT beta_t_b_T = rep<FT, double>(beta_t_b);
+            FT prec_mass_rho_T = rep<FT, double>(prec_mass_rho);
 
             kernel(xyBase + X,
                    zbBase + X,
@@ -997,7 +1000,8 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
                    beta_t_f_T,
                    beta_t_b_T,
                    tbc_phases,
-                   accumulate);
+                   accumulate,
+                   prec_mass_rho_T);
           }
         } // End for over scanlines y
       } // End for over scalines z
