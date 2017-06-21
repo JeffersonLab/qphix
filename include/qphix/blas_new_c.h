@@ -39,10 +39,11 @@ typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
     void>::type
-copySpinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res[num_flav],
-           Spinor1 *const src[num_flav],
-           const Geometry<FT, V, S, compress> &geom,
-           int n_blas_simt)
+copySpinor(
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const res[num_flav],
+    Spinor1 *const src[num_flav],
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
 {
   for (uint8_t f = 0; f < num_flav; ++f) {
     copySpinor(res[f], src[f], geom, n_blas_simt);
@@ -61,7 +62,7 @@ void zeroSpinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res,
 
 template <typename FT, int V, int S, bool compress, uint8_t num_flav>
 void zeroSpinor(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *res[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const res[num_flav],
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
 {
@@ -111,7 +112,7 @@ typename std::enable_if<
     void>::type
 aypx(const double alpha,
      Spinor1 *const x[num_flav],
-     typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[num_flav],
+     typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
      const Geometry<FT, V, S, compress> &geom,
      int n_blas_simt)
 {
@@ -250,12 +251,13 @@ typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
     void>::type
-xmyNorm2Spinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res[num_flav],
-               Spinor1 *const x[num_flav],
-               typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[num_flav],
-               double &n2res,
-               const Geometry<FT, V, S, compress> &geom,
-               int n_blas_simt)
+xmyNorm2Spinor(
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const res[num_flav],
+    Spinor1 *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
+    double &n2res,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
 {
   n2res = 0;
   for (uint8_t f = 0; f < num_flav; ++f) {
@@ -286,12 +288,12 @@ void rmammpNorm2rxpap(typename Geometry<FT, V, S, compress>::FourSpinorBlock *r,
 
 template <typename FT, int V, int S, bool compress, uint8_t num_flav>
 void rmammpNorm2rxpap(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *r[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
     const double &ar,
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *mmp[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const mmp[num_flav],
     double &cp,
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[num_flav],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *p[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const p[num_flav],
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
 {
@@ -340,8 +342,8 @@ typename std::enable_if<
                      const Spinor2>::value,
     void>::type
 richardson_rxupdateNormR(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[num_flav],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *r[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
     Spinor1 *const delta_x[num_flav],
     Spinor2 *const delta_r[num_flav],
     double &cp,
@@ -383,7 +385,7 @@ typename std::enable_if<
                  const Spinor1>::value,
     void>::type
 bicgstab_xmy(Spinor1 *const x[num_flav],
-             typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[num_flav],
+             typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
              const Geometry<FT, V, S, compress> &geom,
              int n_blas_simt)
 {
@@ -477,7 +479,7 @@ typename std::enable_if<
     void>::type
 bicgstab_p_update(
     Spinor1 *const r[num_flav],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *p[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const p[num_flav],
     Spinor2 *const v[num_flav],
     double beta[2],
     double omega[2],
@@ -524,7 +526,7 @@ typename std::enable_if<
     void>::type
 bicgstab_s_update(
     double alpha[2],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *s[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const s[num_flav],
     Spinor1 *const v[num_flav],
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
@@ -575,8 +577,8 @@ typename std::enable_if<
                      const Spinor2>::value,
     void>::type
 bicgstab_rxupdate(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[num_flav],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *r[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
     Spinor1 *const t[num_flav],
     Spinor2 *const p[num_flav],
     double omega[2],

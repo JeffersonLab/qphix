@@ -15,12 +15,12 @@ class EvenOddLinearOperator
   static constexpr uint8_t num_flav = 1;
 
   virtual void operator()(FourSpinorBlock *res,
-                          const FourSpinorBlock *in,
+                          FourSpinorBlock const *in,
                           int isign,
                           int target_cb = 1) const = 0;
 
 #ifdef __INTEL_COMPILER
-  virtual void operator()(FourSpinorBlock *res[1],
+  virtual void operator()(FourSpinorBlock *const res[1],
                           FourSpinorBlock *const in[1],
                           int isign,
                           int target_cb = 1) const
@@ -29,8 +29,8 @@ class EvenOddLinearOperator
   };
 #endif
 
-  virtual void operator()(FourSpinorBlock *res[1],
-                          const FourSpinorBlock *const in[1],
+  virtual void operator()(FourSpinorBlock *const res[1],
+                          FourSpinorBlock const *const in[1],
                           int isign,
                           int target_cb = 1) const
   {
