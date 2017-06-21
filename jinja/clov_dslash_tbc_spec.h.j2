@@ -66,6 +66,6 @@ void clov_dslash_achimbdpsi_{{ isign }}_vec<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc
     const FPTYPE coeff_t_b,
     const FPTYPE tbc_phases[4][2],
     const unsigned int accumulate[8],
-    const FT prec_mass_rho)
+    const FPTYPE prec_mass_rho)
 {% endcall %}
 {% endfor %}
