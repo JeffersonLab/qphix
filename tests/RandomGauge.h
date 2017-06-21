@@ -25,9 +25,10 @@ class RandomGauge
   typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock Clover;
 
   RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom,
-              double const t_boundary = 1.0);
+              double const t_boundary = 1.0,
+              double const gauge_random_factor = 0.08);
 
-  double const gauge_random_factor = 0.08;
+  double const gauge_random_factor;
 #if 0
   double const xi_0_f = 0.3;
   double const nu_f = 1.4;
@@ -75,11 +76,13 @@ template <typename FT,
           typename QdpGauge,
           typename QdpSpinor>
 RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::RandomGauge(
-    Geometry<FT, veclen, soalen, compress12> &geom, double const t_boundary)
-    : geom(geom), u(4), u_aniso(4), gauge_even(geom), gauge_odd(geom), A_even(geom),
-      A_odd(geom), A_inv_even(geom), A_inv_odd(geom),
-      aniso_fac_s(static_cast<double>(nu_f) / xi_0_f), aniso_fac_t(1.0),
-      t_boundary(t_boundary)
+    Geometry<FT, veclen, soalen, compress12> &geom,
+    double const t_boundary,
+    double const gauge_random_factor)
+    : gauge_random_factor(gauge_random_factor), geom(geom), u(4), u_aniso(4),
+      gauge_even(geom), gauge_odd(geom), A_even(geom), A_odd(geom), A_inv_even(geom),
+      A_inv_odd(geom), aniso_fac_s(static_cast<double>(nu_f) / xi_0_f),
+      aniso_fac_t(1.0), t_boundary(t_boundary)
 {
   clov_packed[0] = A_even.get();
   clov_packed[1] = A_odd.get();
