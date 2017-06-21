@@ -29,9 +29,15 @@ class EvenOddTMCloverOperator
                           double aniso_coeff_s,
                           double aniso_coeff_t,
                           bool use_tbc_[4] = nullptr,
-                          double tbc_phases_[4][2] = nullptr)
-      : D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
+                          double tbc_phases_[4][2] = nullptr,
+                          double const prec_mass_rho = 0.0)
+      : D(new TMClovDslash<FT, veclen, soalen, compress12>(geom_,
+                                                           t_boundary,
+                                                           aniso_coeff_s,
+                                                           aniso_coeff_t,
+                                                           use_tbc_,
+                                                           tbc_phases_,
+                                                           prec_mass_rho))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     u[0] = u_[0];
@@ -48,9 +54,15 @@ class EvenOddTMCloverOperator
                           double aniso_coeff_s,
                           double aniso_coeff_t,
                           bool use_tbc_[4] = nullptr,
-                          double tbc_phases_[4][2] = nullptr)
-      : D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_))
+                          double tbc_phases_[4][2] = nullptr,
+                          double const prec_mass_rho = 0.0)
+      : D(new TMClovDslash<FT, veclen, soalen, compress12>(geom_,
+                                                           t_boundary,
+                                                           aniso_coeff_s,
+                                                           aniso_coeff_t,
+                                                           use_tbc_,
+                                                           tbc_phases_,
+                                                           prec_mass_rho))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
