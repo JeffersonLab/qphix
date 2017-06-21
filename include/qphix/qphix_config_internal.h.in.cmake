@@ -21,6 +21,7 @@
 #cmakedefine QPHIX_QPX_SOURCE
 #cmakedefine QPHIX_SCALAR_SOURCE
 #cmakedefine QPHIX_BUILD_QDPJIT
+#cmakedefine QPHIX_MPI_COMMS_CALLS
 
 #define QPHIX_LLC_CACHE_ALIGN @QPHIX_LLC_CACHE_ALIGN@
 #endif

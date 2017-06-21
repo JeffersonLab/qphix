@@ -20,6 +20,7 @@ option(extra_messages "Emit extram messages during compilation time" OFF)
 set(isa avx CACHE STRING "Enable use of code for particular isa. Allowed are: avx avx2 avx512 sse scalar (defaults to avx)")
 option(qdpjit "When QDP++ is used it is QDP-JIT so use QDP-JIT interfaces" OFF)
 option(qdpalloc "When QDP++ is used, use its memory allocator instead of mm_malloc or posix_memalign" OFF)
+option(mpi_comms "Use plain MPI comms instead of QMP in the kernels" ON)
 
 # Codegen stuff
 set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
@@ -129,6 +130,12 @@ endif()
 if(${cean})
   message(STATUS "Setting CEAN")
   set(QPHIX_USE_CEAN 1)
+endif()
+
+###############################################################################
+
+if (mpi_comms)
+  set(QPHIX_MPI_COMMS_CALLS TRUE)
 endif()
 
 ###############################################################################

@@ -213,7 +213,6 @@ inline int numNodes()
 #ifdef QPHIX_QMP_COMMS
 QPHIX_MESSAGE("Doing QMP Comms")
 
-#define QPHIX_MPI_COMMS_CALLS
 #ifdef QPHIX_MPI_COMMS_CALLS
 // Arbitrary tag
 #define QPHIX_DSLASH_MPI_TAG (12)
