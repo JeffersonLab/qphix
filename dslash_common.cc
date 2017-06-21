@@ -1877,7 +1877,7 @@ void dslash_achimbdpsi_body(InstVector &ivector,
         ivector, prec_mass_rho_vec, prec_mass_rho_name, SpinorType);
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
-        bool const isLower = spin >= 2;
+        bool const isLower = (spin >= 2);
         FVec *in = chi_spinor[spin][col];
         FVec *out = out_spinor[spin][col];
 
