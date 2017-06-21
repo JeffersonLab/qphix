@@ -102,7 +102,7 @@ class InvBiCGStab : public AbstractSolver<FT,
 
     // Compute r=r0=rhs - A x
     // A(r0,psi,isign)
-    M(r0, x, isign);
+    M(r0, x, isign, cb);
     norm2Spinor<FT, V, S, compress12, num_flav>(r_norm, r0, geom, norm2Threads);
     mv_apps++;
 
