@@ -16,7 +16,8 @@ class EvenOddLinearOperator
 
   virtual void operator()(FourSpinorBlock *res,
                           const FourSpinorBlock *in,
-                          int isign int target_cb = 1) const = 0;
+                          int isign,
+                          int target_cb = 1) const = 0;
 
 #ifdef __INTEL_COMPILER
   virtual void operator()(FourSpinorBlock *res[1],
