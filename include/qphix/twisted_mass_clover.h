@@ -116,9 +116,9 @@ class EvenOddTMCloverOperator
  private:
   double Mass;
   TMClovDslash<FT, veclen, soalen, compress12> *D;
-  mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
-  mutable FullCloverBlock *clov[2]; // Mutable because of setFields
-  mutable FullCloverBlock *invclov[2]; // Mutable because of setFields
+  SU3MatrixBlock *u[2];
+  FullCloverBlock *clov[2];
+  FullCloverBlock *invclov[2];
   FourSpinorBlock *tmp;
 
 }; // Class

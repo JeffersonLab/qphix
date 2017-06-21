@@ -99,9 +99,9 @@ class EvenOddCloverOperator
  private:
   double Mass;
   ClovDslash<FT, veclen, soalen, compress12> *D;
-  mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
-  mutable CloverBlock *clov; // Mutable because of setFields
-  mutable CloverBlock *invclov; // Mutable because of setFields
+  SU3MatrixBlock *u[2];
+  CloverBlock *clov;
+  CloverBlock *invclov;
   FourSpinorBlock *tmp;
 }; // Class
 }; // Namespace
