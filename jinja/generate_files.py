@@ -33,6 +33,7 @@ def write_if_changed(filename, content_new):
         if content_old == content_new:
             return
 
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as f:
         f.write(content_new)
 
