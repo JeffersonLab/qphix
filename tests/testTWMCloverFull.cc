@@ -26,7 +26,7 @@ using namespace QPhiX;
 
 #include "tolerance.h"
 #include "veclen.h"
-
+#include "compare_qdp_spinors.h"
 #include "cli_args.h"
 #include "tparam_selector.h"
 
@@ -257,60 +257,8 @@ void TestTMClover::operator()()
       dslash(chi2, u_test, psi, isign, target_cb);
       invclov_qdp.apply(clov_chi2, chi2, isign, target_cb);
 
-      // (c) Calculate the norm of the difference
-      Phi diff = clov_chi2 - clov_chi;
-      Double diff_norm = sqrt(norm2(diff, rb[target_cb])) /
-                         (Real(4 * 3 * 2 * Layout::vol()) / Real(2));
-      QDPIO::cout << "\t cb = " << target_cb << "  isign = " << isign
-                  << "  diff_norm = " << diff_norm << endl;
-
-      // (d) Assert things are OK...
-      if (toBool(diff_norm > tolerance<FT>::small)) {
-        int Nxh = Nx / 2;
-        for (int t = 0; t < Nt; t++) {
-          for (int z = 0; z < Nz; z++) {
-            for (int y = 0; y < Ny; y++) {
-              for (int x = 0; x < Nxh; x++) {
-
-                // These are unpadded QDP++ indices...
-                int ind = x + Nxh * (y + Ny * (z + Nz * t));
-                for (int s = 0; s < Ns; s++) {
-                  for (int c = 0; c < Nc; c++) {
-                    REAL dr = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .real();
-                    REAL di = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .imag();
-                    if (toBool(fabs(dr) > tolerance<FT>::small) ||
-                        toBool(fabs(di) > tolerance<FT>::small)) {
-                      QDPIO::cout
-                          << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                          << ") site=" << ind << " spin=" << s << " color=" << c
-                          << " Diff = "
-                          << diff.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << "  chi = "
-                          << clov_chi.elem(rb[target_cb].start() + ind)
-                                 .elem(s)
-                                 .elem(c)
-                          << " qdp++ ="
-                          << clov_chi2.elem(rb[target_cb].start() + ind)
-                                 .elem(s)
-                                 .elem(c)
-                          << endl;
-                    }
-                  }
-                }
-
-              } // x
-            } // y
-          } // z
-        } // t
-        assertion(toBool(diff_norm < tolerance<FT>::small));
-      } // Assertion
-
+      expect_near(
+          clov_chi, clov_chi2, 1e-6, geom, target_cb, "Twisted-mass clover dslash");
     } // cb
   } // isign
 #endif
@@ -347,28 +295,7 @@ void TestTMClover::operator()()
       clov_qdp.apply(res, psi, isign, target_cb);
       res[rb[target_cb]] -= beta * chi2;
 
-      // (c) Calculate the norm of the difference vector
-      Phi diff = res - chi;
-      Double diff_norm = sqrt(norm2(diff, rb[target_cb])) /
-                         (Real(4 * 3 * 2 * Layout::vol()) / Real(2));
-      QDPIO::cout << "\t cb = " << target_cb << "  isign = " << isign
-                  << "  diff_norm = " << diff_norm << endl;
-
-      // (d) Assert things are OK...
-      if (toBool(diff_norm > tolerance<FT>::small)) {
-        for (int i = 0; i < rb[target_cb].siteTable().size(); i++) {
-          for (int s = 0; s < Ns; s++) {
-            for (int c = 0; c < Nc; c++) {
-              QDPIO::cout << "site=" << i << " spin=" << s << " color=" << c
-                          << " Diff = "
-                          << diff.elem(rb[target_cb].start() + i).elem(s).elem(c)
-                          << endl;
-            }
-          }
-        }
-      }
-      assertion(toBool(diff_norm < tolerance<FT>::small));
-
+      expect_near(res, chi, 1e-6, geom, target_cb, "Twisted-mass clover achimbdpsi");
     } // cb
   } // isign
 #endif
