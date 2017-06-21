@@ -73,7 +73,23 @@ void TestClover::operator()()
 
   HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
-  gaussian(hs_source.qdp());
+
+  bool const point_source = true;
+  if (point_source) {
+    hs_source.zero();
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .real() = 1.0;
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .imag() = 0.0;
+  } else {
+    gaussian(hs_source.qdp());
+  }
   hs_source.pack();
 
 #if 1
