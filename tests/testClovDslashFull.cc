@@ -377,12 +377,7 @@ void TestClover::operator()()
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      QdpSpinor diff = chi3 - hs_source.qdp();
-      QDPIO::cout << "cb=" << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
-                  << endl;
-
-      expect_near(chi3, hs_source.qdp(), 1e-6, geom, cb, "CG");
+      expect_near(chi3, hs_source.qdp(), 1e-10, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
