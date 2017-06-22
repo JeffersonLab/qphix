@@ -11,7 +11,7 @@ if( ${testing})
     #testlip is defined in ../tests
      target_link_libraries(tests_g testlib qphix_solver gtest_all ${EXT_LIBS})
 
-     add_test(NAME gtest-runner COMMAND mpirun -n 1 ./tests_g -x ${test_runner_args} -geom 1 1 1 1)
+     add_test(NAME gtest-runner COMMAND mpirun -n 1 ./tests_g ${test_runner_args} -x 8 -y 4 -z 4 -t 4 -geom 1 1 1 1)
 
  endif()
 endif()
