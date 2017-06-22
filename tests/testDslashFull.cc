@@ -714,7 +714,7 @@ void TestDslash::testCG(const multi1d<U> &u, int t_bc)
       dslash(ltmp, u_test, chi3, (-isign), cb);
       chi3[rb[cb]] = massFactor * chi2 - betaFactor * ltmp;
 
-      expect_near(chi3, psi, 1e-10, geom, cb, "Wilson CG");
+      expect_near(chi3, psi, 1e-9, geom, cb, "Wilson CG");
 
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =
