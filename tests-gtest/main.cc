@@ -75,7 +75,9 @@ int main(int argc, char **argv)
     std::cout << localLattSize[i] << std::endl;
   }
 
-  return RUN_ALL_TESTS();
+  auto result =  RUN_ALL_TESTS();
 
   QDP::QDP_finalize();
+
+  return result;
 }
