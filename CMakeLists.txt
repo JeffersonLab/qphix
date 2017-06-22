@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(QPhiX)
+include(CTest)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -288,9 +289,19 @@ configure_file(
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
+if ( ${testing} ) 
+  include_directories(${PROJECT_SOURCE_DIR}/external )
+endif()
 
 add_subdirectory(include/qphix)
 add_subdirectory(lib)
+if( ${testing} )
+
+  # GTest lives here
+  add_subdirectory(external)
+  add_subdirectory(tests-gtest)
+endif()
 add_subdirectory(tests)
+
 
 # vim: sts=2 sw=2

@@ -58,14 +58,13 @@ void processArgs(int argc, char *argv[])
 int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
-
+  QDP::QDP_initialize(&argc,&argv);
   processArgs(argc, argv);
   some_user_args.init(argc, argv);
 
   omp_set_num_threads(some_user_args.getNCores() * some_user_args.getSy() *
                       some_user_args.getSz());
 
-  QDP::QDP_initialize(&argc, &argv);
   QDP::multi1d<int> nrow(QDP::Nd);
   nrow = static_cast<const int *>(nrow_in);
   QDP::Layout::setLattSize(nrow);

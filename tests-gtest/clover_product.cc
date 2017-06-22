@@ -1,8 +1,12 @@
 #include <qphix/qphix_config_internal.h>
+#include "prec.h"
+#include "tparam_selector.h"
 
-#include "veclen.h"
-#include "tolerance.h"
-#include "compare_spinors.h"
+using namespace QPhiX;
+
+#include "./soalen.h"
+#include "./tolerance.h"
+#include "./compare_spinors.h"
 #include "../tests/clover_fermact_params_w.h"
 #include "../tests/clover_term.h"
 
@@ -254,7 +258,7 @@ TYPED_TEST(CloverProductTest, CombinedDslashVersusTwoParts)
 
       expect_near(this->clov_chi,
                   this->clov_chi2,
-                  tolerance<typename TestFixture::FT>::small,
+                  toDouble(tolerance<typename TestFixture::FT>::small),
                   this->geom,
                   target_cb);
     }
@@ -300,7 +304,7 @@ TYPED_TEST(CloverProductTest, CombinedDslashVersusTwoPartsFull)
 
       expect_near(this->clov_chi,
                   this->clov_chi2,
-                  tolerance<typename TestFixture::FT>::small,
+                  toDouble(tolerance<typename TestFixture::FT>::small),
                   this->geom,
                   target_cb);
     }
@@ -330,7 +334,7 @@ TYPED_TEST(CloverProductTest, AinvA)
 
       expect_near(this->psi,
                   this->clov_chi2,
-                  tolerance<typename TestFixture::FT>::small,
+                  toDouble(tolerance<typename TestFixture::FT>::small),
                   this->geom,
                   target_cb);
     }
@@ -360,7 +364,7 @@ TYPED_TEST(CloverProductTest, AinvAFull)
 
       expect_near(this->psi,
                   this->clov_chi2,
-                  tolerance<typename TestFixture::FT>::small,
+                  toDouble(tolerance<typename TestFixture::FT>::small),
                   this->geom,
                   target_cb);
     }

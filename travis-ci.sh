@@ -388,6 +388,7 @@ case "$QPHIX_ARCH" in
         ;;
 esac
 
+
 export OMP_NUM_THREADS=2
 
 pushd $build/qphix/tests
@@ -408,3 +409,12 @@ do
     time mpirun -n 2 ./$runner $args
     fold_end testing.$runner
 done
+
+# Matches pushd
+popd
+
+pushd $build/qphix
+fold_start make.tests
+   # Just execute make test
+   time make test
+fold_end  make.tests

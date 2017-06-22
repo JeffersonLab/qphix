@@ -1,7 +1,5 @@
 #pragma once
-
 #include <qphix/geometry.h>
-
 #include <gtest/gtest.h>
 #include <qdp.h>
 
