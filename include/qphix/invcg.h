@@ -97,7 +97,7 @@ class InvCG : public AbstractSolver<FT,
                           int cb = 1) const override
   {
     if (verboseP) {
-      masterPrintf("Entering the CG inverter with num_flav=%u\n", num_flav);
+      masterPrintf("Entering the CG inverter with num_flav=%d and cb=%d\n", num_flav, cb);
     }
 
 #ifdef QPHIX_TIMING_CG
