@@ -66,7 +66,7 @@ void TestClover::operator()()
                                     args_.MinCt,
                                     true);
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, 1.0, 0.0);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, 1.0);
 
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
@@ -74,7 +74,7 @@ void TestClover::operator()()
   HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
 
-  bool const point_source = true;
+  bool const point_source = false;
   if (point_source) {
     hs_source.zero();
     hs_source.qdp()
@@ -196,7 +196,7 @@ void TestClover::operator()()
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0, 0.1);
 
   // Create Antiperiodic Dslash
   ClovDslash<FT, V, S, compress> D32_ap(&geom,
