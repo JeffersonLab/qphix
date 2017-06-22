@@ -33,6 +33,7 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "tparam_selector.h"
+#include "compare_qdp_spinors.h"
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -496,18 +497,10 @@ void TestTMDslash::testTWMCG(int t_bc)
                      -1,
                      source_target_cb);
 
-  // 3. Assert difference & GFLOP/s
-  // ===================================
-  Phi diff = hs_qdp2.qdp() - hs_source.qdp();
-  Double true_norm = sqrt(norm2(diff, rb[source_target_cb]) /
-                          norm2(hs_source.qdp(), rb[source_target_cb]));
-  QDPIO::cout << "True norm of residuum is: " << true_norm << endl;
-
   unsigned long num_cb_sites = Layout::vol() / 2;
   unsigned long total_flops =
       (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
-  assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
   expect_near(hs_qdp2, hs_source, 1e-6, geom, source_target_cb, "CG");
 }
@@ -634,10 +627,7 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
     applyTwist<>(chi, Mu, alpha, isign, 0);
     chi2[rb[0]] = chi - beta * ltmp;
 
-    Phi diff = chi2 - psi;
-    Double true_norm = sqrt(norm2(diff, rb[0]) / norm2(psi, rb[0]));
-    QDPIO::cout << "BiCGStab Solve isign = " << isign
-                << ": True norm of residual is " << true_norm << endl;
+    expect_near(chi2, psi, 1e-9, geom, 0, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
@@ -646,7 +636,6 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
                  isign,
                  1.0e-9 * (double)(total_flops) / (end - start));
     QDPIO::cout << endl;
-    assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
   } // isign
 
@@ -829,11 +818,8 @@ void TestTMDslash::testTWMRichardson(const U &u, int t_bc)
       dslash(ltmp, u_test, chi2, isign, 0);
       chi2[rb[0]] = massFactor * chi - betaFactor * ltmp;
 
-      Phi diff = chi2 - psi;
-      Double true_norm = sqrt(norm2(diff, rb[0]) / norm2(psi, rb[0]));
-      QDPIO::cout << "RICHARDSON Solve isign=" << isign
-                  << " True norm is: " << true_norm << endl;
-      assertion(toBool(true_norm < (rsd_target + tolerance<T1>::small)));
+      expect_near(chi2, psi, 1e-9, geom_outer, 0, "TM Wilson Richardson");
+
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =
           (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
