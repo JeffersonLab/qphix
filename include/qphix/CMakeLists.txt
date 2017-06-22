@@ -1,4 +1,5 @@
 list(APPEND header_files qphix_config.h dslash_utils.h
+        arith_type.h
         abs_solver.h
         geometry.h
         comm.h
