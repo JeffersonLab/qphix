@@ -30,7 +30,7 @@ class InvBiCGStab : public AbstractSolver<FT,
  public:
   typedef typename Geometry<FT, V, S, compress12>::FourSpinorBlock Spinor;
 
-  static constexpr uint8_t num_flav = EvenOddLinearOperatorBase::num_flav;
+  static constexpr int num_flav = EvenOddLinearOperatorBase::num_flav;
 
   InvBiCGStab(EvenOddLinearOperatorBase &M_, int MaxIters_)
       : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_)

@@ -12,7 +12,7 @@ class EvenOddLinearOperator
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
 
-  static constexpr uint8_t num_flav = 1;
+  static constexpr int num_flav = 1;
 
   virtual void operator()(FourSpinorBlock *res,
                           FourSpinorBlock const *in,
@@ -47,7 +47,7 @@ class TwoFlavEvenOddLinearOperator
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
 
-  static constexpr uint8_t num_flav = 2;
+  static constexpr int num_flav = 2;
 
 #ifdef __INTEL_COMPILER
   virtual void

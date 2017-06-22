@@ -46,7 +46,7 @@ functionality was reused. Each function was *overloaded* to take an array of
 spinor pointers, like this:
 
 ```{.cpp}
-template <typename FT, int V, int S, bool compress, uint8_t num_flav>
+template <typename FT, int V, int S, bool compress, int num_flav>
 void copySpinor(
     typename Geometry<FT, V, S, compress>::FourSpinorBlock *res[num_flav],
     const typename Geometry<FT, V, S, compress>::FourSpinorBlock *src[num_flav],
@@ -157,7 +157,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 void copySpinor(
     typename Geometry<FT, V, S, compress>::FourSpinorBlock *res[num_flav],
@@ -215,7 +215,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,

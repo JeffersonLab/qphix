@@ -10,7 +10,7 @@ namespace QPhiX
 
   This type of (single-shift) solvers solves the equation \f$ M x = b \f$.
   */
-template <typename FT, int V, int S, bool compress12, uint8_t num_flav = 1>
+template <typename FT, int V, int S, bool compress12, int num_flav = 1>
 class AbstractSolver
 {
  public:

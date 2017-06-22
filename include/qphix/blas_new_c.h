@@ -33,7 +33,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -60,7 +60,7 @@ void zeroSpinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res,
       f, geom, n_blas_simt);
 }
 
-template <typename FT, int V, int S, bool compress, uint8_t num_flav>
+template <typename FT, int V, int S, bool compress, int num_flav>
 void zeroSpinor(
     typename Geometry<FT, V, S, compress>::FourSpinorBlock *const res[num_flav],
     const Geometry<FT, V, S, compress> &geom,
@@ -104,7 +104,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -142,7 +142,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -192,7 +192,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -245,7 +245,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -286,7 +286,7 @@ void rmammpNorm2rxpap(typename Geometry<FT, V, S, compress>::FourSpinorBlock *r,
       f, cp, geom, n_blas_simt);
 } // End of Function.
 
-template <typename FT, int V, int S, bool compress, uint8_t num_flav>
+template <typename FT, int V, int S, bool compress, int num_flav>
 void rmammpNorm2rxpap(
     typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
     const double &ar,
@@ -332,7 +332,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1,
           typename Spinor2>
 typename std::enable_if<
@@ -378,7 +378,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -414,7 +414,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1,
           typename Spinor2>
 typename std::enable_if<
@@ -468,7 +468,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1,
           typename Spinor2>
 typename std::enable_if<
@@ -518,7 +518,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
@@ -567,7 +567,7 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1,
           typename Spinor2>
 typename std::enable_if<
@@ -677,7 +677,7 @@ template <typename FTOut,
           int VIn,
           int SIn,
           bool CompressIn,
-          uint8_t num_flav,
+          int num_flav,
           typename Spinor1>
 typename std::enable_if<
     std::is_same<

@@ -26,7 +26,7 @@ class InvRichardsonMultiPrec
   typedef typename Geometry<FTInner, VInner, SInner, CompressInner>::FourSpinorBlock
       SpinorInner;
 
-  static constexpr uint8_t num_flav = EvenOddLinearOperatorBase::num_flav;
+  static constexpr int num_flav = EvenOddLinearOperatorBase::num_flav;
 
   // This class overrides the `operator()` from `AbstractSolver`. Due to “name
   // hiding”, the overloads of `operator()` in the base class are no longer
