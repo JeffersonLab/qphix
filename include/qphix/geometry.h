@@ -261,8 +261,6 @@ class Geometry
   int getVolCB() const { return Nxh_ * Ny_ * Nz_ * Nt_; }
   int getNumPhases() const { return n_phases; }
 
-  size_t get_num_blocks() const { return Nt_ * Nz_ * Ny_ * nvecs_; }
-
   CorePhase &getCorePhase(int i) { return phase[i]; }
   const CorePhase &getCorePhase(int i) const { return phase[i]; }
 
