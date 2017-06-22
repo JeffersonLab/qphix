@@ -320,6 +320,7 @@ void TestClover::operator()()
 #if 1
   {
     for (int cb = 0; cb < 2; ++cb) {
+      masterPrintf("Testing Clover CG on cb = %i\n", cb);
       int other_cb = 1 - cb;
       EvenOddCloverOperator<FT, V, S, compress> M(
           gauge_antip.u_packed,
