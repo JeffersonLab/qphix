@@ -25,7 +25,7 @@ class EvenOddLinearOperator
                           int isign,
                           int target_cb = 1) const
   {
-    (*this)(res[0], in[0], isign);
+    (*this)(res[0], in[0], isign, target_cb);
   };
 #endif
 
@@ -34,7 +34,7 @@ class EvenOddLinearOperator
                           int isign,
                           int target_cb = 1) const
   {
-    (*this)(res[0], in[0], isign);
+    (*this)(res[0], in[0], isign, target_cb);
   };
 
   virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
