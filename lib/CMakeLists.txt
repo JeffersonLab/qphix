@@ -13,10 +13,10 @@ add_library(qphix_solver STATIC ${source_files})
 target_link_libraries(qphix_solver qphix_codegen)
 
 target_compile_options(qphix_solver PUBLIC ${EXT_CXXFLAGS})
-install(TARGETS qphix_solver EXPORT QPhiXConfig
+install(TARGETS qphix_solver EXPORT QPhiXSolverConfig
 	 ARCHIVE  DESTINATION lib
          LIBRARY  DESTINATION lib
          RUNTIME  DESTINATION bin)
 
-install(EXPORT QPhiXConfig DESTINATION cmake)
+install(EXPORT QPhiXSolverConfig DESTINATION cmake)
 

@@ -112,18 +112,18 @@ elseif(${parallel_arch} STREQUAL "parscalar")
   set(QPHIX_PARSCALAR 1)
 
   if(${fake_comms})  
-    message(ERROR "Cannot do fake comms in parscalar mode")
+    message(FATAL_ERROR "Cannot do fake comms in parscalar mode")
   endif()
 
   if(NOT (${QDPXX_CXX_FOUND} OR ${QMP_C_FOUND}))
-    message(ERROR "Parscalar arch requested but neither QMP nor QDPXX specified")
+    message(FATAL_ERROR "Parscalar arch requested but neither QMP nor QDPXX specified")
   else()
     message(STATUS "Regular QMP Comms")
     set(QPHIX_DO_COMMS 1)
     set(QPHIX_QMP_COMMS 1)
   endif()
 else()
-  message(ERROR "Only scalar or parscalar modes supported")
+  message(FATAL_ERROR "Only scalar or parscalar modes supported")
 endif()
 
 ###############################################################################
@@ -311,4 +311,5 @@ endif()
 add_subdirectory(tests)
 
 
+install(FILES ${PROJECT_SOURCE_DIR}/cmake/QPhiXConfig.cmake DESTINATION cmake)
 # vim: sts=2 sw=2
