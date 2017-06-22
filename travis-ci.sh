@@ -416,5 +416,5 @@ popd
 pushd $build/qphix
 fold_start make.tests
    # Just execute make test
-   time make test
+   time ctest --output-on-failure
 fold_end  make.tests
