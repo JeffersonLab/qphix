@@ -114,8 +114,11 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::
   for (int mu = 0; mu < 4; mu++) {
     uf = 1; // Unit gauge
     gaussian(g);
-    u[mu] = uf + gauge_random_factor * g;
-    reunit(u[mu]);
+    if (std::fabs(gauge_random_factor) > std::numeric_limits<double>::epsilon()) {
+      masterPrintf("Use random gauge with factor %g\n", gauge_random_factor);
+      u[mu] = uf + gauge_random_factor * g;
+      reunit(u[mu]);
+    }
   }
   qdp_pack_gauge<>(u, gauge_even.get(), gauge_odd.get(), geom);
 
