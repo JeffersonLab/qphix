@@ -4,6 +4,7 @@
 #include "qphix/qphix_config.h"
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
+#include "qphix/real_functors.h"
 #include "qphix/kernel_selector.h"
 #include <immintrin.h>
 #include <omp.h>
@@ -335,7 +336,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::dslash(
     FourSpinorBlock *res,
     const FourSpinorBlock *psi,
     const SU3MatrixBlock *u,
-    const FullCloverBlock *invclov[2],
+    const FullCloverBlock *const invclov[2],
     int isign,
     int cb)
 {
@@ -1161,6 +1162,59 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
   } // end for
 
 #endif // QPHIX_DO_COMMS
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+template <typename Spinor1>
+void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_dslash(
+    FourSpinorBlock *res[2],
+    Spinor1 *const psi[2],
+    const SU3MatrixBlock *u,
+    const FullCloverBlock *const invclov[2][2][2],
+    const int isign,
+    const int cb)
+{
+  FourSpinorBlock *tmp = s->allocCBFourSpinor();
+
+  // Iterate over the two result flavors …
+  for (int f : {0, 1}) {
+    // Compute the two summands of the current result flavor.
+    dslash(res[f], psi[0], u, invclov[f][0], isign, cb);
+    dslash(tmp, psi[1], u, invclov[f][1], isign, cb);
+
+    // Add the two summands into the result.
+    const int n_blas_simt = 1;
+    axpy(1.0, tmp, res[f], *s, n_blas_simt);
+  }
+
+  s->free(tmp);
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+template <typename Spinor1, typename Spinor2>
+void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
+    FourSpinorBlock *res[2],
+    Spinor1 *const chi[2],
+    Spinor2 *const psi[2],
+    const SU3MatrixBlock *u,
+    const FullCloverBlock *clov[2][2],
+    const double beta,
+    const double epsilon,
+    const int isign,
+    const int cb)
+{
+  const int n_blas_simt = 1;
+
+  // Iterate over the two result flavors …
+  for (int f : {0, 1}) {
+    // Compute the flavor-diagonal part.
+    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, clov[f], beta, isign, cb);
+
+    // The `res[f]` contains the flavor-diagonal part. Now the flavor
+    // off-diagonal part has to be added. This is just the opposite
+    // flavor χ multiplied with ε.
+    axpy(epsilon, chi[1 - f], res[f], *s, n_blas_simt);
+  }
 }
 
 } // Namespace

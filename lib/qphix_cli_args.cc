@@ -96,11 +96,11 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
   // Copy the remaining arguments back to the argument list. This function will have
   // consumed the arguments that it has understood.
   for (int i = 0; i < argc; ++i) {
-      argv[i] = nullptr;
+    argv[i] = nullptr;
   }
   argc = new_argv.size();
   for (int i = 0; i < new_argv.size(); ++i) {
-      argv[i] = new_argv[i];
+    argv[i] = new_argv[i];
   }
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef QPHIX_SOALEN
-#error "QPHIX_SOALEN is not defined"
+#define QPHIX_SOALEN 4
 #endif
 
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
@@ -24,12 +24,10 @@
 #elif defined(QPHIX_SCALAR_SOURCE)
 #define VECLEN_DP 1
 #define VECLEN_SP 1
+#define QPHIX_SOALEN 1
 
 #elif defined(QPHIX_QPX_SOURCE)
 #define VECLEN_DP 4
-
-#else
-
-#error "veclen is not known for this architecture"
+#define QPHIX_SOALEN 4
 
 #endif

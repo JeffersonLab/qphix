@@ -1,5 +1,7 @@
 #pragma once
 
+#include "qphix/arith_type.h"
+
 namespace QPhiX
 {
 

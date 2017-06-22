@@ -1,6 +1,7 @@
 #pragma once
 
 #include "qphix/blas_utils.h"
+#include "qphix/arith_type.h"
 
 namespace QPhiX
 {
