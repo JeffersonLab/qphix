@@ -378,7 +378,7 @@ void TestClover::operator()()
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      expect_near(chi3, hs_source.qdp(), 1e-10, geom, cb, "CG");
+      expect_near(chi3, hs_source.qdp(), 1e-9, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
