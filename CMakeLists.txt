@@ -178,12 +178,15 @@ set(QPHIX_LLC_CACHE_ALIGN 64)
 if(${isa} STREQUAL "avx")
   message(STATUS "Building for AVX")
   set(QPHIX_AVX_SOURCE 1)
+  set(test_soalen 4)
 elseif(${isa} STREQUAL "avx2")
   message(STATUS "Building for AVX2")
   set(QPHIX_AVX2_SOURCE 1)
+  set(test_soalen 4)
 elseif(${isa} STREQUAL "avx512")
   message(STATUS "Building for AVX512")
   set(QPHIX_AVX512_SOURCE 1)
+  set(test_soalen 8)
 elseif(${isa} STREQUAL "sse")
   message(STATUS "Building for SSE")
   set(QPHIX_SSE_SOURCE 1)
@@ -193,6 +196,7 @@ elseif(${isa} STREQUAL "mic")
 elseif(${isa} STREQUAL "scalar")
   message(STATUS "Building for straight C (nonvectorized")
   set(QPHIX_SCALAR_SOURCE 1)
+  set(test_soalen 1)
 elseif(${isa} STREQUAL "qpx")
   message(STATUS "Building for QPX (BG/Q)")
   set(QPHIX_QPX_SOURCE 1)
@@ -282,6 +286,9 @@ endif()
 
 ###############################################################################
 
+set(test_runner_args -by 4 -bz 4 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x 16 -y 16 -z 16 -t 16 -prec f -geom 1 1 1 2 -soalen ${test_soalen})
+
+###############################################################################
 configure_file(
   ${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
   ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h 

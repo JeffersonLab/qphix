@@ -14,8 +14,17 @@ namespace
 size_t constexpr re = 0;
 size_t constexpr im = 1;
 int const n_blas_simt = 1;
+
+// The even checkerboard is given by ( (x + y + z + t ) & 1 == 0 ) -> cb0 is even
+int constexpr cb_even = 0;
+int constexpr cb_odd = 1;
 }
 
+/**
+  Complex multiplication accumulate.
+
+  Computes \f$ (r + \mathrm i i) += (a + \mathrm i b) * (c + \mathrm i d) \f$.
+  */
 template <typename FT>
 void cplx_mul_acc(
     FT &r_out, FT &i_out, FT const &a, FT const &b, FT const &c, FT const &d)
@@ -24,14 +33,45 @@ void cplx_mul_acc(
   i_out += a * d + b * c;
 }
 
+/**
+  Wrapper for the clover multiplication function.
+
+  The `struct` is needed in order to allow for partial template specialization in the
+  `Clover`
+  parameter.
+
+  \tparam Clover Type of clover block to use, must be a type from Geometry such that
+  there exists a
+  specialization for it.
+  */
 template <typename FT, int veclen, int soalen, bool compress12, typename Clover>
 struct InnerCloverProduct {
+  /**
+  Multiplies the clover term for a single lattice size to a spinor.
+
+  This function is intended to be used in a loop over all lattice sites. It is
+  expected from the
+  caller to have figured out all the correct indices. There are template
+  specializations for the two
+  different types of clover term that are used in QPhiX.
+
+  \param[out] out Output spinor block. It is assumed to be zeroed properly, the
+  function will just
+  accumulate values into that output variable. Use \ref QPhiX::zeroSpinor for that.
+  \param[in] in Input spinor block.
+  \param[in] clover Single clover block that contains the lattice site of the spinor.
+  \param[in] xi SIMD index for the arrays with length `soalen`, as in the spinors.
+  \param[in] veclen_idx SIMD index for the arrays with length `veclen`, as in the
+  clover term.
+  */
   static void multiply(
       typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
           &out,
       typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
           FourSpinorBlock const &in,
-      Clover const &clover);
+      Clover const &clover,
+      int const xi,
+      int const veclen_idx);
 };
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -136,7 +176,7 @@ struct InnerCloverProduct<
     // The clover term is block-diagonal in spin. Therefore we need
     // to iterate over the two blocks of spin.
     for (auto s_block : {0, 1}) {
-      // Extract the diagonal and triangular parts.
+      // handy reference to half-spinor block
       auto const &block_in = s_block == 0 ? clov_block.block1 : clov_block.block2;
       // Input two-spinor component.
       for (auto two_s_in : {0, 1}) {
@@ -169,23 +209,38 @@ struct InnerCloverProduct<
   }
 };
 
+/**
+  Multiplies a checkerboarded QPhiX Clover term with a checkerboarded QPhiX spinor.
+
+  Padding is taken care of. A test case for (a copy of) this function exists in
+  QPhiX.
+
+  If the preprocessor macro `PRINT_MAPPING` is defined, it will print out the mapping
+  of `(x, y, z,
+  t)` coordinates to block indices. Also it will check that each block is accessed
+  the proper number
+  of times, that is `soalen` for spinors and `veclen` for clover blocks.
+
+  \param[out] out Output spinor
+  \param[in] in Input spinor
+  \param[in] clover Clover block
+  \param[in] geom Geometry object holding the dimension of clover and spinor
+  */
 template <typename FT, int veclen, int soalen, bool compress12, typename Clover>
 void clover_product(
     typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
         *const out,
     typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock const
         *const in,
-    Clover *local_clover,
+    Clover *clover,
     ::QPhiX::Geometry<FT, veclen, soalen, compress12> &geom)
 {
   ::QPhiX::zeroSpinor<FT, veclen, soalen, compress12>(out, geom, n_blas_simt);
 
-#ifndef NDEBUG
+#ifdef PRINT_MAPPING
   std::vector<int> spin_touches(geom.getPxyz() * geom.Nt(), 0);
   std::vector<int> clover_touches(geom.getPxyz() * geom.Nt() * soalen / veclen, 0);
-#endif
 
-#ifdef PRINT_MAPPING
   std::cout << std::setw(3) << "x" << std::setw(3) << "y" << std::setw(3) << "z"
             << std::setw(3) << "t"
             << ":" << std::setw(5) << "spin" << std::setw(5) << "clov"
@@ -216,12 +271,10 @@ void clover_product(
           // various SoA within the tile.
           auto const veclen_idx = soalen * tile + xi;
 
-#ifndef NDEBUG
+#ifdef PRINT_MAPPING
           ++spin_touches[spin_block_idx];
           ++clover_touches[clov_block_idx];
-#endif
 
-#ifdef PRINT_MAPPING
           std::cout << std::setw(3) << x << std::setw(3) << y << std::setw(3) << z
                     << std::setw(3) << t << ":" << std::setw(5) << spin_block_idx
                     << std::setw(5) << clov_block_idx << "\n";
@@ -230,7 +283,7 @@ void clover_product(
           assert(xi + xb * soalen == x);
 
           // References to the objects at desired block.
-          auto const &clov_block = local_clover[clov_block_idx];
+          auto const &clov_block = clover[clov_block_idx];
           auto const &spinor_in = in[spin_block_idx];
           auto &spinor_out = out[spin_block_idx];
 
@@ -241,9 +294,9 @@ void clover_product(
     }
   }
 
+#ifdef PRINT_MAPPING
   std::cout << std::flush;
 
-#ifdef PRINT_MAPPING
   // Make sure that each block got touched the correct number of times.
   for (int i = 0; i != spin_touches.size(); ++i) {
     if (spin_touches[i] != soalen) {
