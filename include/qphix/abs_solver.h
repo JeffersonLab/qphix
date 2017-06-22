@@ -30,6 +30,8 @@ template <typename FT, int V, int S, bool compress12>
 class AbstractMultiSolver
 {
  public:
+  virtual ~AbstractMultiSolver(){};
+
   typedef typename Geometry<FT, V, S, compress12>::FourSpinorBlock Spinor;
   virtual void operator()(Spinor **x,
                           const Spinor *rhs,
