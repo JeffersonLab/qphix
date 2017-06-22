@@ -9,6 +9,8 @@ template <typename FT, int veclen, int soalen, bool compress>
 class EvenOddLinearOperator
 {
  public:
+  virtual ~EvenOddLinearOperator(){};
+
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
   virtual void operator()(FourSpinorBlock *res,
