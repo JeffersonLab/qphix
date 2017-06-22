@@ -391,30 +391,7 @@ esac
 
 export OMP_NUM_THREADS=2
 
-pushd $build/qphix/tests
-
-l=16
-args="-by 8 -bz 8 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x $l -y $l -z $l -t $l -prec f -geom 1 1 1 2 -soalen $soalen"
-
-tests=(
-t_clov_dslash
-t_dslash
-t_twm_dslash
-t_twm_clover
-)
-
-for runner in "${tests[@]}"
-do
-    fold_start testing.$runner
-    time mpirun -n 2 ./$runner $args
-    fold_end testing.$runner
-done
-
-# Matches pushd
-popd
-
 pushd $build/qphix
 fold_start make.tests
-   # Just execute make test
-   time ctest --output-on-failure
+time ctest -V
 fold_end  make.tests
