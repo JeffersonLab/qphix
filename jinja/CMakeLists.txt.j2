@@ -16,8 +16,10 @@ add_library(qphix_codegen
     {% endfor -%}
     )
 
-install(TARGETS qphix_codegen
-    DESTINATION lib)
+install(TARGETS qphix_codegen EXPORT QPhiXCodegenConfig
+	ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin )
 
 install(FILES
     {% for header_file in header_files -%}
@@ -25,3 +27,5 @@ install(FILES
     {% endfor -%}
 
     DESTINATION "include/qphix_codegen")
+
+install(EXPORT QPhiXCodegenConfig DESTINATION cmake)
