@@ -84,12 +84,14 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
 
   int expected_threads = NCores * n_threads_per_core;
   if (expected_threads != omp_get_max_threads()) {
-    cout << "Expected (Cores per Socket x Threads per Core)=" << expected_threads
-         << " but found " << omp_get_max_threads() << "..." << endl;
-    cout << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the "
-            "CORES_PER_SOCKET and THREADS_PER_CORE env variables"
-         << endl;
-    abort();
+    std::cout << "Expected (Cores per Socket x Threads per Core)="
+              << expected_threads << " but found " << omp_get_max_threads() << "..."
+              << std::endl;
+    std::cout
+        << "Check your OMP_NUM_THREADS or QMT_NUM_THREADS env variable, or the "
+           "CORES_PER_SOCKET and THREADS_PER_CORE env variables"
+        << std::endl;
+    std::abort();
   }
 
   int nvecs = s->nVecs();

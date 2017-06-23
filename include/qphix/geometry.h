@@ -14,8 +14,6 @@
 #include <immintrin.h>
 #endif
 
-using namespace std;
-
 namespace QPhiX
 {
 
@@ -160,9 +158,9 @@ class Geometry
       nvecs_++;
 
     if (V % S != 0) {
-      cerr << "Error: Geometry constructor: SOALEN=" << S
-           << " does not divide V=" << V << endl;
-      abort();
+      std::cerr << "Error: Geometry constructor: SOALEN=" << S
+                << " does not divide V=" << V << std::endl;
+      std::abort();
     }
     ngy_ = V / S;
 

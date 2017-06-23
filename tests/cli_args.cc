@@ -148,7 +148,7 @@ CliArgs processArgs(int &argc, char **&argv, bool const is_timing)
     }
 
     else if (arg == "-prec") {
-      string user_arg(argv[i + 1]);
+      std::string user_arg(argv[i + 1]);
       if (user_arg.compare("f") == 0) {
         args.prec = FLOAT_PREC;
       }

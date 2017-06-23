@@ -22,8 +22,6 @@
 
 #endif
 
-using namespace std;
-
 // Options
 #undef SCATTERED_THREAD_IDS
 
