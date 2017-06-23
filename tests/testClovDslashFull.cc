@@ -180,8 +180,8 @@ void TestClover::operator()()
       res[rb[target_cb]] -= beta * hs_qdp1.qdp();
 
       // Check the difference per number in chi vector
-      expect_near(res,
-                  hs_qphix1.qdp(),
+      expect_near(hs_qphix1.qdp(),
+                  res,
                   1e-6,
                   geom,
                   target_cb,
