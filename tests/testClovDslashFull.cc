@@ -29,13 +29,18 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 
+void TestClover::run()
+{
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+}
+
 template <typename FT,
           int V,
           int S,
           bool compress,
           typename QdpGauge,
           typename QdpSpinor>
-void testClovDslashFull::runTest(void)
+void TestClover::operator()()
 {
 
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
@@ -45,31 +50,46 @@ void testClovDslashFull::runTest(void)
   bool verbose = true;
   QDPIO::cout << endl << "ENTERING CLOVER DSLASH TEST" << endl;
 
-  // Diagnostic information:
-  const multi1d<int> &lattSize = Layout::subgridLattSize();
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
+  int Nx = args_.nrow_in[0];
+  int Ny = args_.nrow_in[1];
+  int Nz = args_.nrow_in[2];
+  int Nt = args_.nrow_in[3];
 
   Geometry<FT, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                    By,
-                                    Bz,
-                                    NCores,
-                                    Sy,
-                                    Sz,
-                                    PadXY,
-                                    PadXYZ,
-                                    MinCt);
+                                    args_.By,
+                                    args_.Bz,
+                                    args_.NCores,
+                                    args_.Sy,
+                                    args_.Sz,
+                                    args_.PadXY,
+                                    args_.PadXYZ,
+                                    args_.MinCt,
+                                    true);
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, 1.0);
 
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
-  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom), hs_qphix2(geom),
-      hs_qdp1(geom), hs_qdp2(geom);
-  gaussian(hs_source.qdp());
+  HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom),
+      hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
+
+  bool const point_source = false;
+  if (point_source) {
+    hs_source.zero();
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .real() = 1.0;
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .imag() = 0.0;
+  } else {
+    gaussian(hs_source.qdp());
+  }
   hs_source.pack();
 
 #if 1
@@ -160,8 +180,8 @@ void testClovDslashFull::runTest(void)
       res[rb[target_cb]] -= beta * hs_qdp1.qdp();
 
       // Check the difference per number in chi vector
-      expect_near(res,
-                  hs_qphix1.qdp(),
+      expect_near(hs_qphix1.qdp(),
+                  res,
                   1e-6,
                   geom,
                   target_cb,
@@ -176,7 +196,7 @@ void testClovDslashFull::runTest(void)
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0, 0.1);
 
   // Create Antiperiodic Dslash
   ClovDslash<FT, V, S, compress> D32_ap(&geom,
@@ -300,15 +320,16 @@ void testClovDslashFull::runTest(void)
 #if 1
   {
     for (int cb = 0; cb < 2; ++cb) {
+      masterPrintf("Testing Clover CG on cb = %i\n", cb);
       int other_cb = 1 - cb;
-      EvenOddCloverOperator<FT, V, S, compress> M(gauge_antip.u_packed,
-                                                  gauge_antip.clov_packed[cb],
-                                                  gauge_antip.invclov_packed[other_cb],
-                                                  &geom,
-                                                  gauge_antip.t_boundary,
-                                                  gauge_antip.aniso_fac_s,
-                                                  gauge_antip.aniso_fac_t);
-
+      EvenOddCloverOperator<FT, V, S, compress> M(
+          gauge_antip.u_packed,
+          gauge_antip.clov_packed[cb],
+          gauge_antip.invclov_packed[other_cb],
+          &geom,
+          gauge_antip.t_boundary,
+          gauge_antip.aniso_fac_s,
+          gauge_antip.aniso_fac_t);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -357,12 +378,7 @@ void testClovDslashFull::runTest(void)
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      QdpSpinor diff = chi3 - hs_source.qdp();
-      QDPIO::cout << "cb=" << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
-                  << endl;
-
-      expect_near(chi3, hs_source.qdp(), 1e-6, geom, cb, "CG");
+      expect_near(chi3, hs_source.qdp(), 1e-9, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
@@ -379,14 +395,14 @@ void testClovDslashFull::runTest(void)
   {
     for (int cb = 0; cb < 2; ++cb) {
       int other_cb = 1 - cb;
-      EvenOddCloverOperator<FT, V, S, compress> M(gauge_antip.u_packed,
-                                                  gauge_antip.clov_packed[cb],
-                                                  gauge_antip.invclov_packed[other_cb],
-                                                  &geom,
-                                                  gauge_antip.t_boundary,
-                                                  gauge_antip.aniso_fac_s,
-                                                  gauge_antip.aniso_fac_t);
-
+      EvenOddCloverOperator<FT, V, S, compress> M(
+          gauge_antip.u_packed,
+          gauge_antip.clov_packed[cb],
+          gauge_antip.invclov_packed[other_cb],
+          &geom,
+          gauge_antip.t_boundary,
+          gauge_antip.aniso_fac_s,
+          gauge_antip.aniso_fac_t);
 
       double rsd_target = rsdTarget<FT>::value;
       int max_iters = 500;
@@ -424,7 +440,8 @@ void testClovDslashFull::runTest(void)
 
       QdpSpinor diff = hs_qdp1.qdp() - hs_source.qdp();
       QDPIO::cout << " cb = " << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb])) << endl;
+                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
+                  << endl;
       expect_near(hs_qdp1.qdp(), hs_source.qdp(), 1e-6, geom, cb, "BiCGStab");
 
       int Nxh = Nx / 2;
@@ -436,117 +453,4 @@ void testClovDslashFull::runTest(void)
     } // cb loop
   } // scope
 #endif
-}
-
-void testClovDslashFull::run(void)
-{
-  typedef LatticeColorMatrixF UF;
-  typedef LatticeDiracFermionF PhiF;
-
-  typedef LatticeColorMatrixD UD;
-  typedef LatticeDiracFermionD PhiD;
-
-#if defined(QPHIX_SCALAR_SOURCE)
-  if (precision == FLOAT_PREC) {
-    if (compress12) {
-      runTest<float, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<float, 1, 1, false, UF, PhiF>();
-    }
-  }
-  if (precision == DOUBLE_PREC) {
-    if (compress12) {
-      runTest<double, 1, 1, true, UF, PhiF>();
-    } else {
-      runTest<double, 1, 1, false, UF, PhiF>();
-    }
-  }
-#else
-
-  if (precision == FLOAT_PREC) {
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 4, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 4, false, UF, PhiF>();
-    }
-
-#if !defined(QPHIX_SSE_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 8, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 8, false, UF, PhiF>();
-    }
-#endif
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<float, VECLEN_SP, 16, true, UF, PhiF>();
-    } else {
-      runTest<float, VECLEN_SP, 16, false, UF, PhiF>();
-    }
-#endif
-#endif // QPHIX_AVX_SOURCE|| QPHIX_AVX2_SOURCE|| QPHIX_MIC_SOURCE |
-    // QPHIX_AVX512_SOURCE
-  }
-
-  if (precision == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
-    defined(QPHIX_AVX2_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 4, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 4, false, UF, PhiF>();
-    }
-
-    if (compress12) {
-      runTest<half, VECLEN_HP, 8, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 8, false, UF, PhiF>();
-    }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (compress12) {
-      runTest<half, VECLEN_HP, 16, true, UF, PhiF>();
-    } else {
-      runTest<half, VECLEN_HP, 16, false, UF, PhiF>();
-    }
-#endif
-#else
-    QDPIO::cout << "Half precision tests are not available in this build. "
-                   "Currently only in MIC builds"
-                << endl;
-#endif
-  }
-
-  if (precision == DOUBLE_PREC) {
-
-#if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-    // Only AVX can do DP 2
-    if (compress12) {
-      runTest<double, VECLEN_DP, 2, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 2, false, UD, PhiD>();
-    }
-#endif
-
-    if (compress12) {
-      runTest<double, VECLEN_DP, 4, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 4, false, UD, PhiD>();
-    }
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    // Only MIC can do DP 8
-    if (compress12) {
-      runTest<double, VECLEN_DP, 8, true, UD, PhiD>();
-    } else {
-      runTest<double, VECLEN_DP, 8, false, UD, PhiD>();
-    }
-#endif
-  }
-
-#endif // SCALAR SOURCE
 }

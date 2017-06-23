@@ -1,5 +1,4 @@
-#ifndef THREAD_LIMITS_H
-#define THREAD_LIMITS_H
+#pragma once
 
 namespace QPhiX
 {
@@ -8,4 +7,3 @@ namespace QPhiX
 #define MAX_THREADS_PER_CORE 4
 #define MAX_THREADS (MAX_CORES * MAX_THREADS_PER_CORE)
 };
-#endif

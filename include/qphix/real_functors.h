@@ -1,9 +1,10 @@
-#ifndef QPHIX_REAL_FUNCTORS_H
-#define QPHIX_REAL_FUNCTORS_H
+#pragma once
 
+#include "qphix/blas_c.h"
 #include "qphix/qphix_config.h"
 #include "qphix/blas_utils.h"
 #include "qphix/print_utils.h"
+#include "qphix/arith_type.h"
 
 namespace QPhiX
 {
@@ -786,5 +787,3 @@ class RichardsonRXUpdateNormRFunctor
 };
 
 }; // Namespace
-
-#endif

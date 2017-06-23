@@ -448,12 +448,12 @@ void QDPCloverTermT<T, U>::makeClov(const multi1d<U> &f, const RealT &diag_mass)
 {
 
   if (Nd != 4) {
-    QDPIO::cerr << __func__ << ": expecting Nd==4" << endl;
+    QDPIO::cerr << __func__ << ": expecting Nd==4" << std::endl;
     QDP_abort(1);
   }
 
   if (Ns != 4) {
-    QDPIO::cerr << __func__ << ": expecting Ns==4" << endl;
+    QDPIO::cerr << __func__ << ": expecting Ns==4" << std::endl;
     QDP_abort(1);
   }
 
@@ -688,7 +688,8 @@ inline void LDagDLInvSiteLoop(int lo, int hi, int myId, LDagDLInvArgs<U> *a)
     if (site_neg_logdet != 0) {
       // Report if site has any negative terms. (-ve def)
       std::cout << "WARNING: found " << site_neg_logdet
-                << " negative eigenvalues in Clover DET at site: " << site << endl;
+                << " negative eigenvalues in Clover DET at site: " << site
+                << std::endl;
     }
   } /* End Site Loop */
 } /* End Function */
@@ -700,7 +701,7 @@ void QDPCloverTermT<T, U>::ldagdlinv(LatticeREAL &tr_log_diag, int cb)
 {
 
   if (2 * Nc < 3) {
-    QDPIO::cerr << __func__ << ": Matrix is too small" << endl;
+    QDPIO::cerr << __func__ << ": Matrix is too small" << std::endl;
     QDP_abort(1);
   }
 
@@ -736,7 +737,7 @@ void QDPCloverTermT<T, U>::applySite(T &chi, const T &psi, int isign, int site) 
 {
 
   if (Ns != 4) {
-    QDPIO::cerr << __func__ << ": CloverTerm::applySite requires Ns==4" << endl;
+    QDPIO::cerr << __func__ << ": CloverTerm::applySite requires Ns==4" << std::endl;
     QDP_abort(1);
   }
 
@@ -1372,7 +1373,7 @@ void QDPCloverTermT<T, U>::apply(T &chi, const T &psi, int isign, int cb) const
 {
 
   if (Ns != 4) {
-    QDPIO::cerr << __func__ << ": CloverTerm::apply requires Ns==4" << endl;
+    QDPIO::cerr << __func__ << ": CloverTerm::apply requires Ns==4" << std::endl;
     QDP_abort(1);
   }
 

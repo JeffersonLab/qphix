@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_DSLASH_DEF_H
-#define QPHIX_TM_DSLASH_DEF_H
+#pragma once
 
 #include "qphix/dslash_utils.h"
 #include "qphix/geometry.h"
@@ -7,6 +6,7 @@
 
 namespace QPhiX
 {
+
 template <typename FT, int veclen, int soalen, bool compress12>
 class TMDslash
 {
@@ -24,7 +24,9 @@ class TMDslash
            double aniso_coeff_S_,
            double aniso_coeff_T_,
            double Mass_,
-           double TwistedMass_);
+           double TwistedMass_,
+           bool use_tbc_[4] = nullptr,
+           double tbc_phases_[4][2] = nullptr);
 
   ~TMDslash();
 
@@ -43,6 +45,24 @@ class TMDslash
                             double beta,
                             int isign,
                             int cb);
+
+  void two_flav(FourSpinorBlock *res[2],
+                const FourSpinorBlock *const psi[2],
+                const SU3MatrixBlock *u,
+                double mu,
+                double mu_inv,
+                int isign,
+                int cb);
+
+  void two_flav_achimbdpsi(FourSpinorBlock *res[2],
+                           const FourSpinorBlock *const psi[2],
+                           const FourSpinorBlock *const chi[2],
+                           const SU3MatrixBlock *u,
+                           double alpha,
+                           double beta,
+                           double epsilon,
+                           int isign,
+                           int cb);
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
@@ -74,6 +94,12 @@ class TMDslash
   double aniso_coeff_S;
   double aniso_coeff_T;
 
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
+
   // Wilson & Twisted Mass Parameters
   double Mass;
   double TwistedMass;
@@ -96,61 +122,37 @@ class TMDslash
 
   TMDslash(); // Hide Free Constructor
 
-  void TMDyzPlus(int tid,
-                 const FourSpinorBlock *psi,
-                 FourSpinorBlock *res,
-                 const SU3MatrixBlock *u,
-                 int cb);
+  void TMDyz(int tid,
+             const FourSpinorBlock *psi,
+             FourSpinorBlock *res,
+             const SU3MatrixBlock *u,
+             bool const is_plus,
+             int cb);
 
-  void TMDyzMinus(int tid,
-                  const FourSpinorBlock *psi,
-                  FourSpinorBlock *res,
-                  const SU3MatrixBlock *u,
-                  int cb);
+  void TMDyzAChiMinusBDPsi(int tid,
+                           const FourSpinorBlock *psi,
+                           const FourSpinorBlock *chi,
+                           FourSpinorBlock *res,
+                           const SU3MatrixBlock *u,
+                           double alpha,
+                           double beta,
+                           bool const is_plus,
+                           int cb);
 
-  void TMDyzPlusAChiMinusBDPsi(int tid,
-                               const FourSpinorBlock *psi,
-                               const FourSpinorBlock *chi,
-                               FourSpinorBlock *res,
-                               const SU3MatrixBlock *u,
-                               double alpha,
-                               double beta,
-                               int cb);
+  void TMDPsi(const SU3MatrixBlock *u,
+              const FourSpinorBlock *psi_in,
+              FourSpinorBlock *res_out,
+              bool const is_plus,
+              int cb);
 
-  void TMDyzMinusAChiMinusBDPsi(int tid,
-                                const FourSpinorBlock *psi,
-                                const FourSpinorBlock *chi,
-                                FourSpinorBlock *res,
-                                const SU3MatrixBlock *u,
-                                double alpha,
-                                double beta,
-                                int cb);
-
-  void TMDPsiPlus(const SU3MatrixBlock *u,
-                  const FourSpinorBlock *psi_in,
-                  FourSpinorBlock *res_out,
-                  int cb);
-
-  void TMDPsiMinus(const SU3MatrixBlock *u,
-                   const FourSpinorBlock *psi_in,
-                   FourSpinorBlock *res_out,
-                   int cb);
-
-  void TMDPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                                const FourSpinorBlock *psi_in,
-                                const FourSpinorBlock *chi,
-                                FourSpinorBlock *res_out,
-                                double alpha,
-                                double beta,
-                                int cb);
-
-  void TMDPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                                 const FourSpinorBlock *psi_in,
-                                 const FourSpinorBlock *chi,
-                                 FourSpinorBlock *re_out,
-                                 double alpha,
-                                 double beta,
-                                 int cb);
+  void TMDPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                            const FourSpinorBlock *psi_in,
+                            const FourSpinorBlock *chi,
+                            FourSpinorBlock *res_out,
+                            double alpha,
+                            double beta,
+                            bool const is_plus,
+                            int cb);
 
 // packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS
@@ -161,7 +163,7 @@ class TMDslash
                      int cb,
                      int dir,
                      int fb,
-                     int isPlus);
+                     bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeTMFaceDir(int tid,
@@ -172,7 +174,7 @@ class TMDslash
                          int cb,
                          int dir,
                          int fb,
-                         int isPlus);
+                         bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeFaceDirAChiMBDPsi(int tid,
@@ -183,7 +185,7 @@ class TMDslash
                                  int cb,
                                  int dir,
                                  int fb,
-                                 int isPlus);
+                                 bool const is_plus);
 #endif
 }; // Class
 
@@ -192,5 +194,4 @@ class TMDslash
 
 #ifdef QPHIX_QMP_COMMS
 #include "qphix/tm_dslash_face.h"
-#endif
 #endif

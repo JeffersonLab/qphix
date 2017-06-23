@@ -32,29 +32,28 @@ using namespace QPhiX;
 #include "RandomGauge.h"
 #include "veclen.h"
 #include "tolerance.h"
+#include "tparam_selector.h"
+#include "compare_qdp_spinors.h"
 
-// What we consider to be small enough...
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
 
-void testTWMDslashFull::run(void)
+void TestTMDslash::run(void)
 {
   RNG::savern(rng_seed);
 
-  typedef LatticeColorMatrixF UF;
-  typedef LatticeColorMatrixD UD;
-  typedef LatticeDiracFermionF PhiF;
-  typedef LatticeDiracFermionD PhiD;
-
-  typedef multi1d<UF> MUF;
-  typedef multi1d<UD> MUD;
-
-  // Diagnostic information:
   const multi1d<int> &lattSize = Layout::subgridLattSize();
   Nx = lattSize[0];
   Ny = lattSize[1];
   Nz = lattSize[2];
   Nt = lattSize[3];
+
+  call(*this, args_.prec, args_.soalen, args_.compress12);
+
+  /*
+
+  typedef multi1d<UF> MUF;
+  typedef multi1d<UD> MUD;
 
   // Make a random gauge field
   QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
@@ -79,10 +78,6 @@ void testTWMDslashFull::run(void)
 
 #if defined(QPHIX_SCALAR_SOURCE)
     if (soalen == 1) {
-      testTWMDslashWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 1, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 1, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 1, MUF, PhiF>(u_in);
     }
 #endif
@@ -91,10 +86,6 @@ void testTWMDslashFull::run(void)
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE) ||                    \
     defined(QPHIX_SSE_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 4, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 4, MUF, PhiF>(u_in);
 #endif
     }
@@ -102,20 +93,12 @@ void testTWMDslashFull::run(void)
     if (soalen == 8) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 8, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 8, MUF, PhiF>(u_in);
 #endif
     }
 
     if (soalen == 16) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMMWrapper<float, VECLEN_SP, 16, UF, PhiF>();
-      testTWMCGWrapper<float, VECLEN_SP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<float, VECLEN_SP, 16, MUF, PhiF>(u_in);
 #else
       masterPrintf("SOALEN = 16 not available");
@@ -133,23 +116,14 @@ void testTWMDslashFull::run(void)
       u_in[mu] = u[mu];
     }
     if (soalen == 4) {
-      testTWMDslashWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 4, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 4, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 4, MUF, PhiF>(u_in);
     }
 
     if (soalen == 8) {
-      testTWMDslashWrapper<half, VECLEN_HP, 8, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 8, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 8, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 8, MUF, PhiF>(u_in);
     }
 
     if (soalen == 16) {
-      testTWMDslashWrapper<half, VECLEN_HP, 16, UF, PhiF>();
-      testTWMDslashAChiMBDPsiWrapper<half, VECLEN_HP, 16, UF, PhiF>();
-      testTWMCGWrapper<half, VECLEN_HP, 16, UF, PhiF>();
       testTWMBiCGStabWrapper<half, VECLEN_HP, 16, MUF, PhiF>(u_in);
     }
 #else
@@ -166,10 +140,6 @@ void testTWMDslashFull::run(void)
 
     if (soalen == 2) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 2, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 2, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 2, MUD, PhiD>(u_in);
 #endif
     }
@@ -177,28 +147,21 @@ void testTWMDslashFull::run(void)
     if (soalen == 4) {
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 4, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 4, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 4, MUD, PhiD>(u_in);
 #endif
     }
 
     if (soalen == 8) {
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-      testTWMDslashWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMDslashAChiMBDPsiWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMMWrapper<double, VECLEN_DP, 8, UD, PhiD>();
-      testTWMCGWrapper<double, VECLEN_DP, 8, UD, PhiD>();
       testTWMBiCGStabWrapper<double, VECLEN_DP, 8, MUD, PhiD>(u_in);
 #endif
     }
   } // DOUBLE_PREC
+  */
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMDslash(int t_bc)
+void TestTMDslash::testTWMDslash(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -219,14 +182,15 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt,
+                                   true);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -273,7 +237,7 @@ void testTWMDslashFull::testTWMDslash(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
+void TestTMDslash::testTWMDslashAChiMBDPsi(int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
@@ -298,14 +262,14 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -354,7 +318,7 @@ void testTWMDslashFull::testTWMDslashAChiMBDPsi(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMM(int t_bc)
+void TestTMDslash::testTWMM(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -370,14 +334,14 @@ void testTWMDslashFull::testTWMM(int t_bc)
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
@@ -421,15 +385,14 @@ void testTWMDslashFull::testTWMM(int t_bc)
                          isign,
                          target_cb);
 
-      expect_near(
-          hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
 
 // add twisted mass term.
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMCG(int t_bc)
+void TestTMDslash::testTWMCG(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -445,14 +408,14 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   const double MuInv = alpha / (alpha * alpha + TwistedMass * TwistedMass);
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
   HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
@@ -513,30 +476,37 @@ void testTWMDslashFull::testTWMCG(int t_bc)
   // 2. Multiply back with QDP + TM term
   // ===================================
   // chi2 = M chi
-  qdp_apply_operator(hs_qdp1.qdp(), hs_qphix1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, 1, source_target_cb);
+  qdp_apply_operator(hs_qdp1.qdp(),
+                     hs_qphix1.qdp(),
+                     gauge.u_aniso,
+                     Mu,
+                     MuInv,
+                     alpha,
+                     beta,
+                     1,
+                     source_target_cb);
 
   // chi3 = M^\dagger chi2
-  qdp_apply_operator(hs_qdp2.qdp(), hs_qdp1.qdp(), gauge.u_aniso, Mu, MuInv, alpha, beta, -1, source_target_cb);
-
-  // 3. Assert difference & GFLOP/s
-  // ===================================
-  Phi diff = hs_qdp2.qdp() - hs_source.qdp();
-  Double true_norm = sqrt(norm2(diff, rb[source_target_cb]) /
-                          norm2(hs_source.qdp(), rb[source_target_cb]));
-  QDPIO::cout << "True norm of residuum is: " << true_norm << endl;
+  qdp_apply_operator(hs_qdp2.qdp(),
+                     hs_qdp1.qdp(),
+                     gauge.u_aniso,
+                     Mu,
+                     MuInv,
+                     alpha,
+                     beta,
+                     -1,
+                     source_target_cb);
 
   unsigned long num_cb_sites = Layout::vol() / 2;
   unsigned long total_flops =
       (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
-  assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
-  expect_near(hs_qdp2, hs_source, 1e-6, geom, source_target_cb, "CG");
-
+  expect_near(hs_qdp2, hs_source, 1e-8, geom, source_target_cb, "CG");
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
+void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -562,14 +532,14 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
               << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                   By,
-                                   Bz,
-                                   NCores,
-                                   Sy,
-                                   Sz,
-                                   PadXY,
-                                   PadXYZ,
-                                   MinCt);
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt);
 
   Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
   Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
@@ -657,10 +627,7 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
     applyTwist<>(chi, Mu, alpha, isign, 0);
     chi2[rb[0]] = chi - beta * ltmp;
 
-    Phi diff = chi2 - psi;
-    Double true_norm = sqrt(norm2(diff, rb[0]) / norm2(psi, rb[0]));
-    QDPIO::cout << "BiCGStab Solve isign = " << isign
-                << ": True norm of residual is " << true_norm << endl;
+    expect_near(chi2, psi, 1e-8, geom, 0, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
@@ -669,7 +636,6 @@ void testTWMDslashFull::testTWMBiCGStab(const U &u, int t_bc)
                  isign,
                  1.0e-9 * (double)(total_flops) / (end - start));
     QDPIO::cout << endl;
-    assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
 
   } // isign
 
@@ -690,7 +656,7 @@ template <typename T1,
           int SOA2,
           typename U,
           typename Phi>
-void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
+void TestTMDslash::testTWMRichardson(const U &u, int t_bc)
 {
   RNG::setrn(rng_seed);
   typedef typename Geometry<T1, VEC1, SOA1, compress>::SU3MatrixBlock GaugeOuter;
@@ -709,24 +675,24 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
   gaussian(psi);
 
   Geometry<T1, VEC1, SOA1, compress> geom_outer(Layout::subgridLattSize().slice(),
-                                                By,
-                                                Bz,
-                                                NCores,
-                                                Sy,
-                                                Sz,
-                                                PadXY,
-                                                PadXYZ,
-                                                MinCt);
+                                                args_.By,
+                                                args_.Bz,
+                                                args_.NCores,
+                                                args_.Sy,
+                                                args_.Sz,
+                                                args_.PadXY,
+                                                args_.PadXYZ,
+                                                args_.MinCt);
 
   Geometry<T2, VEC2, SOA2, compress> geom_inner(Layout::subgridLattSize().slice(),
-                                                By,
-                                                Bz,
-                                                NCores,
-                                                Sy,
-                                                Sz,
-                                                PadXY,
-                                                PadXYZ,
-                                                MinCt);
+                                                args_.By,
+                                                args_.Bz,
+                                                args_.NCores,
+                                                args_.Sy,
+                                                args_.Sz,
+                                                args_.PadXY,
+                                                args_.PadXYZ,
+                                                args_.MinCt);
 
   // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
 
@@ -852,11 +818,8 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
       dslash(ltmp, u_test, chi2, isign, 0);
       chi2[rb[0]] = massFactor * chi - betaFactor * ltmp;
 
-      Phi diff = chi2 - psi;
-      Double true_norm = sqrt(norm2(diff, rb[0]) / norm2(psi, rb[0]));
-      QDPIO::cout << "RICHARDSON Solve isign=" << isign
-                  << " True norm is: " << true_norm << endl;
-      assertion(toBool(true_norm < (rsd_target + tolerance<T1>::small)));
+      expect_near(chi2, psi, 1e-8, geom_outer, 0, "TM Wilson Richardson");
+
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =
           (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
@@ -881,7 +844,7 @@ void testTWMDslashFull::testTWMRichardson(const U &u, int t_bc)
 }
 
 template <typename QDPSpinor>
-void testTWMDslashFull::applyTwist(
+void TestTMDslash::applyTwist(
     QDPSpinor &psi, double Mu, double Alpha, int isign, int target_cb)
 {
   int Nxh = Nx / 2;
@@ -926,7 +889,7 @@ void testTWMDslashFull::applyTwist(
 }
 
 template <typename QDPSpinor>
-void testTWMDslashFull::applyInvTwist(
+void TestTMDslash::applyInvTwist(
     QDPSpinor &psi, double Mu, double MuInv, int isign, int target_cb)
 {
   int Nxh = Nx / 2;
@@ -971,7 +934,7 @@ void testTWMDslashFull::applyInvTwist(
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
+void TestTMDslash::qdp_dslash(QdpSpinor &out,
                                    QdpSpinor const &in,
                                    QDP::multi1d<QdpGauge> const &u_aniso,
                                    double const Mu,
@@ -979,12 +942,12 @@ void testTWMDslashFull::qdp_dslash(QdpSpinor &out,
                                    int const isign,
                                    int const target_cb)
 {
-    dslash(out, u_aniso, in, isign, target_cb);
-    applyInvTwist<>(out, Mu, MuInv, isign, target_cb);
+  dslash(out, u_aniso, in, isign, target_cb);
+  applyInvTwist<>(out, Mu, MuInv, isign, target_cb);
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
+void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
                                        QdpSpinor const &chi,
                                        QdpSpinor const &psi,
                                        QDP::multi1d<QdpGauge> const &u_aniso,
@@ -995,19 +958,19 @@ void testTWMDslashFull::qdp_achimbdpsi(QdpSpinor &out,
                                        int const isign,
                                        int const target_cb)
 {
-    int const other_cb = 1 - target_cb;
+  int const other_cb = 1 - target_cb;
 
-    QdpSpinor D_psi = zero;
-    dslash(D_psi, u_aniso, psi, isign, target_cb);
+  QdpSpinor D_psi = zero;
+  dslash(D_psi, u_aniso, psi, isign, target_cb);
 
-    QdpSpinor A_chi = chi;
-    applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
+  QdpSpinor A_chi = chi;
+  applyTwist<>(A_chi, Mu, alpha, isign, target_cb);
 
-    out[rb[target_cb]] = A_chi - beta * D_psi;
+  out[rb[target_cb]] = A_chi - beta * D_psi;
 }
 
 template <typename QdpGauge, typename QdpSpinor>
-void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
+void TestTMDslash::qdp_apply_operator(QdpSpinor &out,
                                            QdpSpinor const &in,
                                            QDP::multi1d<QdpGauge> const &u_aniso,
                                            double const Mu,
@@ -1017,12 +980,11 @@ void testTWMDslashFull::qdp_apply_operator(QdpSpinor &out,
                                            int const isign,
                                            int const target_cb)
 {
-    int const other_cb = 1 - target_cb;
+  int const other_cb = 1 - target_cb;
 
+  QdpSpinor A_inv_D_psi = zero;
+  qdp_dslash(A_inv_D_psi, in, u_aniso, Mu, MuInv, isign, other_cb);
 
-    QdpSpinor A_inv_D_psi = zero;
-    qdp_dslash(A_inv_D_psi, in, u_aniso, Mu, MuInv, isign, other_cb);
-
-    qdp_achimbdpsi(
-        out, in, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
+  qdp_achimbdpsi(
+      out, in, A_inv_D_psi, u_aniso, Mu, MuInv, alpha, beta, isign, target_cb);
 }

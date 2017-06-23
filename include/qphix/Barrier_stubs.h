@@ -1,11 +1,9 @@
-#ifndef QPHIX_BARRIER_MIC_STUBS_H
-#define QPHIX_BARRIER_MIC_STUBS_H
+#pragma once
 
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-using namespace std;
 
 namespace QPhiX
 {
@@ -22,5 +20,3 @@ class Barrier
 };
 
 }; // end namespace
-
-#endif

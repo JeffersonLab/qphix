@@ -1,5 +1,4 @@
-#ifndef QPHIX_DSLASH_UTILS_H
-#define QPHIX_DSLASH_UTILS_H
+#pragma once
 
 #include <cerrno>
 #include "qphix/diagnostics.h"
@@ -22,8 +21,6 @@
 #endif
 
 #endif
-
-using namespace std;
 
 // Options
 #undef SCATTERED_THREAD_IDS
@@ -226,5 +223,3 @@ QPHIX_MESSAGE("including barrier")
 
 #define BARRIER_TSLICES 16
 #define N_PROBES 8
-
-#endif

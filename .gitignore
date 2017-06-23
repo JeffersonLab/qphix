@@ -41,6 +41,9 @@ config/install-sh
 config/missing
 configure
 doc
+doc/*.tmp
+doc/html
+doc/latex
 ehthumbs.db
 include/qphix/qphix_config_internal.h
 include/qphix/qphix_config_internal.h.in

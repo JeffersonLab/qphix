@@ -1,7 +1,5 @@
-#ifndef QPHIX_MINVCG2_H
-#define QPHIX_MINVCG2_H
+#pragma once
 
-///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
 #include "qphix/linearOp.h"
 #include "qphix/print_utils.h"
 #include "qphix/blas_new_c.h"
@@ -440,5 +438,3 @@ class MInvCG : public AbstractMultiSolver<FT, veclen, soalen, compress12>
   }
 };
 };
-
-#endif

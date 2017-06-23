@@ -1,7 +1,7 @@
-#ifndef QPHIX_COMPLEX_FUNCTORS_H
-#define QPHIX_COMPLEX_FUNCTORS_H
+#pragma once
 
 #include "qphix/blas_utils.h"
+#include "qphix/arith_type.h"
 
 namespace QPhiX
 {
@@ -301,5 +301,3 @@ class BiCGStabRXUpdateFunctor
 };
 
 }; // Namespace
-
-#endif

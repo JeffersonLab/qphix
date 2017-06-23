@@ -1,5 +1,4 @@
-#ifndef QPHIX_DSLASH_DEF_H
-#define QPHIX_DSLASH_DEF_H
+#pragma once
 
 #include "qphix/diagnostics.h"
 #include "qphix/dslash_utils.h"
@@ -28,7 +27,9 @@ class Dslash
   Dslash(Geometry<FT, veclen, soalen, compress12> *geom_,
          double t_boundary_,
          double aniso_coeff_S_,
-         double aniso_coeff_T_);
+         double aniso_coeff_T_,
+         bool use_tbc_[4] = nullptr,
+         double tbc_phases_[4][2] = nullptr);
 
   /* Destructor */
   ~Dslash();
@@ -56,7 +57,6 @@ class Dslash
 
   int log2veclen;
   int log2soalen;
-  void init();
 
   const int n_threads_per_core;
 
@@ -90,63 +90,46 @@ class Dslash
   unsigned int ybmask_y0;
   unsigned int yfmask_yn;
 
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
+
   // Hide Free Constructor
   Dslash();
-  void DyzPlus(int tid,
-               const FourSpinorBlock *psi,
-               FourSpinorBlock *res,
-               const SU3MatrixBlock *u,
-               int cb);
 
-  void DyzMinus(int tid,
-                const FourSpinorBlock *psi,
-                FourSpinorBlock *res,
-                const SU3MatrixBlock *u,
-                int cb);
+  void Dyz(int tid,
+           const FourSpinorBlock *psi,
+           FourSpinorBlock *res,
+           const SU3MatrixBlock *u,
+           bool const is_plus,
+           int cb);
 
-  void DyzPlusAChiMinusBDPsi(int tid,
-                             const FourSpinorBlock *psi,
-                             const FourSpinorBlock *chi,
-                             FourSpinorBlock *res,
-                             const SU3MatrixBlock *u,
-                             double alpha,
-                             double beta,
-                             int cb);
+  void DPsi(const SU3MatrixBlock *u,
+            const FourSpinorBlock *psi_in,
+            FourSpinorBlock *res_out,
+            bool const is_plus,
+            int cb);
 
-  void DyzMinusAChiMinusBDPsi(int tid,
-                              const FourSpinorBlock *psi,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res,
-                              const SU3MatrixBlock *u,
-                              double alpha,
-                              double beta,
-                              int cb);
+  void DyzAChiMinusBDPsi(int tid,
+                         const FourSpinorBlock *psi,
+                         const FourSpinorBlock *chi,
+                         FourSpinorBlock *res,
+                         const SU3MatrixBlock *u,
+                         double alpha,
+                         double beta,
+                         bool const is_plus,
+                         int cb);
 
-  void DPsiPlus(const SU3MatrixBlock *u,
-                const FourSpinorBlock *psi_in,
-                FourSpinorBlock *res_out,
-                int cb);
-
-  void DPsiMinus(const SU3MatrixBlock *u,
-                 const FourSpinorBlock *psi_in,
-                 FourSpinorBlock *res_out,
-                 int cb);
-
-  void DPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                              const FourSpinorBlock *psi_in,
-                              const FourSpinorBlock *chi,
-                              FourSpinorBlock *res_out,
-                              double alpha,
-                              double beta,
-                              int cb);
-
-  void DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-                               const FourSpinorBlock *psi_in,
-                               const FourSpinorBlock *chi,
-                               FourSpinorBlock *re_out,
-                               double alpha,
-                               double beta,
-                               int cb);
+  void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                          const FourSpinorBlock *psi_in,
+                          const FourSpinorBlock *chi,
+                          FourSpinorBlock *res_out,
+                          double alpha,
+                          double beta,
+                          bool const is_plus,
+                          int cb);
 
 #ifdef QPHIX_DO_COMMS
   QPHIX_MESSAGE("defining face packers")
@@ -157,7 +140,7 @@ class Dslash
                    int cb,
                    int dir,
                    int fb,
-                   int isPlus);
+                   bool const is_plus);
 
   //  RECEIVE AND COMPLETE FACE
   void completeFaceDir(int tid,
@@ -168,7 +151,7 @@ class Dslash
                        int cb,
                        int dir,
                        int fb,
-                       int isPlus);
+                       bool const is_plus);
 #endif
 
 }; // Class
@@ -178,5 +161,4 @@ class Dslash
 
 #ifdef QPHIX_DO_COMMS
 #include "qphix/face.h"
-#endif
 #endif

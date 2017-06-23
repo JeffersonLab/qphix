@@ -1,6 +1,7 @@
 #pragma once
 
-namespace QPhiX {
+namespace QPhiX
+{
 /// Maximum resident memory size in MiB.
 double get_max_resident_mib();
 }

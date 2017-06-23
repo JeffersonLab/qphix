@@ -1,7 +1,8 @@
-#ifndef QPHIX_INVBICGSTAB_H
-#define QPHIX_INVBICGSTAB_H
+#pragma once
 
-///// USER SERVICEABLE OPTIONS -- SHOULD BE MOVED TO AUTOCONF CONTROL
+/**
+ \TODO user serviceable options -- should be moved to autoconf control
+ */
 #define QPHIX_VERBOSE_BICGSTAB
 #define QPHIX_TIMING_BICGSTAB
 
@@ -14,19 +15,36 @@
 namespace QPhiX
 {
 
-template <typename FT, int V, int S, bool compress12>
-class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
+template <typename FT,
+          int V,
+          int S,
+          bool compress12,
+          typename EvenOddLinearOperatorBase =
+              EvenOddLinearOperator<FT, V, S, compress12>>
+class InvBiCGStab : public AbstractSolver<FT,
+                                          V,
+                                          S,
+                                          compress12,
+                                          EvenOddLinearOperatorBase::num_flav>
 {
  public:
   typedef typename Geometry<FT, V, S, compress12>::FourSpinorBlock Spinor;
-  InvBiCGStab(EvenOddLinearOperator<FT, V, S, compress12> &M_, int MaxIters_)
+
+  static constexpr int num_flav = EvenOddLinearOperatorBase::num_flav;
+
+  InvBiCGStab(EvenOddLinearOperatorBase &M_, int MaxIters_)
       : M(M_), geom(M_.getGeometry()), MaxIters(MaxIters_)
   {
-    r = geom.allocCBFourSpinor();
-    r0 = geom.allocCBFourSpinor();
-    p = geom.allocCBFourSpinor();
-    v = geom.allocCBFourSpinor();
-    t = geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      r[f] = geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      r0[f] = geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      p[f] = geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      v[f] = geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      t[f] = geom.allocCBFourSpinor();
 
     norm2Threads = geom.getNSIMT();
     xmyThreads = geom.getNSIMT();
@@ -40,15 +58,27 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
 
   ~InvBiCGStab()
   {
-    geom.free(r);
-    geom.free(r0);
-    geom.free(p);
-    geom.free(v);
-    geom.free(t);
+    for (uint8_t f = 0; f < num_flav; ++f) {
+      geom.free(r[f]);
+      geom.free(r0[f]);
+      geom.free(p[f]);
+      geom.free(v[f]);
+      geom.free(t[f]);
+    }
   }
 
-  void operator()(Spinor *x,
-                  const Spinor *rhs,
+  // This class overrides the `operator()` from `AbstractSolver`. Due to “name
+  // hiding”, the overloads of `operator()` in the base class are no longer
+  // visible in this class. Therefore the single-flavor interface is not found
+  // when trying to use the solver like it has worked before, namely with an
+  // instance of this solver with automatic storage (i.e. no pointers). Here
+  // we do want the overload for a single spinor pointer to delegate back to
+  // the multi-flavor variant. The overloads need to be included explicitly
+  // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
+  using AbstractSolver<FT, V, S, compress12, num_flav>::operator();
+
+  void operator()(Spinor *x[num_flav],
+                  const Spinor *const rhs[num_flav],
                   const double RsdTarget,
                   int &n_iters,
                   double &rsd_sq_final,
@@ -63,8 +93,8 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
     double rhs_sq;
     double r_norm;
     // Double chi_sq = norm2(chi,s)
-    norm2Spinor<FT, V, S, compress12>(rhs_sq, rhs, geom, norm2Threads);
-    site_flops += 4 * 12;
+    norm2Spinor<FT, V, S, compress12, num_flav>(rhs_sq, rhs, geom, norm2Threads);
+    site_flops += 4 * 12 * num_flav;
 
     double rsd_sq = rhs_sq * RsdTarget * RsdTarget;
     if (verbose)
@@ -73,19 +103,19 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
     // Compute r=r0=rhs - A x
     // A(r0,psi,isign)
     M(r0, x, isign, cb);
-    norm2Spinor<FT, V, S, compress12>(r_norm, r0, geom, norm2Threads);
+    norm2Spinor<FT, V, S, compress12, num_flav>(r_norm, r0, geom, norm2Threads);
     mv_apps++;
 
     // r = chi - r0
-    bicgstab_xmy<FT, V, S, compress12>(rhs, r0, geom, xmyThreads);
-    site_flops += 24;
+    bicgstab_xmy<FT, V, S, compress12, num_flav>(rhs, r0, geom, xmyThreads);
+    site_flops += 24 * num_flav;
 
     // r = r0
-    copySpinor<FT, V, S, compress12>(r, r0, geom, copyThreads);
+    copySpinor<FT, V, S, compress12, num_flav>(r, r0, geom, copyThreads);
 
     // Now intitialize p and v to zero.
-    zeroSpinor<FT, V, S, compress12>(p, geom, zeroThreads);
-    zeroSpinor<FT, V, S, compress12>(v, geom, zeroThreads);
+    zeroSpinor<FT, V, S, compress12, num_flav>(p, geom, zeroThreads);
+    zeroSpinor<FT, V, S, compress12, num_flav>(v, geom, zeroThreads);
 
     // rho_prev = 1
     double rho_prev_c[2] = {(double)1, (double)0};
@@ -104,8 +134,9 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
     for (k = 1; (k <= MaxIters) && notConvP; k++) {
 
       // rho_{k+1} = < r_0 | r >
-      innerProduct<FT, V, S, compress12>(rho_c, r0, r, geom, innerProductThreads);
-      site_flops += 8 * 12;
+      innerProduct<FT, V, S, compress12, num_flav>(
+          rho_c, r0, r, geom, innerProductThreads);
+      site_flops += 8 * 12 * num_flav;
 
       if ((rho_c[0] == 0) && (rho_c[1] == 0)) {
         masterPrintf("BICGSTAB: Breakdown in iteration %d. rho = 0\n", k);
@@ -124,19 +155,19 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
       complex_mul(beta_c, tmp_c, tmp2_c);
 
       // p = r + beta(p - omega v)
-      // p = r + betap - beta*omega v;
-      //   y = x + a(y - bz)
+      // y = x + a(y - bz)
 
-      bicgstab_p_update<FT, V, S, compress12>(
+      bicgstab_p_update<FT, V, S, compress12, num_flav>(
           r, p, v, beta_c, omega_c, geom, pUpdateThreads);
-      site_flops += 16 * 12;
+      site_flops += 16 * 12 * num_flav;
 
       // v = Ap
       M(v, p, isign, cb);
       mv_apps++;
 
-      innerProduct<FT, V, S, compress12>(tmp_c, r0, v, geom, innerProductThreads);
-      site_flops += 8 * 12;
+      innerProduct<FT, V, S, compress12, num_flav>(
+          tmp_c, r0, v, geom, innerProductThreads);
+      site_flops += 8 * 12 * num_flav;
 
       if ((tmp_c[0] == 0) && (tmp_c[1] == 0)) {
         masterPrintf("BICGSTAB: Breakdown in iteration %d. <r_0|v> = 0\n", k);
@@ -157,16 +188,17 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
       // r = s = r - alpha v:   complex y=ax+y with a=-alpha x=v, y=r
       //	FT alpha_cr[2] = { (FT)(alpha_c[0]), (FT)(alpha_c[1]) };
 
-      bicgstab_s_update<FT, V, S, compress12>(alpha_c, r, v, geom, sUpdateThreads);
-      site_flops += 8 * 12;
+      bicgstab_s_update<FT, V, S, compress12, num_flav>(
+          alpha_c, r, v, geom, sUpdateThreads);
+      site_flops += 8 * 12 * num_flav;
 
       // t = As
       M(t, r, isign, cb);
       mv_apps++;
 
       double t_norm = 0;
-      norm2Spinor<FT, V, S, compress12>(t_norm, t, geom, norm2Threads);
-      site_flops += 4 * 12;
+      norm2Spinor<FT, V, S, compress12, num_flav>(t_norm, t, geom, norm2Threads);
+      site_flops += 4 * 12 * num_flav;
 
       if (t_norm == 0) {
         masterPrintf("BICGSTAB: Breakdown in iteration %d. ||t|| = 0\n", k);
@@ -175,8 +207,9 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
         return;
       }
 
-      innerProduct<FT, V, S, compress12>(omega_c, t, r, geom, innerProductThreads);
-      site_flops += 8 * 12;
+      innerProduct<FT, V, S, compress12, num_flav>(
+          omega_c, t, r, geom, innerProductThreads);
+      site_flops += 8 * 12 * num_flav;
 
       omega_c[0] /= t_norm;
       omega_c[1] /= t_norm;
@@ -185,9 +218,9 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
       // r = r - omega t
       // r_norm = norm2(r);
 
-      bicgstab_rxupdate<FT, V, S, compress12>(
+      bicgstab_rxupdate<FT, V, S, compress12, num_flav>(
           x, r, t, p, omega_c, alpha_c, r_norm, geom, rxUpdateThreads);
-      site_flops += 28 * 12;
+      site_flops += 28 * 12 * num_flav;
 
       if (verbose)
         masterPrintf(
@@ -210,7 +243,7 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
   Geometry<FT, V, S, compress12> &getGeometry() { return geom; }
 
  private:
-  EvenOddLinearOperator<FT, V, S, compress12> &M;
+  EvenOddLinearOperatorBase &M;
   Geometry<FT, V, S, compress12> &geom;
   int MaxIters;
 
@@ -229,11 +262,11 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
     res[1] = mul1[0] * mul2[1] + mul1[1] * mul2[0];
   }
 
-  Spinor *r;
-  Spinor *r0;
-  Spinor *p;
-  Spinor *v;
-  Spinor *t;
+  Spinor *r[num_flav];
+  Spinor *r0[num_flav];
+  Spinor *p[num_flav];
+  Spinor *v[num_flav];
+  Spinor *t[num_flav];
 
   int norm2Threads;
   int xmyThreads;
@@ -562,5 +595,3 @@ class InvBiCGStab : public AbstractSolver<FT, V, S, compress12>
   }
 };
 };
-
-#endif

@@ -36,15 +36,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * has been made dynamic, in the constructor and destructor.
  * -- Balint Joo, Jefferson Lab */
 
-#ifndef QPHIX_BARRIER_MIC_H
-#define QPHIX_BARRIER_MIC_H
+#pragma once
 
 #include <immintrin.h>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-
-using namespace std;
 
 namespace QPhiX
 {
@@ -216,5 +213,3 @@ class Barrier
 
 #undef MAX_THREADS_PER_CORE
 }; // End Namespace
-
-#endif

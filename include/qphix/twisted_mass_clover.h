@@ -1,5 +1,4 @@
-#ifndef QPHIX_TM_CLOVER_H
-#define QPHIX_TM_CLOVER_H
+#pragma once
 
 #include "qphix/linearOp.h"
 #include "qphix/tm_clov_dslash_def.h"
@@ -28,9 +27,17 @@ class EvenOddTMCloverOperator
                           Geometry<FT, veclen, soalen, compress12> *geom_,
                           double t_boundary,
                           double aniso_coeff_s,
-                          double aniso_coeff_t)
-      : D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+                          double aniso_coeff_t,
+                          bool use_tbc_[4] = nullptr,
+                          double tbc_phases_[4][2] = nullptr,
+                          double const prec_mass_rho = 0.0)
+      : D(new TMClovDslash<FT, veclen, soalen, compress12>(geom_,
+                                                           t_boundary,
+                                                           aniso_coeff_s,
+                                                           aniso_coeff_t,
+                                                           use_tbc_,
+                                                           tbc_phases_,
+                                                           prec_mass_rho))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     u[0] = u_[0];
@@ -45,9 +52,17 @@ class EvenOddTMCloverOperator
   EvenOddTMCloverOperator(Geometry<FT, veclen, soalen, compress12> *geom_,
                           double t_boundary,
                           double aniso_coeff_s,
-                          double aniso_coeff_t)
-      : D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t))
+                          double aniso_coeff_t,
+                          bool use_tbc_[4] = nullptr,
+                          double tbc_phases_[4][2] = nullptr,
+                          double const prec_mass_rho = 0.0)
+      : D(new TMClovDslash<FT, veclen, soalen, compress12>(geom_,
+                                                           t_boundary,
+                                                           aniso_coeff_s,
+                                                           aniso_coeff_t,
+                                                           use_tbc_,
+                                                           tbc_phases_,
+                                                           prec_mass_rho))
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
@@ -101,12 +116,10 @@ class EvenOddTMCloverOperator
  private:
   double Mass;
   TMClovDslash<FT, veclen, soalen, compress12> *D;
-  mutable SU3MatrixBlock *u[2]; // Mutable because of setFields
-  mutable FullCloverBlock *clov[2]; // Mutable because of setFields
-  mutable FullCloverBlock *invclov[2]; // Mutable because of setFields
+  SU3MatrixBlock *u[2];
+  FullCloverBlock *clov[2];
+  FullCloverBlock *invclov[2];
   FourSpinorBlock *tmp;
 
 }; // Class
 }; // Namespace
-
-#endif // Include guard
