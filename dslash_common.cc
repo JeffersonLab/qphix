@@ -1870,7 +1870,10 @@ void dslash_achimbdpsi_body(InstVector &ivector,
   // Fill result with a*chi
   achiResult(ivector, clover, twisted_mass, isPlus);
 
-  // Add twisted preconditioning mass.
+  // Add twisted preconditioning mass. The following block will
+  // generate instructions that compute
+  //
+  //     out := i \rho \gamma_5 \xhi + out.
   if (clover) {
     declareFVecFromFVec(ivector, prec_mass_rho_vec);
     loadBroadcastScalar(
@@ -1889,18 +1892,15 @@ void dslash_achimbdpsi_body(InstVector &ivector,
         // cases.
         if (isPlus ^ isLower) {
           fnmaddFVec(
-              ivector, tmp_1_re, prec_mass_rho_vec, in[IM], in[RE]);
+              ivector, out[RE], prec_mass_rho_vec, in[IM], out[RE]);
           fmaddFVec(
-              ivector, tmp_1_im, prec_mass_rho_vec, in[RE], in[IM]);
+              ivector, out[IM], prec_mass_rho_vec, in[RE], out[IM]);
         } else {
           fmaddFVec(
-              ivector, tmp_1_re, prec_mass_rho_vec, in[IM], in[RE]);
+              ivector, out[RE], prec_mass_rho_vec, in[IM], out[RE]);
           fnmaddFVec(
-              ivector, tmp_1_im, prec_mass_rho_vec, in[RE], in[IM]);
+              ivector, out[IM], prec_mass_rho_vec, in[RE], out[IM]);
         }
-
-        addFVec(ivector, out[RE], out[RE], tmp_1_re);
-        addFVec(ivector, out[IM], out[IM], tmp_1_im);
       }
     }
   }
