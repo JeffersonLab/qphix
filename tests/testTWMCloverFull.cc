@@ -630,9 +630,7 @@ void TestTMClover::operator()()
     // dslash(ltmp,u,chi3, (-1), 0);
     // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-    Phi diff = chi3 - psi;
-    QDPIO::cout << "True norm is: " << sqrt(norm2(diff, rb[1]) / norm2(psi, rb[1]))
-                << endl;
+    expect_near(chi3, psi, 1e-8, geom, 1, "TM Clover CG");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
@@ -687,9 +685,7 @@ void TestTMClover::operator()()
     clov_qdp_ap.apply(chi2, chi, 1, 1);
     chi2[rb[1]] -= betaFactor * ltmp;
 
-    Phi diff = chi2 - psi;
-    QDPIO::cout << "True norm is: " << sqrt(norm2(diff, rb[1]) / norm2(psi, rb[1]))
-                << endl;
+    expect_near(chi2, psi, 1e-8, geom, 1, "TM Clover BiCGStab");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;

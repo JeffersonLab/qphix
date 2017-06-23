@@ -1,4 +1,5 @@
 list(APPEND header_files qphix_config.h dslash_utils.h
+        arith_type.h
         abs_solver.h
         geometry.h
         comm.h
@@ -20,6 +21,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         complex_functors.h
         kernel_selector.h
         site_loops.h
+        blas_c.h
         blas_new_c.h
         print_utils.h
         threadbind.h

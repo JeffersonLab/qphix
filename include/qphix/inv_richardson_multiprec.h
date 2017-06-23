@@ -15,16 +15,31 @@ template <typename FT,
           typename FTInner,
           int VInner,
           int SInner,
-          bool CompressInner>
-class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
+          bool CompressInner,
+          typename EvenOddLinearOperatorBase =
+              EvenOddLinearOperator<FT, V, S, Compress>>
+class InvRichardsonMultiPrec
+    : public AbstractSolver<FT, V, S, Compress, EvenOddLinearOperatorBase::num_flav>
 {
  public:
   typedef typename Geometry<FT, V, S, Compress>::FourSpinorBlock Spinor;
   typedef typename Geometry<FTInner, VInner, SInner, CompressInner>::FourSpinorBlock
       SpinorInner;
 
-  void operator()(Spinor *x,
-                  const Spinor *rhs,
+  static constexpr int num_flav = EvenOddLinearOperatorBase::num_flav;
+
+  // This class overrides the `operator()` from `AbstractSolver`. Due to “name
+  // hiding”, the overloads of `operator()` in the base class are no longer
+  // visible in this class. Therefore the single-flavor interface is not found
+  // when trying to use the solver like it has worked before, namely with an
+  // instance of this solver with automatic storage (i.e. no pointers). Here
+  // we do want the overload for a single spinor pointer to delegate back to
+  // the multi-flavor variant. The overloads need to be included explicitly
+  // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
+  using AbstractSolver<FT, V, S, Compress, num_flav>::operator();
+
+  void operator()(Spinor *x[num_flav],
+                  const Spinor *const rhs[num_flav],
                   const double RsdTarget,
                   int &n_iters,
                   double &rsd_sq_final,
@@ -42,7 +57,7 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
 
     double rhs_sq;
     double r_norm_sq;
-    norm2Spinor<FT, V, S, Compress>(rhs_sq, rhs, geom, norm2Threads);
+    norm2Spinor<FT, V, S, Compress, num_flav>(rhs_sq, rhs, geom, norm2Threads);
     site_flops_outer += 24 + 23; // 24 muls, 23 adds
 
     // This is the target residuum
@@ -52,7 +67,8 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
     mv_apps_outer++;
 
     // r = rhs - M x
-    xmyNorm2Spinor<FT, V, S, Compress>(r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
+    xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
+        r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
     site_flops_outer += 24 + 24 + 23; // (24 -,  24 square, 23 adds)
 
     masterPrintf(
@@ -65,7 +81,7 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
       n_iters = 0;
       rsd_sq_final = r_norm_sq;
       mv_apps = mv_apps_outer + mv_apps_inner_total;
-      site_flops = site_flops_outer + site_flops_inner_total;
+      site_flops = site_flops_outer + site_flops_inner_total * num_flav;
       masterPrintf("RICHARDSON: Solver converged at iter 0\n");
       masterPrintf("RICHARDSON: Inner MV Apps=%lu Outer MV Apps=%lu Inner Site "
                    "Flops=%lu Outer Site Flops=%lu\n",
@@ -100,11 +116,11 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
       // these flops? (Not useful?)
       double r_norm = sqrt(r_norm_sq);
       double scale_factor = ((double)1) / r_norm;
-      convert<FTInner, VInner, SInner, CompressInner, FT, V, S, Compress>(
+      convert<FTInner, VInner, SInner, CompressInner, FT, V, S, Compress, num_flav>(
           r_inner, scale_factor, r, geom_inner, geom, convertToThreads);
 
       // Zero out dx_single
-      zeroSpinor<FTInner, VInner, SInner, CompressInner>(
+      zeroSpinor<FTInner, VInner, SInner, CompressInner, num_flav>(
           dx_inner, geom_inner, zeroThreads);
 
       solver_inner(dx_inner,
@@ -123,13 +139,13 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
 
       // Up convert and un-normalize (Again don't count the flops, since its not
       // 'useful'?
-      convert<FT, V, S, Compress, FTInner, VInner, SInner, CompressInner>(
+      convert<FT, V, S, Compress, FTInner, VInner, SInner, CompressInner, num_flav>(
           delta_x, r_norm, dx_inner, geom, geom_inner, convertFromThreads);
 
       m_outer(tmp, delta_x, isign, cb);
       mv_apps_outer++;
 
-      richardson_rxupdateNormR<FT, V, S, Compress>(
+      richardson_rxupdateNormR<FT, V, S, Compress, num_flav>(
           x, r, delta_x, tmp, r_norm_sq, geom, rxUpdateThreads);
       site_flops_outer += 8 * 12;
       if (verbose)
@@ -143,14 +159,14 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
         m_outer(tmp, x, isign, cb);
         mv_apps_outer++;
 
-        xmyNorm2Spinor<FT, V, S, Compress>(
+        xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
             r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
         site_flops_outer += 24 + 24 + 23; // (24 -,  24 square, 23 adds)
 
         rsd_sq_final = r_norm_sq / rhs_sq;
         n_iters = iter;
         mv_apps = mv_apps_outer + mv_apps_inner_total;
-        site_flops = site_flops_outer + site_flops_inner_total;
+        site_flops = site_flops_outer + site_flops_inner_total * num_flav;
         masterPrintf("RICHARDSON: Solver converged at iter %d || r || = %16.8e\n",
                      iter,
                      sqrt(rsd_sq_final));
@@ -168,14 +184,15 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
     m_outer(tmp, x, isign, cb);
     mv_apps_outer++;
 
-    xmyNorm2Spinor<FT, V, S, Compress>(r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
+    xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
+        r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
     site_flops_outer += 24 + 24 + 23;
 
     rsd_sq_final = r_norm_sq / rhs_sq;
     n_iters = iter;
 
     mv_apps = mv_apps_outer + mv_apps_inner_total;
-    site_flops = site_flops_outer + site_flops_inner_total;
+    site_flops = site_flops_outer + site_flops_inner_total * num_flav;
     masterPrintf("RICHARDSON: Solver NOT converged at iter %d || r || = %16.8e\n",
                  sqrt(rsd_sq_final));
     masterPrintf("RICHARDSON: Inner MV Apps=%lu Outer MV Apps=%lu Inner Site "
@@ -197,11 +214,16 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
         max_iters(max_iters_), geom(m_outer_.getGeometry()),
         geom_inner(solver_inner_.getGeometry())
   {
-    r = (Spinor *)geom.allocCBFourSpinor();
-    tmp = (Spinor *)geom.allocCBFourSpinor();
-    delta_x = (Spinor *)geom.allocCBFourSpinor();
-    r_inner = (SpinorInner *)geom_inner.allocCBFourSpinor();
-    dx_inner = (SpinorInner *)geom_inner.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      r[f] = (Spinor *)geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      tmp[f] = (Spinor *)geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      delta_x[f] = (Spinor *)geom.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      r_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f)
+      dx_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
 
     // Initial value for norm2threads. Use all threads
     norm2Threads = geom.getNSIMT();
@@ -214,28 +236,32 @@ class InvRichardsonMultiPrec : public AbstractSolver<FT, V, S, Compress>
 
   ~InvRichardsonMultiPrec()
   {
-    geom.free(r);
-    geom.free(tmp);
-    geom.free(delta_x);
+    for (uint8_t f = 0; f < num_flav; ++f) {
+      geom.free(r[f]);
+      geom.free(tmp[f]);
+      geom.free(delta_x[f]);
 
-    geom_inner.free(r_inner);
-    geom_inner.free(dx_inner);
+      geom_inner.free(r_inner[f]);
+      geom_inner.free(dx_inner[f]);
+    }
   }
+
+  void tune(void) { solver_inner.tune(); }
 
   Geometry<FT, V, S, Compress> &getGeometry() { return geom; }
 
  private:
   EvenOddLinearOperator<FT, V, S, Compress> &m_outer;
-  AbstractSolver<FTInner, VInner, SInner, CompressInner> &solver_inner;
+  AbstractSolver<FTInner, VInner, SInner, CompressInner, num_flav> &solver_inner;
   const double delta;
   const int max_iters;
 
   // Internal Spinors
-  Spinor *r;
-  Spinor *tmp; // For computing residua  and also Ddelta_x
-  Spinor *delta_x;
-  SpinorInner *r_inner;
-  SpinorInner *dx_inner;
+  Spinor *r[num_flav];
+  Spinor *tmp[num_flav]; // For computing residua  and also Ddelta_x
+  Spinor *delta_x[num_flav];
+  SpinorInner *r_inner[num_flav];
+  SpinorInner *dx_inner[num_flav];
 
   int norm2Threads;
   int xmyNormThreads;

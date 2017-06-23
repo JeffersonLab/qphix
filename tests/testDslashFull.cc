@@ -27,6 +27,7 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "tparam_selector.h"
+#include "compare_qdp_spinors.h"
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -713,10 +714,7 @@ void TestDslash::testCG(const multi1d<U> &u, int t_bc)
       dslash(ltmp, u_test, chi3, (-isign), cb);
       chi3[rb[cb]] = massFactor * chi2 - betaFactor * ltmp;
 
-      Phi diff = chi3 - psi;
-      Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
-      QDPIO::cout << "True norm is: " << true_norm << endl;
-      assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
+      expect_near(chi3, psi, 1e-9, geom, cb, "Wilson CG");
 
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =

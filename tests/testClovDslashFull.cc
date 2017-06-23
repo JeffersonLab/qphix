@@ -66,14 +66,30 @@ void TestClover::operator()()
                                     args_.MinCt,
                                     true);
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, 1.0);
 
   ClovDslash<FT, V, S, compress> D32(
       &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
   HybridSpinor<FT, V, S, compress, QdpSpinor> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
-  gaussian(hs_source.qdp());
+
+  bool const point_source = false;
+  if (point_source) {
+    hs_source.zero();
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .real() = 1.0;
+    hs_source.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .imag() = 0.0;
+  } else {
+    gaussian(hs_source.qdp());
+  }
   hs_source.pack();
 
 #if 1
@@ -180,7 +196,7 @@ void TestClover::operator()()
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
   QDPIO::cout << "Testing Dslash With antiperiodic BCs \n" << endl;
 
-  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0);
+  RandomGauge<FT, V, S, compress, QdpGauge, QdpSpinor> gauge_antip(geom, -1.0, 0.1);
 
   // Create Antiperiodic Dslash
   ClovDslash<FT, V, S, compress> D32_ap(&geom,
@@ -304,6 +320,7 @@ void TestClover::operator()()
 #if 1
   {
     for (int cb = 0; cb < 2; ++cb) {
+      masterPrintf("Testing Clover CG on cb = %i\n", cb);
       int other_cb = 1 - cb;
       EvenOddCloverOperator<FT, V, S, compress> M(
           gauge_antip.u_packed,
@@ -361,12 +378,7 @@ void TestClover::operator()()
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      QdpSpinor diff = chi3 - hs_source.qdp();
-      QDPIO::cout << "cb=" << cb << " True norm is: "
-                  << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
-                  << endl;
-
-      expect_near(chi3, hs_source.qdp(), 1e-6, geom, cb, "CG");
+      expect_near(chi3, hs_source.qdp(), 1e-9, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;

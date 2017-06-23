@@ -1,5 +1,8 @@
 #pragma once
 
+#include "qphix/blas_c.h"
+#include "qphix/blas_new_c.h"
+
 #include <immintrin.h>
 
 namespace QPhiX
