@@ -1,0 +1,4 @@
+#! /bin/bash
+
+CXX=@target_cxx@ CXXFLAGS="@target_cxxflags@" cmake ../generated/@isa@
+make
