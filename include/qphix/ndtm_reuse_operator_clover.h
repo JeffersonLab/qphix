@@ -53,9 +53,11 @@ class EvenOddNDTMCloverReuseOperator
                                  Geometry<FT, veclen, soalen, compress12> *geom_,
                                  double t_boundary,
                                  double aniso_coeff_s,
-                                 double aniso_coeff_t)
+                                 double aniso_coeff_t,
+                                 bool use_tbc_[4] = nullptr,
+                                 double tbc_phases_[4][2] = nullptr)
       : EvenOddNDTMCloverReuseOperator(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t)
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)
   {
     this->epsilon = epsilon;
     setFields(u_, clov_, invclov_);
@@ -64,9 +66,11 @@ class EvenOddNDTMCloverReuseOperator
   EvenOddNDTMCloverReuseOperator(Geometry<FT, veclen, soalen, compress12> *geom_,
                                  double t_boundary,
                                  double aniso_coeff_s,
-                                 double aniso_coeff_t)
+                                 double aniso_coeff_t,
+                                 bool use_tbc_[4] = nullptr,
+                                 double tbc_phases_[4][2] = nullptr)
       : D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t)),
+            geom_, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
         tmp{D->getGeometry().allocCBFourSpinor(),
             D->getGeometry().allocCBFourSpinor()}
   {

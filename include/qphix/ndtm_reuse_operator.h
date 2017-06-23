@@ -28,13 +28,15 @@ class EvenOddNDTMWilsonReuseOperator
                                  double t_boundary,
                                  double aniso_coeff_s,
                                  double aniso_coeff_t,
-                                 bool mu_plus)
+                                 bool mu_plus,
+                                 bool use_tbc_[4] = nullptr,
+                                 double tbc_phases_[4][2] = nullptr)
       : mass(mass), mass_factor_alpha(4 + mass),
         mass_factor_beta(0.25 / mass_factor_alpha),
         mu(-2.0 * mu * (mu_plus ? 1 : -1) * mass_factor_beta),
         mu_inv(1.0 / (1.0 + Mu * Mu)), epsilon(epsilon),
         D(new TMClovDslash<FT, veclen, soalen, compress12>(
-            geom, t_boundary, aniso_coeff_s, aniso_coeff_t)),
+            geom, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
         tmp({D->getGeometry().allocCBFourSpinor(),
              D->getGeometry().allocCBFourSpinor()})
   {
