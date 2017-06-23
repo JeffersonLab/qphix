@@ -74,8 +74,7 @@ class EvenOddNDTMWilsonReuseOperator
 
   std::unique_ptr<TMClovDslash<FT, veclen, soalen, compress12>> D;
 
-  // TODO Remove the `mutable`, it seems to be unnecessary.
-  mutable SU3MatrixBlock *u[2];
+  SU3MatrixBlock *u[2];
 
   FourSpinorBlock *tmp[2];
 
