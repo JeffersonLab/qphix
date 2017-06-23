@@ -20,7 +20,7 @@ class EvenOddNDTMWilsonReuseOperator
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
       SU3MatrixBlock;
 
-  EvenOddNDTMCloverReuseOperator(const double mass,
+  EvenOddNDTMWilsonReuseOperator(const double mass,
                                  const double mu,
                                  const double epsilon,
                                  SU3MatrixBlock *u[2],
@@ -44,7 +44,7 @@ class EvenOddNDTMWilsonReuseOperator
     this->u[1] = u[1];
   }
 
-  ~EvenOddNDTMCloverReuseOperator()
+  ~EvenOddNDTMWilsonReuseOperator()
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     for (int f : {0, 1}) {
