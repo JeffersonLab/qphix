@@ -63,8 +63,8 @@ class MInvCG : public AbstractMultiSolver<FT,
     masterPrintf("MinvCG::~MInvCG: Done\n");
   }
 
-  void operator()(Spinor **const x[num_flav],
-                  const Spinor *const rhs[num_flav],
+  void operator()(Spinor **const *x,
+                  const Spinor *const *rhs,
                   const int n_shift,
                   const double *shifts,
                   const double *RsdTarget,

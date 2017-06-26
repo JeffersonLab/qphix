@@ -35,8 +35,8 @@ typename std::enable_if<
                  const Spinor1>::value,
     void>::type
 copySpinor(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const res[num_flav],
-    Spinor1 *const src[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *res,
+    Spinor1 *const *src,
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
 {
