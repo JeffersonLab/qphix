@@ -181,7 +181,7 @@ template <typename FT, int V, int S, bool compress, int num_flav, typename Spino
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
-    void>::type void
+    void>::type
 axpby(const double alpha,
       Spinor1 *const x[num_flav],
       const double beta,
