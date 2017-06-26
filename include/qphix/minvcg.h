@@ -91,10 +91,12 @@ class MInvCG : public AbstractMultiSolver<FT,
     /* Sanity Check */
     {
       double n2_tmp = 0;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, rhs, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, rhs, geom, norm2_threads);
       masterPrintf("rhs has norm=%16.8e\n", n2_tmp);
       for (int s = 0; s < n_shift; ++s) {
-        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, x[s], geom, norm2_threads);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            n2_tmp, x[s], geom, norm2_threads);
         masterPrintf("x[%d] has norm=%16.8e\n", s, n2_tmp);
       }
       for (int s = 0; s < n_shift; ++s) {
@@ -116,7 +118,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 #endif
     // Get the norm of the rhs
     double chi_norm_sq, chi_norm;
-    norm2Spinor<FT, veclen, soalen, compress12, num_flav>(chi_norm_sq, rhs, geom, norm2_threads);
+    norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+        chi_norm_sq, rhs, geom, norm2_threads);
 
 #ifdef DEBUG_MINVCG
     {
@@ -133,7 +136,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 
     // r[0] = p_0 = p[s] = rhs
     copySpinor<FT, veclen, soalen, compress12, num_flav>(r, rhs, geom, copy_threads);
-    copySpinor<FT, veclen, soalen, compress12, num_flav>(p_0, rhs, geom, copy_threads);
+    copySpinor<FT, veclen, soalen, compress12, num_flav>(
+        p_0, rhs, geom, copy_threads);
     for (int s = 0; s < n_shift; s++) {
       copySpinor(p[s], rhs, geom, copy_threads);
     }
@@ -141,14 +145,17 @@ class MInvCG : public AbstractMultiSolver<FT,
 #ifdef DEBUG_MINVCG
     {
       double n2_tmp;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, r, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, r, geom, norm2_threads);
       masterPrintf("r has norm=%16.8e\n", n2_tmp);
 
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, p_0, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, p_0, geom, norm2_threads);
       masterPrintf("p_0, has norm=%16.8e\n", n2_tmp);
 
       for (int s = 0; s < n_shift; ++s) {
-        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, p[s], geom, norm2_threads);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            n2_tmp, p[s], geom, norm2_threads);
         masterPrintf("p[%d] has norm=%16.8e\n", s, n2_tmp);
       }
     }
@@ -162,10 +169,12 @@ class MInvCG : public AbstractMultiSolver<FT,
 #ifdef DEBUG_MINVCG
     {
       double n2_tmp;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, mp, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, mp, geom, norm2_threads);
       masterPrintf("mp has norm=%16.8e\n", n2_tmp);
 
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, mmp, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, mmp, geom, norm2_threads);
       masterPrintf("mmp has norm=%16.8e\n", n2_tmp);
     }
 #endif
@@ -175,7 +184,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 #ifdef DEBUG_MINVCG
     {
       double n2_tmp;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, mp, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, mp, geom, norm2_threads);
       masterPrintf("mp has norm=%16.8e\n", n2_tmp);
     }
 #endif
@@ -185,7 +195,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 #ifdef DEBUG_MINVCG
     {
       double n2_tmp;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, mmp, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, mmp, geom, norm2_threads);
       masterPrintf("mmp has norm=%16.8e\n", n2_tmp);
     }
 
@@ -194,7 +205,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 
     // d = norm2(Mp) = < M p | M p > =  <p | M^\dagger M p>
 
-    norm2Spinor<FT, veclen, soalen, compress12, num_flav>(d, mp, geom, norm2_threads);
+    norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+        d, mp, geom, norm2_threads);
     site_flops += 47; // 3*Nc*Ns + Nc*Ns-1
 
     double b = -cp / d;
@@ -203,7 +215,8 @@ class MInvCG : public AbstractMultiSolver<FT,
     // c = norm2(r)
     //      axpy(b,mmp,r, geom, axpy_threads);
     // norm2Spinor(c,r,geom, norm2_threads);
-    axpyNorm2<FT, veclen, soalen, compress12, num_flav>(b, mmp, r, c, geom, axpynorm2_threads);
+    axpyNorm2<FT, veclen, soalen, compress12, num_flav>(
+        b, mmp, r, c, geom, axpynorm2_threads);
     site_flops += 95;
 
     // Initialize zetas and betas
@@ -231,14 +244,16 @@ class MInvCG : public AbstractMultiSolver<FT,
 
     for (int s = 0; s < n_shift; s++) {
       double mbeta = -beta[s];
-      axy<FT, veclen, soalen, compress12, num_flav>(mbeta, rhs, x[s], geom, axy_threads); // x[s] = -beta[s]*rhs
+      axy<FT, veclen, soalen, compress12, num_flav>(
+          mbeta, rhs, x[s], geom, axy_threads); // x[s] = -beta[s]*rhs
     }
     site_flops += 24 * n_shift;
 
 #ifdef DEBUG_MINVCG
     for (int s = 0; s < n_shift; ++s) {
       double n2_tmp = 0;
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, x[s], geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          n2_tmp, x[s], geom, norm2_threads);
       masterPrintf("x[%d] has norm = ", s, n2_tmp);
     }
 #endif
@@ -266,7 +281,8 @@ class MInvCG : public AbstractMultiSolver<FT,
 #ifdef DEBUG_MINVCG
       {
         double n2_tmp = 0;
-        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(n2_tmp, p_0, geom, norm2_threads);
+        norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+            n2_tmp, p_0, geom, norm2_threads);
         masterPrintf("p_0 has norm=", n2_tmp);
       }
 #endif
@@ -276,7 +292,8 @@ class MInvCG : public AbstractMultiSolver<FT,
         if (!convsP[s]) {
           // only update unconverged systems
           as = a * zeta[s] * beta[s] / (zeta_prev[s] * b);
-          axpby<FT, veclen, soalen, compress12, num_flav>(zeta[s], r, as, p[s], geom, axpby_threads);
+          axpby<FT, veclen, soalen, compress12, num_flav>(
+              zeta[s], r, as, p[s], geom, axpby_threads);
           site_flops += 72;
         }
       }
@@ -289,13 +306,15 @@ class MInvCG : public AbstractMultiSolver<FT,
       mv_apps += 2;
 
       // d = norm2(Mp) = < M p | M p > =  <p | M^\dagger M p>
-      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(d, mp, geom, norm2_threads);
+      norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
+          d, mp, geom, norm2_threads);
       b = -cp / d;
       // r = r + b MM p
       // c = norm2(r)
       //	axpy(b,mmp,r, geom, axpy_threads);
       // norm2Spinor(c,r,geom, norm2_threads);
-      axpyNorm2<FT, veclen, soalen, compress12, num_flav>(b, mmp, r, c, geom, axpynorm2_threads);
+      axpyNorm2<FT, veclen, soalen, compress12, num_flav>(
+          b, mmp, r, c, geom, axpynorm2_threads);
 
       site_flops += 190; // 2 norms + 2 axpy
 
@@ -329,7 +348,8 @@ class MInvCG : public AbstractMultiSolver<FT,
           beta[s] = b * zeta[s] / z0;
 
           double mbeta = -beta[s];
-          axpy<FT, veclen, soalen, compress12, num_flav>(mbeta, p[s], x[s], geom, axpy_threads);
+          axpy<FT, veclen, soalen, compress12, num_flav>(
+              mbeta, p[s], x[s], geom, axpy_threads);
           site_flops += 48;
 
 #ifdef DEBUG_MINVCG

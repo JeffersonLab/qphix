@@ -29,12 +29,7 @@ void copySpinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res,
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
@@ -119,12 +114,7 @@ void aypx(const double alpha,
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
@@ -157,12 +147,7 @@ void axpy(const double alpha,
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
@@ -197,16 +182,15 @@ typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
     void>::type void
-axpby(
-    const double alpha,
-    Spinor1 *const x[num_flav],
-    const double beta,
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
-    const Geometry<FT, V, S, compress> &geom,
-    int n_blas_simt)
+axpby(const double alpha,
+      Spinor1 *const x[num_flav],
+      const double beta,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
+      const Geometry<FT, V, S, compress> &geom,
+      int n_blas_simt)
 {
   for (int f = 0; f < num_flav; ++f) {
-      axpby(alpha, x[f], beta, y[f], geom, n_blas_simt);
+    axpby(alpha, x[f], beta, y[f], geom, n_blas_simt);
   }
 }
 
@@ -225,12 +209,7 @@ void norm2Spinor(double &n2,
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
@@ -297,12 +276,7 @@ void xmyNorm2Spinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res,
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
@@ -430,20 +404,16 @@ void bicgstab_xmy(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
     void>::type
-bicgstab_xmy(Spinor1 *const x[num_flav],
-             typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
-             const Geometry<FT, V, S, compress> &geom,
-             int n_blas_simt)
+bicgstab_xmy(
+    Spinor1 *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
 {
   for (uint8_t f = 0; f < num_flav; ++f) {
     bicgstab_xmy(x[f], y[f], geom, n_blas_simt);
@@ -570,12 +540,7 @@ void bicgstab_s_update(
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
   */
-template <typename FT,
-          int V,
-          int S,
-          bool compress,
-          int num_flav,
-          typename Spinor1>
+template <typename FT, int V, int S, bool compress, int num_flav, typename Spinor1>
 typename std::enable_if<
     std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
                  const Spinor1>::value,
