@@ -52,6 +52,11 @@ if( ${testing} )
     list(APPEND built_targets t_dslash)
       add_test(NAME wilson COMMAND mpirun -n 2 ./t_dslash ${test_runner_args})
 
+    add_executable(t_minvcg t_minvcg.cc testMInvCG.cc ${framework_headers})
+    target_link_libraries(t_minvcg testlib qphix_codegen qphix_solver ${EXT_LIBS})
+    list(APPEND built_targets t_minvcg)
+    add_test(NAME minvcg COMMAND mpirun -n 2 ./t_minvcg ${test_runner_args})
+
     add_executable(test_blas test_blas.cc testBlas.h testBlas.cc ${framework_headers})
     target_link_libraries(test_blas testlib qphix_codegen qphix_solver ${EXT_LIBS})
     list(APPEND built_targets test_blas)
