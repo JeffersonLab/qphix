@@ -393,6 +393,7 @@ class MInvCG : public AbstractMultiSolver<FT,
   int MaxIters;
   int MaxShifts;
 
+  // TODO (Martin Ueding): Make those flavor arrays.
   Spinor *mp;
   Spinor *mmp;
   Spinor *p_0;
@@ -413,6 +414,7 @@ class MInvCG : public AbstractMultiSolver<FT,
 
   void allocateSpace(void)
   {
+    // TODO (Martin Ueding): Allocate one spinor per flavor. Also use some RAII.
     mp = (Spinor *)geom.allocCBFourSpinor();
     if (mp == 0x0) {
       masterPrintf("MInvCG Failed to allocate mp\n");
