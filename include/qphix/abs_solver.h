@@ -174,7 +174,7 @@ class AbstractMultiSolver
 
     The other parameters are exactly like the other `operator()`.
     */
-  virtual void operator()(Spinor **x[num_flav],
+  virtual void operator()(Spinor **const x[num_flav],
                           const Spinor *const rhs[num_flav],
                           const int n_shift,
                           const double *shifts,
@@ -194,7 +194,7 @@ class AbstractMultiSolver
     \see The article \ref intel-cpp-compiler-workaround contains the
     motivation for this extra overload.
     */
-  virtual void operator()(Spinor **x[num_flav],
+  virtual void operator()(Spinor **const x[num_flav],
                           const Spinor *const rhs[num_flav],
                           const int n_shift,
                           const double *shifts,
