@@ -118,7 +118,7 @@ class AbstractSolver
   virtual Geometry<FT, V, S, compress12> &getGeometry() = 0;
 };
 
-template <typename FT, int V, int S, bool compress12>
+template <typename FT, int V, int S, bool compress12, int num_flav = 1>
 class AbstractMultiSolver
 {
  public:
@@ -147,7 +147,80 @@ class AbstractMultiSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
+                          int cb = 1) const {
+      Spinor **x_array[1] = {x};
+      const Spinor *rhs_array[1] = {rhs};
+      (*this)(x_array,
+              rhs_array,
+              n_shift,
+              shifts,
+              RsdTarget,
+              niters,
+              rsd_sq_final,
+              site_flops,
+              mv_apps,
+              isign,
+              verboseP,
+              cb);
+  }
+
+  /**
+    Solves \f$ M x = b \f$ for \f$ x \f$ for arbitrary many flavors.
+
+    \param[in,out] x Solution vector. The explicit array index is the flavor
+    index. It is assumed that the linear operator will take this array of
+    pointers as its argument.
+    \param[in] rhs Right hand side, flavor index is explicit.
+
+    The other parameters are exactly like the other `operator()`.
+    */
+  virtual void operator()(Spinor **x[num_flav],
+                          const Spinor *const rhs[num_flav],
+                          const int n_shift,
+                          const double *shifts,
+                          const double *RsdTarget,
+                          int &niters,
+                          double *rsd_sq_final,
+                          unsigned long &site_flops,
+                          unsigned long &mv_apps,
+                          int isign,
+                          bool verboseP,
                           int cb = 1) const = 0;
+
+#ifdef __INTEL_COMPILER
+  /**
+    Workaround for the Intel C++ 17 compiler.
+
+    \see The article \ref intel-cpp-compiler-workaround contains the
+    motivation for this extra overload.
+    */
+  virtual void operator()(Spinor **x[num_flav],
+                          const Spinor *const rhs[num_flav],
+                          const int n_shift,
+                          const double *shifts,
+                          const double *RsdTarget,
+                          int &niters,
+                          double *rsd_sq_final,
+                          unsigned long &site_flops,
+                          unsigned long &mv_apps,
+                          int isign,
+                          bool verboseP,
+                          int cb = 1) const
+  {
+    (*this)(x,
+            const_cast<Spinor const *const *>(rhs),
+            n_shift,
+            shifts,
+            RsdTarget,
+            niters,
+            rsd_sq_final,
+            site_flops,
+            mv_apps,
+            isign,
+            verboseP,
+            cb);
+  }
+#endif
 
   virtual Geometry<FT, V, S, compress12> &getGeometry() = 0;
 };
