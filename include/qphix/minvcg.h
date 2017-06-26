@@ -13,7 +13,6 @@
 namespace QPhiX
 {
 
-// That will be a second refactor step when everything works
 template <typename FT,
           int veclen,
           int soalen,
