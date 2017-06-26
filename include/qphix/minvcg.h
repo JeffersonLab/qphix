@@ -63,6 +63,16 @@ class MInvCG : public AbstractMultiSolver<FT,
     masterPrintf("MinvCG::~MInvCG: Done\n");
   }
 
+  // This class overrides the `operator()` from `AbstractSolver`. Due to “name
+  // hiding”, the overloads of `operator()` in the base class are no longer
+  // visible in this class. Therefore the single-flavor interface is not found
+  // when trying to use the solver like it has worked before, namely with an
+  // instance of this solver with automatic storage (i.e. no pointers). Here
+  // we do want the overload for a single spinor pointer to delegate back to
+  // the multi-flavor variant. The overloads need to be included explicitly
+  // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
+  using AbstractMultiSolver<FT, veclen, soalen, compress12, num_flav>::operator();
+
   void operator()(Spinor **const *x,
                   const Spinor *const *rhs,
                   const int n_shift,
