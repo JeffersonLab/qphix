@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <iostream>
+#include <utility>
 
 #if defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
     defined(QPHIX_AVX512_SOURCE)
@@ -448,6 +449,13 @@ class FourSpinorHandle
   typedef typename Geom::FourSpinorBlock ValueType;
 
   FourSpinorHandle(Geom &geom) : value(geom.allocCBFourSpinor()), geom(geom) {}
+
+  FourSpinorHandle(FourSpinorHandle<FT, veclen, soalen, compress12> &&other) noexcept
+      : value(std::move(other.value)),
+        geom(other.geom)
+  {
+    other.value = nullptr;
+  }
 
   ~FourSpinorHandle() { geom.free(value); }
 
