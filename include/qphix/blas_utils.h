@@ -320,6 +320,8 @@ inline void streamOutSpinor<half, 16>(half *dst,
 
 #endif // defined MIC
 
+enum class StreamOut { none, stream, write };
+
 /**
   Holds a spinor that is streamed in or out or both.
 
@@ -335,16 +337,52 @@ inline void streamOutSpinor<half, 16>(half *dst,
   \tparam AT Type of the temporary site that is used within the BLAS function.
   */
 template <typename FT, typename AT, int veclen, int soalen, bool compress12>
+class StreamInSpinor
+{
+ public:
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  typedef typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock Spinor
+      __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+  typedef __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+      typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock Spinor;
+#endif
+
+  StreamInSpinor(FT const *const base)
+      : data_base_(base),
+        tmp_base_(static_cast<AT *>(&tmp_[0][0][0][0]))
+  {
+      streamInSpinor<FT, veclen>(tmp_base_, data_base_, nvec_in_spinor_);
+  }
+
+  Spinor &get() { return tmp_; }
+
+ private :
+  static int constexpr nvec_in_spinor_ = (3 * 4 * 2 * soalen) / veclen;
+
+  Spinor tmp_;
+  FT const *const data_base_;
+  AT *const tmp_base_;
+};
+
+template <typename FT, typename AT, int veclen, int soalen, bool compress12>
 class StreamSpinor
 {
  public:
-  enum class Out { none, stream, write };
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  typedef typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock Spinor
+      __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+  typedef __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+      typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock Spinor;
+#endif
 
-  StreamSpinor(bool const stream_in, Out const stream_out, FT *const base)
-      : stream_in_(stream_in), stream_out_(stream_out), base_(base)
+  StreamSpinor(bool const stream_in, StreamOut const stream_out, FT *const base)
+      : stream_in_(stream_in), stream_out_(stream_out), data_base_(base),
+        tmp_base_(static_cast<AT *>(&tmp_[0][0][0][0]))
   {
     if (stream_in_) {
-      streamInSpinor<FT, veclen>(spinor_, base_, nvec_in_spinor_);
+      streamInSpinor<FT, veclen>(tmp_base_, data_base_, nvec_in_spinor_);
     }
   }
 
@@ -357,28 +395,24 @@ class StreamSpinor
     */
   ~StreamSpinor()
   {
-    if (stream_out_ == Out::stream) {
-      streamOutSpinor<FT, veclen>(base_, spinor_, nvec_in_spinor_);
-    } else if (stream_out_ == Out::write) {
-      writeSpinor<FT, veclen>(base_, spinor_, nvec_in_spinor_);
+    if (stream_out_ == StreamOut::stream) {
+      streamOutSpinor<FT, veclen>(data_base_, tmp_base_, nvec_in_spinor_);
+    } else if (stream_out_ == StreamOut::write) {
+      writeSpinor<FT, veclen>(data_base_, tmp_base_, nvec_in_spinor_);
     }
   }
+
+  Spinor &get() { return tmp_; }
 
  private :
   static int constexpr nvec_in_spinor_ = (3 * 4 * 2 * soalen) / veclen;
 
   bool const stream_in_;
-  Out const stream_out_;
+  StreamOut const stream_out_;
 
-  FT *const base_;
-
-#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
-  typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock spinor_
-      __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
-#else
-  __declspec(align(QPHIX_LLC_CACHE_ALIGN))
-      typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock spinor_;
-#endif
+  Spinor tmp_;
+  FT *const data_base_;
+  AT *const tmp_base_;
 };
 
 } // Namespace BLASUtils
