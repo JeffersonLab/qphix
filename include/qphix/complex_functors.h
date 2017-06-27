@@ -342,7 +342,7 @@ class TwistedMassFunctor
       for (int spin = 0; spin < 4; spin++) {
         // (a + i mu gamma_5) \psi
         (spin < 2
-         ? BLASUtils::cm(y_spinor[col][spin], apimu, x_spinor[col][spin]),
+         ? BLASUtils::cm(y_spinor[col][spin], apimu, x_spinor[col][spin])
          : BLASUtils::cconjm(y_spinor[col][spin], apimu, x_spinor[col][spin])
         );
       }
