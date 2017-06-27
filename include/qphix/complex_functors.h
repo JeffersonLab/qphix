@@ -340,7 +340,6 @@ class TwistedMassFunctor
     // Now we are hopefully both in L1 and in the right layout so
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
-        // (a + i mu gamma_5) \psi
         (spin < 2
          ? BLASUtils::cm(y_spinor[col][spin], apimu, x_spinor[col][spin])
          : BLASUtils::cconjm(y_spinor[col][spin], apimu, x_spinor[col][spin])
@@ -355,6 +354,79 @@ class TwistedMassFunctor
   AT apimu[2];
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
   typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+};
+
+template <typename FT, int V, int S, bool compress>
+class TwoFlavTwistedMassFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  TwoFlavTwistedMassFunctor(
+      double apimu_[2],
+      double epsilon_,
+      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_[2],
+      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_[2])
+      : apimu({rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}), 
+      epsilon(rep<FT,double>(epsilon_)),
+      x({x_[0],x_[1]}), y({y_[0],y_[1]})
+  {
+  }
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    const FT *x_up_base = &x[0][block][0][0][0][0];
+    const FT *x_dn_base = &x[1][block][0][0][0][0];
+    FT *y_up_base = &y[0][block][0][0][0][0];
+    FT *y_dn_base = &y[1][block][0][0][0][0];
+
+// Temporary storage to stream into and out of
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_up_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_dn_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock y_up_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock y_dn_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_up_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock y_up_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_dn_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock y_dn_spinor;
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_up_spinor, x_up_base, nvec_in_spinor);
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_dn_spinor, x_dn_base, nvec_in_spinor);
+
+    // Now we are hopefully both in L1 and in the right layout so
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        // (a + i mu gamma_5) \psi + epsilon permute_flavour(\psi)
+        (spin < 2
+         ? BLASUtils::tau3cm_cross_scaleadd(y_up_spinor[col][spin], y_dn_spinor[col][spin], 
+                                            apimu, epsilon, x_up_spinor[col][spin], x_dn_spinor[col][spin]),
+         : BLASUtils::tau3cconjm_cross_scaleadd(y_up_spinor[col][spin], y_dn_spinor[col][spin], 
+                                                apimu, epsilon, x_up_spinor[col][spin], x_dn_spinor[col][spin]),
+        );
+      }
+    }
+
+    BLASUtils::streamOutSpinor<FT, V>(y_up_base, (const AT *)y_up_spinor, nvec_in_spinor);
+    BLASUtils::streamOutSpinor<FT, V>(y_dn_base, (const AT *)y_dn_spinor, nvec_in_spinor);
+  }
+
+ private:
+  AT apimu[2];
+  AT epsilon;
+  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[2];
+  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[2];
 };
 
 }; // Namespace
