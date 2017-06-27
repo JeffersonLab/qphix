@@ -64,7 +64,7 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
 }
 
 /**
-  Computes τ³ α x + β τ¹ x.
+  Computes (α τ³ x + β τ¹ x).
 
   \param[out] res_up Array with complex index and then \c soalen index.
   \param[out] res_dn Similar, down flavor
@@ -72,32 +72,29 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   \param[in] beta Real number β
   \param[in] x_up Input up flavor spinor
   \param[in] x_dn Similar, down flavor
-
-  \tparam FT Floating point type
-  \tparam S soalen
   */
-template <typename FT, int S>
-inline void tau3cm_tau1_scaleadd(FT res_up[2][S],
-                                 FT res_dn[2][S],
+template <typename FT, int soalen>
+inline void tau3cm_tau1_scaleadd(FT res_up[2][soalen],
+                                 FT res_dn[2][soalen],
                                  const FT alpha[2],
                                  const FT beta,
-                                 const FT x_up[2][S],
-                                 const FT x_dn[2][S])
+                                 const FT x_up[2][soalen],
+                                 const FT x_dn[2][soalen])
 {
-#pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
-  for (int s = 0; s < S; s++) {
-    res_up[0][s] = alpha[0] * x_up[0][s] - alpha[1] * x_up[1][s];
-    res_up[1][s] = alpha[0] * x_up[1][s] + alpha[1] * x_up[0][s];
+#pragma omp simd aligned(res_up, res_dn, x_up, x_dn : soalen)
+  for (int s = 0; s < soalen; s++) {
+    res_up[RE][s] = alpha[RE] * x_up[RE][s] - alpha[IM] * x_up[IM][s];
+    res_up[IM][s] = alpha[RE] * x_up[IM][s] + alpha[IM] * x_up[RE][s];
 
-    res_dn[0][s] = -alpha[0] * x_dn[0][s] + alpha[1] * x_dn[1][s];
-    res_dn[1][s] = -alpha[0] * x_dn[1][s] - alpha[1] * x_dn[0][s];
+    res_dn[RE][s] = -alpha[RE] * x_dn[RE][s] + alpha[IM] * x_dn[IM][s];
+    res_dn[IM][s] = -alpha[RE] * x_dn[IM][s] - alpha[IM] * x_dn[RE][s];
 
     // hopefully all x are still cached
-    res_up[0][s] += beta * x_dn[0][s];
-    res_up[1][s] += beta * x_dn[1][s];
+    res_up[RE][s] += beta * x_dn[RE][s];
+    res_up[IM][s] += beta * x_dn[IM][s];
 
-    res_dn[0][s] += beta * x_up[0][s];
-    res_dn[0][s] += beta * x_up[1][s];
+    res_dn[RE][s] += beta * x_up[RE][s];
+    res_dn[RE][s] += beta * x_up[IM][s];
   }
 }
 
@@ -114,18 +111,18 @@ inline void tau3cconjm_tau1_scaleadd(FT res_up[2][S],
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for (int s = 0; s < S; s++) {
-    res_up[0][s] = alpha[0] * x_up[0][s] + alpha[1] * x_up[1][s];
-    res_up[1][s] = alpha[0] * x_up[1][s] - alpha[1] * x_up[0][s];
+    res_up[RE][s] = alpha[RE] * x_up[RE][s] + alpha[IM] * x_up[IM][s];
+    res_up[IM][s] = alpha[RE] * x_up[IM][s] - alpha[IM] * x_up[RE][s];
 
-    res_dn[0][s] = -alpha[0] * x_dn[0][s] - alpha[1] * x_dn[1][s];
-    res_dn[1][s] = -alpha[0] * x_dn[1][s] + alpha[1] * x_dn[0][s];
+    res_dn[RE][s] = -alpha[RE] * x_dn[RE][s] - alpha[IM] * x_dn[IM][s];
+    res_dn[IM][s] = -alpha[RE] * x_dn[IM][s] + alpha[IM] * x_dn[RE][s];
 
     // hopefully all x are still cached
-    res_up[0][s] += beta * x_dn[0][s];
-    res_up[1][s] += beta * x_dn[1][s];
+    res_up[RE][s] += beta * x_dn[RE][s];
+    res_up[IM][s] += beta * x_dn[IM][s];
 
-    res_dn[0][s] += beta * x_up[0][s];
-    res_dn[0][s] += beta * x_up[1][s];
+    res_dn[RE][s] += beta * x_up[RE][s];
+    res_dn[RE][s] += beta * x_up[IM][s];
   }
 }
 
