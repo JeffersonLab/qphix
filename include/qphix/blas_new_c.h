@@ -106,7 +106,20 @@ void twisted_mass(const double apimu[2],
   TwistedMassFunctor<FT, V, S, compress> f(apimu, x, y);
   siteLoopNoReduction<FT, V, S, compress, TwistedMassFunctor<FT, V, S, compress>>(
      f, geom, n_blas_simt);
-} 
+}
+
+template <typename FT, int V, int S, bool compress>
+void two_flav_twisted_mass(const double apimu[2],
+                           const double epsilon,
+                           const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[2],
+                           typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[2],
+                           const Geometry<FT, V, S, compress> &geom,
+                           int n_blas_simt)
+{
+  TwoFlavTwistedMassFunctor<FT, V, S, compress> f(apimu, epsilon, x, y);
+  siteLoopNoReduction<FT, V, S, compress, TwoFlavTwistedMassFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
 
 /**
   \see The article \ref intel-cpp-compiler-workaround contains an explanation

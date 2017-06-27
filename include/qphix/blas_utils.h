@@ -8,21 +8,6 @@ namespace QPhiX
 namespace BLASUtils
 {
 
-//  res = alpha x + y
-//  alpha is complex
-template <typename FT, int S>
-inline void
-cmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
-{
-//  (a[RE] x[RE] - a[IM] y[IM])  + res[RE]
-//  (a[RE] y[IM] + a[IM] y[RE])  + res[IM]
-#pragma omp simd aligned(res, x, y : S)
-  for (int s = 0; s < S; s++) {
-    res[0][s] = alpha[0] * x[0][s] - alpha[1] * x[1][s] + y[0][s];
-    res[1][s] = alpha[0] * x[1][s] + alpha[1] * x[0][s] + y[1][s];
-  }
-}
-
 template <typename FT, int S>
 inline void
 cm(FT res[2][S], const FT alpha[2], const FT x[2][S])
@@ -45,6 +30,21 @@ cconjm(FT res[2][S], const FT alpha[2], const FT x[2][S])
   }
 }
 
+//  res = alpha x + y
+//  alpha is complex
+template <typename FT, int S>
+inline void
+cmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
+{
+//  (a[RE] x[RE] - a[IM] y[IM])  + res[RE]
+//  (a[RE] y[IM] + a[IM] y[RE])  + res[IM]
+#pragma omp simd aligned(res, x, y : S)
+  for (int s = 0; s < S; s++) {
+    res[0][s] = alpha[0] * x[0][s] - alpha[1] * x[1][s] + y[0][s];
+    res[1][s] = alpha[0] * x[1][s] + alpha[1] * x[0][s] + y[1][s];
+  }
+}
+
 // res = -alpha x + y
 // res = y - alpha x
 // alpha is complex
@@ -61,6 +61,56 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   for (int s = 0; s < S; s++) {
     res[0][s] = y[0][s] - alpha[0] * x[0][s] + alpha[1] * x[1][s];
     res[1][s] = y[1][s] - alpha[0] * x[1][s] - alpha[1] * x[0][s];
+  }
+}
+
+// res and x have dimension 2 "flavour" index
+// res = tau3 * alpha * x + beta permute_flavour(x)
+// alpha complex, beta real
+template <typename FT, int S>
+inline void
+tau3cm_scale_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                            const FT x_up[2][S], const FT x_dn[2][S])
+{
+#pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
+  for(int s = 0; s < S; s++) {
+    res_up[0][s] = alpha[0] * x_up[0][s] - alpha[1] * x_up[1][s];
+    res_up[1][s] = alpha[0] * x_up[1][s] + alpha[1] * x_up[0][s];
+
+    res_dn[0][s] = -alpha[0] * x_dn[0][s] + alpha[1] * x_dn[1][s];
+    res_dn[1][s] = -alpha[0] * x_dn[1][s] - alpha[1] * x_dn[0][s];
+    
+    // hopefully all x are still cached
+    res_up[0][s] += beta * x_dn[0][s];
+    res_up[1][s] += beta * x_dn[1][s];
+
+    res_dn[0][s] += beta * x_up[0][s];
+    res_dn[0][s] += beta * x_up[1][s];
+  }
+}
+
+// res and x have dimension 2 in "flavour"
+// res = tau3 * conj(alpha) * x + beta permute_flavour(x)
+// alpha complex, beta real
+template <typename FT, int S>
+inline void
+tau3cconjm_scale_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                                const FT x_up[2][S], const FT x_dn[2][S])
+{
+#pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
+  for(int s = 0; s < S; s++) {
+    res_up[0][s] = alpha[0] * x_up[0][s] + alpha[1] * x_up[1][s];
+    res_up[1][s] = alpha[0] * x_up[1][s] - alpha[1] * x_up[0][s];
+
+    res_dn[0][s] = -alpha[0] * x_dn[0][s] - alpha[1] * x_dn[1][s];
+    res_dn[1][s] = -alpha[0] * x_dn[1][s] + alpha[1] * x_dn[0][s];
+    
+    // hopefully all x are still cached
+    res_up[0][s] += beta * x_dn[0][s];
+    res_up[1][s] += beta * x_dn[1][s];
+
+    res_dn[0][s] += beta * x_up[0][s];
+    res_dn[0][s] += beta * x_up[1][s];
   }
 }
 
