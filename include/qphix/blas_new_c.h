@@ -96,6 +96,12 @@ void aypx(const double alpha,
       f, geom, n_blas_simt);
 }
 
+/**
+  Multiplies the spinor with \f$ \alpha + \mathrm i \mu \gamma_5 \f$.
+
+  \param[in] apimu Array of length 2. Real and imaginary part of \f$ \alpha +
+  \mathrm i \mu \f$, the first array element is α, the second is μ.
+  */
 template <typename FT, int V, int S, bool compress>
 void twisted_mass(const double apimu[2],
                   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,

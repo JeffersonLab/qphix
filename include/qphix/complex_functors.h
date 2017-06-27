@@ -307,10 +307,10 @@ class TwistedMassFunctor
   typedef typename ArithType<FT>::Type AT;
 
   TwistedMassFunctor(
-      double apimu_[2],
+      double const apimu_[2],
       const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
-      : apimu({rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}), x(x_), y(y_)
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      : apimu{rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}, x(x_), y(y_)
   {
   }
 
@@ -341,7 +341,7 @@ class TwistedMassFunctor
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
         (spin < 2
-         ? BLASUtils::cm(y_spinor[col][spin], apimu, x_spinor[col][spin]),
+         ? BLASUtils::cm(y_spinor[col][spin], apimu, x_spinor[col][spin])
          : BLASUtils::cconjm(y_spinor[col][spin], apimu, x_spinor[col][spin])
         );
       }
@@ -353,7 +353,7 @@ class TwistedMassFunctor
  private:
   AT apimu[2];
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
-  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
 };
 
 template <typename FT, int V, int S, bool compress>
@@ -409,12 +409,18 @@ class TwoFlavTwistedMassFunctor
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
         // (a + i mu gamma_5 tau_3 + epsilon tau_1) \psi
-        (spin < 2
-         ? BLASUtils::tau3cm_tau1_scaleadd(y_up_spinor[col][spin], y_dn_spinor[col][spin], 
-                                           apimu, epsilon, x_up_spinor[col][spin], x_dn_spinor[col][spin]),
-         : BLASUtils::tau3cconjm_tau1_scaleadd(y_up_spinor[col][spin], y_dn_spinor[col][spin], 
-                                               apimu, epsilon, x_up_spinor[col][spin], x_dn_spinor[col][spin]),
-        );
+        (spin < 2 ? BLASUtils::tau3cm_tau1_scaleadd(y_up_spinor[col][spin],
+                                                    y_dn_spinor[col][spin],
+                                                    apimu,
+                                                    epsilon,
+                                                    x_up_spinor[col][spin],
+                                                    x_dn_spinor[col][spin])
+                  : BLASUtils::tau3cconjm_tau1_scaleadd(y_up_spinor[col][spin],
+                                                        y_dn_spinor[col][spin],
+                                                        apimu,
+                                                        epsilon,
+                                                        x_up_spinor[col][spin],
+                                                        x_dn_spinor[col][spin]));
       }
     }
 

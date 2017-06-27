@@ -60,7 +60,7 @@ inline void downconvert_array(const float *from, half *to, const unsigned int nv
 inline void upconvert_array(const half *from, float *to, const unsigned int nvecs)
 {
 #pragma omp parallel for shared(from, to)
-  for (int i = 0; i < nvecs; i++) {
+    for (int i = 0; i < nvecs; i++) {
 #if defined(QPHIX_MIC_SOURCE)
     __m512 in = _mm512_extload_ps(
         (from + 16 * i), _MM_UPCONV_PS_FLOAT16, _MM_BROADCAST32_NONE, _MM_HINT_T0);
