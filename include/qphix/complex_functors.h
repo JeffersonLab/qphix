@@ -396,18 +396,20 @@ class TwoFlavTwistedMassFunctor
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
         // (a + i mu gamma_5 tau_3 + epsilon tau_1) \psi
-        (spin < 2 ? BLASUtils::tau3cm_tau1_scaleadd(y_up_spinor[col][spin],
-                                                    y_dn_spinor[col][spin],
-                                                    apimu,
-                                                    epsilon,
-                                                    x_up_spinor[col][spin],
-                                                    x_dn_spinor[col][spin])
-                  : BLASUtils::tau3cconjm_tau1_scaleadd(y_up_spinor[col][spin],
-                                                        y_dn_spinor[col][spin],
-                                                        apimu,
-                                                        epsilon,
-                                                        x_up_spinor[col][spin],
-                                                        x_dn_spinor[col][spin]));
+        (spin < 2
+             ? BLASUtils::tau3cm_tau1_scaleadd<AT, S>(y_up_spinor[col][spin],
+                                                           y_dn_spinor[col][spin],
+                                                           apimu,
+                                                           epsilon,
+                                                           x_up_spinor[col][spin],
+                                                           x_dn_spinor[col][spin])
+             : BLASUtils::tau3cconjm_tau1_scaleadd<AT, S>(
+                   y_up_spinor[col][spin],
+                   y_dn_spinor[col][spin],
+                   apimu,
+                   epsilon,
+                   x_up_spinor[col][spin],
+                   x_dn_spinor[col][spin]));
       }
     }
 
