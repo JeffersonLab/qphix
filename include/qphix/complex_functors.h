@@ -319,12 +319,12 @@ class TwistedMassFunctor
   inline void func(int block)
   {
     BLASUtils::StreamInSpinor<FT, AT, V, S, compress> x_spinor(
-        static_cast<double const *>(&x[block][0][0][0][0]));
+        &x[block][0][0][0][0]);
 
     BLASUtils::StreamSpinor<FT, AT, V, S, compress> y_spinor(
         false,
         BLASUtils::StreamOut::stream,
-        static_cast<double *>(&y[block][0][0][0][0]));
+        &y[block][0][0][0][0]);
 
     // Now we are hopefully both in L1 and in the right layout so
     for (int col = 0; col < 3; col++) {
