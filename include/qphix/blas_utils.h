@@ -23,6 +23,28 @@ cmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   }
 }
 
+template <typename FT, int S>
+inline void
+cm(FT res[2][S], const FT alpha[2], const FT x[2][S])
+{
+#pragma omp simd aligned(res, x : S)
+  for( int s = 0; s < S; s++){
+    res[0][s] = alpha[0] * x[0][s] - alpha[1] * x[1][s];
+    res[1][s] = alpha[0] * x[1][s] + alpha[1] * x[0][s];
+  }
+}
+
+template <typename FT, int S>
+inline void
+cconjm(FT res[2][S], const FT alpha[2], const FT x[2][S])
+{
+#pragma omp simd aligned(res, x : S)
+  for( int s = 0; s < S; s++){
+    res[0][s] = alpha[0] * x[0][s] + alpha[1] * x[1][s];
+    res[1][s] = alpha[0] * x[1][s] - alpha[1] * x[0][s];
+  }
+}
+
 // res = -alpha x + y
 // res = y - alpha x
 // alpha is complex
