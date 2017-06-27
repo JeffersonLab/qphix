@@ -307,9 +307,9 @@ class TwistedMassFunctor
   typedef typename ArithType<FT>::Type AT;
 
   TwistedMassFunctor(
-      double apimu_[2],
+      double const apimu_[2],
       const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
       : apimu({rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}), x(x_), y(y_)
   {
   }
@@ -354,7 +354,7 @@ class TwistedMassFunctor
  private:
   AT apimu[2];
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
-  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
 };
 
 }; // Namespace
