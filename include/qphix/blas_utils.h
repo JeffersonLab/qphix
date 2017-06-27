@@ -65,12 +65,12 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
 }
 
 // res and x have dimension 2 "flavour" index
-// res = tau3 * alpha * x + beta permute_flavour(x)
+// res = tau3 * alpha * x + beta * tau1 * x
 // alpha complex, beta real
 template <typename FT, int S>
 inline void
-tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                      const FT x_up[2][S], const FT x_dn[2][S])
+tau3cm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                     const FT x_up[2][S], const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
   for(int s = 0; s < S; s++) {
@@ -90,12 +90,12 @@ tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const
 }
 
 // res and x have dimension 2 in "flavour"
-// res = tau3 * conj(alpha) * x + beta permute_flavour(x)
+// res = tau3 * conj(alpha) * x + beta * tau1 * x
 // alpha complex, beta real
 template <typename FT, int S>
 inline void
-tau3cconjm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                          const FT x_up[2][S], const FT x_dn[2][S])
+tau3cconjm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                         const FT x_up[2][S], const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
   for(int s = 0; s < S; s++) {
