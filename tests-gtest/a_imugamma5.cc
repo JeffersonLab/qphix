@@ -11,6 +11,31 @@
 
 using namespace QPhiX;
 
+class BlasTest : public ::testing::Test
+{
+ public:
+  typedef double FT;
+
+  BlasTest()
+      : latt_size_{16, 16, 16, 16}, geom_(latt_size_, 4, 4, 1, 1, 1, 1, 0, 1, true),
+        source_(geom_), step1_(geom_), step2_(geom_)
+  {
+    QDP::gaussian(source_.qdp());
+    source_.pack();
+  }
+
+  static int constexpr veclen = 8;
+  static int constexpr soalen = 4;
+  static bool constexpr compress12 = true;
+
+  int latt_size_[4] = {16, 16, 16, 16};
+
+  Geometry<FT, veclen, soalen, compress12> geom_;
+  HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> source_;
+  HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> step1_;
+  HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> step2_;
+};
+
 /**
   Verifies that multiplying with the inverse returns the original spinor.
 
@@ -25,32 +50,21 @@ using namespace QPhiX;
     + \frac{- \mathrm i \mu \gamma_5}{\alpha^2 + \mu^2} \,.
   \f$
   */
-TEST(apimugamma5, inverse) {
-    int latt_size[] = {16, 16, 16, 16};
-    typedef double FT;
-    int constexpr veclen = 8;
-    int constexpr soalen = 4;
-    bool constexpr compress12 = true;
+TEST_F(BlasTest, apimugamma5)
+{
+  double const alpha = 3.4;
+  double const mu = 1.2;
+  double const denominator = alpha * alpha + mu * mu;
+  double const apimu[] = {alpha, mu};
+  double const apimu_inv[] = {alpha / denominator, -mu / denominator};
 
-    Geometry<FT, veclen, soalen, compress12> geom(
-        latt_size, 4, 4, 1, 1, 1, 1, 0, 1, true);
+  twisted_mass(apimu, source_[0], step1_[0], geom_, 1);
+  twisted_mass(apimu_inv, step1_[0], step2_[0], geom_, 1);
 
-    HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> source(geom);
-    HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> step1(geom);
-    HybridSpinor<FT, veclen, soalen, compress12, QDP::LatticeFermionD> step2(geom);
+  step2_.unpack();
+  expect_near(source_, step2_, 1e-10, geom_, 0, "α+iμγ_5 normal and inverse");
+}
 
-    QDP::gaussian(source.qdp());
-    source.pack();
-
-    double const alpha = 3.4;
-    double const mu = 1.2;
-    double const denominator = alpha * alpha + mu * mu;
-    double const apimu[] = {alpha, mu};
-    double const apimu_inv[] = {alpha / denominator, -mu / denominator};
-
-    twisted_mass(apimu, source[0], step1[0], geom, 1);
-    twisted_mass(apimu_inv, step1[0], step2[0], geom, 1);
-
-    step2.unpack();
-    expect_near(source, step2, 1e-10, geom, 0, "α+iμγ_5 normal and inverse");
+TEST(blas, cm)
+{
 }
