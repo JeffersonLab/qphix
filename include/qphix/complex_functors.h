@@ -355,8 +355,8 @@ class TwoFlavTwistedMassFunctor
       double epsilon_,
       typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
       typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
-      : apimu{rep<FT, double>(apimu_[0]), rep<FT, double>(apimu_[1])},
-        epsilon(rep<FT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
+      : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])},
+        epsilon(rep<AT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
   {
   }
 
