@@ -310,7 +310,7 @@ class TwistedMassFunctor
       double const apimu_[2],
       const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
       typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
-      : apimu{rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}, x(x_), y(y_)
+      : apimu{rep<AT,double>(apimu_[0]),rep<AT,double>(apimu_[1])}, x(x_), y(y_)
   {
   }
 
@@ -363,13 +363,12 @@ class TwoFlavTwistedMassFunctor
   typedef typename ArithType<FT>::Type AT;
 
   TwoFlavTwistedMassFunctor(
-      double apimu_[2],
+      double const *const apimu_,
       double epsilon_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_[2],
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_[2])
-      : apimu({rep<FT,double>(apimu_[0]),rep<FT,double>(apimu_[1])}), 
-      epsilon(rep<FT,double>(epsilon_)),
-      x({x_[0],x_[1]}), y({y_[0],y_[1]})
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
+      : apimu{rep<FT, double>(apimu_[0]), rep<FT, double>(apimu_[1])},
+        epsilon(rep<FT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
   {
   }
 
@@ -424,15 +423,17 @@ class TwoFlavTwistedMassFunctor
       }
     }
 
-    BLASUtils::streamOutSpinor<FT, V>(y_up_base, (const AT *)y_up_spinor, nvec_in_spinor);
-    BLASUtils::streamOutSpinor<FT, V>(y_dn_base, (const AT *)y_dn_spinor, nvec_in_spinor);
+    BLASUtils::streamOutSpinor<FT, V>(
+        y_up_base, (const AT *)y_up_spinor, nvec_in_spinor);
+    BLASUtils::streamOutSpinor<FT, V>(
+        y_dn_base, (const AT *)y_dn_spinor, nvec_in_spinor);
   }
 
  private:
   AT apimu[2];
   AT epsilon;
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[2];
-  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[2];
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[2];
 };
 
 }; // Namespace
