@@ -64,9 +64,19 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   }
 }
 
-// res and x have dimension 2 "flavour" index
-// res = tau3 * alpha * x + beta permute_flavour(x)
-// alpha complex, beta real
+/**
+  Computes τ³ α x + β τ¹ x.
+
+  \param[out] res_up Array with complex index and then \c soalen index.
+  \param[out] res_dn Similar, down flavor
+  \param[in] alpha Complex number α
+  \param[in] beta Real number β
+  \param[in] x_up Input up flavor spinor
+  \param[in] x_dn Similar, down flavor
+
+  \tparam FT Floating point type
+  \tparam S soalen
+  */
 template <typename FT, int S>
 inline void
 tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
@@ -89,9 +99,9 @@ tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const
   }
 }
 
-// res and x have dimension 2 in "flavour"
-// res = tau3 * conj(alpha) * x + beta permute_flavour(x)
-// alpha complex, beta real
+/**
+  Like \ref tau3cm_cross_scaleadd but with α complex conjugated in the process.
+  */
 template <typename FT, int S>
 inline void
 tau3cconjm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
