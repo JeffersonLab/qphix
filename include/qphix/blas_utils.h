@@ -79,8 +79,8 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   */
 template <typename FT, int S>
 inline void
-tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                      const FT x_up[2][S], const FT x_dn[2][S])
+tau3cm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                     const FT x_up[2][S], const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for(int s = 0; s < S; s++) {
@@ -100,12 +100,12 @@ tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const
 }
 
 /**
-  Like \ref tau3cm_cross_scaleadd but with α complex conjugated in the process.
+  Like \ref tau3cm_tau1_scaleadd but with α complex conjugated in the process.
   */
 template <typename FT, int S>
 inline void
-tau3cconjm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                          const FT x_up[2][S], const FT x_dn[2][S])
+tau3cconjm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
+                         const FT x_up[2][S], const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for(int s = 0; s < S; s++) {
