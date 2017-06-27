@@ -114,16 +114,28 @@ void twisted_mass(const double apimu[2],
      f, geom, n_blas_simt);
 }
 
-template <typename FT, int V, int S, bool compress>
-void two_flav_twisted_mass(const double apimu[2],
-                           const double epsilon,
-                           const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x[2],
-                           typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[2],
-                           const Geometry<FT, V, S, compress> &geom,
-                           int n_blas_simt)
+/**
+  Multiplies the spinor with (α + iμγ⁵τ³ + ετ¹).
+  */
+template <typename FT, int V, int S, bool compress, typename Spinor1>
+typename std::enable_if<
+    std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
+                 const Spinor1>::value,
+    void>::type
+two_flav_twisted_mass(
+    const double apimu[2],
+    const double epsilon,
+    Spinor1 *const *x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
 {
   TwoFlavTwistedMassFunctor<FT, V, S, compress> f(apimu, epsilon, x, y);
-  siteLoopNoReduction<FT, V, S, compress, TwoFlavTwistedMassFunctor<FT, V, S, compress>>(
+  siteLoopNoReduction<FT,
+                      V,
+                      S,
+                      compress,
+                      TwoFlavTwistedMassFunctor<FT, V, S, compress>>(
       f, geom, n_blas_simt);
 }
 
