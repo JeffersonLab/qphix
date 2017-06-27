@@ -4,7 +4,6 @@
 
 namespace QPhiX
 {
-
 namespace BLASUtils
 {
 
@@ -321,5 +320,66 @@ inline void streamOutSpinor<half, 16>(half *dst,
 
 #endif // defined MIC
 
-}; // Namespace BLAS UTILS
+/**
+  Holds a spinor that is streamed in or out or both.
+
+  The BLAS functors are implemented without intrinsics. This means that they
+  cannot do any calculations with half-precision data. The streaming will
+  convert from the underlying type (`FT`) into an arithmetic type (`AT`) such
+  that normal `float` operations can be done. This will probably not yield the
+  performance of the generated kernels using the half-precision intrinsics. The
+  BLAS routines will become easier to write this way, one just needs `#pragma
+  omp simd`.
+
+  \tparam FT Type of the spinor data structure for the whole volume.
+  \tparam AT Type of the temporary site that is used within the BLAS function.
+  */
+template <typename FT, typename AT, int veclen, int soalen, bool compress12>
+class StreamSpinor
+{
+ public:
+  enum class Out { none, stream, write };
+
+  StreamSpinor(bool const stream_in, Out const stream_out, FT *const base)
+      : stream_in_(stream_in), stream_out_(stream_out), base_(base)
+  {
+    if (stream_in_) {
+      streamInSpinor<FT, veclen>(spinor_, base_, nvec_in_spinor_);
+    }
+  }
+
+  /**
+    XXX (Martin Ueding): One must not throw any exceptions in the destructor
+    because cleanup must always work. Therefore it might be nicer to have a
+    `finalize` method here that one has to call manually. However, the
+    streaming or writing out will just do some array element assignment. So
+    that should work just fine without any exceptions.
+    */
+  ~StreamSpinor()
+  {
+    if (stream_out_ == Out::stream) {
+      streamOutSpinor<FT, veclen>(base_, spinor_, nvec_in_spinor_);
+    } else if (stream_out_ == Out::write) {
+      writeSpinor<FT, veclen>(base_, spinor_, nvec_in_spinor_);
+    }
+  }
+
+ private :
+  static int constexpr nvec_in_spinor_ = (3 * 4 * 2 * soalen) / veclen;
+
+  bool const stream_in_;
+  Out const stream_out_;
+
+  FT *const base_;
+
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock spinor_
+      __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+      typename Geometry<AT, veclen, soalen, compress12>::FourSpinorBlock spinor_;
+#endif
 };
+
+} // Namespace BLASUtils
+} // Namespace QPhiX
