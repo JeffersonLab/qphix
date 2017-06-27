@@ -94,7 +94,7 @@ inline void tau3cm_tau1_scaleadd(FT res_up[2][soalen],
     res_up[IM][s] += beta * x_dn[IM][s];
 
     res_dn[RE][s] += beta * x_up[RE][s];
-    res_dn[RE][s] += beta * x_up[IM][s];
+    res_dn[IM][s] += beta * x_up[IM][s];
   }
 }
 
@@ -122,7 +122,7 @@ inline void tau3cconjm_tau1_scaleadd(FT res_up[2][S],
     res_up[IM][s] += beta * x_dn[IM][s];
 
     res_dn[RE][s] += beta * x_up[RE][s];
-    res_dn[RE][s] += beta * x_up[IM][s];
+    res_dn[IM][s] += beta * x_up[IM][s];
   }
 }
 
