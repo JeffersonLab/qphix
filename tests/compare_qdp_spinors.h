@@ -102,7 +102,7 @@ void expect_near(QdpSpinor &spinor_a,
 
                 ++printed_out;
 
-                if (printed_out > 100) {
+                if (printed_out > 20) {
                   QPhiX::masterPrintf("More elements are not printed in order to "
                                       "make the output readable.\n");
 #ifdef FAIL
