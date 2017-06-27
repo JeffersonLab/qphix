@@ -82,7 +82,7 @@ inline void
 tau3cm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
                       const FT x_up[2][S], const FT x_dn[2][S])
 {
-#pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
+#pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for(int s = 0; s < S; s++) {
     res_up[0][s] = alpha[0] * x_up[0][s] - alpha[1] * x_up[1][s];
     res_up[1][s] = alpha[0] * x_up[1][s] + alpha[1] * x_up[0][s];
@@ -107,7 +107,7 @@ inline void
 tau3cconjm_cross_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
                           const FT x_up[2][S], const FT x_dn[2][S])
 {
-#pragma omp simd aligned(res_up, res_dn, x_up, x_dn, y_up, y_dn : S)
+#pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for(int s = 0; s < S; s++) {
     res_up[0][s] = alpha[0] * x_up[0][s] + alpha[1] * x_up[1][s];
     res_up[1][s] = alpha[0] * x_up[1][s] - alpha[1] * x_up[0][s];
