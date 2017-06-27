@@ -73,13 +73,13 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   \param[in] x_up Input up flavor spinor
   \param[in] x_dn Similar, down flavor
   */
-template <typename FT, int soalen>
-inline void tau3cm_tau1_scaleadd(FT res_up[2][soalen],
-                                 FT res_dn[2][soalen],
-                                 const FT alpha[2],
-                                 const FT beta,
-                                 const FT x_up[2][soalen],
-                                 const FT x_dn[2][soalen])
+template <typename AT, int soalen>
+inline void tau3cm_tau1_scaleadd(AT res_up[2][soalen],
+                                 AT res_dn[2][soalen],
+                                 const AT alpha[2],
+                                 const AT beta,
+                                 const AT x_up[2][soalen],
+                                 const AT x_dn[2][soalen])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : soalen)
   for (int s = 0; s < soalen; s++) {
@@ -101,13 +101,13 @@ inline void tau3cm_tau1_scaleadd(FT res_up[2][soalen],
 /**
   Like \ref tau3cm_tau1_scaleadd but with α complex conjugated in the process.
   */
-template <typename FT, int S>
-inline void tau3cconjm_tau1_scaleadd(FT res_up[2][S],
-                                     FT res_dn[2][S],
-                                     const FT alpha[2],
-                                     const FT beta,
-                                     const FT x_up[2][S],
-                                     const FT x_dn[2][S])
+template <typename AT, int S>
+inline void tau3cconjm_tau1_scaleadd(AT res_up[2][S],
+                                     AT res_dn[2][S],
+                                     const AT alpha[2],
+                                     const AT beta,
+                                     const AT x_up[2][S],
+                                     const AT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for (int s = 0; s < S; s++) {
