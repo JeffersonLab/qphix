@@ -77,18 +77,21 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
   \tparam S soalen
   */
 template <typename FT, int S>
-inline void
-tau3cm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                     const FT x_up[2][S], const FT x_dn[2][S])
+inline void tau3cm_tau1_scaleadd(FT res_up[2][S],
+                                 FT res_dn[2][S],
+                                 const FT alpha[2],
+                                 const FT beta,
+                                 const FT x_up[2][S],
+                                 const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
-  for(int s = 0; s < S; s++) {
+  for (int s = 0; s < S; s++) {
     res_up[0][s] = alpha[0] * x_up[0][s] - alpha[1] * x_up[1][s];
     res_up[1][s] = alpha[0] * x_up[1][s] + alpha[1] * x_up[0][s];
 
     res_dn[0][s] = -alpha[0] * x_dn[0][s] + alpha[1] * x_dn[1][s];
     res_dn[1][s] = -alpha[0] * x_dn[1][s] - alpha[1] * x_dn[0][s];
-    
+
     // hopefully all x are still cached
     res_up[0][s] += beta * x_dn[0][s];
     res_up[1][s] += beta * x_dn[1][s];
@@ -102,18 +105,21 @@ tau3cm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const 
   Like \ref tau3cm_tau1_scaleadd but with α complex conjugated in the process.
   */
 template <typename FT, int S>
-inline void
-tau3cconjm_tau1_scaleadd(FT res_up[2][S], FT res_dn[2][S], const FT alpha[2], const FT beta, 
-                         const FT x_up[2][S], const FT x_dn[2][S])
+inline void tau3cconjm_tau1_scaleadd(FT res_up[2][S],
+                                     FT res_dn[2][S],
+                                     const FT alpha[2],
+                                     const FT beta,
+                                     const FT x_up[2][S],
+                                     const FT x_dn[2][S])
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
-  for(int s = 0; s < S; s++) {
+  for (int s = 0; s < S; s++) {
     res_up[0][s] = alpha[0] * x_up[0][s] + alpha[1] * x_up[1][s];
     res_up[1][s] = alpha[0] * x_up[1][s] - alpha[1] * x_up[0][s];
 
     res_dn[0][s] = -alpha[0] * x_dn[0][s] - alpha[1] * x_dn[1][s];
     res_dn[1][s] = -alpha[0] * x_dn[1][s] + alpha[1] * x_dn[0][s];
-    
+
     // hopefully all x are still cached
     res_up[0][s] += beta * x_dn[0][s];
     res_up[1][s] += beta * x_dn[1][s];
