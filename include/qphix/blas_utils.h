@@ -64,7 +64,7 @@ cnmadd(FT res[2][S], const FT alpha[2], const FT x[2][S], const FT y[2][S])
 }
 
 /**
-  Computes (α τ³ x + β τ¹ x).
+  Computes (α + iμτ³ + βτ¹) x.
 
   \param[out] res_up Array with complex index and then \c soalen index.
   \param[out] res_dn Similar, down flavor
@@ -86,8 +86,8 @@ inline void tau3cm_tau1_scaleadd(AT res_up[2][soalen],
     res_up[RE][s] = alpha[RE] * x_up[RE][s] - alpha[IM] * x_up[IM][s];
     res_up[IM][s] = alpha[RE] * x_up[IM][s] + alpha[IM] * x_up[RE][s];
 
-    res_dn[RE][s] = -alpha[RE] * x_dn[RE][s] + alpha[IM] * x_dn[IM][s];
-    res_dn[IM][s] = -alpha[RE] * x_dn[IM][s] - alpha[IM] * x_dn[RE][s];
+    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] + alpha[IM] * x_dn[IM][s];
+    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] - alpha[IM] * x_dn[RE][s];
 
     // hopefully all x are still cached
     res_up[RE][s] += beta * x_dn[RE][s];
@@ -99,7 +99,7 @@ inline void tau3cm_tau1_scaleadd(AT res_up[2][soalen],
 }
 
 /**
-  Like \ref tau3cm_tau1_scaleadd but with α complex conjugated in the process.
+  Like \ref tau3cm_tau1_scaleadd but with iμ complex conjugated in the process.
   */
 template <typename AT, int S>
 inline void tau3cconjm_tau1_scaleadd(AT res_up[2][S],
@@ -114,8 +114,8 @@ inline void tau3cconjm_tau1_scaleadd(AT res_up[2][S],
     res_up[RE][s] = alpha[RE] * x_up[RE][s] + alpha[IM] * x_up[IM][s];
     res_up[IM][s] = alpha[RE] * x_up[IM][s] - alpha[IM] * x_up[RE][s];
 
-    res_dn[RE][s] = -alpha[RE] * x_dn[RE][s] - alpha[IM] * x_dn[IM][s];
-    res_dn[IM][s] = -alpha[RE] * x_dn[IM][s] + alpha[IM] * x_dn[RE][s];
+    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] - alpha[IM] * x_dn[IM][s];
+    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] + alpha[IM] * x_dn[RE][s];
 
     // hopefully all x are still cached
     res_up[RE][s] += beta * x_dn[RE][s];
