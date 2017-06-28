@@ -148,8 +148,18 @@ class AbstractMultiSolver
                           int isign,
                           bool verboseP,
                           int cb = 1) const {
-      Spinor **x_array[1] = {x};
+      std::vector<Spinor *[1]> x_vec(n_shift);
+      for (int s = 0; s < n_shift; ++s) {
+          x_vec[s][0] = x[s];
+      }
+      std::vector<Spinor **> x_vec2(n_shift);
+      for (int s = 0; s < n_shift; ++s) {
+          x_vec2[s] = &x_vec[s][0];
+      }
+      Spinor ***x_array = x_vec2.data();
+
       const Spinor *rhs_array[1] = {rhs};
+
       (*this)(x_array,
               rhs_array,
               n_shift,
