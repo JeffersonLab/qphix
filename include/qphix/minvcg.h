@@ -148,7 +148,8 @@ class MInvCG : public AbstractMultiSolver<FT,
     copySpinor<FT, veclen, soalen, compress12, num_flav>(
         p_0, rhs, geom, copy_threads);
     for (int s = 0; s < n_shift; s++) {
-      copySpinor(p[s], rhs, geom, copy_threads);
+      copySpinor<FT, veclen, soalen, compress12, num_flav>(
+          p[s].data(), rhs, geom, copy_threads);
     }
 
 #ifdef DEBUG_MINVCG
@@ -164,7 +165,7 @@ class MInvCG : public AbstractMultiSolver<FT,
 
       for (int s = 0; s < n_shift; ++s) {
         norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
-            n2_tmp, p[s], geom, norm2_threads);
+            n2_tmp, p[s].data(), geom, norm2_threads);
         masterPrintf("p[%d] has norm=%16.8e\n", s, n2_tmp);
       }
     }
@@ -302,7 +303,7 @@ class MInvCG : public AbstractMultiSolver<FT,
           // only update unconverged systems
           as = a * zeta[s] * beta[s] / (zeta_prev[s] * b);
           axpby<FT, veclen, soalen, compress12, num_flav>(
-              zeta[s], r, as, p[s], geom, axpby_threads);
+              zeta[s], r, as, p[s].data(), geom, axpby_threads);
           site_flops += 72;
         }
       }
@@ -358,7 +359,7 @@ class MInvCG : public AbstractMultiSolver<FT,
 
           double mbeta = -beta[s];
           axpy<FT, veclen, soalen, compress12, num_flav>(
-              mbeta, p[s], x[s], geom, axpy_threads);
+              mbeta, p[s].data(), x[s], geom, axpy_threads);
           site_flops += 48;
 
 #ifdef DEBUG_MINVCG
@@ -393,12 +394,12 @@ class MInvCG : public AbstractMultiSolver<FT,
   int MaxIters;
   int MaxShifts;
 
-  // TODO (Martin Ueding): Make those flavor arrays.
-  Spinor *mp;
-  Spinor *mmp;
-  Spinor *p_0;
-  Spinor **p;
-  Spinor *r;
+  Spinor *mp[num_flav];
+  Spinor *mmp[num_flav];
+  Spinor *p_0[num_flav];
+  std::vector<std::array<Spinor *, num_flav>> p;
+  Spinor *r[num_flav];
+
   mutable std::vector<double> rsd_sq;
   mutable std::vector<double> beta;
   mutable std::vector<double> zeta_prev;
@@ -412,43 +413,20 @@ class MInvCG : public AbstractMultiSolver<FT,
   int axy_threads;
   int axpynorm2_threads;
 
-  void allocateSpace(void)
+  void allocateSpace()
   {
-    // TODO (Martin Ueding): Allocate one spinor per flavor. Also use some RAII.
-    mp = (Spinor *)geom.allocCBFourSpinor();
-    if (mp == 0x0) {
-      masterPrintf("MInvCG Failed to allocate mp\n");
-      exit(-1);
+    for (int f = 0; f < num_flav; ++f) {
+      mp[f] = geom.allocCBFourSpinor();
+      mmp[f] = geom.allocCBFourSpinor();
+      r[f] = geom.allocCBFourSpinor();
+      p_0[f] = geom.allocCBFourSpinor();
     }
 
-    mmp = (Spinor *)geom.allocCBFourSpinor();
-    if (mmp == 0x0) {
-      masterPrintf("MInvCG Failed to allocate mmp\n");
-      exit(-1);
-    }
-
-    p = new Spinor *[MaxShifts];
-    if (p == 0x0) {
-      masterPrintf("MInvCG Failed to allocate p-array\n");
-      exit(-1);
-    }
-
+    p.resize(MaxShifts);
     for (int s = 0; s < MaxShifts; s++) {
-      p[s] = (Spinor *)geom.allocCBFourSpinor();
-      if (p[s] == 0x0) {
-        masterPrintf("MInvCG Failed to allocate p[%d]\n", s);
-        exit(-1);
+      for (int f = 0; f < num_flav; ++f) {
+        p[s][f] = geom.allocCBFourSpinor();
       }
-    }
-    r = (Spinor *)geom.allocCBFourSpinor();
-    if (r == 0x0) {
-      masterPrintf("MInvCG Failed to allocate r\n");
-      exit(-1);
-    }
-    p_0 = (Spinor *)geom.allocCBFourSpinor();
-    if (p_0 == 0x0) {
-      masterPrintf("MInvCG Failed to allocate p0\n");
-      exit(-1);
     }
 
     rsd_sq.resize(MaxShifts);
@@ -458,24 +436,17 @@ class MInvCG : public AbstractMultiSolver<FT,
     convsP.resize(MaxShifts);
   }
 
-  void freeSpace(void)
+  void freeSpace()
   {
-    if (mp != 0x0)
-      geom.free(mp);
-    if (mmp != 0x0)
-      geom.free(mmp);
-    if (r != 0x0)
-      geom.free(r);
-    if (p_0 != 0x0)
-      geom.free(p_0);
-    if (p != 0x0) {
+    for (int f = 0; f < num_flav; ++f) {
+      geom.free(mp[f]);
+      geom.free(mmp[f]);
+      geom.free(r[f]);
+      geom.free(p_0[f]);
       for (int s = 0; s < MaxShifts; s++) {
-        if (p[s] != 0x0)
-          geom.free(p[s]);
+        geom.free(p[s][f]);
       }
-
-      delete[] p;
     }
   }
 };
-};
+}

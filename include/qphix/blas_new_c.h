@@ -247,7 +247,7 @@ typename std::enable_if<
     void>::type
 axpyNorm2(const double alpha,
           Spinor1 *const x[num_flav],
-          typename Geometry<FT, V, S, compress>::FourSpinorBlock *y[num_flav],
+          typename Geometry<FT, V, S, compress>::FourSpinorBlock *const y[num_flav],
           double &norm2y,
           const Geometry<FT, V, S, compress> &geom,
           int n_blas_simt)
