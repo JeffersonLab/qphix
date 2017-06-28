@@ -29,9 +29,6 @@ using namespace QPhiX;
 #include "RandomGauge.h"
 #include "compare_qdp_spinors.h"
 
-int Nx, Ny, Nz, Nt, Nxh;
-bool verbose = true;
-
 void TestMultishift::run()
 {
   call(*this, args_.prec, args_.soalen, args_.compress12);
@@ -133,6 +130,7 @@ void TestMultishift::testMInvCG(int t_bc)
 
       start = omp_get_wtime();
 
+      bool verbose = true;
       solver(psi_d,
              hs_source[cb],
              n_shift,
