@@ -1168,19 +1168,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::two_flav(
-    FourSpinorBlock *res[2],
-    const FourSpinorBlock *const psi[2],
-    const SU3MatrixBlock *u,
-    double mu,
-    double mu_inv,
-    int isign,
-    int cb)
-{
-}
-
-template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
+void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
     FourSpinorBlock *res[2],
     const FourSpinorBlock *const psi[2],
     const FourSpinorBlock *const chi[2],
@@ -1200,8 +1188,8 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
 
     // The `res[f]` contains the flavor-diagonal part. Now the flavor
     // off-diagonal part has to be added. This is just the opposite
-    // flavor χ multiplied with ε.
-    axpy(epsilon, chi[1 - f], res[f], *s, n_blas_simt);
+    // flavor χ multiplied with -ε.
+    axpy(-epsilon, chi[1 - f], res[f], *s, n_blas_simt);
   }
 }
 
