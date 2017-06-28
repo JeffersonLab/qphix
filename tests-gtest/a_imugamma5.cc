@@ -26,9 +26,16 @@ class BlasTest : public ::testing::Test
         two_flav_step1_{step1_[0], step1_dn_[0]},
         two_flav_step2_{step2_[0], step2_dn_[0]}
   {
-    QDP::gaussian(source_.qdp());
+    source_.qdp()
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .real() = 1.0;
+
+    //QDP::gaussian(source_.qdp());
+    //QDP::gaussian(source_dn_.qdp());
+
     source_.pack();
-    QDP::gaussian(source_dn_.qdp());
     source_dn_.pack();
   }
 
@@ -104,9 +111,11 @@ TEST_F(BlasTest, twoFlavTwistedMassSignChange) {
 
 TEST_F(BlasTest, twoFlavTwistedMassInverse) {
     double const alpha = 3.0;
-    double const mu = 5.0;
-    double const epsilon = 7.0;
+    double const mu = 0.0;
+    double const epsilon = 5.0;
     double const denominator = alpha * alpha + mu * mu - epsilon * epsilon;
+
+    ASSERT_GT(std::fabs(denominator), 0.0);
 
     double const apimu[2] = {alpha, mu};
     double const apimu_inv[2] = {alpha / denominator, -mu / denominator};
@@ -117,8 +126,25 @@ TEST_F(BlasTest, twoFlavTwistedMassInverse) {
     two_flav_twisted_mass(
         apimu_inv, epsilon_inv, two_flav_step1_, two_flav_step2_, geom_, 1);
 
+    step1_.unpack();
+    step1_dn_.unpack();
     step2_.unpack();
     step2_dn_.unpack();
+
+    QDPIO::cout << "Source:\n  " << source_.qdp().elem(0).elem(0).elem(0).real()
+                << " + i " << source_.qdp().elem(0).elem(0).elem(0).imag() << "\n  "
+                << source_dn_.qdp().elem(0).elem(0).elem(0).real() << "  "
+                << source_dn_.qdp().elem(0).elem(0).elem(0).imag() << "\n"
+                << "Step 1:\n  " << step1_.qdp().elem(0).elem(0).elem(0).real() << " + i "
+                << step1_.qdp().elem(0).elem(0).elem(0).imag() << "\n  "
+                << step1_dn_.qdp().elem(0).elem(0).elem(0).real() << " + i "
+                << step1_dn_.qdp().elem(0).elem(0).elem(0).imag() << "\n"
+                << "Step 2:\n  " << step2_.qdp().elem(0).elem(0).elem(0).real() << " + i "
+                << step2_.qdp().elem(0).elem(0).elem(0).imag() << "\n  "
+                << step2_dn_.qdp().elem(0).elem(0).elem(0).real() << " + i "
+                << step2_dn_.qdp().elem(0).elem(0).elem(0).imag() << "\n";
+
     expect_near(source_, step2_, 1e-10, geom_, 0, "α+iμγ_5 normal and inverse (up)");
-    expect_near(source_dn_, step2_dn_, 1e-10, geom_, 0, "α+iμγ_5 normal and inverse (down)");
+    expect_near(
+        source_dn_, step2_dn_, 1e-10, geom_, 0, "α+iμγ_5 normal and inverse (down)");
 }
