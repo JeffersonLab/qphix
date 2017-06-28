@@ -359,9 +359,10 @@ void TMDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     double alpha,
     double beta,
     int isign,
-    int cb)
+    int cb,
+    const double musign)
 {
-  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb);
+  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb, const double musign);
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -685,7 +686,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
     double alpha,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    const double musign)
 {
   auto kernel =
       (is_plus
@@ -981,7 +983,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
                    beta_t_f_T,
                    beta_t_b_T,
                    tbc_phases,
-                   derived_mu,
+                   musign*derived_mu,
                    accumulate);
           }
         } // End for over scanlines y
@@ -1183,8 +1185,9 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
 
   // Iterate over the two result flavors …
   for (int f : {0, 1}) {
-    // Compute the flavor-diagonal part.
-    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb);
+    // Compute the flavor-diagonal part, for the down flavour, we change the sign
+    // of the twisted mass to imlpement tau3
+    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb, 1.0-2.0*f);
 
     // The `res[f]` contains the flavor-diagonal part. Now the flavor
     // off-diagonal part has to be added. This is just the opposite

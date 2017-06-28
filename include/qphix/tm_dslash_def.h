@@ -44,7 +44,8 @@ class TMDslash
                             double alpha,
                             double beta,
                             int isign,
-                            int cb);
+                            int cb,
+                            const double musign = 1.0);
 
   void two_flav_AChiMinusBDPsi(FourSpinorBlock *res[2],
                                const FourSpinorBlock *const psi[2],
@@ -129,7 +130,8 @@ class TMDslash
                            double alpha,
                            double beta,
                            bool const is_plus,
-                           int cb);
+                           int cb,
+                           const double musign = 1.0);
 
   void TMDPsi(const SU3MatrixBlock *u,
               const FourSpinorBlock *psi_in,
@@ -144,7 +146,8 @@ class TMDslash
                             double alpha,
                             double beta,
                             bool const is_plus,
-                            int cb);
+                            int cb,
+                            const double musign = 1.0);
 
 // packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS
