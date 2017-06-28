@@ -7,7 +7,11 @@
 
 #include <iomanip>
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 class HybridSpinor
 {
  public:
@@ -40,7 +44,11 @@ class HybridSpinor
   QdpSpinor qdp_;
 };
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 void expect_near(QdpSpinor &spinor_a,
                  QdpSpinor &spinor_b,
                  double const abs_err,
