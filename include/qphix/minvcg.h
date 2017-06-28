@@ -264,7 +264,7 @@ class MInvCG : public AbstractMultiSolver<FT,
       double n2_tmp = 0;
       norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
           n2_tmp, x[s], geom, norm2_threads);
-      masterPrintf("x[%d] has norm = ", s, n2_tmp);
+      masterPrintf("x[%d] has norm = %g\n", s, n2_tmp);
     }
 #endif
 
@@ -293,7 +293,7 @@ class MInvCG : public AbstractMultiSolver<FT,
         double n2_tmp = 0;
         norm2Spinor<FT, veclen, soalen, compress12, num_flav>(
             n2_tmp, p_0, geom, norm2_threads);
-        masterPrintf("p_0 has norm=", n2_tmp);
+        masterPrintf("p_0 has norm=%g\n", n2_tmp);
       }
 #endif
 
