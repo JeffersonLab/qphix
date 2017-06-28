@@ -66,6 +66,8 @@ class EvenOddNDTMWilsonReuseOperator
     // now we apply the inverse twisted mass term and the epsilon flavour cross term
     //   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
     // hence the change of sign on the imaginary part of the complex factor
+    // the sign of the off-diagonal contribution will be corrected
+    // by AChiMinusBDPsi below
     two_flav_twisted_mass({mass_factor_alpha * mu_inv, -isign * mu * mu_inv},
                           epsilon * mu_inv,
                           mu_p_eps_Dw_tmp,
