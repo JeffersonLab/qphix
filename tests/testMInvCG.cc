@@ -32,7 +32,8 @@ using namespace QPhiX;
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
 
-void TestMultishift::run() {
+void TestMultishift::run()
+{
   call(*this, args_.prec, args_.soalen, args_.compress12);
 }
 
@@ -124,7 +125,6 @@ void TestMultishift::testMInvCG(int t_bc)
     double isign = 1;
     double start = 0;
     double end = 0;
-
 
     {
       MInvCG<T, V, S, compress> solver(M, max_iters, n_shift);
