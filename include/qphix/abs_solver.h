@@ -147,31 +147,46 @@ class AbstractMultiSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int cb = 1) const {
-      std::vector<Spinor *[1]> x_vec(n_shift);
-      for (int s = 0; s < n_shift; ++s) {
-          x_vec[s][0] = x[s];
-      }
-      std::vector<Spinor **> x_vec2(n_shift);
-      for (int s = 0; s < n_shift; ++s) {
-          x_vec2[s] = &x_vec[s][0];
-      }
-      Spinor ***x_array = x_vec2.data();
+                          int cb = 1) const
+  {
+    masterPrintf("Given is the following:\n");
+    for (int s = 0; s < n_shift; ++s) {
+      masterPrintf("  %p: x[%d] = %p\n", &x[s], s, x[s]);
+    }
 
-      const Spinor *rhs_array[1] = {rhs};
+    // Create the a data structure for the `Spinor *` and populate it.
+    std::vector<std::array<Spinor *, 1>> x_vec(n_shift);
+    for (int s = 0; s < n_shift; ++s) {
+      x_vec[s][0] = x[s];
+    }
 
-      (*this)(x_array,
-              rhs_array,
-              n_shift,
-              shifts,
-              RsdTarget,
-              niters,
-              rsd_sq_final,
-              site_flops,
-              mv_apps,
-              isign,
-              verboseP,
-              cb);
+    std::vector<Spinor **> x_vec2(n_shift);
+    for (int s = 0; s < n_shift; ++s) {
+        x_vec2[s] = x_vec[s].data();
+    }
+    Spinor ***x_array = x_vec2.data();
+
+    masterPrintf("Result is this::\n");
+    masterPrintf("  %p: x_array = %p\n", &x_array, x_array);
+    for (int s = 0; s < n_shift; ++s) {
+      masterPrintf("  %p: x_array[%d] = %p\n", &x_array[0], s, x_array[s]);
+      masterPrintf("  %p: x_array[%d][0] = %p\n", &x_array[s][0], s, x_array[s][0]);
+    }
+
+    const Spinor *rhs_array[1] = {rhs};
+
+    (*this)(x_array,
+            rhs_array,
+            n_shift,
+            shifts,
+            RsdTarget,
+            niters,
+            rsd_sq_final,
+            site_flops,
+            mv_apps,
+            isign,
+            verboseP,
+            cb);
   }
 
   /**
