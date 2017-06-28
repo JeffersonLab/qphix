@@ -362,7 +362,7 @@ void TMDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     int cb,
     const double musign)
 {
-  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb, const double musign);
+  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb, musign);
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
