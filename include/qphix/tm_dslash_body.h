@@ -1131,7 +1131,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
+    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb, musign);
   }
 
 #ifdef QPHIX_DO_COMMS
