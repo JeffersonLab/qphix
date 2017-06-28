@@ -256,6 +256,7 @@ axpyNorm2(const double alpha,
   for (uint8_t f = 0; f < num_flav; ++f) {
     double local_norm2y;
     axpyNorm2(alpha, x[f], y[f], local_norm2y, geom, n_blas_simt);
+    norm2y += local_norm2y;
   }
 }
 
