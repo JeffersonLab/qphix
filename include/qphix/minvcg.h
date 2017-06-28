@@ -84,7 +84,7 @@ class MInvCG : public AbstractMultiSolver<FT,
                   unsigned long &mv_apps,
                   int isign,
                   bool verboseP,
-                  int cb = 1) const
+                  int cb = 1) const override
   {
 
     mv_apps = 0;
