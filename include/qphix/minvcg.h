@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#undef DEBUG_MINVCG
+//#define DEBUG_MINVCG
 
 namespace QPhiX
 {
@@ -86,7 +86,6 @@ class MInvCG : public AbstractMultiSolver<FT,
                   bool verboseP,
                   int cb = 1) const override
   {
-
     mv_apps = 0;
     site_flops = 0;
     if (n_shift > MaxShifts) {
