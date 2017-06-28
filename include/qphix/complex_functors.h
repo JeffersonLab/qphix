@@ -12,9 +12,8 @@ class InnerProductFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  InnerProductFunctor(
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *l_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_)
+  InnerProductFunctor(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *l_,
+                      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_)
       : l(l_), r(r_)
   {
   }
@@ -68,12 +67,11 @@ class BiCGStabPUpdateFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  BiCGStabPUpdateFunctor(
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *v_,
-      double beta_[2],
-      double omega_[2])
+  BiCGStabPUpdateFunctor(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
+                         typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
+                         const typename Geometry<FT, V, S, compress>::FourSpinorBlock *v_,
+                         double beta_[2],
+                         double omega_[2])
       : r(r_), p(p_), v(v_)
   {
     beta[0] = rep<AT, double>(beta_[0]);
@@ -125,12 +123,10 @@ class BiCGStabPUpdateFunctor
         // with tmp = p - omega
 
         // tmp = -omega v + p = p - omega v
-        BLASUtils::cnmadd<AT, S>(
-            tmp_cmpx, omega, v_spinor[col][spin], p_spinor[col][spin]);
+        BLASUtils::cnmadd<AT, S>(tmp_cmpx, omega, v_spinor[col][spin], p_spinor[col][spin]);
 
         // p = r + beta tmp
-        BLASUtils::cmadd<AT, S>(
-            p_spinor[col][spin], beta, tmp_cmpx, r_spinor[col][spin]);
+        BLASUtils::cmadd<AT, S>(p_spinor[col][spin], beta, tmp_cmpx, r_spinor[col][spin]);
       }
     }
 
@@ -152,10 +148,9 @@ class BiCGStabSUpdateFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  BiCGStabSUpdateFunctor(
-      double alpha_[2],
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *s_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *v_)
+  BiCGStabSUpdateFunctor(double alpha_[2],
+                         typename Geometry<FT, V, S, compress>::FourSpinorBlock *s_,
+                         const typename Geometry<FT, V, S, compress>::FourSpinorBlock *v_)
       : s(s_), v(v_)
   {
     alpha[0] = rep<AT, double>(alpha_[0]);
@@ -210,13 +205,12 @@ class BiCGStabRXUpdateFunctor
 {
  public:
   typedef typename ArithType<FT>::Type AT;
-  BiCGStabRXUpdateFunctor(
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *t_,
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
-      double omega_[2],
-      double alpha_[2])
+  BiCGStabRXUpdateFunctor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+                          typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
+                          const typename Geometry<FT, V, S, compress>::FourSpinorBlock *t_,
+                          const typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
+                          double omega_[2],
+                          double alpha_[2])
       : x(x_), r(r_), t(t_), p(p_)
   {
     omega[0] = rep<AT, double>(omega_[0]);
@@ -266,11 +260,9 @@ class BiCGStabRXUpdateFunctor
         AT tmp_cmpx[2][S];
 
         /* tmp = alpha p + x */
-        BLASUtils::cmadd<AT, S>(
-            tmp_cmpx, alpha, p_spinor[col][spin], x_spinor[col][spin]);
+        BLASUtils::cmadd<AT, S>(tmp_cmpx, alpha, p_spinor[col][spin], x_spinor[col][spin]);
         /* x = omega r + tmp = omega r + alpha p + x */
-        BLASUtils::cmadd<AT, S>(
-            x_spinor[col][spin], omega, r_spinor[col][spin], tmp_cmpx);
+        BLASUtils::cmadd<AT, S>(x_spinor[col][spin], omega, r_spinor[col][spin], tmp_cmpx);
 
         /* r = -omega t + r = r - omega t */
         BLASUtils::cnmadd<AT, S>(
@@ -279,8 +271,8 @@ class BiCGStabRXUpdateFunctor
         /* accumulate new r_norm into reduction */
         for (int cmpx = 0; cmpx < 2; cmpx++) {
           for (int s = 0; s < S; s++) {
-            reduction[s] += (double)r_spinor[col][spin][cmpx][s] *
-                            (double)r_spinor[col][spin][cmpx][s];
+            reduction[s] +=
+                (double)r_spinor[col][spin][cmpx][s] * (double)r_spinor[col][spin][cmpx][s];
           }
         }
       }
@@ -306,11 +298,10 @@ class TwistedMassFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  TwistedMassFunctor(
-      double const apimu_[2],
-      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
-      : apimu{rep<AT,double>(apimu_[0]),rep<AT,double>(apimu_[1])}, x(x_), y(y_)
+  TwistedMassFunctor(double const apimu_[2],
+                     const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+                     typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])}, x(x_), y(y_)
   {
   }
 
@@ -318,22 +309,18 @@ class TwistedMassFunctor
 
   inline void func(int block)
   {
-    BLASUtils::StreamInSpinor<FT, AT, V, S, compress> x_spinor(
-        &x[block][0][0][0][0]);
+    BLASUtils::StreamInSpinor<FT, AT, V, S, compress> x_spinor(&x[block][0][0][0][0]);
 
     BLASUtils::StreamSpinor<FT, AT, V, S, compress> y_spinor(
-        false,
-        BLASUtils::StreamOut::stream,
-        &y[block][0][0][0][0]);
+        false, BLASUtils::StreamOut::stream, &y[block][0][0][0][0]);
 
     // Now we are hopefully both in L1 and in the right layout so
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
-        (spin < 2 ? BLASUtils::cm(
-                        y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin])
-                  : BLASUtils::cconjm(y_spinor.get()[col][spin],
-                                      apimu,
-                                      x_spinor.get()[col][spin]));
+        (spin < 2
+             ? BLASUtils::cm<AT, S>(y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin])
+             : BLASUtils::cconjm<AT, S>(
+                   y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin]));
       }
     }
   }
@@ -350,11 +337,10 @@ class TwoFlavTwistedMassFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  TwoFlavTwistedMassFunctor(
-      double const *const apimu_,
-      double epsilon_,
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
-      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
+  TwoFlavTwistedMassFunctor(double const *const apimu_,
+                            double epsilon_,
+                            typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
+                            typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
       : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])},
         epsilon(rep<AT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
   {
@@ -396,27 +382,23 @@ class TwoFlavTwistedMassFunctor
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
         // (a + i mu gamma_5 tau_3 + epsilon tau_1) \psi
-        (spin < 2
-             ? BLASUtils::tau3cm_tau1_scaleadd<AT, S>(y_up_spinor[col][spin],
+        (spin < 2 ? BLASUtils::tau3cm_tau1_scaleadd<AT, S>(y_up_spinor[col][spin],
                                                            y_dn_spinor[col][spin],
                                                            apimu,
                                                            epsilon,
                                                            x_up_spinor[col][spin],
                                                            x_dn_spinor[col][spin])
-             : BLASUtils::tau3cconjm_tau1_scaleadd<AT, S>(
-                   y_up_spinor[col][spin],
-                   y_dn_spinor[col][spin],
-                   apimu,
-                   epsilon,
-                   x_up_spinor[col][spin],
-                   x_dn_spinor[col][spin]));
+                  : BLASUtils::tau3cconjm_tau1_scaleadd<AT, S>(y_up_spinor[col][spin],
+                                                               y_dn_spinor[col][spin],
+                                                               apimu,
+                                                               epsilon,
+                                                               x_up_spinor[col][spin],
+                                                               x_dn_spinor[col][spin]));
       }
     }
 
-    BLASUtils::streamOutSpinor<FT, V>(
-        y_up_base, (const AT *)y_up_spinor, nvec_in_spinor);
-    BLASUtils::streamOutSpinor<FT, V>(
-        y_dn_base, (const AT *)y_dn_spinor, nvec_in_spinor);
+    BLASUtils::streamOutSpinor<FT, V>(y_up_base, (const AT *)y_up_spinor, nvec_in_spinor);
+    BLASUtils::streamOutSpinor<FT, V>(y_dn_base, (const AT *)y_dn_spinor, nvec_in_spinor);
   }
 
  private:
