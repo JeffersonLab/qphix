@@ -97,9 +97,9 @@ class EvenOddNDTMWilsonReuseOperator
   double mu, mu_inv;
   double epsilon;
 
-  // we need the twisted mass Dslash for the flavour-diagonal part
+  // we need the twisted mass Dslash for AChiMinusBDPsi
   std::unique_ptr<TMDslash<FT, veclen, soalen, compress12>> Dtm;
-  // and the Wilson Dslash for the flavour-off-diagonal part
+  // and the Wilson Dslash to get the flavour-off-diagonal part right
   std::unique_ptr<Dslash<FT, veclen, soalen, comperss12>> Dw;
 
   SU3MatrixBlock *u[2];
