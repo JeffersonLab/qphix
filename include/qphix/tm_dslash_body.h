@@ -1090,7 +1090,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
     double alpha,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    const double musign)
 {
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
@@ -1130,7 +1131,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
+    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb, musign);
   }
 
 #ifdef QPHIX_DO_COMMS
