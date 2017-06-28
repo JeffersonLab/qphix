@@ -13,9 +13,12 @@ class EvenOddNDTMWilsonReuseOperator
     : public TwoFlavEvenOddLinearOperator<FT, veclen, soalen, compress12>
 {
  public:
-  typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock FullCloverBlock;
-  typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock FourSpinorBlock;
-  typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock SU3MatrixBlock;
+  typedef
+      typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock FullCloverBlock;
+  typedef
+      typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock FourSpinorBlock;
+  typedef
+      typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock SU3MatrixBlock;
 
   EvenOddNDTMWilsonReuseOperator(const double mass,
                                  const double mu,
@@ -28,14 +31,21 @@ class EvenOddNDTMWilsonReuseOperator
                                  bool use_tbc_[4] = nullptr,
                                  double tbc_phases_[4][2] = nullptr)
       : mass(mass), mass_factor_alpha(4 + mass), mass_factor_beta(0.25), mu(mu),
-        mu_inv(1.0 / ((4 + mass) * (4 + mass) + mu * mu - epsilon * epsilon)), epsilon(epsilon),
-        Dtm(new TMDslash<FT, veclen, soalen, compress12>(
-            geom, t_boundary, aniso_coeff_s, aniso_coeff_t, mass, mu, use_tbc_, tbc_phases_)),
+        mu_inv(1.0 / ((4 + mass) * (4 + mass) + mu * mu - epsilon * epsilon)),
+        epsilon(epsilon), Dtm(new TMDslash<FT, veclen, soalen, compress12>(geom,
+                                                                           t_boundary,
+                                                                           aniso_coeff_s,
+                                                                           aniso_coeff_t,
+                                                                           mass,
+                                                                           mu,
+                                                                           use_tbc_,
+                                                                           tbc_phases_)),
         Dw(new Dslash<FT, veclen, soalen, compress12>(
             geom, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
-        Dw_tmp({Dtm->getGeometry().allocCBFourSpinor(), Dtm->getGeometry().allocCBFourSpinor()}),
-        mu_p_eps_Dw_tmp(
-            {Dtm->getGeometry().allocCBFourSpinor(), Dtm->getGeometry().allocCBFourSpinor()})
+        Dw_tmp({Dtm->getGeometry().allocCBFourSpinor(),
+                Dtm->getGeometry().allocCBFourSpinor()}),
+        mu_p_eps_Dw_tmp({Dtm->getGeometry().allocCBFourSpinor(),
+                         Dtm->getGeometry().allocCBFourSpinor()})
   {
     this->u[0] = u[0];
     this->u[1] = u[1];
@@ -50,7 +60,9 @@ class EvenOddNDTMWilsonReuseOperator
     }
   }
 
-  void operator()(FourSpinorBlock *res[2], const FourSpinorBlock *const in[2], int isign) override
+  void operator()(FourSpinorBlock *res[2],
+                  const FourSpinorBlock *const in[2],
+                  int isign) override
   {
     constexpr int cb_even = 0;
     constexpr int cb_odd = 1;

@@ -123,7 +123,8 @@ class BiCGStabPUpdateFunctor
         // with tmp = p - omega
 
         // tmp = -omega v + p = p - omega v
-        BLASUtils::cnmadd<AT, S>(tmp_cmpx, omega, v_spinor[col][spin], p_spinor[col][spin]);
+        BLASUtils::cnmadd<AT, S>(
+            tmp_cmpx, omega, v_spinor[col][spin], p_spinor[col][spin]);
 
         // p = r + beta tmp
         BLASUtils::cmadd<AT, S>(p_spinor[col][spin], beta, tmp_cmpx, r_spinor[col][spin]);
@@ -205,12 +206,13 @@ class BiCGStabRXUpdateFunctor
 {
  public:
   typedef typename ArithType<FT>::Type AT;
-  BiCGStabRXUpdateFunctor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
-                          typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
-                          const typename Geometry<FT, V, S, compress>::FourSpinorBlock *t_,
-                          const typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
-                          double omega_[2],
-                          double alpha_[2])
+  BiCGStabRXUpdateFunctor(
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *r_,
+      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *t_,
+      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *p_,
+      double omega_[2],
+      double alpha_[2])
       : x(x_), r(r_), t(t_), p(p_)
   {
     omega[0] = rep<AT, double>(omega_[0]);
@@ -260,9 +262,11 @@ class BiCGStabRXUpdateFunctor
         AT tmp_cmpx[2][S];
 
         /* tmp = alpha p + x */
-        BLASUtils::cmadd<AT, S>(tmp_cmpx, alpha, p_spinor[col][spin], x_spinor[col][spin]);
+        BLASUtils::cmadd<AT, S>(
+            tmp_cmpx, alpha, p_spinor[col][spin], x_spinor[col][spin]);
         /* x = omega r + tmp = omega r + alpha p + x */
-        BLASUtils::cmadd<AT, S>(x_spinor[col][spin], omega, r_spinor[col][spin], tmp_cmpx);
+        BLASUtils::cmadd<AT, S>(
+            x_spinor[col][spin], omega, r_spinor[col][spin], tmp_cmpx);
 
         /* r = -omega t + r = r - omega t */
         BLASUtils::cnmadd<AT, S>(
@@ -271,8 +275,8 @@ class BiCGStabRXUpdateFunctor
         /* accumulate new r_norm into reduction */
         for (int cmpx = 0; cmpx < 2; cmpx++) {
           for (int s = 0; s < S; s++) {
-            reduction[s] +=
-                (double)r_spinor[col][spin][cmpx][s] * (double)r_spinor[col][spin][cmpx][s];
+            reduction[s] += (double)r_spinor[col][spin][cmpx][s] *
+                            (double)r_spinor[col][spin][cmpx][s];
           }
         }
       }
@@ -317,10 +321,10 @@ class TwistedMassFunctor
     // Now we are hopefully both in L1 and in the right layout so
     for (int col = 0; col < 3; col++) {
       for (int spin = 0; spin < 4; spin++) {
-        (spin < 2
-             ? BLASUtils::cm<AT, S>(y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin])
-             : BLASUtils::cconjm<AT, S>(
-                   y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin]));
+        (spin < 2 ? BLASUtils::cm<AT, S>(
+                        y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin])
+                  : BLASUtils::cconjm<AT, S>(
+                        y_spinor.get()[col][spin], apimu, x_spinor.get()[col][spin]));
       }
     }
   }
@@ -337,10 +341,11 @@ class TwoFlavTwistedMassFunctor
  public:
   typedef typename ArithType<FT>::Type AT;
 
-  TwoFlavTwistedMassFunctor(double const *const apimu_,
-                            double epsilon_,
-                            typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
-                            typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
+  TwoFlavTwistedMassFunctor(
+      double const *const apimu_,
+      double epsilon_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
       : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])},
         epsilon(rep<AT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
   {
