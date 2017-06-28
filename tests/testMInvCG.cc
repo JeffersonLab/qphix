@@ -44,12 +44,6 @@ template <typename FT,
           typename QdpSpinor>
 void TestMultishift::operator()()
 {
-  // XXX (Martin Ueding): Is this really needed?
-  Nx = args_.nrow_in[0];
-  Ny = args_.nrow_in[1];
-  Nz = args_.nrow_in[2];
-  Nt = args_.nrow_in[3];
-
   testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(1);
   if (!compress12) {
     testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(-1);
