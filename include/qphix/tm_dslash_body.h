@@ -1184,7 +1184,7 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
   // Iterate over the two result flavors …
   for (int f : {0, 1}) {
     // Compute the flavor-diagonal part.
-    tmdslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb);
+    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb);
 
     // The `res[f]` contains the flavor-diagonal part. Now the flavor
     // off-diagonal part has to be added. This is just the opposite
