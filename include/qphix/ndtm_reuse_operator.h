@@ -42,10 +42,10 @@ class EvenOddNDTMWilsonReuseOperator
                                                                            tbc_phases_)),
         Dw(new Dslash<FT, veclen, soalen, compress12>(
             geom, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
-        Dw_tmp({Dtm->getGeometry().allocCBFourSpinor(),
-                Dtm->getGeometry().allocCBFourSpinor()}),
-        mu_p_eps_Dw_tmp({Dtm->getGeometry().allocCBFourSpinor(),
-                         Dtm->getGeometry().allocCBFourSpinor()})
+        Dw_tmp{Dtm->getGeometry().allocCBFourSpinor(),
+               Dtm->getGeometry().allocCBFourSpinor()},
+        mu_p_eps_Dw_tmp{Dtm->getGeometry().allocCBFourSpinor(),
+                        Dtm->getGeometry().allocCBFourSpinor()}
   {
     this->u[0] = u[0];
     this->u[1] = u[1];
