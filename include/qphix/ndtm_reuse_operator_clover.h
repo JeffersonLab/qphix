@@ -101,12 +101,12 @@ class EvenOddNDTMCloverReuseOperator
 
   void operator()(FourSpinorBlock *res[2],
                   const FourSpinorBlock *const in[2],
-                  int isign) override
+                  int isign, int target_cb) const override
   {
     double beta = 0.25;
 
-    D->two_flav_dslash(tmp, in, u[0], invclov, isign, 0);
-    D->two_flav_achimbdpsi(res, tmp, in, u[1], clov, beta, epsilon, isign, 1);
+    D->two_flav_dslash(tmp, in, u[target_cb], invclov, isign, target_cb);
+    D->two_flav_achimbdpsi(res, tmp, in, u[1-target_cb], clov, beta, epsilon, isign, 1-target_cb);
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry()

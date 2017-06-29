@@ -53,7 +53,7 @@ class EvenOddNDTMWilsonReuseOperator
 
   ~EvenOddNDTMWilsonReuseOperator()
   {
-    Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
+    Geometry<FT, veclen, soalen, compress12> &geom = Dtm->getGeometry();
     for (int i = 0; i < 2; i++) {
       geom.free(Dw_tmp[i]);
       geom.free(mu_p_eps_Dw_tmp[i]);
@@ -62,18 +62,16 @@ class EvenOddNDTMWilsonReuseOperator
 
   void operator()(FourSpinorBlock *res[2],
                   const FourSpinorBlock *const in[2],
-                  int isign) override
+                  int isign, int target_cb) const override
   {
-    constexpr int cb_even = 0;
-    constexpr int cb_odd = 1;
     constexpr int up = 0;
     constexpr int dn = 1;
 
     /* for the non-degenerate case, we need to apply the
      * hopping matrix ("Wilson dslash" or Dslash::dslash()) rather than TMDslash::dslash()
      * which would also apply the twisted mass term right after */
-    Dw->dslash(Dw_tmp[up], in[up], u[cb_odd], isign, cb_odd);
-    Dw->dslash(Dw_tmp[dn], in[dn], u[cb_odd], isign, cb_odd);
+    Dw->dslash(Dw_tmp[up], in[up], u[target_cb], isign, target_cb);
+    Dw->dslash(Dw_tmp[dn], in[dn], u[target_cb], isign, target_cb);
 
     // now we apply the inverse twisted mass term and the epsilon flavour cross term
     //   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
@@ -85,7 +83,7 @@ class EvenOddNDTMWilsonReuseOperator
                           mu_p_eps_Dw_tmp,
                           Dw_tmp,
                           Dw->getGeometry(),
-                          n_blas_simt);
+                          Dw->getGeometry().getNSIMT());
 
     /* now the two-flavour AChiMinusBDPsi puts it all together
      *  M_oo^{f=0} = (alpha + i*mu*gamma5 ) \chi^{f=0} - eps*\chi^{f=1} -
@@ -95,12 +93,12 @@ class EvenOddNDTMWilsonReuseOperator
     Dtm->two_flav_AChiMinusBDPsi(res,
                                  mu_p_eps_Dw_tmp,
                                  in,
-                                 u[cb_even],
+                                 u[1-target_cb],
                                  mass_factor_alpha,
                                  mass_factor_beta,
                                  epsilon,
                                  isign,
-                                 cb_even);
+                                 1-target_cb);
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry() { return Dtm->getGeometry(); }
@@ -114,7 +112,7 @@ class EvenOddNDTMWilsonReuseOperator
   // we need the twisted mass Dslash for AChiMinusBDPsi
   std::unique_ptr<TMDslash<FT, veclen, soalen, compress12>> Dtm;
   // and the Wilson Dslash to get the flavour-off-diagonal part right
-  std::unique_ptr<Dslash<FT, veclen, soalen, comperss12>> Dw;
+  std::unique_ptr<Dslash<FT, veclen, soalen, compress12>> Dw;
 
   SU3MatrixBlock *u[2];
 

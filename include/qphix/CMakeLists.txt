@@ -38,7 +38,7 @@ if( ${clover} )
 endif()
 
 if( ${twisted_mass} ) 
-	list(APPEND header_files twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
+	list(APPEND header_files ndtm_reuse_operator.h twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
 endif()
 
 if( ${tm_clover} )
