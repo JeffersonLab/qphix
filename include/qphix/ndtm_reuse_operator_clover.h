@@ -104,9 +104,10 @@ class EvenOddNDTMCloverReuseOperator
                   int isign, int target_cb) const override
   {
     double beta = 0.25;
+    const int other_cb = 1-target_cb;
 
-    D->two_flav_dslash(tmp, in, u[target_cb], invclov, isign, target_cb);
-    D->two_flav_achimbdpsi(res, tmp, in, u[1-target_cb], clov, beta, epsilon, isign, 1-target_cb);
+    D->two_flav_dslash(tmp, in, u[other_cb], invclov, isign, other_cb);
+    D->two_flav_achimbdpsi(res, tmp, in, u[target_cb], clov, beta, epsilon, isign, target_cb);
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry()

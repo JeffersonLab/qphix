@@ -67,11 +67,13 @@ class EvenOddNDTMWilsonReuseOperator
     constexpr int up = 0;
     constexpr int dn = 1;
 
+    const int other_cb = 1-target_cb;
+
     /* for the non-degenerate case, we need to apply the
      * hopping matrix ("Wilson dslash" or Dslash::dslash()) rather than TMDslash::dslash()
      * which would also apply the twisted mass term right after */
-    Dw->dslash(Dw_tmp[up], in[up], u[target_cb], isign, target_cb);
-    Dw->dslash(Dw_tmp[dn], in[dn], u[target_cb], isign, target_cb);
+    Dw->dslash(Dw_tmp[up], in[up], u[other_cb], isign, other_cb);
+    Dw->dslash(Dw_tmp[dn], in[dn], u[other_cb], isign, other_cb);
 
     // now we apply the inverse twisted mass term and the epsilon flavour cross term
     //   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
@@ -93,12 +95,12 @@ class EvenOddNDTMWilsonReuseOperator
     Dtm->two_flav_AChiMinusBDPsi(res,
                                  mu_p_eps_Dw_tmp,
                                  in,
-                                 u[1-target_cb],
+                                 u[target_cb],
                                  mass_factor_alpha,
                                  mass_factor_beta,
                                  epsilon,
                                  isign,
-                                 1-target_cb);
+                                 target_cb);
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry() { return Dtm->getGeometry(); }
