@@ -1182,13 +1182,14 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
     int isign,
     int cb)
 {
-  const int n_blas_simt = 1;
+  const int n_blas_simt = s->getNSIMT();
 
   // Iterate over the two result flavors …
   for (int f : {0, 1}) {
     // Compute the flavor-diagonal part, for the down flavour, we change the sign
     // of the twisted mass to imlpement tau3
-    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb, 1.0-2.0*f);
+    const double musign = 1.0-2.0*f;
+    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb, musign);
 
     // The `res[f]` contains the flavor-diagonal part. Now the flavor
     // off-diagonal part has to be added. This is just the opposite
