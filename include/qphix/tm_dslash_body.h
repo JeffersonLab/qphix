@@ -1172,7 +1172,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 
 template <typename FT, int veclen, int soalen, bool compress12>
 void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
-    FourSpinorBlock *res[2],
+    FourSpinorBlock * const res[2],
     const FourSpinorBlock *const psi[2],
     const FourSpinorBlock *const chi[2],
     const SU3MatrixBlock *u,

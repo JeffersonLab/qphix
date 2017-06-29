@@ -60,7 +60,7 @@ class EvenOddNDTMWilsonReuseOperator
     }
   }
 
-  void operator()(FourSpinorBlock *res[2],
+  void operator()(FourSpinorBlock * const res[2],
                   FourSpinorBlock const *const in[2],
                   int isign, int target_cb) override
   {
@@ -80,7 +80,8 @@ class EvenOddNDTMWilsonReuseOperator
     // hence the change of sign on the imaginary part of the complex factor
     // the sign of the off-diagonal contribution will be corrected
     // by AChiMinusBDPsi below
-    two_flav_twisted_mass({mass_factor_alpha * mu_inv, -isign * mu * mu_inv},
+    const double apimu[2] = {mass_factor_alpha * mu_inv, -isign * mu * mu_inv};
+    two_flav_twisted_mass(apimu,
                           epsilon * mu_inv,
                           mu_p_eps_Dw_tmp,
                           Dw_tmp,

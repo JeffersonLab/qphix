@@ -47,7 +47,7 @@ class TMDslash
                             int cb,
                             const double musign = 1.0);
 
-  void two_flav_AChiMinusBDPsi(FourSpinorBlock *res[2],
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
                                const FourSpinorBlock *const psi[2],
                                const FourSpinorBlock *const chi[2],
                                const SU3MatrixBlock *u,
