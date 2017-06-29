@@ -53,16 +53,16 @@ class TwoFlavEvenOddLinearOperator
 
 #ifdef __INTEL_COMPILER
   virtual void
-  operator()(FourSpinorBlock *res[2], FourSpinorBlock *const in[2], int isign, int target_cb = 1) const
+  operator()(FourSpinorBlock *res[2], FourSpinorBlock *const in[2], int isign, int target_cb = 1)
   {
     (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign, target_cb);
   }
 #endif
 
   virtual void operator()(FourSpinorBlock *res[2],
-                          const FourSpinorBlock *const in[2],
+                          FourSpinorBlock const *const in[2],
                           int isign,
-                          int target_cb = 1) const = 0;
+                          int target_cb = 1) = 0;
 
   virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
 };

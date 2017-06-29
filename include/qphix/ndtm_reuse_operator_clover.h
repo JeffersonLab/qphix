@@ -101,7 +101,7 @@ class EvenOddNDTMCloverReuseOperator
 
   void operator()(FourSpinorBlock *res[2],
                   const FourSpinorBlock *const in[2],
-                  int isign, int target_cb) const override
+                  int isign, int target_cb) override
   {
     double beta = 0.25;
     const int other_cb = 1-target_cb;

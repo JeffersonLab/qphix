@@ -61,8 +61,8 @@ class EvenOddNDTMWilsonReuseOperator
   }
 
   void operator()(FourSpinorBlock *res[2],
-                  const FourSpinorBlock *const in[2],
-                  int isign, int target_cb) const override
+                  FourSpinorBlock const *const in[2],
+                  int isign, int target_cb) override
   {
     constexpr int up = 0;
     constexpr int dn = 1;
