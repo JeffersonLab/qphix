@@ -1186,14 +1186,25 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
 
   // Iterate over the two result flavors …
   for (int f : {0, 1}) {
-    // Compute the flavor-diagonal part, for the down flavour, we change the sign
-    // of the twisted mass to imlpement tau3
+    // The following does:
+    //
+    //   \alpha*{(1 + i(\mu/\alpha)\tau3\gamma5)} \chi - \beta*Doe \psi
+    // = {\alpha + i\mu\tau3\gamma5} \chi - \beta*Doe\psi
+    //
+    // where \psi at this stage is expected to be
+    //
+    //        (\alpha - i\mu\tau3\gamma5 + \eps\tau1) Deo \chi
+    // \psi = ------------------------------------------------
+    //                ( \alpha^2 + \mu^2 - \eps^2 )
+    //
+    // such that all signs come out correct and \beta should be 1/4
+    // we use "musign" to implement tau3
     const double musign = 1.0-2.0*f;
     dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb, musign);
 
-    // The `res[f]` contains the flavor-diagonal part. Now the flavor
-    // off-diagonal part has to be added. This is just the opposite
-    // flavor χ multiplied with -ε.
+    // now 
+    //   \res += -\eps\tau1 \chi
+    // (note the minus sign) to get the full \tilde{M}_{cb,cb}
     axpy(-epsilon, chi[1 - f], res[f], *s, n_blas_simt);
   }
 }
