@@ -1,7 +1,9 @@
 #pragma once
 
 #include "qphix/linearOp.h"
-#include "qphix/tm_clov_dslash_def.h"
+#include "qphix/tm_dslash_def.h"
+#include "qphix/dslash_def.h"
+
 
 #include <memory>
 
