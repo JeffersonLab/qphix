@@ -107,8 +107,11 @@ class NDTMReuseOperatorHermTest : public ::testing::Test
         Mchi[cb][f] = qhandles.back().get();
         qhandles.push_back( makeFourSpinorHandle(geom) );
         MdagMchi[cb][f] = qhandles.back().get();
+
+        QPhiX::masterPrintf("%p %p %p\n", (void*)chi[cb][f], (void*)Mchi[cb][f], (void*)MdagMchi[cb][f]);
       }
     }
+    QPhiX::masterPrintf("%p %p\n", (void*)u_packed[0], (void*)u_packed[1]);
 
     // pack the gaussian sources
     QPhiX::qdp_pack_spinor<>(chi_qdp_f0, chi[cb_even][0], chi[cb_odd][0], geom);
