@@ -8,6 +8,7 @@ if( ${testing})
      list(APPEND HEADERS compare_spinors.h tolerance.h veclen.h)
      add_executable(tests_g
          main.cc
+         ndtm_herm.cc
          clover_product.cc
          a_imugamma5.cc
          )
