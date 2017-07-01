@@ -48,7 +48,8 @@ class NDTMReuseOperatorHermTest : public ::testing::Test
   double nu_f;
   double aniso_fac_s;
   double aniso_fac_t;
-  
+ 
+
   NDTMReuseOperatorHermTest()
       : geom(Layout::subgridLattSize().slice(),
              some_user_args.getBy(),
@@ -63,8 +64,11 @@ class NDTMReuseOperatorHermTest : public ::testing::Test
         aniso_fac_t(1.0),
         packed_gauge_cb0(geom), packed_gauge_cb1(geom),
         u_packed{ packed_gauge_cb0.get(), packed_gauge_cb1.get() },
-        NDTMEO(-0.37, 0.1, 0.01, u_packed, &geom, 1, aniso_fac_s, aniso_fac_t) // no twisted bcs
+        NDTMEO(nullptr)
   {
+    NDTMEO = new EvenOddNDTMWilsonReuseOperator<typename Geom::FT, Geom::veclen, Geom::soalen, Geom::compress12>
+                   (-0.37, 0.1, 0.01, u_packed, &geom, 1, aniso_fac_s, aniso_fac_t);
+
     constexpr int cb_even = 0;
     constexpr int cb_odd = 1;
     // Make a random gauge field
@@ -120,10 +124,13 @@ class NDTMReuseOperatorHermTest : public ::testing::Test
     const int cbsize_in_blocks = rb[0].numSiteTable() / Geom::soalen;
   }
 
+  ~NDTMReuseOperatorHermTest(){
+    delete NDTMEO;
+  }
+
   Geom geom;
 
-  QPhiX::EvenOddNDTMWilsonReuseOperator<typename Geom::FT, Geom::veclen, Geom::soalen, Geom::compress12>
-      NDTMEO;
+  QPhiX::EvenOddNDTMWilsonReuseOperator<typename Geom::FT, Geom::veclen, Geom::soalen, Geom::compress12> *NDTMEO;
 
   QDPSpinor chi_qdp_f0;
   QDPSpinor chi_qdp_f1;
@@ -167,12 +174,12 @@ TYPED_TEST(NDTMReuseOperatorHermTest, GaussianSource)
           this->psi_qdp_f1, this->MdagMchi[cb_even][1], this->MdagMchi[cb_odd][1], this->geom);
 
       // apply two-flavour operator
-      this->NDTMEO(this->Mchi[cb],
+      (this->NDTMEO)->operator()(this->Mchi[cb],
                    this->chi[cb],
                    isign,
                    cb);
       // apply daggered operator
-      this->NDTMEO(this->MdagMchi[cb],
+      (this->NDTMEO)->operator()(this->MdagMchi[cb],
                    this->chi[cb],
                    -isign,
                    cb);
