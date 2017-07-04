@@ -685,7 +685,7 @@ typename std::enable_if<
         const Spinor1>::value,
     void>::type
 convert(typename Geometry<FTOut, VOut, SOut, CompressOut>::FourSpinorBlock
-            *spinor_out[num_flav],
+            *const spinor_out[num_flav],
         double scale_factor,
         Spinor1 *const spinor_in[num_flav],
         const Geometry<FTOut, VOut, SOut, CompressOut> &geom_out,
