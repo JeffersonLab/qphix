@@ -4,7 +4,6 @@
 #include "qphix/tm_dslash_def.h"
 #include "qphix/dslash_def.h"
 
-
 #include <memory>
 
 namespace QPhiX
@@ -33,19 +32,20 @@ class EvenOddNDTMWilsonReuseOperator
                                  bool use_tbc_[4] = nullptr,
                                  double tbc_phases_[4][2] = nullptr)
       : mass(mass), mass_factor_alpha(4 + mass), mass_factor_beta(0.25), mu(mu),
+        epsilon(epsilon),
         mu_inv(1.0 / ((4 + mass) * (4 + mass) + mu * mu - epsilon * epsilon)),
-        epsilon(epsilon), Dtm(new TMDslash<FT, veclen, soalen, compress12>(geom,
-                                                                           t_boundary,
-                                                                           aniso_coeff_s,
-                                                                           aniso_coeff_t,
-                                                                           mass,
-                                                                           mu,
-                                                                           use_tbc_,
-                                                                           tbc_phases_)),
+        Dtm(new TMDslash<FT, veclen, soalen, compress12>(geom,
+                                                         t_boundary,
+                                                         aniso_coeff_s,
+                                                         aniso_coeff_t,
+                                                         mass,
+                                                         mu,
+                                                         use_tbc_,
+                                                         tbc_phases_)),
         Dw(new Dslash<FT, veclen, soalen, compress12>(
             geom, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
-        Dw_tmp{Dtm->getGeometry().allocCBFourSpinor(),
-               Dtm->getGeometry().allocCBFourSpinor()},
+        Dw_tmp{Dw->getGeometry().allocCBFourSpinor(),
+               Dw->getGeometry().allocCBFourSpinor()},
         mu_p_eps_Dw_tmp{Dtm->getGeometry().allocCBFourSpinor(),
                         Dtm->getGeometry().allocCBFourSpinor()}
   {
@@ -62,14 +62,15 @@ class EvenOddNDTMWilsonReuseOperator
     }
   }
 
-  void operator()(FourSpinorBlock * const res[2],
+  void operator()(FourSpinorBlock *const res[2],
                   FourSpinorBlock const *const in[2],
-                  int isign, int target_cb) override
+                  int isign,
+                  int target_cb = 1) override
   {
     constexpr int up = 0;
     constexpr int dn = 1;
 
-    const int other_cb = 1-target_cb;
+    const int other_cb = 1 - target_cb;
 
     /* for the non-degenerate case, we need to apply the
      * hopping matrix ("Wilson dslash" or Dslash::dslash()) rather than TMDslash::dslash()
@@ -77,12 +78,12 @@ class EvenOddNDTMWilsonReuseOperator
     Dw->dslash(Dw_tmp[up], in[up], u[other_cb], isign, other_cb);
     Dw->dslash(Dw_tmp[dn], in[dn], u[other_cb], isign, other_cb);
 
-    // now we apply the inverse twisted mass term and the epsilon flavour cross term
-    //   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
-    // hence the change of sign on the twisted mass
-    // ALSO NOTE: the sign of the off-diagonal contribution will be corrected
-    // by AChiMinusBDPsi below
-    const double apimu[2] = { mass_factor_alpha * mu_inv, -isign * mu * mu_inv};
+    //// now we apply the inverse twisted mass term and the epsilon flavour cross term
+    ////   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
+    //// hence the change of sign on the twisted mass
+    //// ALSO NOTE: the sign of the off-diagonal contribution will be corrected
+    //// by AChiMinusBDPsi below
+    const double apimu[2] = {mass_factor_alpha * mu_inv, -isign * mu * mu_inv};
     two_flav_twisted_mass(apimu,
                           epsilon * mu_inv,
                           Dw_tmp,
@@ -90,11 +91,11 @@ class EvenOddNDTMWilsonReuseOperator
                           Dw->getGeometry(),
                           Dw->getGeometry().getNSIMT());
 
-    /* now the two-flavour AChiMinusBDPsi puts it all together
-     *  M_oo^{f=0} = (alpha + i*mu*gamma5 ) \chi^{f=0} - eps*\chi^{f=1} -
-     *               1/(4*(alpha^2 + mu^2 - eps^2)) D_oe *
-     *               ( (alpha - i*mu*gamma5) Deo \chi^{f=0} + eps*Deo \chi^{f=1} )
-     */
+    ///* now the two-flavour AChiMinusBDPsi puts it all together
+    // *  M_oo^{f=0} = (alpha + i*mu*gamma5 ) \chi^{f=0} - eps*\chi^{f=1} -
+    // *               1/(4*(alpha^2 + mu^2 - eps^2)) D_oe *
+    // *               ( (alpha - i*mu*gamma5) Deo \chi^{f=0} + eps*Deo \chi^{f=1} )
+    // */
     Dtm->two_flav_AChiMinusBDPsi(res,
                                  mu_p_eps_Dw_tmp,
                                  in,
@@ -110,16 +111,18 @@ class EvenOddNDTMWilsonReuseOperator
 
  private:
   double mass;
-  double mass_factor_alpha, mass_factor_beta;
-  double mu, mu_inv;
+  double mass_factor_alpha;
+  double mass_factor_beta;
   double epsilon;
+  double mu;
+  double mu_inv;
+
+  SU3MatrixBlock *u[2];
 
   // we need the twisted mass Dslash for AChiMinusBDPsi
   std::unique_ptr<TMDslash<FT, veclen, soalen, compress12>> Dtm;
   // and the Wilson Dslash to get the flavour-off-diagonal part right
   std::unique_ptr<Dslash<FT, veclen, soalen, compress12>> Dw;
-
-  SU3MatrixBlock *u[2];
 
   FourSpinorBlock *Dw_tmp[2];
   FourSpinorBlock *mu_p_eps_Dw_tmp[2];
