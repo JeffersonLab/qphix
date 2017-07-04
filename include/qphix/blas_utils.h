@@ -83,18 +83,11 @@ inline void tau3cm_tau1_scaleadd(AT res_up[2][soalen],
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : soalen)
   for (int s = 0; s < soalen; s++) {
-    res_up[RE][s] = alpha[RE] * x_up[RE][s] - alpha[IM] * x_up[IM][s];
-    res_up[IM][s] = alpha[RE] * x_up[IM][s] + alpha[IM] * x_up[RE][s];
+    res_up[RE][s] = alpha[RE] * x_up[RE][s] - alpha[IM] * x_up[IM][s] + beta*x_dn[RE][s];
+    res_up[IM][s] = alpha[RE] * x_up[IM][s] + alpha[IM] * x_up[RE][s] + beta*x_dn[IM][s];
 
-    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] + alpha[IM] * x_dn[IM][s];
-    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] - alpha[IM] * x_dn[RE][s];
-
-    // hopefully all x are still cached
-    res_up[RE][s] += beta * x_dn[RE][s];
-    res_up[IM][s] += beta * x_dn[IM][s];
-
-    res_dn[RE][s] += beta * x_up[RE][s];
-    res_dn[IM][s] += beta * x_up[IM][s];
+    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] + alpha[IM] * x_dn[IM][s] + beta*x_up[RE][s];
+    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] - alpha[IM] * x_dn[RE][s] + beta*x_up[IM][s];
   }
 }
 
@@ -111,18 +104,11 @@ inline void tau3cconjm_tau1_scaleadd(AT res_up[2][S],
 {
 #pragma omp simd aligned(res_up, res_dn, x_up, x_dn : S)
   for (int s = 0; s < S; s++) {
-    res_up[RE][s] = alpha[RE] * x_up[RE][s] + alpha[IM] * x_up[IM][s];
-    res_up[IM][s] = alpha[RE] * x_up[IM][s] - alpha[IM] * x_up[RE][s];
+    res_up[RE][s] = alpha[RE] * x_up[RE][s] + alpha[IM] * x_up[IM][s] + beta*x_dn[RE][s];
+    res_up[IM][s] = alpha[RE] * x_up[IM][s] - alpha[IM] * x_up[RE][s] + beta*x_dn[IM][s];
 
-    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] - alpha[IM] * x_dn[IM][s];
-    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] + alpha[IM] * x_dn[RE][s];
-
-    // hopefully all x are still cached
-    res_up[RE][s] += beta * x_dn[RE][s];
-    res_up[IM][s] += beta * x_dn[IM][s];
-
-    res_dn[RE][s] += beta * x_up[RE][s];
-    res_dn[IM][s] += beta * x_up[IM][s];
+    res_dn[RE][s] = alpha[RE] * x_dn[RE][s] - alpha[IM] * x_dn[IM][s] + beta*x_up[RE][s];
+    res_dn[IM][s] = alpha[RE] * x_dn[IM][s] + alpha[IM] * x_dn[RE][s] + beta*x_up[IM][s];
   }
 }
 
