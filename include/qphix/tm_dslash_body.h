@@ -1199,8 +1199,8 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
     //
     // such that all signs come out correct and \beta should be 1/4
     // we use "musign" to implement tau3
-    const double musign = 1.0-2.0*f;
-    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb, musign);
+    double musign = 1.0-2.0*f;
+    dslashAChiMinusBDPsi(res[f], psi[f], chi[f], u, alpha, beta, isign, cb, musign);
 
     // now 
     //   \res += -\eps\tau1 \chi
