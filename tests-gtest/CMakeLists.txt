@@ -13,6 +13,9 @@ if( ${testing})
          a_imugamma5.cc
          )
 
+     add_dependencies(tests_g qphix_codegen qphix_solver)
+
+
     #testlip is defined in ../tests
      target_link_libraries(tests_g testlib qphix_solver gtest_all ${EXT_LIBS})
 
