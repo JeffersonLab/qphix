@@ -249,9 +249,13 @@ class InvRichardsonMultiPrec
       r_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
     for (uint8_t f = 0; f < num_flav; ++f)
       dx_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
-    if( MdagM ){
-      for (uint8_t f = 0; f < num_flav; ++f)
-        tmp_MdagM[f] = (Spinor *)geom.allocCBFourSpinor();
+      for (uint8_t f = 0; f < num_flav; ++f){
+        if( MdagM ){
+          tmp_MdagM[f] = (Spinor *)geom.allocCBFourSpinor();
+        } else {
+          tmp_MdagM[f] = nullptr;
+        }
+      }
     }
 
     // Initial value for norm2threads. Use all threads
