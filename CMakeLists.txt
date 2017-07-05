@@ -34,6 +34,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
 
+
+# Include our own files first.
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/include)
+if ( ${testing} ) 
+  include_directories(${PROJECT_SOURCE_DIR}/external )
+endif()
+
 ###############################################################################
 #                                   OpenMP                                    #
 ###############################################################################
@@ -293,12 +301,6 @@ configure_file(
   ${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
   ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h 
 )
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_BINARY_DIR}/include)
-if ( ${testing} ) 
-  include_directories(${PROJECT_SOURCE_DIR}/external )
-endif()
 
 add_subdirectory(include/qphix)
 add_subdirectory(lib)

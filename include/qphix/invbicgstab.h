@@ -77,7 +77,7 @@ class InvBiCGStab : public AbstractSolver<FT,
   // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
   using AbstractSolver<FT, V, S, compress12, num_flav>::operator();
 
-  void operator()(Spinor *x[num_flav],
+  void operator()(Spinor *const x[num_flav],
                   const Spinor *const rhs[num_flav],
                   const double RsdTarget,
                   int &n_iters,
@@ -86,7 +86,7 @@ class InvBiCGStab : public AbstractSolver<FT,
                   unsigned long &mv_apps,
                   int isign,
                   bool verbose,
-                  int cb = 1) const
+                  int cb = 1) const override
   {
     site_flops = 0;
     mv_apps = 0;

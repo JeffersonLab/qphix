@@ -85,7 +85,7 @@ class InvCG : public AbstractSolver<FT,
   // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
   using AbstractSolver<FT, veclen, soalen, compress12, num_flav>::operator();
 
-  virtual void operator()(Spinor *x[num_flav],
+  virtual void operator()(Spinor *const x[num_flav],
                           const Spinor *const rhs[num_flav],
                           const double RsdTarget,
                           int &n_iters,
