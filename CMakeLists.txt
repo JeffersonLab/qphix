@@ -294,7 +294,7 @@ endif()
 
 ###############################################################################
 
-set(test_runner_args -by 4 -bz 4 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x 16 -y 16 -z 16 -t 16 -prec f -geom 1 1 1 2 -soalen ${test_soalen})
+set(test_runner_args -by 4 -bz 4 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x 64 -y 16 -z 8 -t 8 -prec f -geom 1 1 1 2 -soalen ${test_soalen})
 
 ###############################################################################
 configure_file(
