@@ -706,7 +706,7 @@ void TestDslash::testCG(const multi1d<U> &u, int t_bc)
       
       Phi diff = chi3 - psi;
       Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
-      QDPIO::cout << "BiCGStab Solve isign=" << isign
+      QDPIO::cout << "Wilson CG Solve isign=" << isign
                   << " True norm is: " << true_norm << endl;
 
       expect_near(chi3, psi, 1e-9, geom, cb, "Wilson CG");
