@@ -231,8 +231,8 @@ class InvRichardsonMultiPrec
   }
 
   InvRichardsonMultiPrec(
-      EvenOddLinearOperator<FT, V, S, Compress> &m_outer_,
-      AbstractSolver<FTInner, VInner, SInner, CompressInner> &solver_inner_,
+      EvenOddLinearOperatorBase &m_outer_,
+      AbstractSolver<FTInner, VInner, SInner, CompressInner, EvenOddLinearOperatorBase::num_flav > &solver_inner_,
       const double delta_,
       const int max_iters_)
       : m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_),
