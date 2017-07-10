@@ -343,13 +343,25 @@ class TwoFlavTwistedMassFunctor
 
   TwoFlavTwistedMassFunctor(
       double const *const apimu_,
-      double epsilon_,
+      double const epsilon_,
       typename Geometry<FT, V, S, compress>::FourSpinorBlock const *const *x_,
       typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
       : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])},
         epsilon(rep<AT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
   {
   }
+
+#ifdef __INTEL_COMPILER
+  TwoFlavTwistedMassFunctor(
+      double const * apimu_,
+      double const epsilon_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *x_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *const *y_)
+      : apimu{rep<AT, double>(apimu_[0]), rep<AT, double>(apimu_[1])},
+        epsilon(rep<AT, double>(epsilon_)), x{x_[0], x_[1]}, y{y_[0], y_[1]}
+  {
+  }
+#endif
 
   inline void func(int block)
   {

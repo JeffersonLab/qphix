@@ -57,6 +57,56 @@ class TMDslash
                                int isign,
                                int cb);
 
+#ifdef __INTEL_COMPILER  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock *const psi[2],
+                               FourSpinorBlock *const chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               FourSpinorBlock * chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               const FourSpinorBlock * const chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+#endif
+
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
  private:
