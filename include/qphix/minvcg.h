@@ -160,7 +160,7 @@ class MInvCG : public AbstractMultiSolver<FT, veclen, soalen, compress12>
     }
 #endif
 
-    M(mp, p_0, +1, cb);
+    M(mp, p_0, +isign, cb);
 
 #ifdef DEBUG_MINVCG
     {
@@ -170,7 +170,7 @@ class MInvCG : public AbstractMultiSolver<FT, veclen, soalen, compress12>
     }
 #endif
 
-    M(mmp, mp, -1, cb);
+    M(mmp, mp, -isign, cb);
 
 #ifdef DEBUG_MINVCG
     {
@@ -274,8 +274,8 @@ class MInvCG : public AbstractMultiSolver<FT, veclen, soalen, compress12>
       cp = c;
       bp = b;
 
-      M(mp, p_0, +1, cb);
-      M(mmp, mp, -1, cb);
+      M(mp, p_0, +isign, cb);
+      M(mmp, mp, -isign, cb);
       mv_apps += 2;
 
       // d = norm2(Mp) = < M p | M p > =  <p | M^\dagger M p>
