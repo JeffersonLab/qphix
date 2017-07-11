@@ -71,7 +71,6 @@ namespace QPhiXTesting {
 		  _the_env = new  QPhiXTesting::QDPXXTestEnv(argc,&argv);
 		  ::testing::AddGlobalTestEnvironment(_the_env);
 		  auto test_result = RUN_ALL_TESTS();
-		  delete(_the_env);
 		  return test_result;
 	}
 
