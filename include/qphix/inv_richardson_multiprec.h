@@ -47,7 +47,8 @@ class InvRichardsonMultiPrec
                   unsigned long &mv_apps,
                   int isign,
                   bool verbose,
-                  int cb = 1) const override
+                  int cb = 1,
+		  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const override
   {
     int iter = 0;
     int mv_apps_outer = 0;
@@ -61,7 +62,14 @@ class InvRichardsonMultiPrec
     site_flops_outer += 24 + 23; // 24 muls, 23 adds
 
     // This is the target residuum
-    double rsd_t = RsdTarget * RsdTarget * rhs_sq;
+    double rsd_t = RsdTarget * RsdTarget;
+    if( residType == QPhiX::RELATIVE) {
+	rsd_t  *= rhs_sq;
+        masterPrintf("RICHARDSON: RelativeResiduum requested\n");
+    }
+    else {
+	masterPrintf("RICHARDSON: Absolut Residuum requested\n");
+    }
 
     m_outer(tmp, x, isign, cb);
     mv_apps_outer++;
