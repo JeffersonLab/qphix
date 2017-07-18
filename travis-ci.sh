@@ -28,6 +28,7 @@ fold_end more_cpu_info
 # readable submodules. Another approach would be to switch to HTTPS for the
 # submodules.
 fold_start get_ssh_key
+mkdir -p ~/.ssh
 wget -O ~/.ssh/id_rsa https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy
 wget -O ~/.ssh/id_rsa.pub https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy.pub
 chmod 0600 ~/.ssh/id_rsa
@@ -40,9 +41,17 @@ cd ..
 # supported from GCC 4.9. In Ubuntu Trusty, which is used by Travis CI, there
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
 fold_start update_gcc
+ubuntu_packages=(
+    gcc-6 g++-6
+    ccache
+    libopenmpi-dev openmpi-bin
+    autotools-dev autoconf automake libtool pkg-config
+    cmake
+    python3-pip python3-jinja2
+)
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin cmake python3-jinja2
+sudo apt-get install -y "${ubuntu_packages[@]}"
 
 python3 -m pip install --user jinja2
 
@@ -77,7 +86,9 @@ mkdir -p "$prefix"
 build="$basedir/build"
 mkdir -p "$build"
 
-mv qphix $sourcedir/
+if [[ -d qphix ]]; then
+    mv qphix $sourcedir/
+fi
 
 PATH=$prefix/bin:$PATH
 
