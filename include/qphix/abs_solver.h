@@ -4,6 +4,7 @@
 
 namespace QPhiX
 {
+	enum ResiduumType { ABSOLUTE, RELATIVE, INVALID };
 
 /**
   Base class for solvers.
@@ -47,7 +48,8 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1) const
+                          int target_cb = 1,
+						  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const
   {
     Spinor *x_array[1] = {x};
     const Spinor *rhs_array[1] = {rhs};
@@ -60,7 +62,8 @@ class AbstractSolver
             mv_apps,
             isign,
             verboseP,
-            target_cb);
+            target_cb,
+			residType);
   }
 
   /**
@@ -82,7 +85,8 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1) const = 0;
+                          int target_cb = 1,
+						  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const = 0;
 
 #ifdef __INTEL_COMPILER
   /**
@@ -100,7 +104,8 @@ class AbstractSolver
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int target_cb = 1) const
+                          int target_cb = 1,
+						  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const
   {
     (*this)(x,
             const_cast<Spinor const *const *>(rhs),
@@ -111,7 +116,8 @@ class AbstractSolver
             mv_apps,
             isign,
             verboseP,
-            target_cb);
+            target_cb,
+			residType);
   }
 #endif
 

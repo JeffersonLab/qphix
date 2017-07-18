@@ -65,7 +65,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
     printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n",
            Nxh,
            soalen);
-    abort();
+    std::abort();
   }
 
   // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
@@ -73,7 +73,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   if (Ny % ngy != 0) {
     printf(
         "Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n", Ny, ngy);
-    abort();
+    std::abort();
   }
 
   if (Sy > By / ngy) {
@@ -134,7 +134,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
                                             QPHIX_LLC_CACHE_ALIGN);
   if (block_info == 0x0) {
     fprintf(stderr, "Could not allocate Block Info array\n");
-    abort();
+    std::abort();
   }
 
   // Set up blockinfo
@@ -175,7 +175,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, QPHIX_LLC_CACHE_ALIGN);
   if (tmpspc_all == 0x0) {
     printf("Failed to allocate xy offset tmpspc\n");
-    abort();
+    std::abort();
   }
 
 #pragma omp parallel
