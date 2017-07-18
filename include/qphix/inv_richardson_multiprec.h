@@ -38,7 +38,7 @@ class InvRichardsonMultiPrec
   // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
   using AbstractSolver<FT, V, S, Compress, num_flav>::operator();
 
-  void operator()(Spinor *x[num_flav],
+  void operator()(Spinor *const x[num_flav],
                   const Spinor *const rhs[num_flav],
                   const double RsdTarget,
                   int &n_iters,
@@ -47,7 +47,7 @@ class InvRichardsonMultiPrec
                   unsigned long &mv_apps,
                   int isign,
                   bool verbose,
-                  int cb = 1) const
+                  int cb = 1) const override
   {
     int iter = 0;
     int mv_apps_outer = 0;
@@ -251,7 +251,7 @@ class InvRichardsonMultiPrec
   Geometry<FT, V, S, Compress> &getGeometry() { return geom; }
 
  private:
-  EvenOddLinearOperator<FT, V, S, Compress> &m_outer;
+  EvenOddLinearOperatorBase &m_outer;
   AbstractSolver<FTInner, VInner, SInner, CompressInner, num_flav> &solver_inner;
   const double delta;
   const int max_iters;
