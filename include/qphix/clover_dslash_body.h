@@ -334,7 +334,17 @@ ClovDslash<FT, veclen, soalen, compress12>::~ClovDslash()
   delete comms;
 }
 
-// The operator() that the user sees
+template <typename FT, int veclen, int soalen, bool compress12>
+void ClovDslash<FT, veclen, soalen, compress12>::dslashT(FourSpinorBlock *res,
+                                                         const FourSpinorBlock *psi,
+                                                         const SU3MatrixBlock *u,
+                                                         const CloverBlock *invclov,
+                                                         int isign,
+                                                         int cb)
+{
+  DPsi(u, invclov, psi, res, isign == 1, cb);
+}
+
 template <typename FT, int veclen, int soalen, bool compress12>
 void ClovDslash<FT, veclen, soalen, compress12>::dslash(FourSpinorBlock *res,
                                                         const FourSpinorBlock *psi,
@@ -343,10 +353,26 @@ void ClovDslash<FT, veclen, soalen, compress12>::dslash(FourSpinorBlock *res,
                                                         int isign,
                                                         int cb)
 {
-  DPsi(u, invclov, psi, res, isign == 1, cb);
+#pragma omp parallel
+  {
+    DPsi(u, invclov, psi, res, isign == 1, cb);
+  }
 }
 
-// The operator() that the user sees
+template <typename FT, int veclen, int soalen, bool compress12>
+void ClovDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsiT(
+    FourSpinorBlock *res,
+    const FourSpinorBlock *psi,
+    const FourSpinorBlock *chi,
+    const SU3MatrixBlock *u,
+    const CloverBlock *clov,
+    double beta,
+    int isign,
+    int cb)
+{
+  DPsiAChiMinusBDPsi(u, clov, psi, chi, res, beta, isign == 1, cb);
+}
+
 template <typename FT, int veclen, int soalen, bool compress12>
 void ClovDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     FourSpinorBlock *res,
@@ -358,7 +384,10 @@ void ClovDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     int isign,
     int cb)
 {
-  DPsiAChiMinusBDPsi(u, clov, psi, chi, res, beta, isign == 1, cb);
+#pragma omp parallel
+  {
+    DPsiAChiMinusBDPsi(u, clov, psi, chi, res, beta, isign == 1, cb);
+  }
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
