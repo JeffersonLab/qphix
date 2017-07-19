@@ -404,7 +404,7 @@ message(STATUS "target_cxx: ${target_cxx}")
 if ("${target_jN}" STREQUAL "")
     set(make_program_arguments)
 else()
-    set(make_program_arguments -j ${target_jN})
+    set(make_program_arguments "-j ${target_jN}")
 endif()
 message(STATUS "make_program_arguments: ${make_program_arguments}")
 
