@@ -8,15 +8,10 @@
 namespace QPhiX
 {
 
-/* Specialize - Dslash of float */
-template <typename FT,
-          int veclen,
-          int soalen,
-          bool compress12> /* The teplate is the floating point type */
+template <typename FT, int veclen, int soalen, bool compress12>
 class Dslash
 {
  public:
-  // Pack gauges...
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
       SU3MatrixBlock;
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
@@ -31,15 +26,19 @@ class Dslash
          bool use_tbc_[4] = nullptr,
          double tbc_phases_[4][2] = nullptr);
 
-  /* Destructor */
   ~Dslash();
 
-  /* Apply the operator */
   void dslash(FourSpinorBlock *res,
               const FourSpinorBlock *psi,
               const SU3MatrixBlock *u,
               int isign,
               int cb);
+
+  void dslashT(FourSpinorBlock *res,
+               const FourSpinorBlock *psi,
+               const SU3MatrixBlock *u,
+               int isign,
+               int cb);
 
   void dslashAChiMinusBDPsi(FourSpinorBlock *res,
                             const FourSpinorBlock *psi,
@@ -49,6 +48,15 @@ class Dslash
                             double beta,
                             int isign,
                             int cb);
+
+  void dslashAChiMinusBDPsiT(FourSpinorBlock *res,
+                             const FourSpinorBlock *psi,
+                             const FourSpinorBlock *chi,
+                             const SU3MatrixBlock *u,
+                             double alpha,
+                             double beta,
+                             int isign,
+                             int cb);
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
  private:
@@ -173,7 +181,7 @@ class Dslash
                         int cb,
                         int dir,
                         int fb,
-                        bool isPlus)
+                        bool isPlus);
 #endif
 
 }; // Class

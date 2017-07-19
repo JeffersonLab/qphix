@@ -1098,7 +1098,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     }
 #endif // QPHIX_DO_COMMS
 
-    Dyz(tid, psi_in, res_out, u, cb);
+    Dyz(tid, psi_in, res_out, u, is_plus, cb);
 
 #ifdef QPHIX_DO_COMMS
 

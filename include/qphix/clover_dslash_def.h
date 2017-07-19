@@ -7,9 +7,8 @@
 namespace QPhiX
 {
 
-/* Specialize - Dslash of float */
-/* To note the clover block will already include anisotropy and probably also
- * boundaries */
+// To note the clover block will already include anisotropy and probably also
+// boundaries
 template <typename FT, int veclen, int soalen, bool compress12>
 class ClovDslash
 {
@@ -39,6 +38,13 @@ class ClovDslash
               int isign,
               int cb);
 
+  void dslashT(FourSpinorBlock *res,
+               const FourSpinorBlock *psi,
+               const SU3MatrixBlock *u,
+               const CloverBlock *invclov,
+               int isign,
+               int cb);
+
   void dslashAChiMinusBDPsi(FourSpinorBlock *res,
                             const FourSpinorBlock *psi,
                             const FourSpinorBlock *chi,
@@ -47,6 +53,15 @@ class ClovDslash
                             const double beta,
                             int isign,
                             int cb);
+
+  void dslashAChiMinusBDPsiT(FourSpinorBlock *res,
+                             const FourSpinorBlock *psi,
+                             const FourSpinorBlock *chi,
+                             const SU3MatrixBlock *u,
+                             const CloverBlock *clov,
+                             const double beta,
+                             int isign,
+                             int cb);
 
   void free(void *p);
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }

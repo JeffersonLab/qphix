@@ -5,55 +5,61 @@ namespace QPhiX
 
 // (1 + gamma_T) dagger psi
 template <typename FT, int veclen, int soalen, bool compress>
-    void Dslash<FT,veclen,soalen,compress>::packFaceDir2(int gtid,
-							 int tid,
-							 int teamsize,
-							 const FourSpinorBlock *psi,
-							 FT *res,
-							 int cb, int dir, int fb, bool isPlus)
-  {
-    int Nxh = s->Nxh();
-    int Ny = s->Ny();
-    int Nz = s->Nz();
-    int Nt = s->Nt();
-    int ngy = s->nGY();
-    int n_cores = s->getNumCores();
-    int Pxyz = s->getPxyz();
-    int Pxy = s->getPxy();
+void Dslash<FT, veclen, soalen, compress>::packFaceDir2(int gtid,
+                                                        int tid,
+                                                        int teamsize,
+                                                        const FourSpinorBlock *psi,
+                                                        FT *res,
+                                                        int cb,
+                                                        int dir,
+                                                        int fb,
+                                                        bool isPlus)
+{
+  int Nxh = s->Nxh();
+  int Ny = s->Ny();
+  int Nz = s->Nz();
+  int Nt = s->Nt();
+  int ngy = s->nGY();
+  int n_cores = s->getNumCores();
+  int Pxyz = s->getPxyz();
+  int Pxy = s->getPxy();
 
-    int ngy_pack = ngy;
-    // If packing x face and ngy is 1, we need to pick alternate rows in Y, so use ngy = 2
-    if(dir == 0 && ngy_pack == 1) ngy_pack = 2;
-    int n_soa_x = Nxh / soalen;
-    int n_blocks_y = Ny/ngy_pack;
-    int lens1[4] = {n_soa_x, n_blocks_y, Nz, Nt};
-    int lens[4] = {n_soa_x, n_blocks_y, Nz, Nt};
-    
-    lens[dir] = 1;
-    
-    int npkts = lens[0] * lens[1] * lens[2] * lens[3];
-    int pktsize = veclen;
-    unsigned int mask = -1;
-    unsigned int mask_xodd[2] = {0, 0};
-    if(dir == 0) {
-      pktsize = ngy_pack / 2;
-      if(ngy == 1) 
-	mask = (fb == 0 ? 1 : (1 << (soalen-1)));
-      else {
-	for(int i = 0; i < veclen; i+=2*soalen)	mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
-	mask_xodd[1] = mask_xodd[0] << soalen;
-	if(fb == 1) {
-	  unsigned int tmp = mask_xodd[0];
-	  mask_xodd[0] = mask_xodd[1];
-	  mask_xodd[1] = tmp;
-	}
+  int ngy_pack = ngy;
+  // If packing x face and ngy is 1, we need to pick alternate rows in Y, so use ngy
+  // = 2
+  if (dir == 0 && ngy_pack == 1)
+    ngy_pack = 2;
+  int n_soa_x = Nxh / soalen;
+  int n_blocks_y = Ny / ngy_pack;
+  int lens1[4] = {n_soa_x, n_blocks_y, Nz, Nt};
+  int lens[4] = {n_soa_x, n_blocks_y, Nz, Nt};
+
+  lens[dir] = 1;
+
+  int npkts = lens[0] * lens[1] * lens[2] * lens[3];
+  int pktsize = veclen;
+  unsigned int mask = -1;
+  unsigned int mask_xodd[2] = {0, 0};
+  if (dir == 0) {
+    pktsize = ngy_pack / 2;
+    if (ngy == 1)
+      mask = (fb == 0 ? 1 : (1 << (soalen - 1)));
+    else {
+      for (int i = 0; i < veclen; i += 2 * soalen)
+        mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
+      mask_xodd[1] = mask_xodd[0] << soalen;
+      if (fb == 1) {
+        unsigned int tmp = mask_xodd[0];
+        mask_xodd[0] = mask_xodd[1];
+        mask_xodd[1] = tmp;
       }
     }
-    else if(dir == 1) {
-      pktsize = soalen;
-      mask = (1 << soalen) - 1;
-      if(fb == 1) mask <<= ((ngy-1)*soalen);
-    }
+  } else if (dir == 1) {
+    pktsize = soalen;
+    mask = (1 << soalen) - 1;
+    if (fb == 1)
+      mask <<= ((ngy - 1) * soalen);
+  }
     
 
 #if defined (__GNUG__) && !defined (__INTEL_COMPILER)
@@ -323,61 +329,67 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir(int tid,
 // Accumulate received back T face (made by packTFaceForwPlus)
 // Recons_add ( 1 + gamma_T )
 template <typename FT, int veclen, int soalen, bool compress>
-    void Dslash<FT,veclen,soalen,compress>::completeFaceDir2(int gtid,
-							     int tid, 
-							     int teamsize,
-							    const FT* psi,
-							    FourSpinorBlock* res,
-							    const SU3MatrixBlock* u,
-							    const double beta, 
-							    int cb, int dir, int fb, int isPlus)
-    {
-      // This is the total number of veclen in the face. 
-      // Guaranteed to be good, since s->Nxh()*s->Ny() is a multiple
-      // of VECLEN
-      int Nxh = s->Nxh();
-      int Ny = s->Ny();
-      int Nz = s->Nz();
-      int Nt = s->Nt();
-      int ngy = s->nGY();
-      int n_cores = s->getNumCores();
-      int Pxyz = s->getPxyz();
-      int Pxy = s->getPxy();
-      
-      int ngy_pack = ngy;
-      // If packing x face and ngy is 1, we need to pick alternate rows in Y, so use ngy = 2
-      if(dir == 0 && ngy_pack == 1) ngy_pack = 2;
-      int n_soa_x = Nxh / soalen;
-      int n_blocks_y = Ny/ngy_pack;
-      int lens1[4] = {n_soa_x, n_blocks_y, Nz, Nt};
-      int lens[4] = {n_soa_x, n_blocks_y, Nz, Nt};
-      
-      lens[dir] = 1;
-      
-      int npkts = lens[0] * lens[1] * lens[2] * lens[3];
-      int pktsize = veclen;
-      unsigned int mask = -1;
-      unsigned int mask_xodd[2] = {0, 0};
-      
-      if(dir == 0) {
-	pktsize = ngy_pack / 2;
-	if(ngy == 1) 
-	  mask = (fb == 0 ? 1 : (1 << (soalen-1)));
-	else {
-	  for(int i = 0; i < veclen; i+=2*soalen)	mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
-	  mask_xodd[1] = mask_xodd[0] << soalen;
-	  if(fb == 1) {
-	    unsigned int tmp = mask_xodd[0];
-	    mask_xodd[0] = mask_xodd[1];
-	    mask_xodd[1] = tmp;
-	  }
-	}
+void Dslash<FT, veclen, soalen, compress>::completeFaceDir2(int gtid,
+                                                            int tid,
+                                                            int teamsize,
+                                                            const FT *psi,
+                                                            FourSpinorBlock *res,
+                                                            const SU3MatrixBlock *u,
+                                                            const double beta,
+                                                            int cb,
+                                                            int dir,
+                                                            int fb,
+                                                            bool isPlus)
+{
+  // This is the total number of veclen in the face.
+  // Guaranteed to be good, since s->Nxh()*s->Ny() is a multiple
+  // of VECLEN
+  int Nxh = s->Nxh();
+  int Ny = s->Ny();
+  int Nz = s->Nz();
+  int Nt = s->Nt();
+  int ngy = s->nGY();
+  int n_cores = s->getNumCores();
+  int Pxyz = s->getPxyz();
+  int Pxy = s->getPxy();
+
+  int ngy_pack = ngy;
+  // If packing x face and ngy is 1, we need to pick alternate rows in Y, so use ngy
+  // = 2
+  if (dir == 0 && ngy_pack == 1)
+    ngy_pack = 2;
+  int n_soa_x = Nxh / soalen;
+  int n_blocks_y = Ny / ngy_pack;
+  int lens1[4] = {n_soa_x, n_blocks_y, Nz, Nt};
+  int lens[4] = {n_soa_x, n_blocks_y, Nz, Nt};
+
+  lens[dir] = 1;
+
+  int npkts = lens[0] * lens[1] * lens[2] * lens[3];
+  int pktsize = veclen;
+  unsigned int mask = -1;
+  unsigned int mask_xodd[2] = {0, 0};
+
+  if (dir == 0) {
+    pktsize = ngy_pack / 2;
+    if (ngy == 1)
+      mask = (fb == 0 ? 1 : (1 << (soalen - 1)));
+    else {
+      for (int i = 0; i < veclen; i += 2 * soalen)
+        mask_xodd[0] |= ((fb == 0 ? 1 : (1 << (soalen - 1))) << i);
+      mask_xodd[1] = mask_xodd[0] << soalen;
+      if (fb == 1) {
+        unsigned int tmp = mask_xodd[0];
+        mask_xodd[0] = mask_xodd[1];
+        mask_xodd[1] = tmp;
       }
-      else if(dir == 1) {
-	pktsize = soalen;
-	mask = (1 << soalen) - 1;
-	if(fb == 1) mask <<= ((ngy-1)*soalen);
-      }
+    }
+  } else if (dir == 1) {
+    pktsize = soalen;
+    mask = (1 << soalen) - 1;
+    if (fb == 1)
+      mask <<= ((ngy - 1) * soalen);
+  }
       
       
       
