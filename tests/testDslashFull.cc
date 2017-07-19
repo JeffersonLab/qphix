@@ -242,60 +242,7 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
       QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
       QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
 
-#if 1
-      // Check the difference per number in chi vector
-      Phi diff = chi2 - chi;
-
-      Double diff_norm = sqrt(norm2(diff, rb[target_cb])) /
-                         (Real(4 * 3 * 2 * Layout::vol()) / Real(2));
-
-      QDPIO::cout << "\t cb = " << target_cb << "  isign = " << isign
-                  << "  diff_norm = " << diff_norm << endl;
-      // Assert things are OK...
-      if (toBool(diff_norm > tolerance<T>::small)) {
-
-        int Nxh = Nx / 2;
-        for (int t = 0; t < Nt; t++) {
-          for (int z = 0; z < Nz; z++) {
-            for (int y = 0; y < Ny; y++) {
-              for (int x = 0; x < Nxh; x++) {
-
-                // These are unpadded QDP++ indices...
-                int ind = x + Nxh * (y + Ny * (z + Nz * t));
-                for (int s = 0; s < Ns; s++) {
-                  for (int c = 0; c < Nc; c++) {
-                    REAL dr = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .real();
-                    REAL di = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .imag();
-                    if (toBool(fabs(dr) > tolerance<T>::small) ||
-                        toBool(fabs(di) > tolerance<T>::small)) {
-                      QDPIO::cout
-                          << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                          << ") site=" << ind << " spin=" << s << " color=" << c
-                          << " Diff = "
-                          << diff.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << "  chi = "
-                          << chi.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << " qdp++ ="
-                          << chi2.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << endl;
-                    }
-                  }
-                }
-              } // x
-            } // y
-          } // z
-        } // t
-        assertion(toBool(diff_norm <= tolerance<T>::small));
-      } // if
-
-#endif
-
+      expect_near(chi2, chi, tolerance<T>::value, geom, target_cb, "Dslash");
     } // cb
   } // isign
 
