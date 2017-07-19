@@ -1082,8 +1082,15 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   for (int d = 3; d >= 0; d--) {
     if (!comms->localDir(d)) {
       if (tid < nteam1) {
-        packFaceDir2(
-            tid, tid, nteam1, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, 1);
+        packFaceDir2(tid,
+                     tid,
+                     nteam1,
+                     psi_in,
+                     comms->sendToDir[2 * d + 1],
+                     cb,
+                     d,
+                     1,
+                     is_plus);
       } else {
         packFaceDir2(tid,
                      tid - nteam1,
@@ -1093,7 +1100,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                      cb,
                      d,
                      0,
-                     1);
+                     is_plus);
       }
     }
   }
@@ -1111,7 +1118,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 #endif // QPHIX_DO_COMMS
 
-    Dyz(tid, psi_in, res_out, u, invclov, is_plus, cb);
+  Dyz(tid, psi_in, res_out, u, invclov, is_plus, cb);
 
 #ifdef QPHIX_DO_COMMS
 
@@ -1151,7 +1158,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                              cb,
                              d,
                              0,
-                             1);
+                             is_plus);
           } else {
             completeFaceDir2(tid,
                              tid - nteam1,
@@ -1164,7 +1171,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                              cb,
                              d,
                              1,
-                             1);
+                             is_plus);
           }
         } else {
           completeFaceDir2(tid,
@@ -1178,7 +1185,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                            cb,
                            d,
                            0,
-                           1);
+                           is_plus);
           completeFaceDir2(tid,
                            tid,
                            nthread,
@@ -1190,7 +1197,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                            cb,
                            d,
                            1,
-                           1);
+                           is_plus);
         }
 
       } // if
@@ -1222,45 +1229,59 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     beta_t_f *= t_boundary;
   }
 
-       int tid = omp_get_thread_num();
-       int nthread = omp_get_num_threads();
-       int nthreadby2 = nthread/2;
-       int nteam1=nthreadby2;
-       int nteam2=nthread-nthreadby2;
-       
-#ifdef QPHIX_DO_COMMS  
+  int tid = omp_get_thread_num();
+  int nthread = omp_get_num_threads();
+  int nthreadby2 = nthread / 2;
+  int nteam1 = nthreadby2;
+  int nteam2 = nthread - nthreadby2;
+
+#ifdef QPHIX_DO_COMMS
 #pragma omp master
-       {
+  {
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        comms->startRecvFromDir(2 * d + 0);
+        comms->startRecvFromDir(2 * d + 1);
+      }
+    }
+  } // End omp master
+
+  // Pack all the faces. Everyone does this
   for (int d = 3; d >= 0; d--) {
     if (!comms->localDir(d)) {
-      comms->startRecvFromDir(2 * d + 0);
-      comms->startRecvFromDir(2 * d + 1);
-          }
-        }
-       }  // End omp master
+      if (tid < nteam1) {
+        packFaceDir2(tid,
+                     tid,
+                     nteam1,
+                     psi_in,
+                     comms->sendToDir[2 * d + 1],
+                     cb,
+                     d,
+                     1,
+                     is_plus);
+      } else {
+        packFaceDir2(tid,
+                     tid - nteam1,
+                     nteam2,
+                     psi_in,
+                     comms->sendToDir[2 * d + 0],
+                     cb,
+                     d,
+                     0,
+                     is_plus);
+      }
+    }
+  }
 
-
-         // Pack all the faces. Everyone does this
-       for(int d = 3; d >= 0; d--) {
-        if( ! comms->localDir(d)  ) {
-          if( tid < nteam1 ) {
-            packFaceDir2(tid, tid, nteam1, psi_in, comms->sendToDir[2*d+1], cb, d, 1, 1);
-          }
-          else {
-            packFaceDir2(tid,tid-nteam1,nteam2, psi_in, comms->sendToDir[2*d+0], cb, d, 0, 1);
-          }
-         }
-       }
-       
-       // Call a barrier to make sure everyone finished their packing
+// Call a barrier to make sure everyone finished their packing
 #pragma omp barrier
 #pragma omp master
-       {
-        for(int d = 3; d >= 0; d--) {
-          if( ! comms->localDir(d)  ) {
-      comms->startSendDir(2 * d + 1);
-      comms->startSendDir(2 * d + 0);
-          }
+  {
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        comms->startSendDir(2 * d + 1);
+        comms->startSendDir(2 * d + 0);
+      }
     }
   }
 #endif // QPHIX_DO_COMMS
@@ -1304,7 +1325,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                        cb,
                                        d,
                                        0,
-                                       1);
+                                       is_plus);
           } else {
             completeFaceDirAChiMBDPsi2(tid,
                                        tid - nteam1,
@@ -1316,7 +1337,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                        cb,
                                        d,
                                        1,
-                                       1);
+                                       is_plus);
           }
         } else {
           completeFaceDirAChiMBDPsi2(tid,
@@ -1329,7 +1350,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                      cb,
                                      d,
                                      0,
-                                     1);
+                                     is_plus);
           completeFaceDirAChiMBDPsi2(tid,
                                      tid,
                                      nthread,
@@ -1340,7 +1361,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                      cb,
                                      d,
                                      1,
-                                     1);
+                                     is_plus);
         }
 
       } // if

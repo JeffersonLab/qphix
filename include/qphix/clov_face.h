@@ -14,7 +14,7 @@ void ClovDslash<FT, veclen, soalen, compress>::packFaceDir2(
     int cb,
     int dir,
     int fb,
-    int isPlus)
+    bool isPlus)
 {
   int Nxh = s->Nxh();
   int Ny = s->Ny();

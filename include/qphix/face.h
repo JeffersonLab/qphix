@@ -10,7 +10,7 @@ template <typename FT, int veclen, int soalen, bool compress>
 							 int teamsize,
 							 const FourSpinorBlock *psi,
 							 FT *res,
-							 int cb, int dir, int fb, int isPlus)
+							 int cb, int dir, int fb, bool isPlus)
   {
     int Nxh = s->Nxh();
     int Ny = s->Ny();

@@ -335,12 +335,11 @@ Dslash<FT, veclen, soalen, compress12>::~Dslash()
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void Dslash<FT, veclen, soalen, compress12>::dslash(
-    FourSpinorBlock *res,
-    const FourSpinorBlock *psi,
-    const SU3MatrixBlock *u,
-    int isign,
-    int cb)
+void Dslash<FT, veclen, soalen, compress12>::dslash(FourSpinorBlock *res,
+                                                    const FourSpinorBlock *psi,
+                                                    const SU3MatrixBlock *u,
+                                                    int isign,
+                                                    int cb)
 {
 #pragma omp parallel
   {
@@ -349,12 +348,11 @@ void Dslash<FT, veclen, soalen, compress12>::dslash(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void Dslash<FT, veclen, soalen, compress12>::dslashT(
-    FourSpinorBlock *res,
-    const FourSpinorBlock *psi,
-    const SU3MatrixBlock *u,
-    int isign,
-    int cb)
+void Dslash<FT, veclen, soalen, compress12>::dslashT(FourSpinorBlock *res,
+                                                     const FourSpinorBlock *psi,
+                                                     const SU3MatrixBlock *u,
+                                                     int isign,
+                                                     int cb)
 {
   DPsi(u, psi, res, isign == 1, cb);
 }
@@ -1063,8 +1061,15 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     for (int d = 3; d >= 0; d--) {
       if (!comms->localDir(d)) {
         if (tid < nteam1) {
-          packFaceDir2(
-              tid, tid, nteam1, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, 1);
+          packFaceDir2(tid,
+                       tid,
+                       nteam1,
+                       psi_in,
+                       comms->sendToDir[2 * d + 1],
+                       cb,
+                       d,
+                       1,
+                       is_plus);
         } else {
           packFaceDir2(tid,
                        tid - nteam1,
@@ -1074,7 +1079,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                        cb,
                        d,
                        0,
-                       1);
+                       is_plus);
         }
       }
     }
@@ -1134,7 +1139,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                                cb,
                                d,
                                0,
-                               1);
+                               is_plus);
             } else {
               completeFaceDir2(tid,
                                tid - nteam1,
@@ -1146,7 +1151,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                                cb,
                                d,
                                1,
-                               1);
+                               is_plus);
             }
           } else {
             // d == 0 && s->Nxh == soalen
@@ -1160,7 +1165,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                              cb,
                              d,
                              0,
-                             1);
+                             is_plus);
             completeFaceDir2(tid,
                              tid,
                              nthread,
@@ -1171,7 +1176,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                              cb,
                              d,
                              1,
-                             1);
+                             is_plus);
           }
         } // if
       } // for
@@ -1232,8 +1237,15 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     for (int d = 3; d >= 0; d--) {
       if (!comms->localDir(d)) {
         if (tid < nteam1) {
-          packFaceDir2(
-              tid, tid, nteam1, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, 1);
+          packFaceDir2(tid,
+                       tid,
+                       nteam1,
+                       psi_in,
+                       comms->sendToDir[2 * d + 1],
+                       cb,
+                       d,
+                       1,
+                       is_plus);
         } else {
           packFaceDir2(tid,
                        tid - nteam1,
@@ -1243,7 +1255,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                        cb,
                        d,
                        0,
-                       1);
+                       is_plus);
         }
       }
     }
@@ -1305,7 +1317,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                cb,
                                d,
                                0,
-                               1);
+                               is_plus);
             } else {
               completeFaceDir2(tid,
                                tid - nteam1,
@@ -1317,10 +1329,9 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                                cb,
                                d,
                                1,
-                               1);
+                               is_plus);
             }
           } else {
-
             completeFaceDir2(tid,
                              tid,
                              nthread,
@@ -1331,7 +1342,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                              cb,
                              d,
                              0,
-                             1);
+                             is_plus);
             completeFaceDir2(tid,
                              tid,
                              nthread,
@@ -1342,7 +1353,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
                              cb,
                              d,
                              1,
-                             1);
+                             is_plus);
           }
 
         } // if

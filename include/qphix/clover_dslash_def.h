@@ -142,6 +142,16 @@ class ClovDslash
                    int fb,
                    bool const is_plus);
 
+  void packFaceDir2(int gtid,
+                    int tid,
+                    int teamsize,
+                    const FourSpinorBlock *psi,
+                    FT *res,
+                    int cb,
+                    int dir,
+                    int fb,
+                    bool isPlus);
+
   void completeFaceDir(int tid,
                        const FT *psi,
                        FourSpinorBlock *res,
@@ -153,6 +163,19 @@ class ClovDslash
                        int fb,
                        bool const is_plus);
 
+  void completeFaceDir2(int gtid,
+                        int tid,
+                        int teamsize,
+                        const FT *psi,
+                        FourSpinorBlock *res,
+                        const SU3MatrixBlock *u,
+                        const CloverBlock *invclov,
+                        const double beta,
+                        int cb,
+                        int dir,
+                        int fb,
+                        bool isPlus);
+
   void completeFaceDirAChiMBDPsi(int tid,
                                  const FT *psi,
                                  FourSpinorBlock *res,
@@ -162,6 +185,18 @@ class ClovDslash
                                  int dir,
                                  int fb,
                                  bool const is_plus);
+
+  void completeFaceDirAChiMBDPsi2(int gtid,
+                                  int tid,
+                                  int teamsize,
+                                  const FT *psi,
+                                  FourSpinorBlock *res,
+                                  const SU3MatrixBlock *u,
+                                  const double beta,
+                                  int cb,
+                                  int dir,
+                                  int fb,
+                                  bool isPlus);
 #endif
 
 }; // Class
