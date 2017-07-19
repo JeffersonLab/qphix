@@ -2,6 +2,8 @@
 
 #include "qphix/geometry.h"
 
+//#define DEBUG_MULTISOLVER
+
 namespace QPhiX
 {
 
@@ -149,10 +151,12 @@ class AbstractMultiSolver
                           bool verboseP,
                           int cb = 1) const
   {
+#ifdef DEBUG_MULTISOLVER
     masterPrintf("Given is the following:\n");
     for (int s = 0; s < n_shift; ++s) {
       masterPrintf("  %p: x[%d] = %p\n", &x[s], s, x[s]);
     }
+#endif
 
     // Create the a data structure for the `Spinor *` and populate it.
     std::vector<std::array<Spinor *, 1>> x_vec(n_shift);
@@ -166,12 +170,14 @@ class AbstractMultiSolver
     }
     Spinor ***x_array = x_vec2.data();
 
+#ifdef DEBUG_MULTISOLVER
     masterPrintf("Result is this::\n");
     masterPrintf("  %p: x_array = %p\n", &x_array, x_array);
     for (int s = 0; s < n_shift; ++s) {
       masterPrintf("  %p: x_array[%d] = %p\n", &x_array[0], s, x_array[s]);
       masterPrintf("  %p: x_array[%d][0] = %p\n", &x_array[s][0], s, x_array[s][0]);
     }
+#endif
 
     const Spinor *rhs_array[1] = {rhs};
 
@@ -211,7 +217,7 @@ class AbstractMultiSolver
                           int isign,
                           bool verboseP,
                           int cb = 1) const = 0;
-
+  
 #ifdef __INTEL_COMPILER
   /**
     Workaround for the Intel C++ 17 compiler.

@@ -5,8 +5,8 @@
 using namespace QPhiX;
 
 #include "./soalen.h"
-//#include "../tests/clover_fermact_params_w.h"
-//#include "../tests/clover_term.h"
+#include "./tolerance.h"
+#include "./compare_spinors.h"
 
 #include <qphix/blas_new_c.h>
 #include <qphix/ndtm_reuse_operator.h>
