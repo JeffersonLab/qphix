@@ -84,40 +84,41 @@ void ClovDslash<FT, veclen, soalen, compress>::packFaceDir2(
     if ( high_pkt > npkts ) high_pkt = npkts;
     
     // OK Each core can now work on its pkts:
-    for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core) {
+    for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core)
 #else
   int pkts_per_thread = (npkts + teamsize - 1) / teamsize;
   int lo = tid * pkts_per_thread;
   int hi = (tid + 1) * pkts_per_thread < npkts ? (tid + 1) * pkts_per_thread : npkts;
 
-  for (int pkt = lo; pkt < hi; pkt++) {
+  for (int pkt = lo; pkt < hi; pkt++)
 #endif
+  {
 
-  int coords[4];
-  int tmp = pkt;
-  for (int j = 0; j < 4; j++) {
-    if (j != dir) {
-      int tmp1 = tmp / lens[j];
-      coords[j] = tmp - tmp1 * lens[j];
-      tmp = tmp1;
+    int coords[4];
+    int tmp = pkt;
+    for (int j = 0; j < 4; j++) {
+      if (j != dir) {
+        int tmp1 = tmp / lens[j];
+        coords[j] = tmp - tmp1 * lens[j];
+        tmp = tmp1;
+      }
     }
-  }
 
-  coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
-  int xblock = coords[0];
-  int yblock = coords[1];
-  int z = coords[2];
-  int t = coords[3];
-  int yi = yblock * ngy_pack;
-  // yi is always going to be even for dir==0
-  int xodd = (z + t + cb) & 1;
+    coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
+    int xblock = coords[0];
+    int yblock = coords[1];
+    int z = coords[2];
+    int t = coords[3];
+    int yi = yblock * ngy_pack;
+    // yi is always going to be even for dir==0
+    int xodd = (z + t + cb) & 1;
 
-  if (dir == 0) {
-    if (ngy == 1)
-      yi += (fb == 0 ? 1 - xodd : xodd);
-    else
-      mask = mask_xodd[1 - xodd];
-  }
+    if (dir == 0) {
+      if (ngy == 1)
+        yi += (fb == 0 ? 1 - xodd : xodd);
+      else
+        mask = mask_xodd[1 - xodd];
+    }
 #if 0
       //      int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
       int pkt_next = pkt + 1 < hi ? pkt+1 : lo ;
@@ -155,27 +156,20 @@ void ClovDslash<FT, veclen, soalen, compress>::packFaceDir2(
     int hsprefdist = 0;
 
 #endif
-  // Now we have x,y,z coordinates, we need the base address of the spinor
-  const FourSpinorBlock *xyBase = &psi[t * Pxyz + z * Pxy + yi * n_soa_x + xblock];
-  // We are streaming out in sequence
-  FT *outbuf = &res[12 * pktsize * pkt];
+    // Now we have x,y,z coordinates, we need the base address of the spinor
+    const FourSpinorBlock *xyBase = &psi[t * Pxyz + z * Pxy + yi * n_soa_x + xblock];
+    // We are streaming out in sequence
+    FT *outbuf = &res[12 * pktsize * pkt];
 
-  // printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf,
-  // outbuf-res);
-  // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
+    // printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf,
+    // outbuf-res);
+    // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
 
-    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_proj_dir_plus,
-                                           face_proj_dir_minus,
-                                           FT,
-                                           veclen,
-                                           soalen,
-                                           compress,
-                                           is_plus,
-                                           use_tbc[dir]);
+    auto kernel = (is_plus ? face_proj_dir_plus<FT, veclen, soalen, compress>
+                           : face_proj_dir_minus<FT, veclen, soalen, compress>);
 
-    kernel(
-        xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb, tbc_phases);
-}
+    kernel(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
+  }
 }
 
 // File scope...
@@ -713,29 +707,29 @@ void ClovDslash<FT, veclen, soalen, compress>::completeFaceDir2(
   // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
   FT beta_T = rep<FT, double>(beta);
 
-    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_clov_finish_dir_plus,
-                                           face_clov_finish_dir_minus,
-                                           FT,
-                                           veclen,
-                                           soalen,
-                                           compress,
-                                           is_plus,
-                                           use_tbc[dir]);
+  auto kernel = QPHIX_FACE_KERNEL_SELECT(face_clov_finish_dir_plus,
+                                         face_clov_finish_dir_minus,
+                                         FT,
+                                         veclen,
+                                         soalen,
+                                         compress,
+                                         is_plus,
+                                         use_tbc[dir]);
 
-    kernel(inbuf,
-           gBase,
-           oBase,
-           clBase,
-           gOffs,
-           offs,
-           hsprefdist,
-           gprefdist,
-           soprefdist,
-           clprefdist,
-           beta_T,
-           mask,
-           dir * 2 + fb,
-           tbc_phases);
+  kernel(inbuf,
+         gBase,
+         oBase,
+         clBase,
+         gOffs,
+         offs,
+         hsprefdist,
+         gprefdist,
+         soprefdist,
+         clprefdist,
+         beta_T,
+         mask,
+         dir * 2 + fb,
+         tbc_phases);
 }
 } // Function
 

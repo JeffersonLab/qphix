@@ -13,7 +13,7 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir2(int gtid,
                                                         int cb,
                                                         int dir,
                                                         int fb,
-                                                        bool isPlus)
+                                                        bool is_plus)
 {
   int Nxh = s->Nxh();
   int Ny = s->Ny();
@@ -60,16 +60,17 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir2(int gtid,
     if (fb == 1)
       mask <<= ((ngy - 1) * soalen);
   }
-    
 
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-    int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*gtid]);
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * gtid]);
 #else
-    __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*gtid]);
-#endif    
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * gtid]);
+#endif
 
-    int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
-    int *offs = &atmp[0];
+  int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
+  int *offs = &atmp[0];
 
 #if 0
     int pkts_per_core = (npkts + n_cores - 1) / n_cores;
@@ -84,43 +85,42 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir2(int gtid,
     if ( high_pkt > npkts ) high_pkt = npkts;
 
     // OK Each core can now work on its pkts:
-    for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core) {
+    for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core)
 #else
 
-      int pkts_per_thread = (npkts + teamsize - 1) / teamsize;
-      int lo = tid*pkts_per_thread;
-      int hi = (tid + 1)*pkts_per_thread < npkts  ? (tid+1)*pkts_per_thread : npkts;
+  int pkts_per_thread = (npkts + teamsize - 1) / teamsize;
+  int lo = tid * pkts_per_thread;
+  int hi = (tid + 1) * pkts_per_thread < npkts ? (tid + 1) * pkts_per_thread : npkts;
 
-
-
-      for(int pkt = lo; pkt < hi; pkt++) {
+  for (int pkt = lo; pkt < hi; pkt++)
 #endif
-      int coords[4];
-      int tmp = pkt;
-      for(int j = 0; j < 4; j++) {
-	if(j != dir) {
-	  int tmp1 = tmp / lens[j];
-	  coords[j] = tmp - tmp1*lens[j];
-	  tmp = tmp1;
-	}
+  {
+    int coords[4];
+    int tmp = pkt;
+    for (int j = 0; j < 4; j++) {
+      if (j != dir) {
+        int tmp1 = tmp / lens[j];
+        coords[j] = tmp - tmp1 * lens[j];
+        tmp = tmp1;
       }
-      
-      coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
-      int xblock = coords[0];
-      int yblock = coords[1];
-      int z = coords[2];
-      int t = coords[3];
-      int yi = yblock * ngy_pack;
-      // yi is always going to be even for dir==0
-      int xodd = (z + t + cb) & 1;
-      
-      if(dir == 0) {
-	if(ngy == 1)
-	  yi += (fb == 0 ? 1-xodd : xodd);
-	else
-	  mask = mask_xodd[1-xodd];
-      }
-      
+    }
+
+    coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
+    int xblock = coords[0];
+    int yblock = coords[1];
+    int z = coords[2];
+    int t = coords[3];
+    int yi = yblock * ngy_pack;
+    // yi is always going to be even for dir==0
+    int xodd = (z + t + cb) & 1;
+
+    if (dir == 0) {
+      if (ngy == 1)
+        yi += (fb == 0 ? 1 - xodd : xodd);
+      else
+        mask = mask_xodd[1 - xodd];
+    }
+
 #if 0
       //int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
       int pkt_next = pkt + 1 < hi ? pkt+1 : lo ;
@@ -153,26 +153,26 @@ void Dslash<FT, veclen, soalen, compress>::packFaceDir2(int gtid,
       int si_offset = off_next*sizeof(FourSpinorBlock)/sizeof(FT);
       int hsprefdist = (pkt_next - pkt)*sizeof(FourSpinorBlock)/sizeof(FT)/2;
 #else
-      int si_offset = 0;
-      int hsprefdist=0;
+    int si_offset = 0;
+    int hsprefdist = 0;
 #endif
-      
-      const FourSpinorBlock *xyBase = &psi[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
-      // We are streaming out in sequence
-      FT *outbuf = &res[12*pktsize*pkt];
-      
-      //printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf, outbuf-res);
-      // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
-      if(isPlus)
-	face_proj_dir_plus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
-      else
-	face_proj_dir_minus<FT,veclen,soalen,compress>(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir*2+fb);
-    }
+
+    const FourSpinorBlock *xyBase = &psi[t * Pxyz + z * Pxy + yi * n_soa_x + xblock];
+    // We are streaming out in sequence
+    FT *outbuf = &res[12 * pktsize * pkt];
+
+    // printf("rank = %d, pkt = %d, outbuf=%p (%lld)\n", myRank, pkt, outbuf,
+    // outbuf-res);
+    // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
+    auto kernel = (is_plus ? face_proj_dir_plus<FT, veclen, soalen, compress>
+                           : face_proj_dir_minus<FT, veclen, soalen, compress>);
+
+    kernel(xyBase, offs, si_offset, outbuf, hsprefdist, mask, dir * 2 + fb);
   }
+}
 
-
-  // (1 + gamma_T) dagger psi
-  template<typename FT, int veclen, int soalen, bool compress>
+// (1 + gamma_T) dagger psi
+template <typename FT, int veclen, int soalen, bool compress>
 void Dslash<FT, veclen, soalen, compress>::packFaceDir(int tid,
                                                        const FourSpinorBlock *psi,
                                                        FT *res,
@@ -339,7 +339,7 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir2(int gtid,
                                                             int cb,
                                                             int dir,
                                                             int fb,
-                                                            bool isPlus)
+                                                            bool is_plus)
 {
   // This is the total number of veclen in the face.
   // Guaranteed to be good, since s->Nxh()*s->Ny() is a multiple
@@ -390,19 +390,19 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir2(int gtid,
     if (fb == 1)
       mask <<= ((ngy - 1) * soalen);
   }
-      
-      
-      
-#if defined (__GNUG__) && !defined (__INTEL_COMPILER)
-      int* tmpspc __attribute__ ((aligned(QPHIX_LLC_CACHE_ALIGN)))  =&(tmpspc_all[veclen*16*gtid]);
+
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * gtid]);
 #else
-      __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int* tmpspc=&(tmpspc_all[veclen*16*gtid]);
-#endif    
-      
-      int *atmp = (int*)((((unsigned long long)tmpspc)+0x3F) & ~0x3F);
-      int *offs = &atmp[0];
-      int *gOffs = &atmp[veclen*13];
-      
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * gtid]);
+#endif
+
+  int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
+  int *offs = &atmp[0];
+  int *gOffs = &atmp[veclen * 13];
+
 #if 0
       int pkts_per_core = (npkts + n_cores - 1) / n_cores;
       
@@ -417,42 +417,41 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir2(int gtid,
       if ( high_pkt > npkts ) high_pkt = npkts;
       
       // OK Each core can now work on its pkts:
-      for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core) {
+      for(int pkt = low_pkt + smtid; pkt < high_pkt; pkt+=n_threads_per_core)
 #else
-      int pkts_per_thread = (npkts + teamsize - 1) / teamsize;
-      int lo = tid*pkts_per_thread;
-      int hi = (tid + 1)*pkts_per_thread < npkts  ? (tid+1)*pkts_per_thread : npkts;
+  int pkts_per_thread = (npkts + teamsize - 1) / teamsize;
+  int lo = tid * pkts_per_thread;
+  int hi = (tid + 1) * pkts_per_thread < npkts ? (tid + 1) * pkts_per_thread : npkts;
 
-
-
-      for(int pkt = lo; pkt < hi; pkt++) {
+  for (int pkt = lo; pkt < hi; pkt++)
 #endif
+  {
 
-	int coords[4];
-	int tmp = pkt;
-	for(int j = 0; j < 4; j++) {
-	  if(j != dir) {
-	    int tmp1 = tmp / lens[j];
-	    coords[j] = tmp - tmp1*lens[j];
-	    tmp = tmp1;
-	  }
-	}
-	
-	coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
-	int xblock = coords[0];
-	int yblock = coords[1];
-	int z = coords[2];
-	int t = coords[3];
-	int yi = yblock * ngy_pack;
-	// yi is always going to be even for dir==0
-	int xodd = (z + t + cb) & 1;
-	
-	if(dir == 0) {
-	  if(ngy == 1) 
-	    yi += (fb == 0 ? xodd : 1-xodd);
-	  else
-	    mask = mask_xodd[xodd];
-	}
+    int coords[4];
+    int tmp = pkt;
+    for (int j = 0; j < 4; j++) {
+      if (j != dir) {
+        int tmp1 = tmp / lens[j];
+        coords[j] = tmp - tmp1 * lens[j];
+        tmp = tmp1;
+      }
+    }
+
+    coords[dir] = (fb == 0 ? 0 : lens1[dir] - 1);
+    int xblock = coords[0];
+    int yblock = coords[1];
+    int z = coords[2];
+    int t = coords[3];
+    int yi = yblock * ngy_pack;
+    // yi is always going to be even for dir==0
+    int xodd = (z + t + cb) & 1;
+
+    if (dir == 0) {
+      if (ngy == 1)
+        yi += (fb == 0 ? xodd : 1 - xodd);
+      else
+        mask = mask_xodd[xodd];
+    }
 
 #if 0
 	//int pkt_next = pkt + n_threads_per_core < high_pkt ? pkt + n_threads_per_core : low_pkt + smtid;
@@ -489,28 +488,46 @@ void Dslash<FT, veclen, soalen, compress>::completeFaceDir2(int gtid,
 	int goff_next  = ((t_next-t)*Pxyz+(z_next-z)*Pxy+(yi_next-yi)*n_soa_x)/ngy + (xblock_next-xblock);
 	int gprefdist = goff_next*sizeof(SU3MatrixBlock)/sizeof(FT);
 #else
-	int hsprefdist=0;
-	int gprefdist=0;
-	int soprefdist=0;
+    int hsprefdist = 0;
+    int gprefdist = 0;
+    int soprefdist = 0;
 #endif
-	
-	FourSpinorBlock *oBase = &res[t*Pxyz + z*Pxy + yi*n_soa_x + xblock];
-	const SU3MatrixBlock *gBase = &u[(t*Pxyz+z*Pxy+yi*n_soa_x)/ngy+xblock];
-	// We are streaming out in sequence
-	const FT *inbuf = &psi[12*pktsize*pkt];
-	// OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
-	FT beta_T = rep<FT,double>(beta);
-	
-	if(isPlus)
-	  face_finish_dir_plus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mask, dir*2+fb );
-	else
-	  face_finish_dir_minus<FT,veclen,soalen,compress>(inbuf, gBase, oBase, gOffs, offs, hsprefdist, gprefdist, soprefdist, beta_T, mask, dir*2+fb );
-      }
-    } // Function
 
-  // Accumulate received back T face (made by packTFaceForwPlus) 
-  // Recons_add ( 1 + gamma_T )
-  template<typename FT, int veclen,int soalen, bool compress>
+    FourSpinorBlock *oBase = &res[t * Pxyz + z * Pxy + yi * n_soa_x + xblock];
+    const SU3MatrixBlock *gBase =
+        &u[(t * Pxyz + z * Pxy + yi * n_soa_x) / ngy + xblock];
+    // We are streaming out in sequence
+    const FT *inbuf = &psi[12 * pktsize * pkt];
+    // OK: now we have xyBase, offs, and oubuf -- we should call the kernel.
+    FT beta_T = rep<FT, double>(beta);
+
+    auto kernel = QPHIX_FACE_KERNEL_SELECT(face_finish_dir_plus,
+                                           face_finish_dir_minus,
+                                           FT,
+                                           veclen,
+                                           soalen,
+                                           compress,
+                                           is_plus,
+                                           use_tbc[dir]);
+
+    kernel(inbuf,
+           gBase,
+           oBase,
+           gOffs,
+           offs,
+           hsprefdist,
+           gprefdist,
+           soprefdist,
+           beta_T,
+           mask,
+           dir * 2 + fb,
+           tbc_phases);
+  }
+} // Function
+
+// Accumulate received back T face (made by packTFaceForwPlus)
+// Recons_add ( 1 + gamma_T )
+template <typename FT, int veclen, int soalen, bool compress>
 void Dslash<FT, veclen, soalen, compress>::completeFaceDir(int tid,
                                                            const FT *psi,
                                                            FourSpinorBlock *res,

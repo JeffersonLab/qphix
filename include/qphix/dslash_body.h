@@ -1275,7 +1275,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
     // Do body compute
     {
-      DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
+      DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
     }
 
 #ifdef QPHIX_DO_COMMS

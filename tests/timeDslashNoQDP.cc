@@ -431,7 +431,7 @@ void TimeDslash::runTest()
 	 			  for(int repeat=0; repeat < 3; repeat++) {
 	 				  double start = omp_get_wtime();
 
-	 				  for(int i=0; i < iters; i++) {
+	 				  for(int i=0; i < args_.iters; i++) {
 	 					  // Apply Optimized Dslash
 	 					  D32.dslashAChiMinusBDPsi(chi_s[target_cb],
 	 							  psi_s[source_cb],
@@ -451,9 +451,9 @@ void TimeDslash::runTest()
 	 				  time /= (double)CommsUtils::numNodes();
 
 	 				  masterPrintf("\t timing %d of 3\n", repeat);
-	 				  masterPrintf("\t %d iterations in %e seconds\n", iters, time);
-	 				  masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
-	 				  double Gflops = ((3.0f*24.0f) + 1320.0f)*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+	 				  masterPrintf("\t %d iterations in %e seconds\n", args_.iters, time);
+	 				  masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)args_.iters);
+	 				  double Gflops = ((3.0f*24.0f) + 1320.0f)*(double)(args_.iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
 	 				  double perf = Gflops/time;
 	 				  masterPrintf("\t Performance: %g GFLOPS total\n", perf);
 	 			  }
