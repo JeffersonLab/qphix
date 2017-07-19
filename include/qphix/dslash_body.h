@@ -1037,52 +1037,148 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 
   TSC_tick t_start, t_end;
-#ifdef QPHIX_DO_COMMS
-  // Pre-initiate all receives
 
-  for (int d = 3; d >= 0; d--) {
-    if (!comms->localDir(d)) {
-      comms->startRecvFromDir(2 * d + 0);
-      comms->startRecvFromDir(2 * d + 1);
-
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num();
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
-      }
-      comms->startSendDir(2 * d + 1);
-      comms->startSendDir(2 * d + 0);
-      comms->recv_queue.push(2 * d + 1);
-      comms->recv_queue.push(2 * d + 0);
-    }
-  }
-#endif // QPHIX_DO_COMMS
-
-// DO BODY DON"T ACCUMULATE BOUNDARY
+// Single parallel region. Serial bits (message sending performed by master)
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    Dyz(tid, psi_in, res_out, u, is_plus, cb);
-  }
+    int nthread = omp_get_num_threads();
+    int nthreadby2 = nthread / 2;
+    int nteam1 = nthreadby2;
+    int nteam2 = nthread - nthreadby2;
 
 #ifdef QPHIX_DO_COMMS
-  while (!comms->recv_queue.empty()) {
-    int d = comms->recv_queue.front();
-    comms->recv_queue.pop();
-    if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num();
-
-        double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-        completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+// Pre-initiate all receives -- only master thread does this
+#pragma omp master
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+          comms->startRecvFromDir(2 * d + 0);
+          comms->startRecvFromDir(2 * d + 1);
+        }
       }
-    } else
-      comms->recv_queue.push(d);
-  }
+    } // End omp master
+
+    // Pack all the faces. Everyone does this
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        if (tid < nteam1) {
+          packFaceDir2(
+              tid, tid, nteam1, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, 1);
+        } else {
+          packFaceDir2(tid,
+                       tid - nteam1,
+                       nteam2,
+                       psi_in,
+                       comms->sendToDir[2 * d + 0],
+                       cb,
+                       d,
+                       0,
+                       1);
+        }
+      }
+    }
+
+// Call a barrier to make sure everyone finished their packing
+
+#pragma omp barrier
+#pragma omp master
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+          comms->startSendDir(2 * d + 1);
+          comms->startSendDir(2 * d + 0);
+        }
+      }
+    }
 #endif // QPHIX_DO_COMMS
+
+    Dyz(tid, psi_in, res_out, u, cb);
+
+#ifdef QPHIX_DO_COMMS
+
+    // Finish comms and process faces.
+    // Current strategy is to do this direction by direction
+    // There may be better ways e.g.
+    //
+    // Test if the comms is complete, if so then deal with the faces
+    // NB: Also it would be good to see if we could split the threads so
+    // the forward and backward face could be done together...
+
+    // Yet another way would be to wait for all the comms to finish
+    // Ie a 'waitall'
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+#pragma omp master
+          {
+            comms->finishSendDir(2 * d + 1);
+            comms->finishRecvFromDir(2 * d + 0);
+            comms->finishSendDir(2 * d + 0);
+            comms->finishRecvFromDir(2 * d + 1);
+          }
+#pragma omp barrier
+
+          bool cantDoPFaces =
+              (d == 0 && s->Nxh() <= soalen) || (d == 1 && s->Ny() <= s->nGY());
+
+          if (!cantDoPFaces) {
+            if (tid < nteam1) {
+              completeFaceDir2(tid,
+                               tid,
+                               nteam1,
+                               comms->recvFromDir[2 * d + 0],
+                               res_out,
+                               u,
+                               (d == 3 ? beta_t_b : beta_s),
+                               cb,
+                               d,
+                               0,
+                               1);
+            } else {
+              completeFaceDir2(tid,
+                               tid - nteam1,
+                               nteam2,
+                               comms->recvFromDir[2 * d + 1],
+                               res_out,
+                               u,
+                               (d == 3 ? beta_t_f : beta_s),
+                               cb,
+                               d,
+                               1,
+                               1);
+            }
+          } else {
+            // d == 0 && s->Nxh == soalen
+            completeFaceDir2(tid,
+                             tid,
+                             nthread,
+                             comms->recvFromDir[2 * d + 0],
+                             res_out,
+                             u,
+                             beta_s,
+                             cb,
+                             d,
+                             0,
+                             1);
+            completeFaceDir2(tid,
+                             tid,
+                             nthread,
+                             comms->recvFromDir[2 * d + 1],
+                             res_out,
+                             u,
+                             beta_s,
+                             cb,
+                             d,
+                             1,
+                             1);
+          }
+        } // if
+      } // for
+    } // scope
+
+#endif // QPHIX_DO_COMMS
+  } // End of parallel region. Barriered.
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -1096,6 +1192,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     bool const is_plus,
     int cb)
 {
+
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
   double beta_t_b = beta * aniso_coeff_T;
@@ -1110,52 +1207,150 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     beta_t_f *= t_boundary;
   }
 
-#ifdef QPHIX_DO_COMMS
-  // Pre-initiate all receives
-
-  for (int d = 3; d >= 0; d--) {
-    if (!comms->localDir(d)) {
-      comms->startRecvFromDir(2 * d + 0);
-      comms->startRecvFromDir(2 * d + 1);
-
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num();
-
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
-      }
-      comms->startSendDir(2 * d + 1);
-      comms->startSendDir(2 * d + 0);
-      comms->recv_queue.push(2 * d + 1);
-      comms->recv_queue.push(2 * d + 0);
-    }
-  }
-#endif // QPHIX_DO_COMMS
-
+// Single parallel region. Serial bits (message sending performed by master)
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
-  }
+    int nthread = omp_get_num_threads();
+    int nthreadby2 = nthread / 2;
+    int nteam1 = nthreadby2;
+    int nteam2 = nthread - nthreadby2;
 
 #ifdef QPHIX_DO_COMMS
-  while (!comms->recv_queue.empty()) {
-    int d = comms->recv_queue.front();
-    comms->recv_queue.pop();
-    if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num();
-
-        double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-        completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+// Pre-initiate all receives -- only master thread does this
+#pragma omp master
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+          comms->startRecvFromDir(2 * d + 0);
+          comms->startRecvFromDir(2 * d + 1);
+        }
       }
-    } else
-      comms->recv_queue.push(d);
-  } // end for
+    } // End omp master
+
+    // Pack all the faces. Everyone does this
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        if (tid < nteam1) {
+          packFaceDir2(
+              tid, tid, nteam1, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, 1);
+        } else {
+          packFaceDir2(tid,
+                       tid - nteam1,
+                       nteam2,
+                       psi_in,
+                       comms->sendToDir[2 * d + 0],
+                       cb,
+                       d,
+                       0,
+                       1);
+        }
+      }
+    }
+
+// Call a barrier to make sure everyone finished their packing
+#pragma omp barrier
+#pragma omp master
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+          comms->startSendDir(2 * d + 1);
+          comms->startSendDir(2 * d + 0);
+        }
+      }
+    }
 #endif // QPHIX_DO_COMMS
+
+    // Do body compute
+    {
+      DyzPlusAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, cb);
+    }
+
+#ifdef QPHIX_DO_COMMS
+
+    // Finish comms and process faces.
+    // Current strategy is to do this direction by direction
+    // There may be better ways e.g.
+    //
+    // Test if the comms is complete, if so then deal with the faces
+    // NB: Also it would be good to see if we could split the threads so
+    // the forward and backward face could be done together...
+
+    // Yet another way would be to wait for all the comms to finish
+    // Ie a 'waitall'
+    {
+      for (int d = 3; d >= 0; d--) {
+        if (!comms->localDir(d)) {
+#pragma omp master
+          {
+            comms->finishSendDir(2 * d + 1);
+            comms->finishRecvFromDir(2 * d + 0);
+            comms->finishSendDir(2 * d + 0);
+            comms->finishRecvFromDir(2 * d + 1);
+          }
+#pragma omp barrier
+
+          bool cantDoPFaces =
+              (d == 0 && s->Nxh() <= soalen) || (d == 1 && s->Ny() <= s->nGY());
+
+          if (!cantDoPFaces) {
+            if (tid < nteam1) {
+              completeFaceDir2(tid,
+                               tid,
+                               nteam1,
+                               comms->recvFromDir[2 * d + 0],
+                               res_out,
+                               u,
+                               (d == 3 ? beta_t_b : beta_s),
+                               cb,
+                               d,
+                               0,
+                               1);
+            } else {
+              completeFaceDir2(tid,
+                               tid - nteam1,
+                               nteam2,
+                               comms->recvFromDir[2 * d + 1],
+                               res_out,
+                               u,
+                               (d == 3 ? beta_t_f : beta_s),
+                               cb,
+                               d,
+                               1,
+                               1);
+            }
+          } else {
+
+            completeFaceDir2(tid,
+                             tid,
+                             nthread,
+                             comms->recvFromDir[2 * d + 0],
+                             res_out,
+                             u,
+                             beta_s,
+                             cb,
+                             d,
+                             0,
+                             1);
+            completeFaceDir2(tid,
+                             tid,
+                             nthread,
+                             comms->recvFromDir[2 * d + 1],
+                             res_out,
+                             u,
+                             beta_s,
+                             cb,
+                             d,
+                             1,
+                             1);
+          }
+
+        } // if
+      } // for
+    } // scope
+
+#endif // QPHIX_DO_COMMS
+  } // End of parallel region. Barriered.
 }
 
 } // Namespace
