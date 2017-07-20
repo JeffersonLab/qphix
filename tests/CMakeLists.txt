@@ -8,7 +8,8 @@ if( ${testing} )
 
      list(APPEND framework_sources dslashm_w.cc
                                    reunit.cc
-                                   mesfield.cc)
+                                   mesfield.cc
+                                   tolerance.cpp)
 
      if( ${clover} OR ${tm_clover} )
        list(APPEND framework_headers clover_fermact_params_w.h )
