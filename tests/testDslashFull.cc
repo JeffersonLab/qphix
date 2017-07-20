@@ -152,11 +152,9 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
   gaussian(hs_source.qdp());
   hs_source.pack();
 
-  int isign = 1;
-  for (int isign = 1; isign >= -1; isign -= 2) {
-    for (int cb = 0; cb < 2; cb++) {
-      int source_cb = 1 - cb;
-      int target_cb = cb;
+  for (int isign : {1, -1}) {
+    for (int target_cb : {1, 0}) {
+      int source_cb = 1 - target_cb;
 
       D32.dslash(hs_qphix1[target_cb],
                  hs_source[source_cb],
