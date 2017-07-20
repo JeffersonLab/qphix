@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qphix_codegen/decl_common.h>
+
 #include "qdp.h"
 
 template <typename T>
@@ -9,9 +11,9 @@ struct tolerance {
 };
 
 template <>
-const QDP::Double tolerance<half>::small = QDP::Double(5.0e-3);
+const QDP::Double tolerance<QPhiX::half>::small = QDP::Double(5.0e-3);
 template <>
-const double tolerance<half>::value = 5.0e-3;
+const double tolerance<QPhiX::half>::value = 5.0e-3;
 
 template <>
 const QDP::Double tolerance<float>::small = QDP::Double(1.0e-6);
@@ -29,7 +31,7 @@ struct rsdTarget {
 };
 
 template <>
-const double rsdTarget<half>::value = (double)(1.0e-3);
+const double rsdTarget<QPhiX::half>::value = (double)(1.0e-3);
 
 template <>
 const double rsdTarget<float>::value = (double)(1.0e-7);
