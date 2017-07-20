@@ -31,14 +31,6 @@ TEST(RandomGauge, clover) {
   QdpSpinor qdp_spinor_3;
   gaussian(qdp_spinor_1);
 
-  // Apply the clover term and its copy (not inverted yet!) to the spinor as a sanity
-  // check.
-  for (int cb = 0; cb < 2; ++cb) {
-    gauge.clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
-    gauge.invclov_qdp.apply(qdp_spinor_3, qdp_spinor_1, 1, cb);
-    expect_near(qdp_spinor_2, qdp_spinor_3, 1e-6, geom, cb);
-  }
-
   // Apply the clover term and inverse, result should be the original spinor.
   for (int cb = 0; cb < 2; ++cb) {
     gauge.clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
