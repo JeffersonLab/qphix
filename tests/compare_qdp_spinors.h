@@ -83,8 +83,8 @@ void expect_near(QdpSpinor &spinor_a,
 
               if (std::fabs(diff_real) > abs_err || std::fabs(diff_imag) > abs_err) {
                 masterPrintf("(xyzt)=(%2d,%2d,%2d,%2d) site=%5d s=%d c=%d "
-                             "A=(% 14.7e,% 14.7e) B=(% 14.7e,% 14.7e) "
-                             "A-B=(% 14.7e,% 14.7e)\n",
+                             "A=(% 12.5e,% 12.5e) B=(% 12.5e,% 12.5e) "
+                             "A-B=(% 12.5e,% 12.5e)\n",
                              x,
                              y,
                              z,
