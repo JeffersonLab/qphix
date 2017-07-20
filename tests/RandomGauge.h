@@ -115,7 +115,6 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::
     uf = 1; // Unit gauge
     gaussian(g);
     if (std::fabs(gauge_random_factor) > std::numeric_limits<double>::epsilon()) {
-      masterPrintf("Use random gauge with factor %g\n", gauge_random_factor);
       u[mu] = uf + gauge_random_factor * g;
       reunit(u[mu]);
     }
