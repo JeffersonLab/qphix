@@ -7,6 +7,7 @@
 #include "qphix/abs_solver.h"
 
 #include <vector>
+#include <array>
 
 //#define DEBUG_MINVCG
 
