@@ -11,6 +11,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         wilson.h
         invcg.h
         invbicgstab.h
+	invmr.h
         inv_richardson_multiprec.h
         minvcg.h
         linearOp.h

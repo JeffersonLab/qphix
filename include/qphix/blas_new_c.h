@@ -401,10 +401,15 @@ void innerProduct(double results[2],
                   const Geometry<FT, V, S, compress> &geom,
                   int n_blas_simt)
 {
+  results[0] = (double) 0;
+  results[1] = (double) 0;
+
   InnerProductFunctor<FT, V, S, compress> f(x, y);
   siteLoop2Reductions<FT, V, S, compress, InnerProductFunctor<FT, V, S, compress>>(
       f, results, geom, n_blas_simt);
 }
+
+
 
 /**
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
@@ -440,6 +445,60 @@ innerProduct(double results[2],
     results[1] += local_results[1];
   }
 }
+
+template <typename FT, int V, int S, bool compress>
+void innerProductNorm(double results[3],
+                  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+                  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
+                  const Geometry<FT, V, S, compress> &geom,
+                  int n_blas_simt)
+{
+  results[0] = (double) 0;
+  results[1] = (double) 0;
+  results[2] = (double) 0;
+
+  InnerProductNormFunctor<FT, V, S, compress> f(x, y);
+  siteLoop3Reductions<FT, V, S, compress, InnerProductNormFunctor<FT, V, S, compress>>(
+      f, results, geom, n_blas_simt);
+}
+
+/**
+  \see The article \ref intel-cpp-compiler-workaround contains an explanation
+  of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
+  */
+template <typename FT,
+          int V,
+          int S,
+          bool compress,
+          int num_flav,
+          typename Spinor1,
+          typename Spinor2>
+typename std::enable_if<
+    std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
+                 const Spinor1>::value &&
+        std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
+                     const Spinor2>::value,
+    void>::type
+innerProductNorm(double results[3],
+             Spinor1 *const x[num_flav],
+             Spinor2 *const y[num_flav],
+             const Geometry<FT, V, S, compress> &geom,
+             int n_blas_simt)
+{
+  results[0] = 0;
+  results[1] = 0;
+  results[2] = 0;
+
+  for (uint8_t f = 0; f < num_flav; ++f) {
+    double local_results[3];
+    innerProductNorm(local_results, x[f], y[f], geom, n_blas_simt);
+
+    results[0] += local_results[0];
+    results[1] += local_results[1];
+    results[2] += local_results[2];
+  }
+}
+
 
 template <typename FT, int V, int S, bool compress>
 void bicgstab_p_update(
@@ -597,6 +656,52 @@ bicgstab_rxupdate(
     r_norm += local_r_norm;
   }
 }
+
+template <typename FT, int V, int S, bool compress>
+void mr_rxupdate(
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r,
+    const typename Geometry<FT, V, S, compress>::FourSpinorBlock *const Mr,
+    double a[2],
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+  MRRXUpdateFunctor<FT, V, S, compress> f(x, r, Mr, a);
+  siteLoopNoReduction<FT,
+                     V,
+                     S,
+                     compress,
+                     MRRXUpdateFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
+
+/**
+  \see The article \ref intel-cpp-compiler-workaround contains an explanation
+  of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
+  */
+template <typename FT,
+          int V,
+          int S,
+          bool compress,
+          int num_flav>
+void
+mr_rxupdate(
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x[num_flav],
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
+    const typename Geometry<FT,V,S,compress>::FourSpinorBlock *const Mr[num_flav],
+    double a[2],
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+  // TODO Check whether this is the correct generalization to multiple
+  // flavors.
+
+  for (uint8_t f = 0; f < num_flav; ++f) {
+    mr_rxupdate(
+		x[f], r[f], Mr[f], a, geom, n_blas_simt);
+  }
+}
+
 
 template <typename FTOut,
           int VOut,
