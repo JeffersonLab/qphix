@@ -5,7 +5,7 @@ include_directories(${PROJECT_SOURCE_DIR}/external)
 
 if( ${testing})
   if ( ${QDPXX_CXX_FOUND} )
-     list(APPEND HEADERS compare_spinors.h tolerance.h veclen.h)
+     list(APPEND HEADERS compare_spinors.h)
      add_executable(tests_g main.cc clover_product.cc)
 
     #testlip is defined in ../tests

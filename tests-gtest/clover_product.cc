@@ -1,12 +1,12 @@
 #include <qphix/qphix_config_internal.h>
-#include "prec.h"
-#include "tparam_selector.h"
+#include "../tests/prec.h"
+#include "../tests/tparam_selector.h"
 
 using namespace QPhiX;
 
-#include "./soalen.h"
-#include "./tolerance.h"
-#include "./compare_spinors.h"
+#include "../tests/veclen.h"
+#include "../tests/tolerance.h"
+#include "compare_spinors.h"
 #include "../tests/clover_fermact_params_w.h"
 #include "../tests/clover_term.h"
 
@@ -214,7 +214,7 @@ class CloverProductTest : public ::testing::Test
   QPhiX::CloverTermT<Phi, U> invclov_qdp;
 };
 
-typedef ::testing::Types<QPhiX::Geometry<double, VECLEN_DP, QPHIX_SOALEN, true>>
+typedef ::testing::Types<QPhiX::Geometry<double, VECLEN_DP, VECLEN_DP, true>>
     MyTypes;
 
 TYPED_TEST_CASE(CloverProductTest, MyTypes);
