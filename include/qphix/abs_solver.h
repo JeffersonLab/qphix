@@ -2,6 +2,9 @@
 
 #include "qphix/geometry.h"
 
+#include <array>
+#include <vector>
+
 //#define DEBUG_MULTISOLVER
 
 namespace QPhiX
