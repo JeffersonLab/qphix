@@ -259,7 +259,7 @@ else()
   if ("${recursive_jN}" STREQUAL "")
     set(make_program_arguments "")
   else()
-    set(make_program_arguments "-j ${recursive_jN}")
+    set(make_program_arguments "-j${recursive_jN}")
   endif()
   message(STATUS "make_program_arguments: ${make_program_arguments}")
 
