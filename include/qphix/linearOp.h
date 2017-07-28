@@ -46,6 +46,8 @@ template <typename FT, int veclen, int soalen, bool compress>
 class TwoFlavEvenOddLinearOperator
 {
  public:
+  virtual ~TwoFlavEvenOddLinearOperator(){};
+
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
 
