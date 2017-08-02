@@ -342,9 +342,15 @@ void TMClovDslash<FT, veclen, soalen, compress12>::dslash(
     const SU3MatrixBlock *u,
     const FullCloverBlock *const invclov[2],
     int isign,
-    int cb)
+    int cb,
+    int fl)
 {
-  DPsi(u, invclov[isign == 1 ? 0 : 1], psi, res, isign == 1, cb);
+  /* for the 'up' flavour (0), the FullCloverBlock with the positive twisted mass
+   * is used for the unconjugated operator and the block with negative twisted
+   * mass for the conjugated operator. For the 'down' flavour (1), the relationship
+   * is reversed. */
+  const int clidx = fl == 0 ? ( isign == 1 ? 0 : 1 ) : ( isign == 1 ? 1 : 0 );
+  DPsi(u, invclov[clidx], psi, res, isign == 1, cb);
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -353,13 +359,14 @@ void TMClovDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     const FourSpinorBlock *psi,
     const FourSpinorBlock *chi,
     const SU3MatrixBlock *u,
-    const FullCloverBlock *clov[2],
+    const CloverBlock *clov,
     double beta,
     int isign,
-    int cb)
+    int cb,
+    int fl)
 {
   DPsiAChiMinusBDPsi(
-      u, clov[isign == 1 ? 0 : 1], psi, chi, res, beta, isign == 1, cb);
+      u, clov, psi, chi, res, beta, isign == 1, cb, fl);
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -688,10 +695,11 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
     const FourSpinorBlock *chi,
     FourSpinorBlock *res,
     const SU3MatrixBlock *u,
-    const FullCloverBlock *clov,
+    const CloverBlock *clov,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    int fl)
 {
   auto kernel =
       (is_plus
@@ -915,10 +923,10 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
                               (cx_next - cx)) *
                              gauge_line_in_floats;
 
-            const FullCloverBlock *clBase =
+            const CloverBlock *clBase =
                 &clov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
             const int clov_line_in_floats =
-                sizeof(FullCloverBlock) /
+                sizeof(CloverBlock) /
                 sizeof(FT); // One gauge scanline, in floats
             int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
                                (yi_next - yi) * nvecs) /
@@ -970,7 +978,9 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DyzAChiMinusBDPsi(
             FT beta_s_T = rep<FT, double>(beta_s);
             FT beta_t_f_T = rep<FT, double>(beta_t_f);
             FT beta_t_b_T = rep<FT, double>(beta_t_b);
-            FT prec_mass_rho_T = rep<FT, double>(prec_mass_rho);
+            // when working on the 'down' flavour, the negative twisted mass is passed
+            // down
+            FT prec_mass_rho_T = rep<FT, double>( (fl==1 ? -1.0 : 1.0 ) *  prec_mass_rho);
 
             kernel(xyBase + X,
                    zbBase + X,
@@ -1102,13 +1112,14 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsi(
 template <typename FT, int veclen, int soalen, bool compress12>
 void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     const SU3MatrixBlock *u,
-    const FullCloverBlock *clov,
+    const CloverBlock *clov,
     const FourSpinorBlock *psi_in,
     const FourSpinorBlock *chi_in,
     FourSpinorBlock *res_out,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    int fl)
 {
 
   double beta_s = beta * aniso_coeff_S;
@@ -1147,7 +1158,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, is_plus, cb);
+    DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, is_plus, cb, fl);
   }
 
 #ifdef QPHIX_DO_COMMS
@@ -1171,55 +1182,28 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-template <typename Spinor1>
-void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_dslash(
-    FourSpinorBlock *res[2],
-    Spinor1 *const psi[2],
+void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
+    FourSpinorBlock *const res[2],
+    const FourSpinorBlock *const chi[2],
+    const FourSpinorBlock *const psi[2],
     const SU3MatrixBlock *u,
-    const FullCloverBlock *const invclov[2][2][2],
-    const int isign,
-    const int cb)
-{
-  FourSpinorBlock *tmp = s->allocCBFourSpinor();
-
-  // Iterate over the two result flavors …
-  for (int f : {0, 1}) {
-    // Compute the two summands of the current result flavor.
-    dslash(res[f], psi[0], u, invclov[f][0], isign, cb);
-    dslash(tmp, psi[1], u, invclov[f][1], isign, cb);
-
-    // Add the two summands into the result.
-    const int n_blas_simt = 1;
-    axpy(1.0, tmp, res[f], *s, n_blas_simt);
-  }
-
-  s->free(tmp);
-}
-
-template <typename FT, int veclen, int soalen, bool compress12>
-template <typename Spinor1, typename Spinor2>
-void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
-    FourSpinorBlock *res[2],
-    Spinor1 *const chi[2],
-    Spinor2 *const psi[2],
-    const SU3MatrixBlock *u,
-    const FullCloverBlock *clov[2][2],
+    const CloverBlock *clov,
     const double beta,
     const double epsilon,
     const int isign,
     const int cb)
 {
-  const int n_blas_simt = 1;
+  const int n_blas_simt = s->getNSIMT();;
 
   // Iterate over the two result flavors …
-  for (int f : {0, 1}) {
+  for (int fl : {0, 1}) {
     // Compute the flavor-diagonal part.
-    dslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, clov[f], beta, isign, cb);
+    dslashAChiMinusBDPsi(res[fl], chi[fl], psi[fl], u, clov, beta, isign, cb, fl);
 
     // The `res[f]` contains the flavor-diagonal part. Now the flavor
     // off-diagonal part has to be added. This is just the opposite
-    // flavor χ multiplied with ε.
-    axpy(epsilon, chi[1 - f], res[f], *s, n_blas_simt);
+    // flavor χ multiplied with -ε.
+    axpy(-epsilon, chi[1 - fl], res[fl], *s, n_blas_simt);
   }
 }
 

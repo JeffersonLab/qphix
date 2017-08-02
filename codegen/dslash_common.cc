@@ -1589,21 +1589,26 @@ void achiResult(InstVector &ivector,
       }
     }
 
-    // Apply clover term, and store result in out spinor.
-    // This is only on the AChi - bDPsi op (achimbdpsi = true)
-    // This is only in body kernel (face = false)
-    if (twisted_mass == TwistedMassVariant::none) {
-      clover_term(ivector, chi_spinor, false);
-    } else if (twisted_mass == TwistedMassVariant::degenerate) {
-      full_clover_term(ivector, chi_spinor, false);
-    } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
-      full_clover_term(ivector, chi_spinor, false);
-    } else {
-      unsupported_twisted_mass_variant();
-    }
+    clover_term(ivector, chi_spinor, false);
+   
+    // BaKo WIP: for AChi - bDPsi, we always use CloverBlock, the twisted mass
+    // (or epsilon) is added using linear algebra in the EO operator 
+    //
+    //// Apply clover term, and store result in out spinor.
+    //// This is only on the AChi - bDPsi op (achimbdpsi = true)
+    //// This is only in body kernel (face = false)
+    //if (twisted_mass == TwistedMassVariant::none) {
+    //  clover_term(ivector, chi_spinor, false);
+    //} else if (twisted_mass == TwistedMassVariant::degenerate) {
+    //  full_clover_term(ivector, chi_spinor, false);
+    //} else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+    //  // TODO Here something new for the ND case has to be
+    //  // implemented.
+    //  // Currently this is just copied from the degenerate case.
+    //  full_clover_term(ivector, chi_spinor, false);
+    //} else {
+    //  unsupported_twisted_mass_variant();
+    //}
   } else { // NO CLOVER
     if (twisted_mass == TwistedMassVariant::none) {
       for (int col = 0; col < 3; col++) {
@@ -1641,9 +1646,8 @@ void achiResult(InstVector &ivector,
       // for pure twisted mass and stores result in out_spinor
       twisted_term(ivector, isPlus);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
+      // the full ND twisted mass term with mass splitting is implemented
+      // as a linalg functor in QPhiX, this is basically never used
 
       // Loads spinor elements from chiBase, multiplies with A
       // for pure twisted mass and stores result in out_spinor
@@ -1853,18 +1857,10 @@ void dslash_achimbdpsi_body(InstVector &ivector,
   }
 
   if (clover) {
-    if (twisted_mass == TwistedMassVariant::none) {
-      declare_clover(ivector);
-    } else if (twisted_mass == TwistedMassVariant::degenerate) {
-      declare_full_clover(ivector);
-    } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
-      declare_full_clover(ivector);
-    } else {
-      unsupported_twisted_mass_variant();
-    }
+    // whether we are using twisted mass or not, the clover term in AChiMinusBDPsi
+    // is always of the Wilson form. The twisted mass is added via the preconditioning
+    // mass below.
+    declare_clover(ivector);
   }
 
   // Fill result with a*chi

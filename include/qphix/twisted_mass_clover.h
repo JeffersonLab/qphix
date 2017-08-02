@@ -14,6 +14,8 @@ class EvenOddTMCloverOperator
  public:
   typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock
       FullCloverBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock
+      CloverBlock;
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
       FourSpinorBlock;
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
@@ -22,7 +24,7 @@ class EvenOddTMCloverOperator
   // Constructor
   // No anisotropy, all boundaries periodic for now.
   EvenOddTMCloverOperator(SU3MatrixBlock *u_[2],
-                          FullCloverBlock *clov_[2],
+                          CloverBlock *clov_,
                           FullCloverBlock *invclov_[2],
                           Geometry<FT, veclen, soalen, compress12> *geom_,
                           double t_boundary,
@@ -42,8 +44,7 @@ class EvenOddTMCloverOperator
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     u[0] = u_[0];
     u[1] = u_[1];
-    clov[0] = clov_[0];
-    clov[1] = clov_[1];
+    clov = clov_;
     invclov[0] = invclov_[0];
     invclov[1] = invclov_[1];
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
@@ -77,13 +78,12 @@ class EvenOddTMCloverOperator
   }
 
   void setFields(SU3MatrixBlock *u_[2],
-                 FullCloverBlock *clov_[2],
+                 CloverBlock *clov_,
                  FullCloverBlock *invclov_[2])
   {
     u[0] = u_[0];
     u[1] = u_[1];
-    clov[0] = clov_[0];
-    clov[1] = clov_[1];
+    clov = clov_;
     invclov[0] = invclov_[0];
     invclov[1] = invclov_[1];
   }
@@ -102,7 +102,7 @@ class EvenOddTMCloverOperator
                             tmp,
                             in,
                             u[target_cb],
-                            (const FullCloverBlock **)clov,
+                            clov,
                             beta,
                             isign,
                             target_cb);
@@ -117,7 +117,7 @@ class EvenOddTMCloverOperator
   double Mass;
   TMClovDslash<FT, veclen, soalen, compress12> *D;
   SU3MatrixBlock *u[2];
-  FullCloverBlock *clov[2];
+  CloverBlock *clov;
   FullCloverBlock *invclov[2];
   FourSpinorBlock *tmp;
 

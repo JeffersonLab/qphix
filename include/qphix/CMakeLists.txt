@@ -42,7 +42,7 @@ if( ${twisted_mass} )
 endif()
 
 if( ${tm_clover} )
-	list(APPEND header_files twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
+	list(APPEND header_files ndtm_reuse_operator_clover.h twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
 endif()
 
 list(APPEND header_files ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h)

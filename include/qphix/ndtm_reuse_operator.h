@@ -15,8 +15,6 @@ class EvenOddNDTMWilsonReuseOperator
 {
  public:
   typedef
-      typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock FullCloverBlock;
-  typedef
       typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock FourSpinorBlock;
   typedef
       typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock SU3MatrixBlock;
