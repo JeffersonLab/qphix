@@ -5,7 +5,7 @@
             "float": {"veclen": 8, "soalens": [4, 8]}
         },
         "extra_includes_global": ["immintrin.h"],
-        "extra_includes_local": ["avx_utils.h"]
+        "extra_includes_local": ["qphix_codegen/avx_utils.h"]
     },
     "avx2": {
         "fptypes": {
@@ -14,7 +14,7 @@
             "half": {"veclen": 8, "soalens": [4, 8]}
         },
         "extra_includes_global": ["immintrin.h"],
-        "extra_includes_local": ["avx_utils.h"]
+        "extra_includes_local": ["qphix_codegen/avx_utils.h"]
     },
     "avx512": {
         "fptypes": {
@@ -55,6 +55,6 @@
             "float": {"veclen": 4, "soalens": [4]}
         },
         "extra_includes_global": ["immintrin.h"],
-        "extra_includes_local": ["sse_utils.h"]
+        "extra_includes_local": ["qphix_codegen/sse_utils.h"]
     }
 }
