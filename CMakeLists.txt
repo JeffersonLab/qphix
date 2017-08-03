@@ -302,6 +302,7 @@ configure_file(
 )
 
 add_subdirectory(include/qphix)
+add_subdirectory(include/qphix_codegen)
 add_subdirectory(lib)
 if( ${testing} )
 
