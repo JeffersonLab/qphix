@@ -392,7 +392,7 @@ add_custom_target( codegen_lib ALL
 				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
                                                 -DCMAKE_CXX_COMPILER=${target_cxx}
                                                 -DCMAKE_CXX_FLAGS=${target_cxxflags} 
-                                                -Dmain_source_dir=${CMAKE_CURRENT_SOURCE_DIR}
+                                                -Dmain_source_dir=${CMAKE_CURRENT_SOURCE_DIR}/..
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
