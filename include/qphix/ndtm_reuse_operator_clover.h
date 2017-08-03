@@ -124,7 +124,7 @@ class EvenOddNDTMCloverReuseOperator
       Dtmcl->dslash(tmp[fl], in[fl], u[other_cb], invclov, isign, other_cb, fl); 
       Dwcl->dslash(odiag_tmp[fl], in[1-fl], u[other_cb], invclov_odiag, isign, other_cb);
     }
-    axpy<FT, veclen, soalen, compress12, 2>(1.0, odiag_tmp, tmp, getGeometry(), getGeometry().getNSIMT());
+    axpy<FT, veclen, soalen, compress12, 2>(Epsilon, odiag_tmp, tmp, getGeometry(), getGeometry().getNSIMT());
 
     Dtmcl->two_flav_AChiMinusBDPsi(res, tmp, in, u[target_cb], clov, beta, Epsilon, isign, target_cb);
   }

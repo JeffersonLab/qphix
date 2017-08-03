@@ -349,7 +349,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::dslash(
    * is used for the unconjugated operator and the block with negative twisted
    * mass for the conjugated operator. For the 'down' flavour (1), the relationship
    * is reversed. */
-  const int clidx = fl == 0 ? ( isign == 1 ? 0 : 1 ) : ( isign == 1 ? 1 : 0 );
+  const int clidx = (fl == 0 ? ( isign == 1 ? 0 : 1 ) : ( isign == 1 ? 1 : 0 ));
   DPsi(u, invclov[clidx], psi, res, isign == 1, cb);
 }
 
@@ -1184,8 +1184,8 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 template <typename FT, int veclen, int soalen, bool compress12>
 void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
     FourSpinorBlock *const res[2],
-    const FourSpinorBlock *const chi[2],
     const FourSpinorBlock *const psi[2],
+    const FourSpinorBlock *const chi[2],
     const SU3MatrixBlock *u,
     const CloverBlock *clov,
     const double beta,
@@ -1197,12 +1197,9 @@ void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
 
   // Iterate over the two result flavors …
   for (int fl : {0, 1}) {
-    // Compute the flavor-diagonal part.
-    dslashAChiMinusBDPsi(res[fl], chi[fl], psi[fl], u, clov, beta, isign, cb, fl);
+    dslashAChiMinusBDPsi(res[fl], psi[fl], chi[fl], u, clov, beta, isign, cb, fl);
 
-    // The `res[f]` contains the flavor-diagonal part. Now the flavor
-    // off-diagonal part has to be added. This is just the opposite
-    // flavor χ multiplied with -ε.
+    // add flavour off-diagonal contribution from AChi
     axpy(-epsilon, chi[1 - fl], res[fl], *s, n_blas_simt);
   }
 }

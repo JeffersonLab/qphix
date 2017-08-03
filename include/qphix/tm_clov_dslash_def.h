@@ -127,8 +127,8 @@ class TMClovDslash
     \author Bartosz Kostrzewa <bartosz_kostrzewa@fastmail.com>
     */
   void two_flav_AChiMinusBDPsi(FourSpinorBlock *const res[2],
-                               const FourSpinorBlock *const chi[2],
                                const FourSpinorBlock *const psi[2],
+                               const FourSpinorBlock *const chi[2],
                                const SU3MatrixBlock *u,
                                const CloverBlock *clov,
                                const double beta,
