@@ -60,6 +60,8 @@ def main():
     complete_specialization = env.get_template('complete_specialization.h.j2')
     kernel_generated_h = env.get_template('kernel_generated.h.j2')
 
+    all_header_files = []
+
     for kernel_pattern in kernel_patterns:
         kernel = kernel_pattern % {'fptype_underscore': ''}
 
