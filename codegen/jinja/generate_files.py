@@ -74,7 +74,6 @@ def main():
         write_if_changed(filename, rendered)
         all_header_files.append(os.path.join('..', os.path.basename(filename)))
 
-
     for isa, isa_data in sorted(isas.items()):
         if len(options.isa) > 0 and not isa in options.isa:
             continue
@@ -84,7 +83,7 @@ def main():
             continue
 
         source_files = []
-        header_files = []
+        header_files = list(all_header_files)
 
         os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
         os.makedirs(os.path.join('..', 'generated', isa, 'src'), exist_ok=True)
