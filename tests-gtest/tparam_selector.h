@@ -3,7 +3,7 @@
 #include "veclen.h"
 #include "prec.h"
 
-#include <qphix/print_utils.h>
+#include "qphix/print_utils.h"
 
 #include <qdp.h>
 #include <qphix_codegen/decl_common.h>
