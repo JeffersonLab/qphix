@@ -12,6 +12,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         invcg.h
         invbicgstab.h
         inv_richardson_multiprec.h
+        inv_dummy_hermtest.h
         minvcg.h
         linearOp.h
         memmap.h
