@@ -121,7 +121,6 @@ endfunction()
 
 
 MESSAGE(STATUS "Looking for Python")
-find_package(PythonLibs 3.0 REQUIRED)
 find_package(PythonInterp 3.0 REQUIRED)
 MESSAGE(STATUS "Python interpreter is ${PYTHON_EXECUTABLE}")
 
