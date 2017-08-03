@@ -371,7 +371,7 @@ foreach(targ ${target_list})
 	LIST(APPEND codegen_targets codegen_${targ})
 endforeach()
 
-# 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja)
 add_custom_target( jinja ALL 
 				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT__DIR}/jinja/generate_files.py ${isa}
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
