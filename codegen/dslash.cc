@@ -104,6 +104,12 @@ string mu_inv_name("muinv");
 
 string prec_mass_rho_name("prec_mass_rho");
 
+// kernel parameter names for the two-flavour inverse clover kernel
+// the offsets are identical for both flavours
+string out2Base("o2Base");
+string chi2Base("chi2Base");
+string cl2Base("cl2Base");
+
 // Defines which dimensions are involved in SIMD blocking
 // Currently just X and Y
 bool requireAllOneCheck[4] = {true, true, false, false};
@@ -552,6 +558,24 @@ void recons_add_face_vec(InstVector &ivector,
   StoreFullSpinor(ivector, out_spinor, outBase, outOffs);
 }
 
+void apply_two_flav_tm_inverse_clover_term(InstVector &ivector){
+  extern FVec out_spinor[4][3][2];
+  extern FVec out2_spinor[4][3][2];
+  extern FVec chi_spinor[4][3][2];
+  extern FVec chi2_spinor[4][3][2];
+
+  string mask;
+
+  LoadFullSpinor(ivector, chi_spinor, chiBase, chiOffs, mask);
+  LoadFullSpinor(ivector, chi2_spinor, chi2Base, chiOffs, mask);
+
+  two_flav_tm_inverse_clover_term(ivector, mask);
+
+  StoreFullSpinor(ivector, out_spinor, outBase, outOffs);
+  StoreFullSpinor(ivector, out2_spinor, out2Base, outOffs);
+}
+
+
 string getTypeName(size_t s)
 {
   if (s == 2) {
@@ -741,6 +765,19 @@ void generate_code(void)
         dumpIVector(ivector, filename.str());
       }
     }
+  }
+
+  // TWO-FLAVOUR TWISTED MASS SPECIFIC KERNELS
+  // =========================================
+  for( auto kernel : {"tm_clov_two_flav_inverse_clover_term"} ){
+    std::ostringstream filename;
+    InstVector ivector;
+    filename << output_dir << "/generated/" << ARCH_NAME << "/generated/"
+             << kernel << "_"
+             << SpinorTypeName << "_" << GaugeTypeName << "_v"
+             << VECLEN << "_s" << SOALEN;
+    apply_two_flav_tm_inverse_clover_term(ivector);
+    dumpIVector(ivector, filename.str()); 
   }
 
   data_types<float, VECLEN, SOALEN, true>::Gauge cmped;

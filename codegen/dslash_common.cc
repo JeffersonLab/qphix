@@ -10,12 +10,15 @@ extern string beta_names[8];
 
 extern string alpha_name;
 extern string outBase;
+extern string out2Base;
 extern string outOffs;
 extern string gBase;
 extern string gOffs;
 extern string chiBase;
+extern string chi2Base;
 extern string chiOffs;
 extern string clBase;
+extern string cl2Base;
 extern string clOffs;
 
 extern string mu_name;
@@ -101,6 +104,45 @@ FVec out_spinor[4][3][2] = {{{out_S0_C0_RE, out_S0_C0_IM},
                              {out_S3_C1_RE, out_S3_C1_IM},
                              {out_S3_C2_RE, out_S3_C2_IM}}};
 
+// for two-flavour kernels we have a second output spinor
+FVec out2_S0_C0_RE("out2_S0_C0_RE");
+FVec out2_S0_C0_IM("out2_S0_C0_IM");
+FVec out2_S0_C1_RE("out2_S0_C1_RE");
+FVec out2_S0_C1_IM("out2_S0_C1_IM");
+FVec out2_S0_C2_RE("out2_S0_C2_RE");
+FVec out2_S0_C2_IM("out2_S0_C2_IM");
+FVec out2_S1_C0_RE("out2_S1_C0_RE");
+FVec out2_S1_C0_IM("out2_S1_C0_IM");
+FVec out2_S1_C1_RE("out2_S1_C1_RE");
+FVec out2_S1_C1_IM("out2_S1_C1_IM");
+FVec out2_S1_C2_RE("out2_S1_C2_RE");
+FVec out2_S1_C2_IM("out2_S1_C2_IM");
+FVec out2_S2_C0_RE("out2_S2_C0_RE");
+FVec out2_S2_C0_IM("out2_S2_C0_IM");
+FVec out2_S2_C1_RE("out2_S2_C1_RE");
+FVec out2_S2_C1_IM("out2_S2_C1_IM");
+FVec out2_S2_C2_RE("out2_S2_C2_RE");
+FVec out2_S2_C2_IM("out2_S2_C2_IM");
+FVec out2_S3_C0_RE("out2_S3_C0_RE");
+FVec out2_S3_C0_IM("out2_S3_C0_IM");
+FVec out2_S3_C1_RE("out2_S3_C1_RE");
+FVec out2_S3_C1_IM("out2_S3_C1_IM");
+FVec out2_S3_C2_RE("out2_S3_C2_RE");
+FVec out2_S3_C2_IM("out2_S3_C2_IM");
+
+FVec out2_spinor[4][3][2] = {{{out2_S0_C0_RE, out2_S0_C0_IM},
+                              {out2_S0_C1_RE, out2_S0_C1_IM},
+                              {out2_S0_C2_RE, out2_S0_C2_IM}},
+                             {{out2_S1_C0_RE, out2_S1_C0_IM},
+                              {out2_S1_C1_RE, out2_S1_C1_IM},
+                              {out2_S1_C2_RE, out2_S1_C2_IM}},
+                             {{out2_S2_C0_RE, out2_S2_C0_IM},
+                              {out2_S2_C1_RE, out2_S2_C1_IM},
+                              {out2_S2_C2_RE, out2_S2_C2_IM}},
+                             {{out2_S3_C0_RE, out2_S3_C0_IM},
+                              {out2_S3_C1_RE, out2_S3_C1_IM},
+                              {out2_S3_C2_RE, out2_S3_C2_IM}}};
+
 FVec clout_spinor[2][6][2] = {{{out_S0_C0_RE, out_S0_C0_IM},
                                {out_S0_C1_RE, out_S0_C1_IM},
                                {out_S0_C2_RE, out_S0_C2_IM},
@@ -152,6 +194,45 @@ FVec chi_spinor[4][3][2] = {{{chi_S0_C0_RE, chi_S0_C0_IM},
                              {chi_S3_C1_RE, chi_S3_C1_IM},
                              {chi_S3_C2_RE, chi_S3_C2_IM}}};
 
+// for two-flavour kernels, we have a second input spinor
+FVec chi2_S0_C0_RE("chi2_S0_C0_RE");
+FVec chi2_S0_C0_IM("chi2_S0_C0_IM");
+FVec chi2_S0_C1_RE("chi2_S0_C1_RE");
+FVec chi2_S0_C1_IM("chi2_S0_C1_IM");
+FVec chi2_S0_C2_RE("chi2_S0_C2_RE");
+FVec chi2_S0_C2_IM("chi2_S0_C2_IM");
+FVec chi2_S1_C0_RE("chi2_S1_C0_RE");
+FVec chi2_S1_C0_IM("chi2_S1_C0_IM");
+FVec chi2_S1_C1_RE("chi2_S1_C1_RE");
+FVec chi2_S1_C1_IM("chi2_S1_C1_IM");
+FVec chi2_S1_C2_RE("chi2_S1_C2_RE");
+FVec chi2_S1_C2_IM("chi2_S1_C2_IM");
+FVec chi2_S2_C0_RE("chi2_S2_C0_RE");
+FVec chi2_S2_C0_IM("chi2_S2_C0_IM");
+FVec chi2_S2_C1_RE("chi2_S2_C1_RE");
+FVec chi2_S2_C1_IM("chi2_S2_C1_IM");
+FVec chi2_S2_C2_RE("chi2_S2_C2_RE");
+FVec chi2_S2_C2_IM("chi2_S2_C2_IM");
+FVec chi2_S3_C0_RE("chi2_S3_C0_RE");
+FVec chi2_S3_C0_IM("chi2_S3_C0_IM");
+FVec chi2_S3_C1_RE("chi2_S3_C1_RE");
+FVec chi2_S3_C1_IM("chi2_S3_C1_IM");
+FVec chi2_S3_C2_RE("chi2_S3_C2_RE");
+FVec chi2_S3_C2_IM("chi2_S3_C2_IM");
+
+FVec chi2_spinor[4][3][2] = {{{chi2_S0_C0_RE, chi2_S0_C0_IM},
+                              {chi2_S0_C1_RE, chi2_S0_C1_IM},
+                              {chi2_S0_C2_RE, chi2_S0_C2_IM}},
+                             {{chi2_S1_C0_RE, chi2_S1_C0_IM},
+                              {chi2_S1_C1_RE, chi2_S1_C1_IM},
+                              {chi2_S1_C2_RE, chi2_S1_C2_IM}},
+                             {{chi2_S2_C0_RE, chi2_S2_C0_IM},
+                              {chi2_S2_C1_RE, chi2_S2_C1_IM},
+                              {chi2_S2_C2_RE, chi2_S2_C2_IM}},
+                             {{chi2_S3_C0_RE, chi2_S3_C0_IM},
+                              {chi2_S3_C1_RE, chi2_S3_C1_IM},
+                              {chi2_S3_C2_RE, chi2_S3_C2_IM}}};
+
 FVec dout_S0_C0_RE("dout_S0_C0_RE");
 FVec dout_S0_C0_IM("dout_S0_C0_IM");
 FVec dout_S0_C1_RE("dout_S0_C1_RE");
@@ -189,6 +270,44 @@ FVec dout_spinor[4][3][2] = {{{dout_S0_C0_RE, dout_S0_C0_IM},
                              {{dout_S3_C0_RE, dout_S3_C0_IM},
                               {dout_S3_C1_RE, dout_S3_C1_IM},
                               {dout_S3_C2_RE, dout_S3_C2_IM}}};
+
+FVec dout2_S0_C0_RE("dout2_S0_C0_RE");
+FVec dout2_S0_C0_IM("dout2_S0_C0_IM");
+FVec dout2_S0_C1_RE("dout2_S0_C1_RE");
+FVec dout2_S0_C1_IM("dout2_S0_C1_IM");
+FVec dout2_S0_C2_RE("dout2_S0_C2_RE");
+FVec dout2_S0_C2_IM("dout2_S0_C2_IM");
+FVec dout2_S1_C0_RE("dout2_S1_C0_RE");
+FVec dout2_S1_C0_IM("dout2_S1_C0_IM");
+FVec dout2_S1_C1_RE("dout2_S1_C1_RE");
+FVec dout2_S1_C1_IM("dout2_S1_C1_IM");
+FVec dout2_S1_C2_RE("dout2_S1_C2_RE");
+FVec dout2_S1_C2_IM("dout2_S1_C2_IM");
+FVec dout2_S2_C0_RE("dout2_S2_C0_RE");
+FVec dout2_S2_C0_IM("dout2_S2_C0_IM");
+FVec dout2_S2_C1_RE("dout2_S2_C1_RE");
+FVec dout2_S2_C1_IM("dout2_S2_C1_IM");
+FVec dout2_S2_C2_RE("dout2_S2_C2_RE");
+FVec dout2_S2_C2_IM("dout2_S2_C2_IM");
+FVec dout2_S3_C0_RE("dout2_S3_C0_RE");
+FVec dout2_S3_C0_IM("dout2_S3_C0_IM");
+FVec dout2_S3_C1_RE("dout2_S3_C1_RE");
+FVec dout2_S3_C1_IM("dout2_S3_C1_IM");
+FVec dout2_S3_C2_RE("dout2_S3_C2_RE");
+FVec dout2_S3_C2_IM("dout2_S3_C2_IM");
+
+FVec dout2_spinor[4][3][2] = {{{dout2_S0_C0_RE, dout2_S0_C0_IM},
+                               {dout2_S0_C1_RE, dout2_S0_C1_IM},
+                               {dout2_S0_C2_RE, dout2_S0_C2_IM}},
+                              {{dout2_S1_C0_RE, dout2_S1_C0_IM},
+                               {dout2_S1_C1_RE, dout2_S1_C1_IM},
+                               {dout2_S1_C2_RE, dout2_S1_C2_IM}},
+                              {{dout2_S2_C0_RE, dout2_S2_C0_IM},
+                               {dout2_S2_C1_RE, dout2_S2_C1_IM},
+                               {dout2_S2_C2_RE, dout2_S2_C2_IM}},
+                              {{dout2_S3_C0_RE, dout2_S3_C0_IM},
+                               {dout2_S3_C1_RE, dout2_S3_C1_IM},
+                               {dout2_S3_C2_RE, dout2_S3_C2_IM}}};
 
 FVec cl_diag_0("cl_diag_0");
 FVec cl_diag_1("cl_diag_1");
@@ -464,7 +583,7 @@ void declare_u_gaus(InstVector &ivector)
   }
 }
 
-void declare_outs(InstVector &ivector)
+void declare_outs(InstVector &ivector, bool two_flav = false)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
@@ -472,9 +591,17 @@ void declare_outs(InstVector &ivector)
       declareFVecFromFVec(ivector, out_spinor[s][c][IM]);
     }
   }
+  if(two_flav){
+    for (int s = 0; s < 4; s++) {
+      for (int c = 0; c < 3; c++) {
+        declareFVecFromFVec(ivector, out2_spinor[s][c][RE]);
+        declareFVecFromFVec(ivector, out2_spinor[s][c][IM]);
+      }
+    }
+  }
 }
 
-void declare_douts(InstVector &ivector)
+void declare_douts(InstVector &ivector, bool two_flav = false)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
@@ -482,14 +609,30 @@ void declare_douts(InstVector &ivector)
       declareFVecFromFVec(ivector, dout_spinor[s][c][IM]);
     }
   }
+  if(two_flav){
+    for (int s = 0; s < 4; s++) {
+      for (int c = 0; c < 3; c++) {
+        declareFVecFromFVec(ivector, dout2_spinor[s][c][RE]);
+        declareFVecFromFVec(ivector, dout2_spinor[s][c][IM]);
+      }
+    }
+  }
 }
 
-void declare_chi(InstVector &ivector)
+void declare_chi(InstVector &ivector, bool two_flav = false)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
       declareFVecFromFVec(ivector, chi_spinor[s][c][RE]);
       declareFVecFromFVec(ivector, chi_spinor[s][c][IM]);
+    }
+  }
+  if(two_flav){
+    for (int s = 0; s < 4; s++) {
+      for (int c = 0; c < 3; c++) {
+        declareFVecFromFVec(ivector, chi2_spinor[s][c][RE]);
+        declareFVecFromFVec(ivector, chi2_spinor[s][c][IM]);
+      }
     }
   }
 }
@@ -1094,6 +1237,146 @@ void zeroResult(InstVector &ivector, FVec *outspinor)
     setZero(ivector, outspinor[i]);
   }
 }
+
+void two_flav_clover_term(InstVector &ivector,
+                          FVec in_spinor[4][3][2],
+                          FVec in2_spinor[4][3][2],
+                          FVec out_spinor[4][3][2],
+                          FVec out2_spinor[4][3][2],
+                          string _mask,
+                          bool acc){
+
+  FVec clout_tmp[2] = {tmp_1_re, tmp_1_im};
+  for (int block = 0; block < 2; block++) {
+    PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
+    LoadFullCloverBlock(
+        ivector, clov_diag, clov_offdiag, clBase, clOffs, block);
+
+    for (int c1 = 0; c1 < 6; c1++) {
+      int spin = 2 * block + c1 / 3;
+      int col = c1 % 3;
+      string mask = _mask;
+
+      // tau1 in flavour imlpemented on the in spinors
+      FVec *clout = out_spinor[spin][col];
+      FVec *clout2 = out2_spinor[spin][col];
+      FVec *clin = in2_spinor[spin][col];
+      FVec *clin2 = in_spinor[spin][col];
+#ifdef NO_HW_MASKING
+
+      if (_mask != "") {
+        acc = false;
+        clout = clout_tmp;
+        mask = "";
+      }
+
+#endif
+
+      if (acc) {
+        fmaddFVec(ivector, clout[RE], clov_diag[c1], clin[RE], clout[RE], mask);
+        fmaddFVec(ivector, clout2[RE], clov_diag[c1], clin2[RE], clout2[RE], mask);
+        fmaddFVec(ivector, clout[IM], clov_diag[c1], clin[IM], clout[IM], mask);
+        fmaddFVec(ivector, clout2[IM], clov_diag[c1], clin2[IM], clout2[IM], mask);
+      } else {
+        mulFVec(ivector, clout[RE], clov_diag[c1], clin[RE], mask);
+        mulFVec(ivector, clout2[RE], clov_diag[c1], clin2[RE], mask);
+        mulFVec(ivector, clout[IM], clov_diag[c1], clin[IM], mask);
+        mulFVec(ivector, clout2[IM], clov_diag[c1], clin2[IM], mask);
+      }
+
+      for (int c2 = 0; c2 < 6; c2++) {
+        if (c1 == c2) {
+          continue; // diagonal case
+        }
+
+        if (c1 < c2) {
+          int od = c2 * (c2 - 1) / 2 + c1;
+          // note the tau1 in flavour
+          fmaddConjCVec(ivector, clout, clov_offdiag[od], in2_spinor[2 * block + c2 / 3][c2 % 3], clout, mask);
+          fmaddConjCVec(ivector, clout2, clov_offdiag[od], in_spinor[2 * block + c2 / 3][c2 % 3], clout2, mask);
+        } else {
+          int od = c1 * (c1 - 1) / 2 + c2;
+          // note tha tau1 in flavour
+          fmaddCVec(ivector, clout, clov_offdiag[od], in2_spinor[2 * block + c2 / 3][c2 % 3], clout, mask);
+          fmaddCVec(ivector, clout2, clov_offdiag[od], in_spinor[2 * block + c2 / 3][c2 % 3], clout2, mask);
+        }
+      } // c2
+
+#ifdef NO_HW_MASKING
+
+      if (_mask != "") {
+        if(acc){
+          addCVec(ivector, out_spinor[spin][col], clout, out_spinor[block][c1], _mask);
+          addCVec(ivector, out2_spinor[spin][col], clout2, out2_spinor[block][c1], _mask);
+        }else{
+          movCVec(ivector, out_spinor[spin][col], clout, _mask);
+          movCVec(ivector, out2_spinor[spin][col], clout2, _mask);
+        }
+      }
+
+#endif
+    } // c1
+  } // block
+
+}
+
+void two_flav_full_clover_term(InstVector &ivector,
+                               FVec in_spinor[4][3][2],
+                               FVec out_spinor[4][3][2],
+                               string cloverBase,
+                               string _mask,
+                               bool acc){
+  for (int block = 0; block < 2; block++) {
+
+    PrefetchL1FullCloverFullBlockIn(ivector, cloverBase, clOffs, block);
+    LoadFullCloverFullBlock(
+        ivector, clov_full, cloverBase, clOffs, block);
+
+    for (int sc1 = 0; sc1 < 6; sc1++) { // half-spin-colour row
+
+      int spin_out = 2 * block + sc1 / 3;
+      int col_out = sc1 % 3;
+      FVec *clout = out_spinor[spin_out][col_out];
+
+      for (int sc2 = 0; sc2 < 6; sc2++) { // half-spin-colour column
+
+        int spin_in = 2 * block + sc2 / 3;
+        int col_in = sc2 % 3;
+        FVec *clin = in_spinor[spin_in][col_in];
+
+        if (sc2 == 0 && !acc) {
+          mulCVec(ivector, clout, clov_full[sc1][sc2], clin, _mask);
+        } else {
+          fmaddCVec(ivector,
+                    clout,
+                    clov_full[sc1][sc2],
+                    clin,
+                    clout,
+                    _mask);
+        }
+      } // half-spin-colour column
+    } // half-spin-colour row
+  } // block
+}
+
+void two_flav_tm_inverse_clover_term(InstVector &ivector,
+                                     string _mask)
+{
+  declare_outs(ivector, true);
+  declare_chi(ivector, true);
+
+  // first we apply the inverse full clover term on the diagonal
+  // we do so flavour by flavour because otherwise we would jump around in memory a lot
+  two_flav_full_clover_term(ivector, chi_spinor, out_spinor, clBase, _mask, false);
+  two_flav_full_clover_term(ivector, chi2_spinor, out2_spinor, cl2Base, _mask, false);
+  // and then we add the flavour-off-diagonal contribution which comes with
+  // just a Wilson-type clover term with a real spin-colour diagonal
+  // it makes sense to do this in one go because the same term is applied to both flavours
+  two_flav_clover_term(ivector, chi_spinor, chi2_spinor,
+                       out_spinor, out2_spinor, _mask, true);
+
+}
+
 
 void clover_term(InstVector &ivector,
                  FVec in_spinor[4][3][2],
