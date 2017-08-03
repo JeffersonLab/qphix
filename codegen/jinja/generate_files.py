@@ -15,6 +15,9 @@ import sys
 import jinja2
 
 
+SOURCEDIR = os.path.dirname(sys.argv[0])
+
+
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
     generated_files = os.listdir(os.path.join('..', 'generated', isa,
                                               'generated'))
@@ -44,20 +47,18 @@ def main():
 
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
 
-    with open('isa.js') as f:
+    with open(os.path.join(SOURCEDIR, 'isa.js')) as f:
         isas = json.load(f)
 
-    with open('kernels.js') as f:
+    with open(os.path.join(SOURCEDIR, 'kernels.js')) as f:
         kernel_patterns = json.load(f)
-
-    all_header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
 
     # Setting up Jinja
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(os.path.dirname(sys.argv[0]))
+        loader=jinja2.FileSystemLoader(SOURCEDIR)
     )
-    complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
-    kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
+    complete_specialization = env.get_template('complete_specialization.h.j2')
+    kernel_generated_h = env.get_template('kernel_generated.h.j2')
 
     for kernel_pattern in kernel_patterns:
         kernel = kernel_pattern % {'fptype_underscore': ''}
@@ -81,7 +82,7 @@ def main():
             continue
 
         source_files = []
-        header_files = list(all_header_files)
+        header_files = []
 
         os.makedirs(os.path.join('..', 'generated', isa, 'include'), exist_ok=True)
         os.makedirs(os.path.join('..', 'generated', isa, 'src'), exist_ok=True)
