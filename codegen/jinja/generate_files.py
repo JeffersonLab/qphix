@@ -10,6 +10,7 @@ import itertools
 import json
 import os
 import socket
+import sys
 
 import jinja2
 
@@ -53,7 +54,7 @@ def main():
 
     # Setting up Jinja
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader('..')
+        loader=jinja2.FileSystemLoader(os.path.dirname(sys.argv[0]))
     )
     complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
     kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')

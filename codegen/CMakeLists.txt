@@ -124,12 +124,6 @@ MESSAGE(STATUS "Looking for Python")
 find_package(PythonInterp 3.0 REQUIRED)
 MESSAGE(STATUS "Python interpreter is ${PYTHON_EXECUTABLE}")
 
-MESSAGE(STATUS "Copying JINJA Directory")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-#MESSAGE(INFO "Copying Include Directory")
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 LIST(APPEND codegen_sources codegen.cc
 	    data_types.cc
 	    dslash.cc
@@ -379,7 +373,7 @@ endforeach()
 
 # 
 add_custom_target( jinja ALL 
-				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/jinja/generate_files.py ${isa}
+				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT__DIR}/jinja/generate_files.py ${isa}
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
 				   COMMENT "Generating function body source code: with generate_files.py ${isa}"
 				   DEPENDS ${codegen_targets})
@@ -398,6 +392,7 @@ add_custom_target( codegen_lib ALL
 				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
                                                 -DCMAKE_CXX_COMPILER=${target_cxx}
                                                 -DCMAKE_CXX_FLAGS=${target_cxxflags} 
+                                                -Dmain_source_dir=${CMAKE_CURRENT_SOURCE_DIR}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
 				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
 				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
