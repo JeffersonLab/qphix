@@ -372,11 +372,11 @@ foreach(targ ${target_list})
 endforeach()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja)
-add_custom_target( jinja ALL 
-				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT__DIR}/jinja/generate_files.py ${isa}
-				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
-				   COMMENT "Generating function body source code: with generate_files.py ${isa}"
-				   DEPENDS ${codegen_targets})
+add_custom_target(jinja ALL 
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/jinja/generate_files.py ${isa}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
+    COMMENT "Generating function body source code: with generate_files.py ${isa}"
+    DEPENDS ${codegen_targets})
 				   
 export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
