@@ -100,7 +100,7 @@ def main():
             kernel = kernel_pattern % {'fptype_underscore': ''}
 
             filename_decl = os.path.join('..', 'generated', isa, 'include', '{}_{}_decl.h'.format(kernel, isa))
-            template_decl = env.get_template('jinja/{}_decl.h.j2'.format(kernel))
+            template_decl = env.get_template('{}_decl.h.j2'.format(kernel))
 
             rendered = template_decl.render()
             write_if_changed(filename_decl, rendered)
@@ -172,7 +172,7 @@ def main():
                             source_files.append(filename_spec)
 
 
-        cmake_template = env.get_template('jinja/CMakeLists.txt.j2')
+        cmake_template = env.get_template('CMakeLists.txt.j2')
         filename_cmake = os.path.join('../generated', isa, 'CMakeLists.txt')
         rendered = cmake_template.render(
             source_files=[
