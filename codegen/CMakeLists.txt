@@ -386,21 +386,6 @@ add_custom_target( jinja ALL
 				   
 export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
-# Copy some headers over into the directory for the generated code
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
- 		   				${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
-    				
-if ( (${isa} STREQUAL "avx") OR (${isa} STREQUAL "avx2") )
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
-					${CMAKE_CURRENT_BINARY_DIR}/include/avx_utils.h)
-elseif( ${isa} STREQUAL "sse" )
-    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/sse_utils.h
-   				${CMAKE_CURRENT_BINARY_DIR}/include/sse_utils.h)
-elseif( ${isa} STREQUAL "qpx" ) 
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/qpx_utils.h
-    				${CMAKE_CURRENT_BINARY_DIR}/include/qpx_utils.h)
-endif()
-
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
 
