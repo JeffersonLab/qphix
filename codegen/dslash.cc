@@ -108,7 +108,8 @@ string prec_mass_rho_name("prec_mass_rho");
 // the offsets are identical for both flavours
 string out2Base("o2Base");
 string chi2Base("chi2Base");
-string cl2Base("cl2Base");
+string fclBase("fclBase");
+string fcl2Base("fcl2Base");
 
 // Defines which dimensions are involved in SIMD blocking
 // Currently just X and Y

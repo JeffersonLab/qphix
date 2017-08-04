@@ -136,6 +136,12 @@ class TMClovDslash
                                const int isign,
                                const int cb);
 
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    const FourSpinorBlock *const psi[2],
+                                    const FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign);
+
 #ifdef __INTEL_COMPILER  
   void two_flav_AChiMinusBDPsi(FourSpinorBlock *const res[2],
                                FourSpinorBlock *const psi[2],
@@ -183,6 +189,33 @@ class TMClovDslash
                                   const_cast<const FourSpinorBlock * const *>(psi),
                                   const_cast<const FourSpinorBlock * const *>(chi),
                                   u, alpha, beta, epsilon, isign, cb);
+  }
+  
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    FourSpinorBlock *const psi[2],
+                                    const FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign)
+  {
+    this->two_flav_inverse_clover_term(res,
+                                       const_cast<const FourSpinorBlock * const *>(psi),
+                                       fcl,
+                                       clOffDiag,
+                                       isign);
+  }
+  
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    FourSpinorBlock *const psi[2],
+                                    FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign)
+  {
+    this->two_flav_inverse_clover_term(res,
+                                       const_cast<const FourSpinorBlock * const *>(psi),
+                                       const_cast<const FullCloverBlock * const *>(fcl),
+                                       fclDn,
+                                       clOffDiag,
+                                       isign);
   }
 #endif // __INTEL_COMPILER workaround 
 

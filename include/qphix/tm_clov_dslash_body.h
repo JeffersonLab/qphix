@@ -486,7 +486,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::Dyz(
       // If we are on timeslice 0, we should set back t_coeff and accumulate
       if (t == 0) {
         if (!comms->localT()) {
-          accumulate[6] = 0;
+          xaccumulate[6] = 0;
         } else {
           if (amIPtMin) {
             back_t_coeff *= t_boundary;
@@ -1180,6 +1180,208 @@ void TMClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #endif // QPHIX_DO_COMMS
 }
+template <typename FT, int veclen, int soalen, bool compress12>
+void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_inverse_clover_term(
+    FourSpinorBlock *const res[2],
+    const FourSpinorBlock *const psi[2],
+    const FullCloverBlock *const fcl[2],
+    const CloverBlock     *const clOffDiag,
+    int isign)
+{
+  #pragma omp parallel
+  {
+    const int tid = omp_get_thread_num();
+    // isign changes the sign of the twisted mass
+    if(isign==1){
+      two_flav_inverse_clover_term_YZ(tid, res[0], res[1], psi[0], psi[1],
+                                      fcl[0], fcl[1], clOffDiag);
+    } else {
+      two_flav_inverse_clover_term_YZ(tid, res[0], res[1], psi[0], psi[1],
+                                      fcl[1], fcl[0], clOffDiag);
+    }
+  }
+}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+void TMClovDslash<FT, veclen, soalen, compress12::two_flav_inverse_clover_term_YZ(
+    const int tid,
+    FourSpinorBlock *const resUp,
+    FourSpinorBlock *const resDn,
+    const FourSpinorBlock *const psiUp,
+    const FourSpinorBlock *const psiDn,
+    const FullCloverBlock *const fclUp,
+    const FullCloverBlock *const fclDn,
+    const CloverBlock *const clOffDiag)
+{
+  const int Nxh = s->Nxh();
+  const int Nx = s->Nx();
+  const int Ny = s->Ny();
+  const int Nz = s->Nz();
+  const int Nt = s->Nt();
+  const int By = s->getBy();
+  const int Bz = s->getBz();
+  const int Sy = s->getSy();
+  const int Sz = s->getSz();
+  const int ngy = s->nGY();
+  const int Pxy = s->getPxy();
+  const int Pxyz = s->getPxyz();
+
+  // Get Core ID and SIMT ID
+  int cid = tid / n_threads_per_core;
+  int smtid = tid - n_threads_per_core * cid;
+
+  // Compute smt ID Y and Z indices
+  int smtid_z = smtid / Sy;
+  int smtid_y = smtid - Sy * smtid_z;
+
+  unsigned int accumulate[8] = {~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U, ~0U};
+  int nvecs = s->nVecs();
+
+  const int gauge_line_in_floats =
+      sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge soavector
+  const int spinor_line_in_floats =
+      sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
+
+  // Indexing constants
+  const int V1 = 2 * nvecs; // No of vectors in x (without checkerboarding)
+  const int NyV1 = Ny * V1;
+  const int NzNyV1 = Nz * Ny * V1;
+
+  const int Nxm1 = 2 * Nxh - 1;
+  const int Nym1 = Ny - 1;
+  const int Nzm1 = Nz - 1;
+  const int Ntm1 = Nt - 1;
+
+  const int NyV1mV1 = V1 * (Ny - 1);
+  const int NzNyV1mNyV1 = V1 * Ny * (Nz - 1);
+  const int NtNzNyV1mNzNyV1 = V1 * Nz * Ny * (Nt - 1);
+
+  const int nyg = s->nGY();
+  // Get the number of checkerboarded sites and various indexing constants
+  int gprefdist = 0;
+  int soprefdist = 0;
+
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+  int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+      &(tmpspc_all[veclen * 16 * tid]);
+#else
+  __declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+      &(tmpspc_all[veclen * 16 * tid]);
+#endif
+
+  int num_phases = s->getNumPhases();
+
+  for (int ph = 0; ph < num_phases; ph++) {
+    const CorePhase &phase = s->getCorePhase(ph);
+    const BlockPhase &binfo = block_info[tid * num_phases + ph];
+
+    int nActiveCores = phase.Cyz * phase.Ct;
+    if (cid >= nActiveCores)
+      continue;
+
+    int ph_next = ph;
+    int Nct = binfo.nt;
+
+    // Loop over timeslices
+    for (int ct = 0; ct < Nct; ct++) {
+      int t = ct + binfo.bt;
+      int ct_next = ct;
+
+      // Loop over z. Start at smtid_z and work up to Ncz
+      // (Ncz truncated for the last block so should be OK)
+      for (int cz = smtid_z; cz < Bz; cz += Sz) {
+
+        int z = cz + binfo.bz; // Add on origin of block
+        int cz_next = cz;
+
+        FourSpinorBlock *oBase = &resUp[t * Pxyz + z * Pxy];
+        FourSpinorBlock *o2Base = &resDn[t * Pxyz + z * Pxy];
+        FourSpinorBlock *chiBase = &psiUp[t * Pxyz + z * Pxy];
+        FourSpinorBlock *chi2Base = &psiDn[t * Pxyz + z * Pxy];
+
+        // Loop over y. Start at smtid_y and work up to Ncy
+        // (Ncy truncated for the last block so should be OK)
+        for (int cy = nyg * smtid_y; cy < By; cy += nyg * Sy) {
+          int yi = cy + binfo.by;
+          int cy_next = cy;
+          const int xodd = (yi + z + t + cb) & 1;
+
+          // cx loops over the soalen partial vectors
+          for (int cx = 0; cx < nvecs; cx++) {
+            ///// ---- BAKO: since we are not prefetching, we don't need to know where to prefetch from
+            /* int ind = 0;
+            int cx_next = cx + 1;
+
+            if (cx_next == nvecs) {
+              cx_next = 0;
+              cy_next += nyg * Sy;
+              if (cy_next >= By) {
+                cy_next = nyg * smtid_y;
+                cz_next += Sz;
+                if (cz_next >= Bz) {
+                  cz_next = smtid_z;
+                  ct_next++;
+                  if (ct_next == Nct) {
+                    ct_next = 0;
+                    ph_next++;
+                    if (ph_next == num_phases) {
+                      ph_next = 0;
+                    }
+                  }
+                }
+              }
+            }
+
+            const BlockPhase &binfo_next = block_info[tid * num_phases + ph_next];
+            int yi_next = cy_next + binfo_next.by;
+            int z_next = cz_next + binfo_next.bz;
+            int t_next = ct_next + binfo_next.bt;
+
+            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
+                           (yi_next - yi) * nvecs + (cx_next - cx);
+            int si_off_next = off_next * spinor_line_in_floats; */
+            //// BAKO ----
+
+            const FullCloverBlock *fclBase =
+                &fclUp[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const FullCloverBlock *fcl2Base =
+                &fclDn[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+            const CloverBlock *clBase =
+                &fclOffDiag[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+
+            // ---- BAKO
+            //const int clov_line_in_floats =
+            //    sizeof(FullCloverBlock) /
+            //    sizeof(FT); // One gauge scanline, in floats
+            //int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
+            //                   (yi_next - yi) * nvecs) /
+            //                      nyg +
+            //                  (cx_next - cx)) *
+            //                 clov_line_in_floats;
+            // BAKO ----
+
+            int X = nvecs * yi + cx;
+
+            tm_clov_two_flav_inverse_clover_term(
+                oBase + X,
+                o2Base + X,
+                chiBase + X,
+                chi2Base + X,
+                fclBase,
+                fcl2Base,
+                clBase);
+
+          }
+        } // End for over scanlines y
+      } // End for over scalines z
+
+      //if (ct % BARRIER_TSLICES == 0)
+      //  barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
+
+    } // end for over t
+  } // phases
+}
+
 
 template <typename FT, int veclen, int soalen, bool compress12>
 void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(

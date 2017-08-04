@@ -10,19 +10,22 @@ extern string beta_names[8];
 
 extern string alpha_name;
 extern string outBase;
-extern string out2Base;
 extern string outOffs;
 extern string gBase;
 extern string gOffs;
 extern string chiBase;
-extern string chi2Base;
 extern string chiOffs;
 extern string clBase;
-extern string cl2Base;
 extern string clOffs;
 
 extern string mu_name;
 extern string mu_inv_name;
+
+// kernel parameter names for the two-flavour kernel(s)
+extern string chi2Base;
+extern string out2Base;
+extern string fclBase;
+extern string fcl2Base;
 
 extern string prec_mass_rho_name;
 
@@ -1367,8 +1370,8 @@ void two_flav_tm_inverse_clover_term(InstVector &ivector,
 
   // first we apply the inverse full clover term on the diagonal
   // we do so flavour by flavour because otherwise we would jump around in memory a lot
-  two_flav_full_clover_term(ivector, chi_spinor, out_spinor, clBase, _mask, false);
-  two_flav_full_clover_term(ivector, chi2_spinor, out2_spinor, cl2Base, _mask, false);
+  two_flav_full_clover_term(ivector, chi_spinor, out_spinor, fclBase, _mask, false);
+  two_flav_full_clover_term(ivector, chi2_spinor, out2_spinor, fcl2Base, _mask, false);
   // and then we add the flavour-off-diagonal contribution which comes with
   // just a Wilson-type clover term with a real spin-colour diagonal
   // it makes sense to do this in one go because the same term is applied to both flavours
