@@ -274,44 +274,6 @@ FVec dout_spinor[4][3][2] = {{{dout_S0_C0_RE, dout_S0_C0_IM},
                               {dout_S3_C1_RE, dout_S3_C1_IM},
                               {dout_S3_C2_RE, dout_S3_C2_IM}}};
 
-FVec dout2_S0_C0_RE("dout2_S0_C0_RE");
-FVec dout2_S0_C0_IM("dout2_S0_C0_IM");
-FVec dout2_S0_C1_RE("dout2_S0_C1_RE");
-FVec dout2_S0_C1_IM("dout2_S0_C1_IM");
-FVec dout2_S0_C2_RE("dout2_S0_C2_RE");
-FVec dout2_S0_C2_IM("dout2_S0_C2_IM");
-FVec dout2_S1_C0_RE("dout2_S1_C0_RE");
-FVec dout2_S1_C0_IM("dout2_S1_C0_IM");
-FVec dout2_S1_C1_RE("dout2_S1_C1_RE");
-FVec dout2_S1_C1_IM("dout2_S1_C1_IM");
-FVec dout2_S1_C2_RE("dout2_S1_C2_RE");
-FVec dout2_S1_C2_IM("dout2_S1_C2_IM");
-FVec dout2_S2_C0_RE("dout2_S2_C0_RE");
-FVec dout2_S2_C0_IM("dout2_S2_C0_IM");
-FVec dout2_S2_C1_RE("dout2_S2_C1_RE");
-FVec dout2_S2_C1_IM("dout2_S2_C1_IM");
-FVec dout2_S2_C2_RE("dout2_S2_C2_RE");
-FVec dout2_S2_C2_IM("dout2_S2_C2_IM");
-FVec dout2_S3_C0_RE("dout2_S3_C0_RE");
-FVec dout2_S3_C0_IM("dout2_S3_C0_IM");
-FVec dout2_S3_C1_RE("dout2_S3_C1_RE");
-FVec dout2_S3_C1_IM("dout2_S3_C1_IM");
-FVec dout2_S3_C2_RE("dout2_S3_C2_RE");
-FVec dout2_S3_C2_IM("dout2_S3_C2_IM");
-
-FVec dout2_spinor[4][3][2] = {{{dout2_S0_C0_RE, dout2_S0_C0_IM},
-                               {dout2_S0_C1_RE, dout2_S0_C1_IM},
-                               {dout2_S0_C2_RE, dout2_S0_C2_IM}},
-                              {{dout2_S1_C0_RE, dout2_S1_C0_IM},
-                               {dout2_S1_C1_RE, dout2_S1_C1_IM},
-                               {dout2_S1_C2_RE, dout2_S1_C2_IM}},
-                              {{dout2_S2_C0_RE, dout2_S2_C0_IM},
-                               {dout2_S2_C1_RE, dout2_S2_C1_IM},
-                               {dout2_S2_C2_RE, dout2_S2_C2_IM}},
-                              {{dout2_S3_C0_RE, dout2_S3_C0_IM},
-                               {dout2_S3_C1_RE, dout2_S3_C1_IM},
-                               {dout2_S3_C2_RE, dout2_S3_C2_IM}}};
-
 FVec cl_diag_0("cl_diag_0");
 FVec cl_diag_1("cl_diag_1");
 FVec cl_diag_2("cl_diag_2");
@@ -604,20 +566,12 @@ void declare_outs(InstVector &ivector, bool two_flav = false)
   }
 }
 
-void declare_douts(InstVector &ivector, bool two_flav = false)
+void declare_douts(InstVector &ivector)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
       declareFVecFromFVec(ivector, dout_spinor[s][c][RE]);
       declareFVecFromFVec(ivector, dout_spinor[s][c][IM]);
-    }
-  }
-  if(two_flav){
-    for (int s = 0; s < 4; s++) {
-      for (int c = 0; c < 3; c++) {
-        declareFVecFromFVec(ivector, dout2_spinor[s][c][RE]);
-        declareFVecFromFVec(ivector, dout2_spinor[s][c][IM]);
-      }
     }
   }
 }
@@ -1251,7 +1205,9 @@ void two_flav_clover_term(InstVector &ivector,
 
   FVec clout_tmp[2] = {tmp_1_re, tmp_1_im};
   for (int block = 0; block < 2; block++) {
-    PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
+    // BaKo, August 2017: we leave out all prefetches because they don's seem to
+    // do anything here
+    //PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
     LoadFullCloverBlock(
         ivector, clov_diag, clov_offdiag, clBase, clOffs, block);
 
@@ -1331,7 +1287,9 @@ void two_flav_full_clover_term(InstVector &ivector,
                                bool acc){
   for (int block = 0; block < 2; block++) {
 
-    PrefetchL1FullCloverFullBlockIn(ivector, cloverBase, clOffs, block);
+    // BaKo, August 2017: we leave out all prefetches because they don's seem to
+    // do anything here
+    //PrefetchL1FullCloverFullBlockIn(ivector, cloverBase, clOffs, block);
     LoadFullCloverFullBlock(
         ivector, clov_full, cloverBase, clOffs, block);
 
@@ -1367,7 +1325,11 @@ void two_flav_tm_inverse_clover_term(InstVector &ivector,
 {
   declare_outs(ivector, true);
   declare_chi(ivector, true);
+  declare_clover(ivector);
+  declare_full_clover(ivector);
 
+  LoadFullSpinor(ivector, chi_spinor, chiBase, chiOffs, _mask);
+  LoadFullSpinor(ivector, chi2_spinor, chi2Base, chiOffs, _mask);
   // first we apply the inverse full clover term on the diagonal
   // we do so flavour by flavour because otherwise we would jump around in memory a lot
   two_flav_full_clover_term(ivector, chi_spinor, out_spinor, fclBase, _mask, false);
@@ -1874,27 +1836,11 @@ void achiResult(InstVector &ivector,
                           "");
       }
     }
-
+    
+    // BaKo, August 2017: for AChiMBDPsi we can use the standard clover
+    // term also for twisted mass operators. We pass in the twisted mass
+    // via the pre-conditioning mass "rho"
     clover_term(ivector, chi_spinor, false);
-   
-    // BaKo WIP: for AChi - bDPsi, we always use CloverBlock, the twisted mass
-    // (or epsilon) is added using linear algebra in the EO operator 
-    //
-    //// Apply clover term, and store result in out spinor.
-    //// This is only on the AChi - bDPsi op (achimbdpsi = true)
-    //// This is only in body kernel (face = false)
-    //if (twisted_mass == TwistedMassVariant::none) {
-    //  clover_term(ivector, chi_spinor, false);
-    //} else if (twisted_mass == TwistedMassVariant::degenerate) {
-    //  full_clover_term(ivector, chi_spinor, false);
-    //} else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-    //  // TODO Here something new for the ND case has to be
-    //  // implemented.
-    //  // Currently this is just copied from the degenerate case.
-    //  full_clover_term(ivector, chi_spinor, false);
-    //} else {
-    //  unsupported_twisted_mass_variant();
-    //}
   } else { // NO CLOVER
     if (twisted_mass == TwistedMassVariant::none) {
       for (int col = 0; col < 3; col++) {
@@ -1932,8 +1878,10 @@ void achiResult(InstVector &ivector,
       // for pure twisted mass and stores result in out_spinor
       twisted_term(ivector, isPlus);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
       // the full ND twisted mass term with mass splitting is implemented
-      // as a linalg functor in QPhiX, this is basically never used
+      // as a linalg functor in QPhiX, for now this branch is never
+      // entered
 
       // Loads spinor elements from chiBase, multiplies with A
       // for pure twisted mass and stores result in out_spinor
@@ -2043,6 +1991,15 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       declare_full_clover(ivector);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted clover term with mass splitting is implemented
+      // as a separate operator which applies the flavour-diagonal
+      // and off-diagonal contributions of the inverse clover term
+      // after the hopping matrix has been called on both
+      // flavours seperately
+      //
+      // this branch of the code generator is presently never entered
+      
       // TODO Here something new for the ND case has to be
       // implemented.
       // Currently this is just copied from the degenerate case.
@@ -2089,6 +2046,14 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       full_clover_term(ivector, *outspinor, false);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted clover term with mass splitting is implemented
+      // as a separate operator which applies the flavour-diagonal
+      // and off-diagonal contributions of the inverse clover term
+      // after the hopping matrix has been called on both
+      // flavours seperately
+      //
+      // this branch of the code generator is presently never entered
       full_clover_term(ivector, *outspinor, false);
       // TODO Here something new for the ND case has to be
       // implemented.
@@ -2102,6 +2067,10 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       inverse_twisted_term(ivector, *outspinor, false, isPlus);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted mass term with mass splitting is implemented
+      // as a linalg functor in QPhiX, for now this branch is never
+      // entered
       // TODO Here something new for the ND case has to be
       // implemented.
       // Currently this is just copied from the degenerate case.

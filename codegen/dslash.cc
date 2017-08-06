@@ -567,9 +567,6 @@ void apply_two_flav_tm_inverse_clover_term(InstVector &ivector){
 
   string mask;
 
-  LoadFullSpinor(ivector, chi_spinor, chiBase, chiOffs, mask);
-  LoadFullSpinor(ivector, chi2_spinor, chi2Base, chiOffs, mask);
-
   two_flav_tm_inverse_clover_term(ivector, mask);
 
   StoreFullSpinor(ivector, out_spinor, outBase, outOffs);
@@ -770,10 +767,11 @@ void generate_code(void)
 
   // TWO-FLAVOUR TWISTED MASS SPECIFIC KERNELS
   // =========================================
-  for( auto kernel : {"tm_clov_two_flav_inverse_clover_term"} ){
+  for( auto kernel : {"two_flav_inverse_clover_term"} ){
     std::ostringstream filename;
     InstVector ivector;
     filename << output_dir << "/generated/" << ARCH_NAME << "/generated/"
+             << "tm_clov_" << CloverTypeName << "_dslash_"
              << kernel << "_"
              << SpinorTypeName << "_" << GaugeTypeName << "_v"
              << VECLEN << "_s" << SOALEN;

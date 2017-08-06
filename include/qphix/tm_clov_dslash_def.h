@@ -65,57 +65,9 @@ class TMClovDslash
     Clover \f$ A \chi - b D \psi \f$ for the non-degenerate twisted mass
     case.
 
-    Most aspects of this function are similar to \ref two_flav_dslash.
-    Please first read the documentation there.
-
-    This function will compute
-    \f[
-    \begin{pmatrix}
-    \Psi_\mathrm u \\ \Psi_\mathrm d
-    \end{pmatrix}
-    :=
-    \begin{pmatrix}
-    A_\mathrm{uu} &
-    \epsilon \\
-    \epsilon &
-    A_\mathrm{dd}
-    \end{pmatrix}
-    \begin{pmatrix}
-    \chi_\mathrm u \\ \chi_\mathrm d
-    \end{pmatrix}
-    - b D
-    \begin{pmatrix}
-    \psi_\mathrm u \\ \psi_\mathrm d
-    \end{pmatrix}
-    \,.
-    \f]
-
-    In order to leverage the \ref dslashAChiMinusBDPsi implementation,
-    this is rewritten as
-    \f[
-    \begin{pmatrix}
-    \Psi_\mathrm u \\ \Psi_\mathrm d
-    \end{pmatrix}
-    :=
-    \underbrace{
-    \begin{pmatrix}
-    A_\mathrm{uu} \chi_\mathrm u - b D \psi_\mathrm u \\
-    A_\mathrm{dd} \chi_\mathrm d - b D \psi_\mathrm d
-    \end{pmatrix}
-    }_\text{achimdpsi}
-    +
-    \begin{pmatrix}
-    \epsilon \chi_\mathrm d \\
-    \epsilon \chi_\mathrm u
-    \end{pmatrix}
-    \,.
-    \f]
-
     \param[in] chi Second spinor field \f$ \chi \f$.
-    \param[in] clov Two flavor parts of the odd-odd term. The first index
-    is the flavor index, the second index is for the heritian conjugation,
-    just like \p clov of \ref dslashAChiMinusBDPsi or \p invclov of \ref
-    two_flav_dslash.
+    \param[in] clov Clover term not including the twisted mass, that is
+                    implemented via the pre-conditioning mass rho
     \param[in] beta The \f$ b \f$ (or \f$ \beta \f$) coefficient.
     \param[in] epsilon Twisted mass splitting \f$ \epsilon \f$ (or \f$
     \mu_\delta \f$).
@@ -136,6 +88,17 @@ class TMClovDslash
                                const int isign,
                                const int cb);
 
+  /* 
+   * Applies the two-flavour inverse clover term from three fields. In the
+   * two-flavour EO operator, the hopping matrix is applied to the two
+   * flavours individually first, then this function is called.
+   * \param[out] res two-flavour output
+   * \param[in]  psi two-flavour spinor which should contain D_Wilson \chi
+   * \param[in]  fcl inverse clover terms (including twisted mass) on the flavour
+   *                 diagonal for the up and down flavours
+   * \param[in]  clOffDiag epsilon / ( (alpha+clover)^2 + \mu^2 - \epsilon^2 )
+   *                       inverse clover contribution on the flavour off-diagonal                
+   */ 
   void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
                                     const FourSpinorBlock *const psi[2],
                                     const FullCloverBlock *const fcl[2],
@@ -304,6 +267,16 @@ class TMClovDslash
                           bool const is_plus,
                           int cb,
                           int fl = 0);
+
+  void two_flav_inverse_clover_term_YZ(
+      const int tid,
+      FourSpinorBlock *const resUp,
+      FourSpinorBlock *const resDn,
+      const FourSpinorBlock *const psiUp,
+      const FourSpinorBlock *const psiDn,
+      const FullCloverBlock *const fclUp,
+      const FullCloverBlock *const fclDn,
+      const CloverBlock *const clOffDiag);
 
 #ifdef QPHIX_DO_COMMS
   void packFaceDir(int tid,

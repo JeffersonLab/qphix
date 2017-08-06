@@ -486,7 +486,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::Dyz(
       // If we are on timeslice 0, we should set back t_coeff and accumulate
       if (t == 0) {
         if (!comms->localT()) {
-          xaccumulate[6] = 0;
+          accumulate[6] = 0;
         } else {
           if (amIPtMin) {
             back_t_coeff *= t_boundary;
@@ -1203,7 +1203,7 @@ void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_inverse_clover_term(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void TMClovDslash<FT, veclen, soalen, compress12::two_flav_inverse_clover_term_YZ(
+void TMClovDslash<FT, veclen, soalen, compress12>::two_flav_inverse_clover_term_YZ(
     const int tid,
     FourSpinorBlock *const resUp,
     FourSpinorBlock *const resDn,
@@ -1282,6 +1282,12 @@ void TMClovDslash<FT, veclen, soalen, compress12::two_flav_inverse_clover_term_Y
     int ph_next = ph;
     int Nct = binfo.nt;
 
+    // not sure if it's actually necessary to pass these, but
+    // the spinor loads won't compile without them...
+    int *tmpspc = &(tmpspc_all[veclen * 16 * tid]);
+    int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
+    int *offs = &atmp[0];
+
     // Loop over timeslices
     for (int ct = 0; ct < Nct; ct++) {
       int t = ct + binfo.bt;
@@ -1296,87 +1302,39 @@ void TMClovDslash<FT, veclen, soalen, compress12::two_flav_inverse_clover_term_Y
 
         FourSpinorBlock *oBase = &resUp[t * Pxyz + z * Pxy];
         FourSpinorBlock *o2Base = &resDn[t * Pxyz + z * Pxy];
-        FourSpinorBlock *chiBase = &psiUp[t * Pxyz + z * Pxy];
-        FourSpinorBlock *chi2Base = &psiDn[t * Pxyz + z * Pxy];
+        const FourSpinorBlock * const chiBase = &psiUp[t * Pxyz + z * Pxy];
+        const FourSpinorBlock * const chi2Base = &psiDn[t * Pxyz + z * Pxy];
 
         // Loop over y. Start at smtid_y and work up to Ncy
         // (Ncy truncated for the last block so should be OK)
         for (int cy = nyg * smtid_y; cy < By; cy += nyg * Sy) {
           int yi = cy + binfo.by;
           int cy_next = cy;
-          const int xodd = (yi + z + t + cb) & 1;
 
           // cx loops over the soalen partial vectors
           for (int cx = 0; cx < nvecs; cx++) {
-            ///// ---- BAKO: since we are not prefetching, we don't need to know where to prefetch from
-            /* int ind = 0;
-            int cx_next = cx + 1;
-
-            if (cx_next == nvecs) {
-              cx_next = 0;
-              cy_next += nyg * Sy;
-              if (cy_next >= By) {
-                cy_next = nyg * smtid_y;
-                cz_next += Sz;
-                if (cz_next >= Bz) {
-                  cz_next = smtid_z;
-                  ct_next++;
-                  if (ct_next == Nct) {
-                    ct_next = 0;
-                    ph_next++;
-                    if (ph_next == num_phases) {
-                      ph_next = 0;
-                    }
-                  }
-                }
-              }
-            }
-
-            const BlockPhase &binfo_next = block_info[tid * num_phases + ph_next];
-            int yi_next = cy_next + binfo_next.by;
-            int z_next = cz_next + binfo_next.bz;
-            int t_next = ct_next + binfo_next.bt;
-
-            int off_next = (t_next - t) * Pxyz + (z_next - z) * Pxy +
-                           (yi_next - yi) * nvecs + (cx_next - cx);
-            int si_off_next = off_next * spinor_line_in_floats; */
-            //// BAKO ----
-
             const FullCloverBlock *fclBase =
                 &fclUp[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
             const FullCloverBlock *fcl2Base =
                 &fclDn[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
             const CloverBlock *clBase =
-                &fclOffDiag[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
-
-            // ---- BAKO
-            //const int clov_line_in_floats =
-            //    sizeof(FullCloverBlock) /
-            //    sizeof(FT); // One gauge scanline, in floats
-            //int clprefdist = (((t_next - t) * Pxyz + (z_next - z) * Pxy +
-            //                   (yi_next - yi) * nvecs) /
-            //                      nyg +
-            //                  (cx_next - cx)) *
-            //                 clov_line_in_floats;
-            // BAKO ----
+                &clOffDiag[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
 
             int X = nvecs * yi + cx;
 
-            tm_clov_two_flav_inverse_clover_term(
+            tm_clov_two_flav_inverse_clover_term<FT, veclen, soalen, compress12>(
                 oBase + X,
                 o2Base + X,
                 chiBase + X,
                 chi2Base + X,
                 fclBase,
                 fcl2Base,
-                clBase);
+                clBase,
+                offs);
 
           }
         } // End for over scanlines y
       } // End for over scalines z
-
-      //if (ct % BARRIER_TSLICES == 0)
-      //  barriers[ph][binfo.cid_t]->wait(binfo.group_tid);
 
     } // end for over t
   } // phases
