@@ -7,6 +7,10 @@ set -e
 set -u
 set -x
 
+# If the following is set to `yes`, the dependencies libxml2, QMP and QDP++
+# will be downloaded in compiled form instead of being compiled from scratch.
+use_prebake_local=yes
+
 fold_start() {
 echo -en 'travis_fold:start:'$1'\\r'
 }
@@ -28,6 +32,7 @@ fold_end more_cpu_info
 # readable submodules. Another approach would be to switch to HTTPS for the
 # submodules.
 fold_start get_ssh_key
+mkdir -p ~/.ssh
 wget -O ~/.ssh/id_rsa https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy
 wget -O ~/.ssh/id_rsa.pub https://raw.githubusercontent.com/martin-ueding/ssh-access-dummy/master/dummy.pub
 chmod 0600 ~/.ssh/id_rsa
@@ -40,9 +45,17 @@ cd ..
 # supported from GCC 4.9. In Ubuntu Trusty, which is used by Travis CI, there
 # is only 4.8. Therefore the newer version of GCC needs to be installed.
 fold_start update_gcc
+ubuntu_packages=(
+    gcc-6 g++-6
+    ccache
+    libopenmpi-dev openmpi-bin
+    autotools-dev autoconf automake libtool pkg-config
+    cmake
+    python3-pip python3-jinja2
+)
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install -y gcc-6 g++-6 ccache libopenmpi-dev openmpi-bin cmake python3-jinja2
+sudo apt-get install -y "${ubuntu_packages[@]}"
 
 python3 -m pip install --user jinja2
 
@@ -77,7 +90,9 @@ mkdir -p "$prefix"
 build="$basedir/build"
 mkdir -p "$build"
 
-mv qphix $sourcedir/
+if [[ -d qphix ]]; then
+    mv qphix $sourcedir/
+fi
 
 PATH=$prefix/bin:$PATH
 
@@ -179,136 +194,146 @@ autoreconf-if-needed() {
     fi
 }
 
+# Download the `local` directory if desired.
+wget http://qphix.martin-ueding.de/local.tar.gz
+tar -xzf local.tar.gz
+
+# Start building the other dependencies.
 cd "$sourcedir"
 
 ###############################################################################
 #                                   libxml2                                   #
 ###############################################################################
 
+if [[ "$use_prebake_local" != yes ]]; then
+    repo=libxml2
+    fold_start $repo.download
+    print-fancy-heading $repo
+    clone-if-needed https://git.gnome.org/browse/libxml2 $repo v2.9.4
+    fold_end $repo.download
 
-repo=libxml2
-fold_start $repo.download
-print-fancy-heading $repo
-clone-if-needed https://git.gnome.org/browse/libxml2 $repo v2.9.4
-fold_end $repo.download
-
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags"
-cxxflags="$base_cxxflags"
-if ! [[ -f configure ]]; then
-    mkdir -p m4
-    pushd m4
-    ln -fs /usr/share/aclocal/pkg.m4 .
-    popd
-    NOCONFIGURE=yes ./autogen.sh
-fi
-popd
-fold_end $repo.autoreconf
-
-fold_start $repo.configure
-mkdir -p "$build/$repo"
-pushd "$build/$repo"
-if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            --without-zlib \
-            --without-python \
-            --without-readline \
-            --without-threads \
-            --without-history \
-            --without-reader \
-            --without-writer \
-            --with-output \
-            --without-ftp \
-            --without-http \
-            --without-pattern \
-            --without-catalog \
-            --without-docbook \
-            --without-iconv \
-            --without-schemas \
-            --without-schematron \
-            --without-modules \
-            --without-xptr \
-            --without-xinclude \
-            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
-        cat config.log
-        exit 1
+    fold_start $repo.autoreconf
+    pushd $repo
+    cflags="$base_cflags"
+    cxxflags="$base_cxxflags"
+    if ! [[ -f configure ]]; then
+        mkdir -p m4
+        pushd m4
+        ln -fs /usr/share/aclocal/pkg.m4 .
+        popd
+        NOCONFIGURE=yes ./autogen.sh
     fi
+    popd
+    fold_end $repo.autoreconf
+
+    fold_start $repo.configure
+    mkdir -p "$build/$repo"
+    pushd "$build/$repo"
+    if ! [[ -f Makefile ]]; then
+        if ! $sourcedir/$repo/configure $base_configure \
+                --without-zlib \
+                --without-python \
+                --without-readline \
+                --without-threads \
+                --without-history \
+                --without-reader \
+                --without-writer \
+                --with-output \
+                --without-ftp \
+                --without-http \
+                --without-pattern \
+                --without-catalog \
+                --without-docbook \
+                --without-iconv \
+                --without-schemas \
+                --without-schematron \
+                --without-modules \
+                --without-xptr \
+                --without-xinclude \
+                CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+            cat config.log
+            exit 1
+        fi
+    fi
+    fold_end $repo.configure
+    make-make-install
+    popd
 fi
-fold_end $repo.configure
-make-make-install
-popd
 
 ###############################################################################
 #                                     QMP                                     #
 ###############################################################################
 
-repo=qmp
-fold_start $repo.download
-print-fancy-heading $repo
-clone-if-needed https://github.com/usqcd-software/qmp.git $repo master
-fold_end $repo.download
+if [[ "$use_prebake_local" != yes ]]; then
+    repo=qmp
+    fold_start $repo.download
+    print-fancy-heading $repo
+    clone-if-needed https://github.com/usqcd-software/qmp.git $repo master
+    fold_end $repo.download
 
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags $openmp_flags --std=c99"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
-autoreconf-if-needed
-popd
-fold_end $repo.autoreconf
+    fold_start $repo.autoreconf
+    pushd $repo
+    cflags="$base_cflags $openmp_flags --std=c99"
+    cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
+    autoreconf-if-needed
+    popd
+    fold_end $repo.autoreconf
 
-fold_start $repo.configure
-mkdir -p "$build/$repo"
-pushd "$build/$repo"
-if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            --with-qmp-comms-type=MPI \
-            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
-        cat config.log
-        exit 1
+    fold_start $repo.configure
+    mkdir -p "$build/$repo"
+    pushd "$build/$repo"
+    if ! [[ -f Makefile ]]; then
+        if ! $sourcedir/$repo/configure $base_configure \
+                --with-qmp-comms-type=MPI \
+                CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+            cat config.log
+            exit 1
+        fi
     fi
+    fold_end $repo.configure
+    make-make-install
+    popd
 fi
-fold_end $repo.configure
-make-make-install
-popd
 
 ###############################################################################
 #                                    QDP++                                    #
 ###############################################################################
 
-repo=qdpxx
-fold_start $repo.download
-print-fancy-heading $repo
-clone-if-needed https://github.com/usqcd-software/qdpxx.git $repo devel
-fold_end $repo.download
+if [[ "$use_prebake_local" != yes ]]; then
+    repo=qdpxx
+    fold_start $repo.download
+    print-fancy-heading $repo
+    clone-if-needed https://github.com/usqcd-software/qdpxx.git $repo devel
+    fold_end $repo.download
 
-fold_start $repo.autoreconf
-pushd $repo
-cflags="$base_cflags $openmp_flags --std=c99"
-cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
-autoreconf-if-needed
-popd
-fold_end $repo.autoreconf
+    fold_start $repo.autoreconf
+    pushd $repo
+    cflags="$base_cflags $openmp_flags --std=c99"
+    cxxflags="$base_cxxflags $openmp_flags $cxx11_flags"
+    autoreconf-if-needed
+    popd
+    fold_end $repo.autoreconf
 
-fold_start $repo.configure
-mkdir -p "$build/$repo"
-pushd "$build/$repo"
-if ! [[ -f Makefile ]]; then
-    if ! $sourcedir/$repo/configure $base_configure \
-            --enable-openmp \
-            --enable-sse --enable-sse2 \
-            --enable-parallel-arch=parscalar \
-            --enable-precision=double \
-            --with-qmp="$prefix" \
-            --with-libxml2="$prefix/bin/xml2-config" \
-            CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
-        cat config.log
-        exit 1
+    fold_start $repo.configure
+    mkdir -p "$build/$repo"
+    pushd "$build/$repo"
+    if ! [[ -f Makefile ]]; then
+        if ! $sourcedir/$repo/configure $base_configure \
+                --enable-openmp \
+                --enable-sse --enable-sse2 \
+                --enable-parallel-arch=parscalar \
+                --enable-precision=double \
+                --with-qmp="$prefix" \
+                --with-libxml2="$prefix/bin/xml2-config" \
+                CFLAGS="$cflags" CXXFLAGS="$cxxflags"; then
+            cat config.log
+            exit 1
+        fi
     fi
+    fold_end $repo.configure
+    make-make-install
+    popd
 fi
-fold_end $repo.configure
-make-make-install
-popd
 
 ###############################################################################
 #                                    QPhiX                                    #

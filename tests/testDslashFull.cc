@@ -28,6 +28,7 @@ using namespace QPhiX;
 #include "tolerance.h"
 #include "tparam_selector.h"
 #include "compare_qdp_spinors.h"
+#include "RandomGauge.h"
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -118,13 +119,7 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
   double aniso_fac_s = ((double)0.35);
   double aniso_fac_t = ((double)1.4);
   double t_boundary = ((double)t_bc);
-  QDPIO::cout << "Testing Dslash...  T BCs = " << t_boundary << endl;
-
-  Phi chi, chi2;
-  Phi psi;
-
-  QDPIO::cout << "Filling psi with noise: " << endl;
-  gaussian(psi);
+   QDPIO::cout << "Testing Dslash...  T BCs = " << t_boundary << endl;
 
   Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
                                    args_.By,
@@ -136,167 +131,36 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
                                    args_.PadXYZ,
                                    args_.MinCt,
                                    true);
-  Dslash<T, V, S, compress> D32(&geom, t_boundary, aniso_fac_s, aniso_fac_t);
 
-  Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
-  Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
-  Spinor *psi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *psi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_odd = (Spinor *)geom.allocCBFourSpinor();
+  RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
 
-  QDPIO::cout << "Fields allocated" << endl;
+  Dslash<T, V, S, compress> D32(
+      &geom, gauge.t_boundary, gauge.aniso_fac_s, gauge.aniso_fac_t);
 
-  // Pack the gauge field
-  QDPIO::cout << "Packing gauge field...";
-  qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
+  HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
+      hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
 
-  QDPIO::cout << "done" << endl;
-
-  Gauge *u_packed[2];
-  u_packed[0] = packed_gauge_cb0;
-  u_packed[1] = packed_gauge_cb1;
-
-  Spinor *psi_s[2] = {psi_even, psi_odd};
-  Spinor *chi_s[2] = {chi_even, chi_odd};
-
-  QDPIO::cout << " Packing fermions...";
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
-
-  QDPIO::cout << "done" << endl;
-
-  multi1d<U> u_test(Nd);
-  for (int mu = 0; mu < Nd; mu++) {
-#if 1
-    Real factor = Real(aniso_fac_s);
-    if (mu == Nd - 1) {
-      factor = Real(aniso_fac_t);
-    }
-    u_test[mu] = factor * u[mu];
-#else
-    u_test[mu] = u[mu];
-#endif
-  }
-  QDPIO::cout << "U field prepared" << endl;
-
-  // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
-  u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3] - 1),
-                     Real(t_boundary),
-                     Real(1));
-
-  QDPIO::cout << "BCs applied" << endl;
-  // Go through the test cases -- apply SSE dslash versus, QDP Dslash
   int isign = 1;
   for (int isign = 1; isign >= -1; isign -= 2) {
     for (int cb = 0; cb < 2; cb++) {
       int source_cb = 1 - cb;
       int target_cb = cb;
 
-      chi = zero;
-#if 1
-      QDPIO::cout << "Fields before optimized Dslash" << std::endl;
-      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
-      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
+      D32.dslash(hs_qphix1[target_cb],
+                 hs_source[source_cb],
+                 gauge.u_packed[target_cb],
+                 isign,
+                 target_cb);
+      hs_qphix1.unpack();
 
-      QDPIO::cout << "Packing Chi, Psi already packed" << std::endl;
-      qdp_pack_spinor<>(chi, chi_even, chi_odd, geom);
+      dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
 
-      // Apply Optimized Dslash
-      QDPIO::cout << "Applying Optimized Dslash" << std::endl;
-      D32.dslash(
-          chi_s[target_cb], psi_s[source_cb], u_packed[target_cb], isign, target_cb);
-      QDPIO::cout << "Unpacking result chi" << std::endl;
-      qdp_unpack_spinor<>(chi_even, chi_odd, chi, geom);
-      QDPIO::cout << "chi_norm[cb=0]=" << norm2(chi, rb[0]) << std::endl;
-      QDPIO::cout << "chi_norm[cb=1]=" << norm2(chi, rb[1]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
-
-      QDPIO::cout << "Before applying QDP Dslash" << std::endl;
-#endif
-
-      // Apply QDP Dslash
-
-      chi2 = zero;
-      QDPIO::cout << "chi2_norm[cb=0]=" << norm2(chi2, rb[0]) << std::endl;
-      QDPIO::cout << "chi2_norm[cb=1]=" << norm2(chi2, rb[1]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
-
-      QDPIO::cout << "Applying QDP Dslash" << std::endl;
-      dslash(chi2, u_test, psi, isign, target_cb);
-      QDPIO::cout << "chi2_norm[cb=0]=" << norm2(chi2, rb[0]) << std::endl;
-      QDPIO::cout << "chi2_norm[cb=1]=" << norm2(chi2, rb[1]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=0]=" << norm2(psi, rb[0]) << std::endl;
-      QDPIO::cout << "psi_norm[cb=1]=" << norm2(psi, rb[1]) << std::endl;
-
-#if 1
-      // Check the difference per number in chi vector
-      Phi diff = chi2 - chi;
-
-      Double diff_norm = sqrt(norm2(diff, rb[target_cb])) /
-                         (Real(4 * 3 * 2 * Layout::vol()) / Real(2));
-
-      QDPIO::cout << "\t cb = " << target_cb << "  isign = " << isign
-                  << "  diff_norm = " << diff_norm << endl;
-      // Assert things are OK...
-      if (toBool(diff_norm > tolerance<T>::small)) {
-
-        int Nxh = Nx / 2;
-        for (int t = 0; t < Nt; t++) {
-          for (int z = 0; z < Nz; z++) {
-            for (int y = 0; y < Ny; y++) {
-              for (int x = 0; x < Nxh; x++) {
-
-                // These are unpadded QDP++ indices...
-                int ind = x + Nxh * (y + Ny * (z + Nz * t));
-                for (int s = 0; s < Ns; s++) {
-                  for (int c = 0; c < Nc; c++) {
-                    REAL dr = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .real();
-                    REAL di = diff.elem(rb[target_cb].start() + ind)
-                                  .elem(s)
-                                  .elem(c)
-                                  .imag();
-                    if (toBool(fabs(dr) > tolerance<T>::small) ||
-                        toBool(fabs(di) > tolerance<T>::small)) {
-                      QDPIO::cout
-                          << "(x,y,z,t)=(" << x << "," << y << "," << z << "," << t
-                          << ") site=" << ind << " spin=" << s << " color=" << c
-                          << " Diff = "
-                          << diff.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << "  chi = "
-                          << chi.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << " qdp++ ="
-                          << chi2.elem(rb[target_cb].start() + ind).elem(s).elem(c)
-                          << endl;
-                    }
-                  }
-                }
-              } // x
-            } // y
-          } // z
-        } // t
-        assertion(toBool(diff_norm <= tolerance<T>::small));
-      } // if
-
-#endif
-
+      expect_near(
+          hs_qphix1, hs_qdp1, tolerance<T>::value, geom, target_cb, "Wilson::Dslash");
     } // cb
   } // isign
-
-#if 1
-  geom.free(packed_gauge_cb0);
-  geom.free(packed_gauge_cb1);
-  geom.free(psi_even);
-  geom.free(psi_odd);
-  geom.free(chi_even);
-  geom.free(chi_odd);
-#endif
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>

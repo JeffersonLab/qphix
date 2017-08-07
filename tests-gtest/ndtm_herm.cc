@@ -1,11 +1,11 @@
 #include <qphix/qphix_config_internal.h>
-#include "prec.h"
-#include "tparam_selector.h"
+#include "../tests/prec.h"
+#include "../tests/tparam_selector.h"
 
 using namespace QPhiX;
 
-#include "./soalen.h"
-#include "./tolerance.h"
+#include "../tests/veclen.h"
+#include "../tests/tolerance.h"
 #include "./compare_spinors.h"
 
 #include <qphix/blas_new_c.h>
@@ -194,7 +194,7 @@ class NDTMReuseOperatorHermTest : public ::testing::Test
   Spinor *MwDagMwChi2[2];
 };
 
-typedef ::testing::Types<QPhiX::Geometry<double, VECLEN_DP, QPHIX_SOALEN, true>> MyTypes;
+typedef ::testing::Types<QPhiX::Geometry<double, VECLEN_DP, VECLEN_DP, true>> MyTypes;
 
 TYPED_TEST_CASE(NDTMReuseOperatorHermTest, MyTypes);
 
@@ -267,25 +267,25 @@ TYPED_TEST(NDTMReuseOperatorHermTest, GaussianSource)
       double inner_MwChi_MwChi2[2];
       double inner_Chi_MwDagMwChi2[2];
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true>(inner_MwChi_Chi2,
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true>(inner_MwChi_Chi2,
                                                                  this->MwChi[cb],
                                                                  this->chi2[cb][0],
                                                                  this->geom,
                                                                  this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true>(inner_Chi_MwDagChi2,
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true>(inner_Chi_MwDagChi2,
                                                                  this->chi[cb][0],
                                                                  this->MwDagChi2[cb],
                                                                  this->geom,
                                                                  this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true>(inner_MwChi_MwChi2,
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true>(inner_MwChi_MwChi2,
                                                                  this->MwChi[cb],
                                                                  this->MwChi2[cb],
                                                                  this->geom,
                                                                  this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true>(inner_Chi_MwDagMwChi2,
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true>(inner_Chi_MwDagMwChi2,
                                                                  this->chi[cb][0],
                                                                  this->MwDagMwChi2[cb],
                                                                  this->geom,
@@ -312,28 +312,28 @@ TYPED_TEST(NDTMReuseOperatorHermTest, GaussianSource)
       double inner_Mchi_Mchi2[2];
       double inner_Chi_MdagMchi2[2];
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true, 2>(
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true, 2>(
           inner_Mchi_Chi2,
           this->Mchi[cb],
           this->chi2[cb],
           this->geom,
           this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true, 2>(
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true, 2>(
           inner_Chi_MdagChi2,
           this->chi[cb],
           this->MdagChi2[cb],
           this->geom,
           this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true, 2>(
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true, 2>(
           inner_Mchi_Mchi2,
           this->Mchi[cb],
           this->Mchi2[cb],
           this->geom,
           this->geom.getNSIMT());
 
-      QPhiX::innerProduct<double, VECLEN_DP, QPHIX_SOALEN, true, 2>(
+      QPhiX::innerProduct<double, VECLEN_DP, VECLEN_DP, true, 2>(
           inner_Chi_MdagMchi2,
           this->chi[cb],
           this->MdagMchi2[cb],

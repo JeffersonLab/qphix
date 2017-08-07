@@ -5,7 +5,7 @@ include_directories(${PROJECT_SOURCE_DIR}/external)
 
 if( ${testing})
   if ( ${QDPXX_CXX_FOUND} )
-     list(APPEND HEADERS compare_spinors.h tolerance.h veclen.h)
+     list(APPEND HEADERS compare_spinors.h)
      add_executable(tests_g
          main.cc
          ndtm_herm.cc
@@ -14,7 +14,6 @@ if( ${testing})
          )
 
      add_dependencies(tests_g qphix_codegen qphix_solver)
-
 
     #testlip is defined in ../tests
      target_link_libraries(tests_g testlib qphix_solver gtest_all ${EXT_LIBS})
