@@ -4,16 +4,17 @@ list(APPEND framework_sources cli_args.cc)
 
 if(${testing})
   if(${QDPXX_CXX_FOUND})
-    list(APPEND framework_headers unittest.h dslashm_w.h reunit.h invbicgstab_test.h mesfield.h)
+     list(APPEND framework_headers unittest.h dslashm_w.h reunit.h invbicgstab_test.h mesfield.h)
 
-    list(APPEND framework_sources dslashm_w.cc
-      reunit.cc
-      mesfield.cc)
+     list(APPEND framework_sources dslashm_w.cc
+                                   reunit.cc
+                                   mesfield.cc
+                                   tolerance.cpp)
 
-    if( ${clover} OR ${tm_clover})
-      list(APPEND framework_headers clover_fermact_params_w.h )
-
-      if(${qdpjit})
+     if( ${clover} OR ${tm_clover} )
+       list(APPEND framework_headers clover_fermact_params_w.h )
+   
+       if( ${qdpjit} )
         list(APPEND framework_headers clover_term_llvm_w.h)
       else()
         list(APPEND framework_headers clover_term_qdp_w.h)
