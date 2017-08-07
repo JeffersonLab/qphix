@@ -10,6 +10,7 @@ if( ${testing})
          ndtm_herm.cc
          clover_product.cc
          a_imugamma5.cc
+         richardson_cg.cc
          )
 
      add_dependencies(tests_g qphix_codegen qphix_solver)
