@@ -23,6 +23,7 @@ class RandomGauge
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock Gauge;
   typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock Clover;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock FullClover;
 
   RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom,
               double const t_boundary = 1.0,
@@ -47,6 +48,8 @@ class RandomGauge
   Gauge *u_packed[2];
   Clover *invclov_packed[2];
   Clover *clov_packed[2];
+  FullClover *invfullclov_packed[2];
+  FullClover *fullclov_packed[2];
 
   ::QDP::multi1d<QdpGauge> u_aniso;
 
@@ -64,6 +67,7 @@ class RandomGauge
 
   GaugeHandle<FT, veclen, soalen, compress12> gauge_even, gauge_odd;
   CloverHandle<FT, veclen, soalen, compress12> A_even, A_odd, A_inv_even, A_inv_odd;
+  FullCloverHandle<FT, veclen, soalen, compress12> FA_even, FA_odd, FA_inv_even, FA_inv_odd;
 
   AnisoParam_t aniso;
   CloverFermActParams clparam;
@@ -88,6 +92,10 @@ RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::RandomGauge(
   clov_packed[1] = A_odd.get();
   invclov_packed[0] = A_inv_even.get();
   invclov_packed[1] = A_inv_odd.get();
+  fullclov_packed[0] = FA_even.get();
+  fullclov_packed[1] = FA_odd.get();
+  invfullclov_packed[0] = FA_inv_even.get();
+  invfullclov_packed[1] = FA_inv_odd.get();
   u_packed[0] = gauge_even.get();
   u_packed[1] = gauge_odd.get();
 
@@ -185,6 +193,8 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
   for (int cb = 0; cb < 2; cb++) {
     qdp_pack_clover<>(clov_qdp, clov_packed[cb], geom, cb);
     qdp_pack_clover<>(invclov_qdp, invclov_packed[cb], geom, cb);
+    qdp_pack_fullclover<>(clov_qdp, fullclov_packed[cb], geom, cb);
+    qdp_pack_fullclover<>(invclov_qdp, invfullclov_packed[cb], geom, cb);
   }
 }
 }
