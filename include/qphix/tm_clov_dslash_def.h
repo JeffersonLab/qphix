@@ -119,7 +119,7 @@ class TMClovDslash
     this->two_flav_AChiMinusBDPsi(res, 
                                   const_cast<const FourSpinorBlock * const *>(psi),
                                   const_cast<const FourSpinorBlock * const *>(chi),
-                                  u, alpha, beta, epsilon, isign, cb); 
+                                  u, clov, beta, epsilon, isign, cb); 
   }
 
   void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
@@ -135,7 +135,7 @@ class TMClovDslash
     this->two_flav_AChiMinusBDPsi(res, 
                                   const_cast<const FourSpinorBlock * const *>(psi),
                                   const_cast<const FourSpinorBlock * const *>(chi),
-                                  u, alpha, beta, epsilon, isign, cb); 
+                                  u, clov, beta, epsilon, isign, cb); 
   }
   
   void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
@@ -151,7 +151,7 @@ class TMClovDslash
     this->two_flav_AChiMinusBDPsi(res, 
                                   const_cast<const FourSpinorBlock * const *>(psi),
                                   const_cast<const FourSpinorBlock * const *>(chi),
-                                  u, alpha, beta, epsilon, isign, cb);
+                                  u, clov, beta, epsilon, isign, cb);
   }
   
   void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
