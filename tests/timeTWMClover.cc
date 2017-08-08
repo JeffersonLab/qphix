@@ -34,6 +34,7 @@ void TimeTMClover::runTest()
 
   typedef typename Geometry<FT, V, S, compress>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, V, S, compress>::SU3MatrixBlock Gauge;
+  typedef typename Geometry<FT, V, S, compress>::CloverBlock CloverBlock;
   typedef typename Geometry<FT, V, S, compress>::FullCloverBlock FullCloverBlock;
 
   bool verbose = false;
@@ -377,13 +378,18 @@ void TimeTMClover::runTest()
   masterPrintf(" %g sec\n", end - start);
 
   masterPrintf("Allocating TWO Clover Terms and TWO Clover Inverses\n");
-  FullCloverBlock *A_cb0_plus = (FullCloverBlock *)geom.allocCBFullClov();
-  FullCloverBlock *A_cb0_minus = (FullCloverBlock *)geom.allocCBFullClov();
-  FullCloverBlock *A_inv_cb1_plus = (FullCloverBlock *)geom.allocCBFullClov();
-  FullCloverBlock *A_inv_cb1_minus = (FullCloverBlock *)geom.allocCBFullClov();
+  CloverBlock *A_cb0_plus = geom.allocCBClov();
+  CloverBlock *A_cb0_minus = geom.allocCBClov();
+  FullCloverBlock *A_inv_cb1_plus = geom.allocCBFullClov();
+  FullCloverBlock *A_inv_cb1_minus = geom.allocCBFullClov();
 
-  FullCloverBlock *A_cb0[2] = {A_cb0_plus, A_cb0_minus};
+  CloverBlock *A_cb0[2] = {A_cb0_plus, A_cb0_minus};
   FullCloverBlock *A_inv_cb1[2] = {A_inv_cb1_plus, A_inv_cb1_minus};
+
+  FullCloverBlock *A_inv_multi_cb0[2] = {A_inv_cb1[0], A_inv_cb1[1]};
+  FullCloverBlock *A_inv_multi_cb1[2] = {A_inv_cb1[0], A_inv_cb1[1]};
+  FullCloverBlock **A_inv_multi[2] = {A_inv_multi_cb0, A_inv_multi_cb1};
+
   masterPrintf("Done\n");
 
   masterPrintf("Filling Clover Terms with junk\n");
@@ -400,17 +406,27 @@ void TimeTMClover::runTest()
             // This will work out to be between 0 and veclen
             int xx = (y % nyg) * S + x;
 
+            for (int pm : {0, 1}) {
+              for (int i = 0; i < 6; i++) {
+                A_cb0[pm][block].diag1[i][xx] = rep<FT, double>((double)4.1);
+                A_cb0[pm][block].diag2[i][xx] = rep<FT, double>((double)4.1);
+              }
+
+              for (int i = 0; i < 15; i++) {
+                for (int reim = 0; reim < 2; reim++) {
+                  A_cb0[pm][block].off_diag1[i][reim][xx] = rep<FT, double>(0);
+                  A_cb0[pm][block].off_diag2[i][reim][xx] = rep<FT, double>(0);
+                  ;
+                }
+              }
+            }
+
             // Zero out both clover terms & inverses for both blocks
             // respectively
             for (int pm = 0; pm < 2; ++pm) {
               for (int i = 0; i < 6; ++i) {
                 for (int j = 0; j < 6; ++j) {
                   for (int reim = 0; reim < 2; ++reim) {
-
-                    A_cb0[pm][block].block1[i][j][reim][xx] =
-                        rep<FT, double>((double)0);
-                    A_cb0[pm][block].block2[i][j][reim][xx] =
-                        rep<FT, double>((double)0);
 
                     A_inv_cb1[pm][block].block1[i][j][reim][xx] =
                         rep<FT, double>((double)0);
@@ -425,11 +441,6 @@ void TimeTMClover::runTest()
             // Set the diagonal and its inverse
             for (int pm = 0; pm < 2; ++pm) {
               for (int i = 0; i < 6; ++i) {
-
-                A_cb0[pm][block].block1[i][i][0][xx] = rep<FT, double>((double)4.1);
-                A_cb0[pm][block].block1[i][i][1][xx] = rep<FT, double>((double)0);
-                A_cb0[pm][block].block2[i][i][0][xx] = rep<FT, double>((double)4.1);
-                A_cb0[pm][block].block2[i][i][1][xx] = rep<FT, double>((double)0);
 
                 A_inv_cb1[pm][block].block1[i][i][0][xx] =
                     rep<FT, double>((double)1 / double(4.1));
@@ -453,7 +464,7 @@ void TimeTMClover::runTest()
 
   masterPrintf("Creating Even/Odd Twisted Mass Clover Operator\n");
   EvenOddTMCloverOperator<FT, V, S, compress> M(
-      u_packed, A_cb0, A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
+      u_packed, A_cb0[0], A_inv_cb1, &geom, t_boundary, coeff_s, coeff_t);
 
   if (args_.do_dslash) {
 
