@@ -948,15 +948,15 @@ void TestTMDslash::qdp_dslash(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
-                                       QdpSpinor const &chi,
-                                       QdpSpinor const &psi,
-                                       QDP::multi1d<QdpGauge> const &u_aniso,
-                                       double const Mu,
-                                       double const MuInv,
-                                       double const alpha,
-                                       double const beta,
-                                       int const isign,
-                                       int const target_cb)
+                                  QdpSpinor const &chi,
+                                  QdpSpinor const &psi,
+                                  QDP::multi1d<QdpGauge> const &u_aniso,
+                                  double const Mu,
+                                  double const MuInv,
+                                  double const alpha,
+                                  double const beta,
+                                  int const isign,
+                                  int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 
@@ -971,14 +971,14 @@ void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_apply_operator(QdpSpinor &out,
-                                           QdpSpinor const &in,
-                                           QDP::multi1d<QdpGauge> const &u_aniso,
-                                           double const Mu,
-                                           double const MuInv,
-                                           double const alpha,
-                                           double const beta,
-                                           int const isign,
-                                           int const target_cb)
+                                      QdpSpinor const &in,
+                                      QDP::multi1d<QdpGauge> const &u_aniso,
+                                      double const Mu,
+                                      double const MuInv,
+                                      double const alpha,
+                                      double const beta,
+                                      int const isign,
+                                      int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 

@@ -23,9 +23,9 @@ class EvenOddTMCloverOperator
 
   // Constructor
   // No anisotropy, all boundaries periodic for now.
-  EvenOddTMCloverOperator(SU3MatrixBlock *u_[2],
+  EvenOddTMCloverOperator(SU3MatrixBlock *const u_[2],
                           CloverBlock *clov_,
-                          FullCloverBlock *invclov_[2],
+                          FullCloverBlock *const invclov_[2],
                           Geometry<FT, veclen, soalen, compress12> *geom_,
                           double t_boundary,
                           double aniso_coeff_s,
@@ -96,8 +96,7 @@ class EvenOddTMCloverOperator
     int source_cb = 1 - target_cb;
     double beta = (double)0.25;
 
-    D->dslash(
-        tmp, in, u[source_cb], (const FullCloverBlock **)invclov, isign, source_cb);
+    D->dslash(tmp, in, u[source_cb], invclov, isign, source_cb);
     D->dslashAChiMinusBDPsi(res,
                             tmp,
                             in,

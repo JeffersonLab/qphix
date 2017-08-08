@@ -143,5 +143,7 @@ void expect_near(HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor
                  int const target_cb,
                  char const *const message = nullptr)
 {
+  spinor_a.unpack();
+  spinor_b.unpack();
   expect_near(spinor_a.qdp(), spinor_b.qdp(), abs_err, geom, target_cb, message);
 }

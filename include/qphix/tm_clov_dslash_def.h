@@ -35,9 +35,12 @@ class TMClovDslash
   // Destructor
   ~TMClovDslash();
 
-  // Apply the dslash operator,
-  // which here will be A^-1 * D * psi,
-  // with A^-1 = invclov
+  /**
+    Apply the dslash operator, which here will be \f$ A^{-1} D \psi \f$.
+
+    @param[in] invclov \f$ A^{-1} \f$. The two elements of the array shall be
+    the original and the hermitian conjugate.
+    */
   void dslash(FourSpinorBlock *res,
               const FourSpinorBlock *psi,
               const SU3MatrixBlock *u,
