@@ -700,22 +700,47 @@ void convert(
           for (int col = 0; col < 3; col++) {
             for (int spin = 0; spin < 4; spin++) {
               for (int x = 0; x < SOut; x++) {
+                // Index of the soavector from the output.
+                int const ind_out = t * Pxyz_out + z * Pxy_out + y * nvecs_out + s;
 
-                int ind_out = t * Pxyz_out + z * Pxy_out + y * nvecs_out +
-                              s; //((t*Nz+z)*Ny+y)*nvecs+s;
-                int x_coord = s * SOut + x;
+                // Actual X coordinate is given by the number of elements in each
+                // soavector `SOut` and the position within the soavector `x`.
+                int const x_coord = s * SOut + x;
 
-                int s_in = x_coord / SIn;
-                int x_in = x_coord - SIn * s_in;
+                // The soavector on the current line of X elements is computed from the
+                // actual X coordinate `x_coord` and the input soalen `SIn`.
+                int const s_in = x_coord / SIn;
 
-                int ind_in = t * Pxyz_in + z * Pxy_in + y * nvecs_in + s_in;
+                // The position within the input soavector is given by subtracting the X
+                // coordinate of the head of the input soavector from the actual X
+                // coordinate.
+                int const x_in = x_coord - SIn * s_in;
 
-                for (int reim : {0, 1}) {
-                  spinor_out[ind_out][col][spin][reim][x] =
-                      rep<FTOut, typename ArithType<FTOut>::Type>(
-                          rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
-                          rep<typename ArithType<FTOut>::Type, FTIn>(
-                              spinor_in[ind_in][col][spin][reim][x_in]));
+                // The index of the input soavector is computed analogous to the output
+                // soavector.
+                int const ind_in = t * Pxyz_in + z * Pxy_in + y * nvecs_in + s_in;
+
+                // Iterate over real and imaginary part.
+                for (int const reim : {0, 1}) {
+                    // Extract source and target from the data structures.
+                    auto const source = spinor_in[ind_in][col][spin][reim][x_in];
+                    auto &target = spinor_out[ind_out][col][spin][reim][x];
+
+                    // Convert the input numbers into the arithmetic type.
+                    auto const scale_factor_rep =
+                        rep<typename ArithType<FTOut>::Type, double>(scale_factor);
+                    auto const source_rep =
+                        rep<typename ArithType<FTOut>::Type, FTIn>(source);
+
+                    // Perform the multiplication within the arithmetic types.
+                    auto const result_rep = scale_factor_rep * source_rep;
+
+                    // Convert the result back into the storage type.
+                    auto const result =
+                        rep<FTOut, typename ArithType<FTOut>::Type>(result_rep);
+
+                    // Assign the result into the target array element.
+                    target = result;
                 }
               }
             }
