@@ -679,6 +679,8 @@ void convert(
     const Geometry<FTIn, VIn, SIn, CompressIn> &geom_in,
     int n_blas_threads)
 {
+  typedef typename ArithType<FTOut>::Type AT_out;
+
   // Get the subgrid latt size.
   int Nt = geom_out.Nt();
   int Nz = geom_out.Nz();
@@ -727,17 +729,14 @@ void convert(
                     auto &target = spinor_out[ind_out][col][spin][reim][x];
 
                     // Convert the input numbers into the arithmetic type.
-                    auto const scale_factor_rep =
-                        rep<typename ArithType<FTOut>::Type, double>(scale_factor);
-                    auto const source_rep =
-                        rep<typename ArithType<FTOut>::Type, FTIn>(source);
+                    auto const scale_factor_rep = rep<AT_out, double>(scale_factor);
+                    auto const source_rep = rep<AT_out, FTIn>(source);
 
                     // Perform the multiplication within the arithmetic types.
                     auto const result_rep = scale_factor_rep * source_rep;
 
                     // Convert the result back into the storage type.
-                    auto const result =
-                        rep<FTOut, typename ArithType<FTOut>::Type>(result_rep);
+                    auto const result = rep<FTOut, AT_out>(result_rep);
 
                     // Assign the result into the target array element.
                     target = result;
