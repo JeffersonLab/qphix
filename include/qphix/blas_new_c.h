@@ -710,17 +710,13 @@ void convert(
 
                 int ind_in = t * Pxyz_in + z * Pxy_in + y * nvecs_in + s_in;
 
-                spinor_out[ind_out][col][spin][0][x] =
-                    rep<FTOut, typename ArithType<FTOut>::Type>(
-                        rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
-                        rep<typename ArithType<FTOut>::Type, FTIn>(
-                            spinor_in[ind_in][col][spin][0][x_in]));
-
-                spinor_out[ind_out][col][spin][1][x] =
-                    rep<FTOut, typename ArithType<FTOut>::Type>(
-                        rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
-                        rep<typename ArithType<FTOut>::Type, FTIn>(
-                            spinor_in[ind_in][col][spin][1][x_in]));
+                for (int reim : {0, 1}) {
+                  spinor_out[ind_out][col][spin][reim][x] =
+                      rep<FTOut, typename ArithType<FTOut>::Type>(
+                          rep<typename ArithType<FTOut>::Type, double>(scale_factor) *
+                          rep<typename ArithType<FTOut>::Type, FTIn>(
+                              spinor_in[ind_in][col][spin][reim][x_in]));
+                }
               }
             }
           }
