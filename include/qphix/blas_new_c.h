@@ -659,9 +659,9 @@ bicgstab_rxupdate(
 
 template <typename FT, int V, int S, bool compress>
 void mr_rxupdate(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x,
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r,
-    const typename Geometry<FT, V, S, compress>::FourSpinorBlock *const Mr,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *r,
+    const typename Geometry<FT, V, S, compress>::FourSpinorBlock *Mr,
     double a[2],
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
@@ -675,6 +675,8 @@ void mr_rxupdate(
       f, geom, n_blas_simt);
 }
 
+
+
 /**
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
@@ -683,12 +685,15 @@ template <typename FT,
           int V,
           int S,
           bool compress,
-          int num_flav>
-void
+          int num_flav,
+          typename Spinor1>
+typename std::enable_if<
+    std::is_same<const typename Geometry<FT, V, S, compress>::FourSpinorBlock,
+                 const Spinor1>::value,void>::type
 mr_rxupdate(
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const x[num_flav],
-    typename Geometry<FT, V, S, compress>::FourSpinorBlock *const r[num_flav],
-    const typename Geometry<FT,V,S,compress>::FourSpinorBlock *const Mr[num_flav],
+        typename Geometry<FT, V, S, compress>::FourSpinorBlock *const  x[num_flav],
+        typename Geometry<FT, V, S, compress>::FourSpinorBlock *const  r[num_flav],
+    Spinor1 *const Mr[num_flav],
     double a[2],
     const Geometry<FT, V, S, compress> &geom,
     int n_blas_simt)
