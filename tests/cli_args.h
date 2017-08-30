@@ -9,17 +9,17 @@ struct CliArgs {
   int nrow_in[4];
   int iters = 1;
 
-  bool compress12;
+  bool compress12 = false;
   int qmp_geometry[4];
 
   Prec prec;
   int soalen;
-  bool thread_bind;
+  bool thread_bind = false;
 
-  bool do_dslash;
-  bool do_m;
-  bool do_cg;
-  bool do_bicgstab;
+  bool do_dslash = false;
+  bool do_m = false;
+  bool do_cg = false;
+  bool do_bicgstab = false;
 
   QPhiX::QPhiXCLIArgs some_user_args;
 
