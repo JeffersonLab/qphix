@@ -107,7 +107,7 @@ void expect_near(QdpSpinor &spinor_a,
                                     b.imag(),
                                     diff_real,
                                     diff_imag);
-
+                
                 ++printed_out;
 
                 if (printed_out > 20) {
