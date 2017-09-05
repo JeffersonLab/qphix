@@ -1,42 +1,25 @@
-#ifndef TIME_TWM_CLOVER
-#define TIME_TWM_CLOVER
+#pragma once
 
-enum Prec { FLOAT_PREC=0, HALF_PREC, DOUBLE_PREC };
+#include "cli_args.h"
 
-class timeTWMClover {
+class TimeTMClover
+{
+ public:
+  TimeTMClover(CliArgs &args) : args_(args) {}
 
-  public:
+  void run();
 
-    timeTWMClover(int By_, int Bz_, int NCores_, int Sy_, int Sz_, int PadXY_, int PadXYZ_, int MinCt_,
-        int niters_, bool c12, Prec precision_, bool do_dslash_, bool do_m_, bool do_cg_, bool do_bicgstab_)
-      : By(By_), Bz(Bz_), NCores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_), PadXYZ(PadXYZ_), MinCt(MinCt_),
-      N_simt(Sy_*Sz_),  compress12(c12), iters(niters_), precision(precision_) , do_dslash(do_dslash_),
-      do_m(do_m_), do_cg(do_cg_), do_bicgstab(do_bicgstab_) {}
+  template <typename FT,
+            int veclen,
+            int soalen,
+            bool compress12,
+            typename QdpGauge,
+            typename QdpSpinor>
+  void operator()();
 
-    void run(const int lattSize[], const int qmp_geom[]);
+ private:
+  template <typename FT, int V, int S, bool compress12>
+  void runTest();
 
-
-  private:
-
-    const int By;
-    const int Bz;
-    const int NCores;
-    const int Sy;
-    const int Sz;
-    const int PadXY;
-    const int PadXYZ;
-    const int MinCt;
-    const int N_simt;
-    const bool compress12;
-    const int iters;
-    const Prec precision;
-    const bool do_dslash;
-    const bool do_m;
-    const bool do_cg;
-    const bool do_bicgstab;
-
-    template<typename FT, int V, int S, bool compress12>
-      void runTest(const int lattSize[], const int qmp_geom[]);
-
+  CliArgs &args_;
 };
-#endif

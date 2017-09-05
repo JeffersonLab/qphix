@@ -1,184 +1,318 @@
-#ifndef QPHIX_TM_CLOVER_DSLASH_DEF_H
-#define QPHIX_TM_CLOVER_DSLASH_DEF_H
+#pragma once
 
 #include <qphix/dslash_utils.h>
 #include <qphix/geometry.h>
 #include <qphix/comm.h>
 
-namespace QPhiX {
+namespace QPhiX
+{
 
-  template <typename FT, int veclen, int soalen, bool compress12>  /* The teplate is the floating point type */
-    class TMClovDslash {
+template <typename FT, int veclen, int soalen, bool compress12>
+class TMClovDslash
+{
 
-      public:
+ public:
+  typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
+      SU3MatrixBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
+      FourSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::TwoSpinorBlock
+      TwoSpinorBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock
+      FullCloverBlock;
+  typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock
+      CloverBlock;
 
-        typedef typename Geometry<FT,veclen,soalen,compress12>::SU3MatrixBlock  SU3MatrixBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::FourSpinorBlock FourSpinorBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::TwoSpinorBlock  TwoSpinorBlock;
-        typedef typename Geometry<FT,veclen,soalen,compress12>::FullCloverBlock FullCloverBlock;
+  // Constructor
+  TMClovDslash(Geometry<FT, veclen, soalen, compress12> *geom_,
+               double t_boundary_,
+               double dslash_aniso_s_,
+               double dslash_aniso_t_,
+               bool use_tbc_[4] = nullptr,
+               double tbc_phases_[4][2] = nullptr,
+               double const prec_mass_rho = 0.0);
 
-        // Constructor
-        TMClovDslash(Geometry<FT,veclen,soalen,compress12>* geom_,
-            double t_boundary_,
-            double dslash_aniso_s_,
-            double dslash_aniso_t_);
+  // Destructor
+  ~TMClovDslash();
 
-        // Destructor
-        ~TMClovDslash();
+  /**
+    Apply the dslash operator, which here will be \f$ A^{-1} D \psi \f$.
 
-        // Apply the dslash operator,
-        // which here will be A^-1 * D * psi,
-        // with A^-1 = invclov
-        void dslash(FourSpinorBlock* res,
-            const FourSpinorBlock* psi,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* invclov[2],
-            int isign,
-            int cb);
+    @param[in] invclov \f$ A^{-1} \f$. The two elements of the array shall be
+    the original and the hermitian conjugate.
+    */
+  void dslash(FourSpinorBlock *res,
+              const FourSpinorBlock *psi,
+              const SU3MatrixBlock *u,
+              const FullCloverBlock *const invclov[2],
+              int isign,
+              int cb,
+              int fl = 0);
 
-        // Apply the A*chi-b*D*psi operator
-        // w/ A = alpha 1 +/- i mu gamma_5 + c_SW T = clov,
-        // passed (and suitably packed) externally
-        void dslashAChiMinusBDPsi(FourSpinorBlock* res,
-            const FourSpinorBlock* psi,
-            const FourSpinorBlock* chi,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* clov[2],
-            const double beta,
-            int isign,
-            int cb);
+  // Apply the A*chi-b*D*psi operator
+  // w/ A = alpha 1 + c_SW T = clov,
+  // passed (and suitably packed) externally
+  // The twisted quark mass (plus any preconditioning msss) 
+  // is applied via prec_mass_rho
+  void dslashAChiMinusBDPsi(FourSpinorBlock *res,
+                            const FourSpinorBlock *psi,
+                            const FourSpinorBlock *chi,
+                            const SU3MatrixBlock *u,
+                            const CloverBlock *clov,
+                            const double beta,
+                            int isign,
+                            int cb,
+                            int fl = 0);
 
-        void free(void *p);
+  /**
+    Clover \f$ A \chi - b D \psi \f$ for the non-degenerate twisted mass
+    case.
 
-        Geometry<FT,veclen,soalen,compress12>& getGeometry(void) { return (*s); }
+    \param[in] chi Second spinor field \f$ \chi \f$.
+    \param[in] clov Clover term not including the twisted mass, that is
+                    implemented via the pre-conditioning mass rho
+    \param[in] beta The \f$ b \f$ (or \f$ \beta \f$) coefficient.
+    \param[in] epsilon Twisted mass splitting \f$ \epsilon \f$ (or \f$
+    \mu_\delta \f$).
 
+    Other parameters are exactly like in \ref two_flav_dslash and are not
+    explained again here.
 
-      private:
+    \author Martin Ueding <dev@martin-ueding.de>
+    \author Bartosz Kostrzewa <bartosz_kostrzewa@fastmail.com>
+    */
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock *const res[2],
+                               const FourSpinorBlock *const psi[2],
+                               const FourSpinorBlock *const chi[2],
+                               const SU3MatrixBlock *u,
+                               const CloverBlock *clov,
+                               const double beta,
+                               const double epsilon,
+                               const int isign,
+                               const int cb);
 
-        Geometry<FT,veclen,soalen,compress12>* s;
-        Comms<FT,veclen,soalen,compress12>* comms;
+  /* 
+   * Applies the two-flavour inverse clover term from three fields. In the
+   * two-flavour EO operator, the hopping matrix is applied to the two
+   * flavours individually first, then this function is called.
+   * \param[out] res two-flavour output
+   * \param[in]  psi two-flavour spinor which should contain D_Wilson \chi
+   * \param[in]  fcl inverse clover terms (including twisted mass) on the flavour
+   *                 diagonal for the up and down flavours
+   * \param[in]  clOffDiag epsilon / ( (alpha+clover)^2 + \mu^2 - \epsilon^2 )
+   *                       inverse clover contribution on the flavour off-diagonal                
+   */ 
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    const FourSpinorBlock *const psi[2],
+                                    const FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign);
 
-        int log2veclen;
-        int log2soalen;
+#ifdef __INTEL_COMPILER  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock *const res[2],
+                               FourSpinorBlock *const psi[2],
+                               FourSpinorBlock *const chi[2],
+                               const SU3MatrixBlock *u,
+                               const CloverBlock *clov,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, clov, beta, epsilon, isign, cb); 
+  }
 
-        const int n_threads_per_core;
-        const int By;
-        const int Bz;
-        const int NCores;
-        const int Sy;
-        const int Sz;
-        const int PadXY;
-        const int PadXYZ;
-        const int MinCt;
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               FourSpinorBlock * chi[2],
+                               const SU3MatrixBlock *u,
+                               const CloverBlock *clov,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, clov, beta, epsilon, isign, cb); 
+  }
+  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               const FourSpinorBlock * const chi[2],
+                               const SU3MatrixBlock *u,
+                               const CloverBlock *clov,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, clov, beta, epsilon, isign, cb);
+  }
+  
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    FourSpinorBlock *const psi[2],
+                                    const FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign)
+  {
+    this->two_flav_inverse_clover_term(res,
+                                       const_cast<const FourSpinorBlock * const *>(psi),
+                                       fcl,
+                                       clOffDiag,
+                                       isign);
+  }
+  
+  void two_flav_inverse_clover_term(FourSpinorBlock *const res[2],
+                                    FourSpinorBlock *const psi[2],
+                                    FullCloverBlock *const fcl[2],
+                                    const CloverBlock     *const clOffDiag,
+                                    int isign)
+  {
+    this->two_flav_inverse_clover_term(res,
+                                       const_cast<const FourSpinorBlock * const *>(psi),
+                                       const_cast<const FullCloverBlock * const *>(fcl),
+                                       fclDn,
+                                       clOffDiag,
+                                       isign);
+  }
+#endif // __INTEL_COMPILER workaround 
 
-        const double t_boundary;
-        const double aniso_coeff_S;
-        const double aniso_coeff_T;
+  void free(void *p);
 
-        bool amIPtMin;
-        bool amIPtMax;
+  Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
-        Barrier* gBar;
-        Barrier*** barriers;
+ private:
+  Geometry<FT, veclen, soalen, compress12> *s;
+  Comms<FT, veclen, soalen, compress12> *comms;
 
-        BlockPhase* block_info;
-        int *tmpspc_all; // Space for YZ offsets etc
+  int log2veclen;
+  int log2soalen;
 
-        // Masks for comms in X & Y
-        unsigned int xbmask_x0_xodd[2];
-        unsigned int xfmask_xn_xodd[2];
-        unsigned int ybmask_y0;
-        unsigned int yfmask_yn;
+  const int n_threads_per_core;
+  const int By;
+  const int Bz;
+  const int NCores;
+  const int Sy;
+  const int Sz;
+  const int PadXY;
+  const int PadXYZ;
+  const int MinCt;
 
-        void init();
-        TMClovDslash(); // Hide Free Constructor
+  const double t_boundary;
+  const double aniso_coeff_S;
+  const double aniso_coeff_T;
 
-        void DyzPlus(int tid,
-            const FourSpinorBlock* psi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* invclov,
-            int cb);
+  bool use_tbc[4] = {false, false, false, false};
+  FT tbc_phases[4][2] = {{rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)},
+                         {rep<FT, double>(1.0), rep<FT, double>(0.0)}};
 
-        void DyzMinus(int tid,
-            const FourSpinorBlock* psi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* invclov,
-            int cb);
+  bool amIPtMin;
+  bool amIPtMax;
 
-        void DyzPlusAChiMinusBDPsi(int tid,
-            const FourSpinorBlock* psi,
-            const FourSpinorBlock* chi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* clov,
-            double beta,
-            int cb);
+  Barrier *gBar;
+  Barrier ***barriers;
 
-        void DyzMinusAChiMinusBDPsi(int tid,
-            const FourSpinorBlock* psi,
-            const FourSpinorBlock* chi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* clov,
-            double beta,
-            int cb);
+  BlockPhase *block_info;
+  int *tmpspc_all; // Space for YZ offsets etc
 
-        void DPsiPlus(const SU3MatrixBlock *u,
-            const FullCloverBlock* invclov,
+  // Masks for comms in X & Y
+  unsigned int xbmask_x0_xodd[2];
+  unsigned int xfmask_xn_xodd[2];
+  unsigned int ybmask_y0;
+  unsigned int yfmask_yn;
+
+  double const prec_mass_rho;
+
+  TMClovDslash(); // Hide Free Constructor
+
+  void Dyz(int tid,
+           const FourSpinorBlock *psi,
+           FourSpinorBlock *res,
+           const SU3MatrixBlock *u,
+           const FullCloverBlock *invclov,
+           bool const is_plus,
+           int cb);
+
+  void DyzAChiMinusBDPsi(int tid,
+                         const FourSpinorBlock *psi,
+                         const FourSpinorBlock *chi,
+                         FourSpinorBlock *res,
+                         const SU3MatrixBlock *u,
+                         const CloverBlock *clov,
+                         double beta,
+                         bool const is_plus,
+                         int cb,
+                         int fl = 0);
+
+  void DPsi(const SU3MatrixBlock *u,
+            const FullCloverBlock *invclov,
             const FourSpinorBlock *psi_in,
             FourSpinorBlock *res_out,
+            bool const is_plus,
             int cb);
 
-        void DPsiMinus(const SU3MatrixBlock *u,
-            const FullCloverBlock* invclov,
-            const  FourSpinorBlock *psi_in,
-            FourSpinorBlock *res_out,
-            int cb);
+  void DPsiAChiMinusBDPsi(const SU3MatrixBlock *u,
+                          const CloverBlock *clov,
+                          const FourSpinorBlock *psi_in,
+                          const FourSpinorBlock *chi,
+                          FourSpinorBlock *res_out,
+                          double beta,
+                          bool const is_plus,
+                          int cb,
+                          int fl = 0);
 
-        void DPsiPlusAChiMinusBDPsi(const SU3MatrixBlock *u,
-            const FullCloverBlock* clov,
-            const FourSpinorBlock *psi_in,
-            const FourSpinorBlock *chi,
-            FourSpinorBlock *res_out,
-            double beta,
-            int cb);
+  void two_flav_inverse_clover_term_YZ(
+      const int tid,
+      FourSpinorBlock *const resUp,
+      FourSpinorBlock *const resDn,
+      const FourSpinorBlock *const psiUp,
+      const FourSpinorBlock *const psiDn,
+      const FullCloverBlock *const fclUp,
+      const FullCloverBlock *const fclDn,
+      const CloverBlock *const clOffDiag);
 
-        void DPsiMinusAChiMinusBDPsi(const SU3MatrixBlock *u,
-            const FullCloverBlock* clov,
-            const FourSpinorBlock *psi_in,
-            const FourSpinorBlock *chi,
-            FourSpinorBlock *rea_out,
-            double beta,
-            int cb);
-
-        // DISABLE COMMS FOR NOW
 #ifdef QPHIX_DO_COMMS
-        void packFaceDir(int tid,
-            const FourSpinorBlock *psi,
-            FT *res,
-            int cb, int dir, int fb, int isPlus);
+  void packFaceDir(int tid,
+                   const FourSpinorBlock *psi,
+                   FT *res,
+                   int cb,
+                   int dir,
+                   int fb,
+                   bool const is_plus);
 
-        //  RECEIVE AND COMPLETE FACE
-        void completeFaceDir(int tid,
-            const FT* psi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const FullCloverBlock* invclov,
-            double beta,
-            int cb, int dir, int fb, int isPlus);
+  void completeFaceDir(int tid,
+                       const FT *psi,
+                       FourSpinorBlock *res,
+                       const SU3MatrixBlock *u,
+                       const FullCloverBlock *invclov,
+                       double beta,
+                       int cb,
+                       int dir,
+                       int fb,
+                       bool const is_plus);
 
-        //  RECEIVE AND COMPLETE FACE
-        void completeFaceDirAChiMBDPsi(int tid,
-            const FT* psi,
-            FourSpinorBlock* res,
-            const SU3MatrixBlock* u,
-            const double beta ,
-            int cb, int dir, int fb, int isPlus);
+  void completeFaceDirAChiMBDPsi(int tid,
+                                 const FT *psi,
+                                 FourSpinorBlock *res,
+                                 const SU3MatrixBlock *u,
+                                 const double beta,
+                                 int cb,
+                                 int dir,
+                                 int fb,
+                                 bool const is_plus);
 #endif
 
-    }; // Class
+}; // Class
 
 } // Namespace
 
@@ -187,5 +321,3 @@ namespace QPhiX {
 #ifdef QPHIX_DO_COMMS
 #include "qphix/tm_clov_dslash_face.h"
 #endif
-
-#endif // Include guard

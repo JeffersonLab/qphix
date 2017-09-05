@@ -1,0 +1,98 @@
+#!/bin/bash
+# Copyright © 2017 Martin Ueding <dev@martin-ueding.de>
+
+# Generates the code for a given ISA and then copies the generated code to the
+# QPhiX repository.
+
+###############################################################################
+#                                 Help Screen                                 #
+###############################################################################
+
+if (( $# != 3 )); then
+    cat <<EOF
+Generates kernels and compiles them.
+
+This script will compile the code generator for the given architecture, once
+for each floating point type and vector length and soalen and compression. Then
+it will run generator to generate the code. Third, a Python script will
+generate the \`Makefile.am\` and all the specialization header files. Lastly,
+these files will be compiled into a static library.
+
+Call it like this:
+
+    $0 ISA CXX CXXFLAGS
+
+- ISA is something like “avx” or “avx512”.
+- CXX C++ compiler name
+- CXXFLAGS Flags for the C++ compiler
+EOF
+    exit 1
+fi
+
+set -e
+set -u
+set -x
+
+isa="$1"
+cxx="$2"
+cxxflags="$3"
+
+###############################################################################
+#                        Check that Jinja is installed                        #
+###############################################################################
+
+if ! python3 -c ''; then
+    cat <<EOF
+There is no python3 executable in your PATH. Please make sure that you have
+Python 3, perhaps install a package or load a module.
+EOF
+    exit 1
+fi
+
+if ! /usr/bin/env python3 -c 'import jinja2'; then
+    cat <<EOF
+The required Python 3 library “Jinja 2” is not available on your system. This
+is easily fixed.
+
+If you have root/sudo access to your Linux distribution, just install the
+system package for it. On Fedora, Ubuntu, and Debian it is called
+\`python3-jinja2\`.
+
+If you are just a user (perhaps on a HPC frontend machine), you can install
+Jinja 2 locally with PIP. Run the following to install:
+
+    pip3 install jinja2 --user
+
+It might happen that \`pip3\` is not installed either. Perhaps it can be loaded
+with another module.
+EOF
+    exit 1
+fi
+
+###############################################################################
+#                               Generate & Copy                               #
+###############################################################################
+
+# Generate the kernel code.
+nice make -j "$(nproc)" "$isa"
+
+# Generate the specialization code.
+pushd jinja
+./generate_files.py "$isa"
+popd
+
+mkdir -p cmake_build
+mkdir -p cmake_local
+
+installdir=$PWD/cmake_local
+
+pushd cmake_build
+CXX="$cxx" CXXFLAGS="$cxxflags" cmake ../generated/$isa -DCMAKE_INSTALL_PREFIX="$installdir"
+nice make -j "$(nproc)"
+make install
+popd
+
+cat <<EOF
+Everything has been installed into “$installdir”. Please pass this to QPhiX
+“configure” by specifying “--with-codegen=$installdir”.
+EOF
