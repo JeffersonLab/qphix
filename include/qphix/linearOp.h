@@ -46,6 +46,8 @@ template <typename FT, int veclen, int soalen, bool compress>
 class TwoFlavEvenOddLinearOperator
 {
  public:
+  virtual ~TwoFlavEvenOddLinearOperator(){};
+
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
 
@@ -53,14 +55,14 @@ class TwoFlavEvenOddLinearOperator
 
 #ifdef __INTEL_COMPILER
   virtual void
-  operator()(FourSpinorBlock *res[2], FourSpinorBlock *const in[2], int isign)
+  operator()(FourSpinorBlock * const res[2], FourSpinorBlock *const in[2], int isign, int target_cb = 1)
   {
-    (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign);
+    (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign, target_cb);
   }
 #endif
 
-  virtual void operator()(FourSpinorBlock *res[2],
-                          const FourSpinorBlock *const in[2],
+  virtual void operator()(FourSpinorBlock * const res[2],
+                          FourSpinorBlock const *const in[2],
                           int isign,
                           int target_cb = 1) = 0;
 

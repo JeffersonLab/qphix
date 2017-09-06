@@ -20,7 +20,7 @@ class TestMultishift : public TestFixture
 
  private:
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testMInvCG(const multi1d<U> &u, int t_bc);
+  void testMInvCG(int t_bc);
 
   CliArgs &args_;
   Seed rng_seed;

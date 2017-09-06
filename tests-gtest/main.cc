@@ -58,7 +58,7 @@ void processArgs(int argc, char *argv[])
 int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
-  QDP::QDP_initialize(&argc,&argv);
+  QDP::QDP_initialize(&argc, &argv);
   processArgs(argc, argv);
   some_user_args.init(argc, argv);
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     std::cout << localLattSize[i] << std::endl;
   }
 
-  auto result =  RUN_ALL_TESTS();
+  auto result = RUN_ALL_TESTS();
 
   QDP::QDP_finalize();
 

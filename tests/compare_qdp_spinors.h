@@ -2,12 +2,17 @@
 
 #include <qphix/geometry.h>
 #include <qphix/print_utils.h>
+#include <qphix/qdp_packer.h>
 
 #include <qdp.h>
 
 #include <iomanip>
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 class HybridSpinor
 {
  public:
@@ -40,7 +45,11 @@ class HybridSpinor
   QdpSpinor qdp_;
 };
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 void expect_near(QdpSpinor &spinor_a,
                  QdpSpinor &spinor_b,
                  double const abs_err,
@@ -82,29 +91,33 @@ void expect_near(QdpSpinor &spinor_a,
               double const diff_imag = a.imag() - b.imag();
 
               if (std::fabs(diff_real) > abs_err || std::fabs(diff_imag) > abs_err) {
-                masterPrintf("(xyzt)=(%2d,%2d,%2d,%2d) site=%5d s=%d c=%d "
-                             "A=(% 12.5e,% 12.5e) B=(% 12.5e,% 12.5e) "
-                             "A-B=(% 12.5e,% 12.5e)\n",
-                             x,
-                             y,
-                             z,
-                             t,
-                             ind,
-                             s,
-                             c,
-                             a.real(),
-                             a.imag(),
-                             b.real(),
-                             b.imag(),
-                             diff_real,
-                             diff_imag);
-
+                QPhiX::masterPrintf("(xyzt)=(%2d,%2d,%2d,%2d) site=%5d s=%d c=%d "
+                                    "A=(% 14.7e,% 14.7e) B=(% 14.7e,% 14.7e) "
+                                    "A-B=(% 14.7e,% 14.7e)\n",
+                                    x,
+                                    y,
+                                    z,
+                                    t,
+                                    ind,
+                                    s,
+                                    c,
+                                    a.real(),
+                                    a.imag(),
+                                    b.real(),
+                                    b.imag(),
+                                    diff_real,
+                                    diff_imag);
+                
                 ++printed_out;
 
-                if (printed_out > 100) {
-                  masterPrintf("More elements are not printed in order to make the "
-                               "output readable.\n");
+                if (printed_out > 20) {
+                  QPhiX::masterPrintf("More elements are not printed in order to "
+                                      "make the output readable.\n");
+#ifdef FAIL
+                  FAIL();
+#else
                   assertion(false);
+#endif
                   break;
                 }
               }
@@ -115,7 +128,11 @@ void expect_near(QdpSpinor &spinor_a,
     } // z
   } // t
 
-  assertion(false);
+#ifdef FAIL
+                  FAIL();
+#else
+                  assertion(false);
+#endif
 }
 
 template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>

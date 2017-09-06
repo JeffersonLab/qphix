@@ -38,44 +38,6 @@ void TestDslash::run(void)
   RNG::savern(rng_seed);
 
   call(*this, args_.prec, args_.soalen, args_.compress12);
-
-  /*
-  {
-    typedef multi1d<LatticeColorMatrixF> UF;
-    typedef multi1d<LatticeColorMatrixD> UD;
-    typedef LatticeDiracFermionF PhiF;
-    typedef LatticeDiracFermionD PhiD;
-
-    int t_bc = -1;
-
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
-    if (Nx % 32 == 0) {
-      testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 16, UD, PhiD>(
-          u_in, t_bc);
-    } else {
-      if (Nx % 16 == 0) {
-        testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 8, UD, PhiD>(
-            u_in, t_bc);
-      } else {
-        masterPrintf("I havent set up that mixed precision solver combination\n");
-      }
-    }
-#elif defined(QPHIX_AVX_SOURCE)
-    // AVX: Double SOALEN = 4
-    if (Nx % 16 == 0) {
-      testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 8, UD, PhiD>(
-          u_in, t_bc);
-    } else {
-      if (Nx % 8 == 0) {
-        testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 4, UD, PhiD>(
-            u_in, t_bc);
-      } else {
-        masterPrintf("I havent set up that mixed precision solver combination\n");
-      }
-    }
-#endif
-  }
-  */
 }
 
 template <typename FT,
@@ -113,6 +75,34 @@ void TestDslash::operator()()
     testM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
     testCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
     testBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, t_bc);
+    
+    // unlike the other tests, we run these with fixed soalen
+#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
+    if (Nx % 32 == 0) {
+      testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 16, QdpGauge, QdpSpinor>(
+          u, t_bc);
+    } else {
+      if (Nx % 16 == 0) {
+        testRichardson<double, VECLEN_DP, 8, true, half, VECLEN_HP, 8, QdpGauge, QdpSpinor>(
+            u, t_bc);
+      } else {
+        masterPrintf("I havent set up that mixed precision solver combination\n");
+      }
+    }
+#elif defined(QPHIX_AVX_SOURCE) || defined(QPHIX_AVX2_SOURCE)
+    // AVX: Double SOALEN = 4
+    if (Nx % 16 == 0) {
+      testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 8, QdpGauge, QdpSpinor>(
+          u, t_bc);
+    } else {
+      if (Nx % 8 == 0) {
+        testRichardson<double, VECLEN_DP, 4, true, float, VECLEN_SP, 4, QdpGauge, QdpSpinor>(
+            u, t_bc);
+      } else {
+        masterPrintf("I havent set up that mixed precision solver combination\n");
+      }
+    }
+#endif
   }
 }
 
@@ -577,6 +567,11 @@ void TestDslash::testCG(const multi1d<U> &u, int t_bc)
       dslash(chi3, u_test, chi2, (-isign), other_cb);
       dslash(ltmp, u_test, chi3, (-isign), cb);
       chi3[rb[cb]] = massFactor * chi2 - betaFactor * ltmp;
+      
+      Phi diff = chi3 - psi;
+      Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
+      QDPIO::cout << "Wilson CG Solve isign=" << isign
+                  << " True norm is: " << true_norm << endl;
 
       expect_near(chi3, psi, 1e-9, geom, cb, "Wilson CG");
 
@@ -717,6 +712,7 @@ void TestDslash::testBiCGStab(const multi1d<U> &u, int t_bc)
         Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
         QDPIO::cout << "BiCGStab Solve isign=" << isign
                     << " True norm is: " << true_norm << endl;
+        expect_near(chi2, psi, 1e-9, geom, cb, "BiCGstab: ");
         assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
         int Nxh = Nx / 2;
         unsigned long num_cb_sites = Layout::vol() / 2;
@@ -904,6 +900,8 @@ void TestDslash::testRichardson(const multi1d<U> &u, int t_bc)
         Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
         QDPIO::cout << "RICHARDSON Solve isign=" << isign
                     << " True norm is: " << true_norm << endl;
+        expect_near(chi2, psi, 1e-9, geom_outer, cb, "BiCGstab: ");
+
         assertion(toBool(true_norm < (rsd_target + tolerance<T1>::small)));
         unsigned long num_cb_sites = Layout::vol() / 2;
         unsigned long total_flops =
