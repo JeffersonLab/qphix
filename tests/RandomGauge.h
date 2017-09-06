@@ -1,7 +1,7 @@
 #pragma once
 
 #include "clover_term.h"
-#include "compare_qdp_spinors.h"
+#include "reunit.h"
 #include "tolerance.h"
 
 #include <qphix/geometry.h>
@@ -15,14 +15,17 @@ template <typename FT,
           int veclen,
           int soalen,
           bool compress12,
-          typename QdpGauge = QDP::LatticeColorMatrixD,
-          typename QdpSpinor = QDP::LatticeDiracFermionD>
+          typename QdpGauge_ = QDP::LatticeColorMatrixD,
+          typename QdpSpinor_ = QDP::LatticeDiracFermionD>
 class RandomGauge
 {
  public:
   typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock Spinor;
   typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock Gauge;
   typedef typename Geometry<FT, veclen, soalen, compress12>::CloverBlock Clover;
+
+  typedef QdpGauge_ QdpGauge;
+  typedef QdpSpinor_ QdpSpinor;
 
   RandomGauge(Geometry<FT, veclen, soalen, compress12> &geom,
               double const t_boundary = 1.0,
@@ -115,7 +118,6 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::
     uf = 1; // Unit gauge
     gaussian(g);
     if (std::fabs(gauge_random_factor) > std::numeric_limits<double>::epsilon()) {
-      masterPrintf("Use random gauge with factor %g\n", gauge_random_factor);
       u[mu] = uf + gauge_random_factor * g;
       reunit(u[mu]);
     }
@@ -156,30 +158,10 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
 
   invclov_qdp = clov_qdp;
 
-  // Test spinors.
-  QdpSpinor qdp_spinor_1;
-  QdpSpinor qdp_spinor_2;
-  QdpSpinor qdp_spinor_3;
-  gaussian(qdp_spinor_1);
-
-  // Apply the clover term and its copy (not inverted yet!) to the spinor as a sanity
-  // check.
-  for (int cb = 0; cb < 2; ++cb) {
-    clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
-    invclov_qdp.apply(qdp_spinor_3, qdp_spinor_1, 1, cb);
-    expect_near(qdp_spinor_2, qdp_spinor_3, 1e-6, geom, cb, "Clover term copy");
-  }
 
   // Invert the clover term.
   for (int cb = 0; cb < 2; cb++) {
     invclov_qdp.choles(cb);
-  }
-
-  // Apply the clover term and inverse, result should be the original spinor.
-  for (int cb = 0; cb < 2; ++cb) {
-    clov_qdp.apply(qdp_spinor_2, qdp_spinor_1, 1, cb);
-    invclov_qdp.apply(qdp_spinor_3, qdp_spinor_2, 1, cb);
-    expect_near(qdp_spinor_1, qdp_spinor_3, 1e-6, geom, cb, "Clover term inversion");
   }
 
   for (int cb = 0; cb < 2; cb++) {
