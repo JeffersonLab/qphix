@@ -383,14 +383,18 @@ void TimeDslash::runTest()
 
   if (args_.do_dslash) {
     // Go through the test cases -- apply SSE dslash versus, QDP Dslash
-    for (int isign = 1; isign >= -1; isign -= 2) {
-      for (int cb = 0; cb < 2; cb++) {
+    //for (int isign = 1; isign >= -1; isign -= 2) {
+      //for (int cb = 0; cb < 2; cb++) {
+
+	int cb=0;
+	int isign=1;
+
         int source_cb = 1 - cb;
         int target_cb = cb;
         masterPrintf("Timing on cb=%d isign=%d\n", cb, isign);
         masterPrintf("=============================\n");
 
-        for (int repeat = 0; repeat < 3; repeat++) {
+        for (int repeat = 0; repeat < 10; repeat++) {
           double start = omp_get_wtime();
 
           for (int i = 0; i < args_.iters; i++) {
@@ -415,8 +419,8 @@ void TimeDslash::runTest()
           double perf = Gflops / time;
           masterPrintf("\t Performance: %g GFLOPS total\n", perf);
         }
-      }
-    }
+      //}
+    //}
   }
 
   if (args_.do_m) {
