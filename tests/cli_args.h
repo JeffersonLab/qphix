@@ -6,6 +6,26 @@
 #include <string>
 
 struct CliArgs {
+	CliArgs() {
+		// Defaults
+		for(int mu=0; mu < 4; ++mu) {
+			nrow_in[mu]=8;
+			qmp_geometry[mu]=1;
+		}
+
+		iters=50;
+		compress12=false;
+		prec=FLOAT_PREC;
+		soalen=4; // Safe
+		thread_bind=false;
+		do_dslash=false;
+		do_m = false;
+		do_cg = false;
+		do_bicgstab = false;
+		// Leave some uninitialized
+
+	}
+
   int nrow_in[4];
   int iters = 1;
 
