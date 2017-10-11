@@ -3,6 +3,9 @@
 #include "qphix/linearOp.h"
 #include "qphix/tm_clov_dslash_def.h"
 
+#include "qphix/print_utils.h"
+#include <cstdlib>
+
 namespace QPhiX
 {
 
@@ -106,6 +109,24 @@ class EvenOddTMCloverOperator
                             beta,
                             isign,
                             target_cb);
+  }
+
+  inline void M_offdiag(FourSpinorBlock *res,
+                         FourSpinorBlock const *in,
+                         int isign,
+                         int target_cb) const override {
+    masterPrintf("M_offdiag not yet implemented for this operator\n");
+    std::abort();
+  }
+
+  // M_ee_inv is always Hermitian so no need for isign?
+  // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
+  inline void M_diag_inv(FourSpinorBlock *res,
+                        FourSpinorBlock const *in,
+                        int isign) const override {
+
+    masterPrintf("M_ee_inv not yet implemented for this operator\n");
+    std::abort();
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry()

@@ -1,6 +1,8 @@
 list(APPEND header_files qphix_config.h dslash_utils.h
         arith_type.h
         abs_solver.h
+        unprec_solver_wrapper.h
+        full_spinor.h
         geometry.h
         comm.h
         dslash_def.h
@@ -11,7 +13,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         wilson.h
         invcg.h
         invbicgstab.h
-	invmr.h
+				invmr.h
         inv_richardson_multiprec.h
         minvcg.h
         linearOp.h

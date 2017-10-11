@@ -2,6 +2,7 @@
 
 #include "qphix/linearOp.h"
 #include "qphix/dslash_def.h"
+#include "qphix/blas.h"
 
 namespace QPhiX
 {
@@ -63,7 +64,27 @@ class EvenOddWilsonOperator
                             target_cb);
   }
 
-  Geometry<FT, veclen, soalen, compress12> &getGeometry()
+  // Offdiag is just the dslash
+  inline void M_offdiag(FourSpinorBlock *res,
+                          FourSpinorBlock const *in,
+                          int isign,
+                          int target_cb) const override {
+    Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
+    double beta = -0.5;
+    D->dslash(tmp,in, u[target_cb],isign,target_cb);
+    axy(beta,tmp,res,geom,geom.getNSIMT());
+  }
+
+   // EE-inv is just the identity
+   inline void M_diag_inv(FourSpinorBlock *res,
+                         FourSpinorBlock const *in,
+                         int isign) const override {
+     double beta = static_cast<double>(1)/mass_factor_alpha;
+     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
+     axy(beta,in,res, geom, geom.getNSIMT());
+   }
+
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() override
   {
     return D->getGeometry();
   }
