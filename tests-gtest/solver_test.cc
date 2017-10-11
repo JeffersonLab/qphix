@@ -758,6 +758,8 @@ TEST(UnprecBiCGStabSolverTest, TestUnprecBiCGStabSolver)
               <<  " || r || = " << norm_diff <<"\n";
   }
 }
+
+
 TEST(UnprecMRSolverTest, TestUnprecBiCGStabSolverWilson)
 {
   // This sets up the environment and the lattice
@@ -942,6 +944,181 @@ TEST(UnprecMRSolverTest, TestUnprecBiCGStabSolverWilson)
   else {
     QDPIO::cout << "Full: || b || = " << norm_src
               <<  " || r || = " << norm_diff <<"\n";
+  }
+}
+
+TEST(UnprecOpTest, TestUnprecCloverOps)
+{
+  // This sets up the environment and the lattice
+   const QDPXXTestEnv& testEnv = getQDPXXTestEnv();
+
+   // Get QPhiX Command Line args
+   const QPhiX::QPhiXCLIArgs& CLI = testEnv.getCLIArgs();
+
+   // Set up the params
+   int tBc = -1;
+   double tBoundary= static_cast<double>(tBoundary);
+   double mQ = 0.01;
+   double cSwS = 1.23;
+   double cSwT = 0.95;
+   double xi0 = 1.3;
+   double nu = 0.78;
+   double anisoFacS=nu/xi0;
+   double anisoFacT=1.0;
+   int oddCb = 1;
+   int evenCb = 1-oddCb;
+
+
+   // Set geometry
+   Geom geom(Layout::subgridLattSize().slice(),
+       CLI.getBy(),
+       CLI.getBz(),
+       CLI.getNCores(),
+       CLI.getSy(),
+       CLI.getSz(),
+       CLI.getPxy(),
+       CLI.getPxyz(),
+       CLI.getMinCt(),
+       true);
+
+   // Create lattice
+   multi1d<LatticeColorMatrix> u(Nd);
+   multi1d<LatticeColorMatrix> uAniso(Nd);
+   for(int mu=0 ; mu < Nd; ++mu ) {
+     LatticeColorMatrix g;
+     gaussian(g);
+     u[mu] = 1 + 0.1*g;
+     reunit(u[mu]);
+
+   }
+
+   // Create lattice with ansitropy and BC applied
+   for (int mu = 0; mu < Nd; mu++) {
+     Real factor;
+     if (mu == 3) {
+       factor = Real(anisoFacT);
+     } else {
+       factor = Real(anisoFacS);
+     }
+     uAniso[mu] = factor * u[mu];
+   }
+
+   int const muT = QDP::Nd - 1;
+   uAniso[muT] *= QDP::where(QDP::Layout::latticeCoordinate(muT) ==
+       (QDP::Layout::lattSize()[muT] - 1),
+       QDP::Real(tBoundary),
+       QDP::Real(1));
+
+   QPhiXCBGauge uCb0(geom);
+   QPhiXCBGauge uCb1(geom);
+   qdp_pack_gauge<>(u, uCb0.get(),uCb1.get(),geom);
+   Geom::SU3MatrixBlock *qphixGauge[2] = { uCb0.get(),uCb1.get() };
+
+
+   // Need to make a clover term and inverse to pack.
+   CloverFermActParams param;
+   param.Mass = Real(mQ);
+   param.clovCoeffR = Real(cSwS);
+   param.clovCoeffT = Real(cSwT);
+   param.u0 = Real(1);
+   param.anisoParam.anisoP = true;
+   param.anisoParam.t_dir = 3;
+   param.anisoParam.xi_0 = Real(xi0);
+   param.anisoParam.nu = Real(nu);
+
+   CloverTermT<LatticeFermion, LatticeColorMatrix>  clov;
+   clov.create(u, param);
+   CloverTermT<LatticeFermion, LatticeColorMatrix>  invclov;
+   invclov.create(u, param, clov);
+   invclov.choles(evenCb); // Even Even Inv
+
+
+   QPhiXCBClover A_0(geom);
+   QPhiXCBClover A_1(geom);
+   QPhiXCBClover AInvEe(geom);
+   qdp_pack_clover<>(clov, A_0.get(),geom,0);
+   qdp_pack_clover<>(clov, A_1.get(),geom,1);
+   Geom::CloverBlock *qphixClov[2] = { A_0.get(), A_1.get() };
+
+   qdp_pack_clover<>(invclov, AInvEe.get(), geom, evenCb);
+
+   LatticeFermion source;
+   gaussian(source);
+
+
+   QPhiXFullSpinor qphixSource(geom);
+   QPhiXFullSpinor qphixResult(geom);
+
+   // Now pack fields.
+   QPhiX::qdp_pack_cb_spinor<>(source, qphixSource.getCBData(evenCb),geom, evenCb);
+   QPhiX::qdp_pack_cb_spinor<>(source, qphixSource.getCBData(oddCb),geom, oddCb);
+
+
+   // Create QPhiXClovOp
+   ClovOp QPhiXEOClov(qphixGauge,
+       qphixClov,
+       AInvEe.get(),
+       &geom,
+       tBoundary,
+       anisoFacS,
+       anisoFacT);
+
+   LatticeFermion result;
+
+   // Apply the diagonal operator
+   QPhiXEOClov.M_diag(qphixResult,qphixSource,1);
+
+   QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(evenCb),result,geom,evenCb);
+   QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(oddCb),result,geom,oddCb);
+
+   LatticeFermion qdp_result;
+   for(int cb=0; cb < 2; ++cb) {
+     clov.apply(qdp_result,source,1,cb);
+   }
+
+   QDPIO::cout << "Checking Clover Op Diagonal Part" << std::endl;
+   LatticeFermion diff = qdp_result - result;
+   Double norm_diff = Double(0);
+   for(int cb=0; cb < 2; ++cb) {
+     Double norm_diff = sqrt(norm2(diff,rb[cb]));
+     Double vol_cb = Double(Layout::vol()/2);
+     QDPIO::cout << "cb=" << cb << " || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol_cb
+         << std::endl;
+     ASSERT_LT( toDouble(norm_diff), 5.0e-14);
+   }
+   norm_diff = sqrt(norm2(diff));
+   Double vol = Double(Layout::vol());
+   QDPIO::cout << "Full: || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol
+       << std::endl;
+   ASSERT_LT( toDouble(norm_diff), 7.0e-14);
+
+
+  QDPIO::cout << "Checking UnprecOp Part" << std::endl;
+  for(int isign=-1; isign < +2; isign+=2) {
+   QPhiXEOClov.M_unprec(qphixResult,qphixSource,isign);
+   QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(evenCb),result,geom,evenCb);
+   QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(oddCb),result,geom,oddCb);
+
+     for(int cb=0; cb < 2; ++cb) {
+       clov.apply(qdp_result,source,isign,cb);
+       LatticeFermion tmp_dsl;
+       dslash(tmp_dsl,uAniso,source,isign,cb);
+       qdp_result[rb[cb]] -= Real(0.5)*tmp_dsl;
+     }
+     diff = qdp_result - result;
+     for(int cb=0; cb < 2; ++cb) {
+       norm_diff = sqrt(norm2(diff,rb[cb]));
+       Double vol_cb = Double(Layout::vol()/2);
+       QDPIO::cout << "cb=" << cb << " isign = " << isign <<" || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol_cb
+           << std::endl;
+       ASSERT_LT( toDouble(norm_diff), 5.0e-14);
+     }
+     norm_diff = sqrt(norm2(diff));
+     vol = Double(Layout::vol());
+     QDPIO::cout << "Full: isign = " << isign << " || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol
+         << std::endl;
+     ASSERT_LT( toDouble(norm_diff), 7.0e-14);
+
   }
 }
 

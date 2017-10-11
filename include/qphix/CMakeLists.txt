@@ -37,7 +37,7 @@ if( ${QDPXX_CXX_FOUND} )
 endif()
 
 if( ${clover} )
-	list(APPEND header_files clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h)
+	list(APPEND header_files clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h clover_product.h)
 endif()
 
 if( ${twisted_mass} ) 
