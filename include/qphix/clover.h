@@ -219,10 +219,25 @@ public:
             cb);
   } //cb
   }
+
+  inline void DslashDir(SpinorFull& res,
+                        const SpinorFull& in,
+                        int dir)
+     {
+       for(int cb=0; cb < 2; ++cb) {
+         D_dslash->dslashDir(
+               res.getCBData(cb),
+               in.getCBData(1-cb),
+               u[cb],
+               cb,
+               dir);
+     } //cb
+  }
+
   Geometry<FT, veclen, soalen, compress12> &getGeometry() override
-      {
+  {
     return D->getGeometry();
-      }
+  }
 
 private:
   //double Mass;

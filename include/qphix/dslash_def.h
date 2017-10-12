@@ -50,6 +50,14 @@ class Dslash
                             int isign,
                             int cb);
 
+
+  void dslashDir(FourSpinorBlock *res,
+                 const FourSpinorBlock *psi,
+                 const SU3MatrixBlock *u,
+                 int cb,
+                 int dir);
+
+
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
  private:
   Geometry<FT, veclen, soalen, compress12> *s;
@@ -104,13 +112,20 @@ class Dslash
            FourSpinorBlock *res,
            const SU3MatrixBlock *u,
            bool const is_plus,
-           int cb);
+           int cb,
+           const unsigned int* dir_mask);
 
   void DPsi(const SU3MatrixBlock *u,
             const FourSpinorBlock *psi_in,
             FourSpinorBlock *res_out,
             bool const is_plus,
             int cb);
+
+  void DPsiDir(const SU3MatrixBlock *u,
+             const FourSpinorBlock *psi_in,
+             FourSpinorBlock *res_out,
+             int cb,
+             int dir) ;
 
   void DyzAChiMinusBDPsi(int tid,
                          const FourSpinorBlock *psi,

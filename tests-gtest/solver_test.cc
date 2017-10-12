@@ -534,6 +534,7 @@ TEST(InvMRSmootherTest, TestInvMRSmoother)
     ASSERT_EQ(niters,5);
 
 }
+
 TEST(UnprecBiCGStabSolverTest, TestUnprecBiCGStabSolver)
 {
   // This sets up the environment and the lattice
