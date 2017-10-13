@@ -24,6 +24,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         complex_functors.h
         kernel_selector.h
         site_loops.h
+        blas.h
         blas_c.h
         blas_new_c.h
         print_utils.h

@@ -198,6 +198,16 @@ public:
     for(int cb=0; cb < 2;++cb)
       clover_product( res.getCBData(cb), in.getCBData(cb), clov[cb], geom);
   }
+  // Extra operations: Clover Term
+   inline void M_diag(SpinorFull& res,
+                      const SpinorFull& in,
+                      int isign,int cb) const
+
+   {
+     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
+     assert(clov[cb]!=nullptr);
+     clover_product( res.getCBData(cb), in.getCBData(cb), clov[cb], geom);
+   }
 
   inline void M_unprec(SpinorFull& res,
                        const SpinorFull& in,
