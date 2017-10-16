@@ -10,8 +10,13 @@ import itertools
 import json
 import os
 import socket
+import sys
 
 import jinja2
+
+
+assert sys.version_info.major >= 3, 'This script must run with Python 3, not {}.{}.{}.'.format(
+    sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
 
 
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
