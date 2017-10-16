@@ -2,11 +2,6 @@
 
 #include "unittest.h"
 
-// Stupid compiler thing
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
-
 #include "qdp.h"
 using namespace QDP;
 
