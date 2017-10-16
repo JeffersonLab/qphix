@@ -15,6 +15,10 @@ import sys
 import jinja2
 
 
+assert sys.version_info.major >= 3, 'This script must run with Python 3, not {}.{}.{}.'.format(
+    sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+
+
 SOURCEDIR = os.path.dirname(sys.argv[0])
 
 
