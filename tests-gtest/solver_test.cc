@@ -1065,30 +1065,41 @@ TEST(UnprecOpTest, TestUnprecCloverOps)
        anisoFacT);
 
    LatticeFermion result;
+   LatticeFermion qdp_result;
+   LatticeFermion diff=zero;
+   Double norm_diff = Double(0);
+   Double vol = Double(Layout::vol());
+   Double vol_cb = Double(Layout::vol()/2);
 
-   // Apply the diagonal operator
+   for(int cb =0; cb < 2; ++cb) {
+     QPhiXEOClov.M_diag(qphixResult,qphixSource,1,cb);
+     QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(cb),result,geom,cb);
+     clov.apply(qdp_result,source,1,cb);
+
+     diff[rb[cb]]=qdp_result - result;
+     norm_diff = sqrt(norm2(diff,rb[cb]));
+     QDPIO::cout << "cb=" << cb << " || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol_cb
+              << std::endl;
+     ASSERT_LT( toDouble(norm_diff), 5.0e-14);
+   }
+     // Apply the diagonal operator
    QPhiXEOClov.M_diag(qphixResult,qphixSource,1);
-
    QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(evenCb),result,geom,evenCb);
    QPhiX::qdp_unpack_cb_spinor<>(qphixResult.getCBData(oddCb),result,geom,oddCb);
 
-   LatticeFermion qdp_result;
    for(int cb=0; cb < 2; ++cb) {
      clov.apply(qdp_result,source,1,cb);
    }
 
    QDPIO::cout << "Checking Clover Op Diagonal Part" << std::endl;
-   LatticeFermion diff = qdp_result - result;
-   Double norm_diff = Double(0);
+
    for(int cb=0; cb < 2; ++cb) {
-     Double norm_diff = sqrt(norm2(diff,rb[cb]));
-     Double vol_cb = Double(Layout::vol()/2);
+     norm_diff = sqrt(norm2(diff,rb[cb]));
      QDPIO::cout << "cb=" << cb << " || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol_cb
          << std::endl;
      ASSERT_LT( toDouble(norm_diff), 5.0e-14);
    }
    norm_diff = sqrt(norm2(diff));
-   Double vol = Double(Layout::vol());
    QDPIO::cout << "Full: || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol
        << std::endl;
    ASSERT_LT( toDouble(norm_diff), 7.0e-14);
@@ -1109,13 +1120,11 @@ TEST(UnprecOpTest, TestUnprecCloverOps)
      diff = qdp_result - result;
      for(int cb=0; cb < 2; ++cb) {
        norm_diff = sqrt(norm2(diff,rb[cb]));
-       Double vol_cb = Double(Layout::vol()/2);
        QDPIO::cout << "cb=" << cb << " isign = " << isign <<" || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol_cb
            << std::endl;
        ASSERT_LT( toDouble(norm_diff), 5.0e-14);
      }
      norm_diff = sqrt(norm2(diff));
-     vol = Double(Layout::vol());
      QDPIO::cout << "Full: isign = " << isign << " || diff || = " << norm_diff << " || diff || / site = " << norm_diff/vol
          << std::endl;
      ASSERT_LT( toDouble(norm_diff), 7.0e-14);
