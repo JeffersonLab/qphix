@@ -279,7 +279,7 @@ else()
       -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}
       -G ${CMAKE_GENERATOR}
       ${CMAKE_SOURCE_DIR}/codegen
-    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments}
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} VERBOSE=1
     COMMENT "Generating Libcodegen"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
