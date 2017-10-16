@@ -10,8 +10,12 @@ import itertools
 import json
 import os
 import socket
+import sys
 
 import jinja2
+
+
+SOURCEDIR = os.path.dirname(sys.argv[0])
 
 
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
@@ -43,20 +47,20 @@ def main():
 
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
 
-    with open('isa.js') as f:
+    with open(os.path.join(SOURCEDIR, 'isa.js')) as f:
         isas = json.load(f)
 
-    with open('kernels.js') as f:
+    with open(os.path.join(SOURCEDIR, 'kernels.js')) as f:
         kernel_patterns = json.load(f)
-
-    all_header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
 
     # Setting up Jinja
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader('..')
+        loader=jinja2.FileSystemLoader(SOURCEDIR)
     )
-    complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
-    kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
+    complete_specialization = env.get_template('complete_specialization.h.j2')
+    kernel_generated_h = env.get_template('kernel_generated.h.j2')
+
+    all_header_files = []
 
     for kernel_pattern in kernel_patterns:
         kernel = kernel_pattern % {'fptype_underscore': ''}
@@ -69,7 +73,6 @@ def main():
         filename = '../generated/{}_generated.h'.format(kernel)
         write_if_changed(filename, rendered)
         all_header_files.append(os.path.join('..', os.path.basename(filename)))
-
 
     for isa, isa_data in sorted(isas.items()):
         if len(options.isa) > 0 and not isa in options.isa:
@@ -96,7 +99,7 @@ def main():
             kernel = kernel_pattern % {'fptype_underscore': ''}
 
             filename_decl = os.path.join('..', 'generated', isa, 'include', '{}_{}_decl.h'.format(kernel, isa))
-            template_decl = env.get_template('jinja/{}_decl.h.j2'.format(kernel))
+            template_decl = env.get_template('{}_decl.h.j2'.format(kernel))
 
             rendered = template_decl.render()
             write_if_changed(filename_decl, rendered)
@@ -168,7 +171,7 @@ def main():
                             source_files.append(filename_spec)
 
 
-        cmake_template = env.get_template('jinja/CMakeLists.txt.j2')
+        cmake_template = env.get_template('CMakeLists.txt.j2')
         filename_cmake = os.path.join('../generated', isa, 'CMakeLists.txt')
         rendered = cmake_template.render(
             source_files=[

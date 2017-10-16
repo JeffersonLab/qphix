@@ -120,15 +120,8 @@ target_compile_definitions(${target} PRIVATE ${yesnolist} PRIVATE ${deflist} )
 endfunction()
 
 MESSAGE(STATUS "Looking for Python")
-find_package(PythonLibs 3.0 REQUIRED)
 find_package(PythonInterp 3.0 REQUIRED)
 MESSAGE(STATUS "Python interpreter is ${PYTHON_EXECUTABLE}")
-
-MESSAGE(STATUS "Copying JINJA Directory")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-#MESSAGE(INFO "Copying Include Directory")
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 LIST(APPEND codegen_sources codegen.cc
 	    data_types.cc
@@ -371,29 +364,18 @@ foreach(targ ${target_list})
 	LIST(APPEND codegen_targets codegen_${targ})
 endforeach()
 
-#
-add_custom_target( jinja ALL
-				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/jinja/generate_files.py ${isa}
-				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
-				   COMMENT "Generating function body source code: with generate_files.py ${isa}"
-				   DEPENDS ${codegen_targets})
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja)
+add_custom_target(jinja ALL 
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/jinja/generate_files.py ${isa}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
+    COMMENT "Generating function body source code: with generate_files.py ${isa}"
+    DEPENDS ${codegen_targets})
 
 export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
 # Copy some headers over into the directory for the generated code
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
- 		   				${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
-
-if ( (${isa} STREQUAL "avx") OR (${isa} STREQUAL "avx2") )
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
-					${CMAKE_CURRENT_BINARY_DIR}/include/avx_utils.h)
-elseif( ${isa} STREQUAL "sse" )
-    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/sse_utils.h
-   				${CMAKE_CURRENT_BINARY_DIR}/include/sse_utils.h)
-elseif( ${isa} STREQUAL "qpx" )
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/qpx_utils.h
-    				${CMAKE_CURRENT_BINARY_DIR}/include/qpx_utils.h)
-endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
 
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
@@ -408,15 +390,15 @@ else()
 endif()
 message(STATUS "make_program_arguments: ${make_program_arguments}")
 
-# This custom target executes
-add_custom_target( codegen_lib ALL
-    COMMAND cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa}
-        -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-        -DCMAKE_CXX_COMPILER=${target_cxx}
-        -DCMAKE_CXX_FLAGS=${target_cxxflags}
-        -G ${CMAKE_GENERATOR}
-    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments}
-    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} install
+# This custom target executes 
+add_custom_target( codegen_lib ALL 
+    COMMAND cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_CXX_COMPILER=${target_cxx}
+    -DCMAKE_CXX_FLAGS=${target_cxxflags} 
+    -Dmain_source_dir=${CMAKE_CURRENT_SOURCE_DIR}/..
+    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
+    COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
     DEPENDS jinja)
 

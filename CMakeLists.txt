@@ -250,7 +250,6 @@ if(QPHIX_CODEGEN)
 else()
 
   MESSAGE(INFO, "Looking for Python")
-  find_package(PythonLibs 3.0 REQUIRED)
   find_package(PythonInterp 3.0 REQUIRED)
   MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
   # A build directory for building qphix-codegen
@@ -320,6 +319,7 @@ configure_file(
 )
 
 add_subdirectory(include/qphix)
+add_subdirectory(include/qphix_codegen)
 add_subdirectory(lib)
 if(${testing})
   # GTest lives here
