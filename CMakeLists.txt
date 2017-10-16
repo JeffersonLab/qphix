@@ -26,7 +26,7 @@ option(mpi_comms "Use plain MPI comms instead of QMP in the kernels" ON)
 # Codegen stuff
 set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
 set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
-set(recusive_jN 1 CACHE STRING  "select -j value for recursive make (defaults to 1)")
+set(recusive_jN '' CACHE STRING "select -j value for recursive make (defaults to 1)")
 
 ###############################################################################
 
@@ -34,11 +34,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
 
-
 # Include our own files first.
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_BINARY_DIR}/include)
-if ( ${testing} ) 
+if ( ${testing} )
   include_directories(${PROJECT_SOURCE_DIR}/external )
 endif()
 
@@ -71,7 +70,7 @@ if(QDPXX_DIR)
     list(APPEND EXT_LIBS ${QDPXX_CXX_LIBRARIES})
     set(QPHIX_USE_QDPXX TRUE)
     set(parallel_arch ${QDPXX_PARALLEL_ARCH})
-    if(${qdpalloc}) 
+    if(${qdpalloc})
       message(INFO "Using QDPAlloc for memory allocation")
       set(QPHIX_USE_QDPXX_ALLOC 1)
     endif()
@@ -110,8 +109,8 @@ if(${parallel_arch} STREQUAL "scalar")
   # set in configure file
   set(QPHIX_SCALAR 1)
   message(STATUS "Scalar Comms Mode (single node)")
-  if(${fake_comms}) 
-    message(STATUS "Fake Comms will be used") 
+  if(${fake_comms})
+    message(STATUS "Fake Comms will be used")
     set(QPHIX_DO_COMMS 1)
     set(QPHIX_FAKE_COMMS 1)
   endif()
@@ -119,7 +118,7 @@ elseif(${parallel_arch} STREQUAL "parscalar")
   message(STATUS "Parscalar comms mode (QMP + OpenMP)")
   set(QPHIX_PARSCALAR 1)
 
-  if(${fake_comms})  
+  if(${fake_comms})
     message(FATAL_ERROR "Cannot do fake comms in parscalar mode")
   endif()
 
@@ -162,12 +161,12 @@ endif()
 #             Types of Action (Clover, Wilson, Twisted Mass, ...)             #
 ###############################################################################
 
-if(${clover}) 
+if(${clover})
   message(STATUS "Enabling Clover")
   set(QPHIX_BUILD_CLOVER 1)
 endif()
 
-if(${twisted_mass}) 
+if(${twisted_mass})
   message(STATUS "Enabling Twisted-Mass")
   set(QPHIX_BUILD_TWISTED_MASS 1)
 endif()
@@ -214,7 +213,7 @@ endif()
 ###############################################################################
 
 set(${build_qdpjit_clover} FALSE)
-if(${qdpjit}) 
+if(${qdpjit})
   message(STATUS "Building with QDPJIT")
   set(QPHIX_BUILD_QDPJIT 1)
   if(${clover})
@@ -225,7 +224,7 @@ endif()
 
 ###############################################################################
 
-if(${testing}) 
+if(${testing})
   message(STATUS "Building Tests")
 else()
   message(STATUS "Not Building Tests")
@@ -233,7 +232,7 @@ endif()
 
 ###############################################################################
 
-if(${extra_messages}) 
+if(${extra_messages})
   message(STATUS "Setting Extra Messages")
   set(QPHIX_EMIT_MESSAGES 1)
 endif()
@@ -242,7 +241,7 @@ endif()
 #                            QPhiX Code Generator                             #
 ###############################################################################
 
-if(QPHIX_CODEGEN) 
+if(QPHIX_CODEGEN)
   message(STATUS "Importing QPhix Codegen from ${QPHIX_CODEGEN}")
   include_directories(${QPHIX_CODEGEN}/include)
   add_library(qphix_codegen STATIC IMPORTED)
@@ -257,18 +256,36 @@ else()
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
+  if ("${recursive_jN}" STREQUAL "")
+    set(make_program_arguments "")
+  else()
+    set(make_program_arguments "-j${recursive_jN}")
+  endif()
+  message(STATUS "make_program_arguments: ${make_program_arguments}")
+
   # The custom command will make at least this `libqphix_codegen.a`. It will
   # use the build directory (specified by the `WORKING_DIRECTORY`) When this
   # command is executed, it will also install the library to
   # `CMAKE_INSTALL_PREFIX`.
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
-                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE} -DPYTHON_LIBRARY=${PYTHON_LIBRARY} -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/codegen
-                   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
-                   COMMENT "Generating Libcodegen"
-                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
+    COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags}
+      cmake
+      -Disa=${isa}
+      -Dtarget_cxx=${CMAKE_CXX_COMPILER}
+      -Dtarget_cxxflags=${CMAKE_CXX_FLAGS}
+      -Dtarget_jN=${recursive_jN}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
+      -DPYTHON_LIBRARY=${PYTHON_LIBRARY}
+      -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}
+      -G ${CMAKE_GENERATOR}
+      ${CMAKE_SOURCE_DIR}/codegen
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments}
+    COMMENT "Generating Libcodegen"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
 
   #
-  # now add a target which depends on this file existing. 
+  # now add a target which depends on this file existing.
   # This is kind of liek an alias. I can then make later targets depend on this
   #
   add_custom_target(build_codegen DEPENDS ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a )
@@ -299,19 +316,18 @@ set(test_runner_args -by 4 -bz 4 -c 2 -sy 1 -sz 1 -pxy 1 -pxyz 0 -minct 1 -x 16 
 ###############################################################################
 configure_file(
   ${PROJECT_SOURCE_DIR}/include/qphix/qphix_config_internal.h.in.cmake
-  ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h 
+  ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h
 )
 
 add_subdirectory(include/qphix)
 add_subdirectory(lib)
-if( ${testing} )
-
+if(${testing})
   # GTest lives here
   add_subdirectory(external)
   add_subdirectory(tests-gtest)
 endif()
 add_subdirectory(tests)
 
-
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/QPhiXConfig.cmake DESTINATION cmake)
+
 # vim: sts=2 sw=2
