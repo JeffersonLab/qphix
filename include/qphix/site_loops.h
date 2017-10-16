@@ -86,7 +86,7 @@ template <typename FT, int V, int S, bool compress, typename Reduce1Functor>
 void siteLoop1Reduction(Reduce1Functor theFunctor,
                         double &reduction,
                         const Geometry<FT, V, S, compress> &geom,
-                        int n_blas_simt)
+                        int n_blas_simt, bool globalSum=true)
 {
 
   reduction = (double)0;
@@ -165,14 +165,19 @@ void siteLoop1Reduction(Reduce1Functor theFunctor,
       reduction += new_norm_array[btid][s];
     }
   }
-  CommsUtils::sumDouble(&reduction);
+
+  // If globalSum enabled by default is false each node will have its local reduction
+  if( globalSum ) {
+    CommsUtils::sumDouble(&reduction);
+  }
 }
 
 template <typename FT, int V, int S, bool compress, typename Reduce2Functor>
 void siteLoop2Reductions(Reduce2Functor theFunctor,
                          double reduction[2],
                          const Geometry<FT, V, S, compress> &geom,
-                         int n_blas_simt)
+                         int n_blas_simt,
+                         bool globalSum=true)
 {
 
   const int n_simt = geom.getNSIMT();
@@ -260,15 +265,16 @@ void siteLoop2Reductions(Reduce2Functor theFunctor,
     }
   }
   // DO A GLOBAL SUM HERE
-
-  CommsUtils::sumDoubleArray(reduction, 2);
+  if( globalSum ) {
+    CommsUtils::sumDoubleArray(reduction, 2);
+  }
 }
 
 template <typename FT, int V, int S, bool compress, typename Reduce3Functor>
 void siteLoop3Reductions(Reduce3Functor theFunctor,
                          double reduction[3],
                          const Geometry<FT, V, S, compress> &geom,
-                         int n_blas_simt)
+                         int n_blas_simt, bool globalSum=true)
 {
 
   const int n_simt = geom.getNSIMT();
@@ -362,8 +368,9 @@ void siteLoop3Reductions(Reduce3Functor theFunctor,
 
   }
   // DO A GLOBAL SUM HERE
-
-  CommsUtils::sumDoubleArray(reduction, 3);
+  if( globalSum )  {
+    CommsUtils::sumDoubleArray(reduction, 3);
+  }
 }
 
 }; // Namespace
