@@ -129,6 +129,47 @@ TEST(QPhiXFullBlasTest, FullBlasTestAXPYSpinor)
    QPhiXFullSpinor qphix_y(geom);
    qdp_pack_spinor<>(x,qphix_x,geom);
    qdp_pack_spinor<>(y,qphix_y,geom);
+   Real a(0.2);
+
+   // DO QDP++
+   y += a*x;
+
+
+   // DO QPhiX
+   double alpha = 0.2;
+   axpySpinor(alpha, qphix_x, qphix_y, geom,n_blas_simt);
+   compareSpinors<>(y , qphix_y,geom, 5.0e-14 );
+
+}
+
+TEST(QPhiXFullBlasTest, FullBlasTestCAXPYSpinor)
+{
+  // This sets up the environment and the lattice
+   const QDPXXTestEnv& testEnv = getQDPXXTestEnv();
+
+   // Get QPhiX Command Line args
+   const QPhiX::QPhiXCLIArgs& CLI = testEnv.getCLIArgs();
+
+   // Set geometry
+   Geom geom(Layout::subgridLattSize().slice(),
+       CLI.getBy(),
+       CLI.getBz(),
+       CLI.getNCores(),
+       CLI.getSy(),
+       CLI.getSz(),
+       CLI.getPxy(),
+       CLI.getPxyz(),
+       CLI.getMinCt(),
+       true);
+   int n_blas_simt = geom.getNSIMT();
+
+   LatticeFermion  x; gaussian(x);
+   LatticeFermion  y; gaussian(y);
+
+   QPhiXFullSpinor qphix_x(geom);
+   QPhiXFullSpinor qphix_y(geom);
+   qdp_pack_spinor<>(x,qphix_x,geom);
+   qdp_pack_spinor<>(y,qphix_y,geom);
    Complex a(Real(0.2));
    a +=  timesI(Real(1.5));
 
@@ -143,7 +184,6 @@ TEST(QPhiXFullBlasTest, FullBlasTestAXPYSpinor)
    compareSpinors<>(y , qphix_y,geom, 5.0e-14 );
 
 }
-
 TEST(QPhiXFullBlasTest, FullBlasTestXmYNorm2Spinor)
 {
   // This sets up the environment and the lattice
