@@ -2,7 +2,7 @@
 
 #include "qdp.h"
 #include "qphix/geometry.h"
-
+#include "qphix/full_spinor.h"
 #include "qphix/dslash_def.h"
 #include "qphix/qphix_config.h"
 
@@ -29,6 +29,16 @@ void qdp_pack_spinor(
 }
 
 template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+void qdp_pack_spinor(
+    const QDPSpinor &psi_in,
+    FullSpinor<FT, veclen, soalen, compress>& psi,
+    Geometry<FT, veclen, soalen, compress> &s)
+{
+  qdp_pack_cb_spinor(psi_in, psi.getCBData(0), s, 0);
+  qdp_pack_cb_spinor(psi_in, psi.getCBData(1), s, 1);
+}
+
+template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
 void qdp_unpack_spinor(
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *chi_even,
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *chi_odd,
@@ -39,6 +49,15 @@ void qdp_unpack_spinor(
   qdp_unpack_cb_spinor(chi_odd, chi, s, 1);
 }
 
+template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+void qdp_unpack_spinor(
+    const FullSpinor<FT,veclen,soalen,compress>& chi_qphix,
+    QDPSpinor &chi,
+    Geometry<FT, veclen, soalen, compress> &s)
+{
+  qdp_unpack_cb_spinor(chi_qphix.getCBData(0), chi, s, 0);
+  qdp_unpack_cb_spinor(chi_qphix.getCBData(1), chi, s, 1);
+}
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 // Downconvert an array of float-vecs to an array of float 16 vecs

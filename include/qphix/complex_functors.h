@@ -267,6 +267,72 @@ class BiCGStabSUpdateFunctor
 };
 
 template <typename FT, int V, int S, bool compress>
+class CAXPYFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  CAXPYFunctor(
+      double alpha_[2],
+      const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+      typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      : x(x_), y(y_)
+  {
+    alpha[0] = rep<AT, double>(alpha_[0]);
+    alpha[1] = rep<AT, double>(alpha_[1]);
+  }
+
+  ~CAXPYFunctor() {}
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    FT *ybase = &y[block][0][0][0][0];
+    const FT *xbase = &x[block][0][0][0][0];
+
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor;
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)y_spinor, ybase, nvec_in_spinor);
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_spinor, xbase, nvec_in_spinor);
+
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        // y =  alpha x + y
+        // are not mixed, so I will leave it as an alias to the cnmadd
+        AT tmp_cmpx[2][S];
+        BLASUtils::cmadd<AT, S>(
+            y_spinor[col][spin], alpha, x_spinor[col][spin], y_spinor[col][spin]);
+      }
+    }
+
+    BLASUtils::writeSpinor<FT, V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+  }
+
+ private:
+
+  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+  AT alpha[2];
+};
+
+
+
+
+
+
+
+
+template <typename FT, int V, int S, bool compress>
 class BiCGStabRXUpdateFunctor
 {
  public:

@@ -27,6 +27,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         blas.h
         blas_c.h
         blas_new_c.h
+        blas_full_spinor.h
         print_utils.h
         threadbind.h
         thread_limits.h

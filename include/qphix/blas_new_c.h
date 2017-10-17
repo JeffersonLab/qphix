@@ -177,11 +177,12 @@ template <typename FT, int V, int S, bool compress>
 void norm2Spinor(double &n2,
                  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
                  Geometry<FT, V, S, compress> &geom,
-                 int n_blas_simt)
+                 int n_blas_simt,
+                 bool globalSum=true)
 {
   Norm2Functor<FT, V, S, compress> f(x);
   siteLoop1Reduction<FT, V, S, compress, Norm2Functor<FT, V, S, compress>>(
-      f, n2, geom, n_blas_simt);
+      f, n2, geom, n_blas_simt,globalSum);
 }
 
 /**
@@ -230,13 +231,27 @@ void xmyNorm2Spinor(typename Geometry<FT, V, S, compress>::FourSpinorBlock *res,
                     typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
                     double &n2res,
                     const Geometry<FT, V, S, compress> &geom,
-                    int n_blas_simt)
+                    int n_blas_simt,
+                    bool globalSum=true)
 {
   XMYNorm2Functor<FT, V, S, compress> f(res, x, y);
   siteLoop1Reduction<FT, V, S, compress, XMYNorm2Functor<FT, V, S, compress>>(
-      f, n2res, geom, n_blas_simt);
+      f, n2res, geom, n_blas_simt, globalSum);
 } // End of Function.
 
+
+template <typename FT, int V, int S, bool compress>
+void xmy2Norm2Spinor(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+                      typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
+                      double &n2res,
+                      const Geometry<FT, V, S, compress> &geom,
+                      int n_blas_simt,
+                      bool globalSum=true)
+{
+  XMY2Norm2Functor<FT, V, S, compress> f(x, y);
+  siteLoop1Reduction<FT, V, S, compress, XMY2Norm2Functor<FT, V, S, compress>>(
+      f, n2res, geom, n_blas_simt, globalSum);
+} // End of Function.
 /**
   \see The article \ref intel-cpp-compiler-workaround contains an explanation
   of the `typename Spinor1`, `enable_if`, and `is_same` constructs.
@@ -399,14 +414,15 @@ void innerProduct(double results[2],
                   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
                   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
                   const Geometry<FT, V, S, compress> &geom,
-                  int n_blas_simt)
+                  int n_blas_simt,
+                  bool globalSum=true)
 {
   results[0] = (double) 0;
   results[1] = (double) 0;
 
   InnerProductFunctor<FT, V, S, compress> f(x, y);
   siteLoop2Reductions<FT, V, S, compress, InnerProductFunctor<FT, V, S, compress>>(
-      f, results, geom, n_blas_simt);
+      f, results, geom, n_blas_simt, globalSum);
 }
 
 
@@ -566,6 +582,23 @@ void bicgstab_s_update(
                       S,
                       compress,
                       BiCGStabSUpdateFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
+
+template <typename FT, int V, int S, bool compress>
+void caxpySpinor(
+    double alpha[2],
+    const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+  CAXPYFunctor<FT, V, S, compress> f(alpha, x, y);
+  siteLoopNoReduction<FT,
+                      V,
+                      S,
+                      compress,
+                      CAXPYFunctor<FT, V, S, compress>>(
       f, geom, n_blas_simt);
 }
 

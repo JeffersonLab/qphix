@@ -29,6 +29,10 @@ if( ${testing})
      add_test(NAME dslash-dir-test-Z COMMAND mpirun -n 2 ./dslash_dir_test ${test_runner_args} -x 8 -y 4 -z 8 -t 4 -geom 1 1 2 1)
      add_test(NAME dslash-dir-test-Y COMMAND mpirun -n 2 ./dslash_dir_test ${test_runner_args} -x 8 -y 8 -z 4 -t 4 -geom 1 2 1 1)
      add_test(NAME dslash-dir-test-X COMMAND mpirun -n 2 ./dslash_dir_test ${test_runner_args} -x 16 -y 4 -z 4 -t 4 -geom 2 1 1 1)
+         
+     add_executable(full_blas_test full_blas_test.cc)
+     target_link_libraries(full_blas_test testlib qphix_solver gtest_all gtestlib ${EXT_LIBS})
+     add_test(NAME full-blas-test COMMAND mpirun -n 1 ./full_blas_test ${test_runner_args} -x 8 -y 4 -z 4 -t 4 -geom 1 1 1 1)
                     
  endif()
 endif()
