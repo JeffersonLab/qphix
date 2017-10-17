@@ -406,7 +406,7 @@ if ! [[ -f Makefile ]]; then
     fi
 fi
 fold_end $repo.configure
-make-make-install VERBOSE=1
+make-make-install #VERBOSE=1
 popd
 
 ###############################################################################
