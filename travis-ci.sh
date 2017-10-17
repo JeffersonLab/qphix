@@ -66,7 +66,7 @@ python3 -c 'print("Hello, World!")'
 
 # Ensure that we actually get Python 3 when we call it.
 which python3
-python3 -c 'import sys; assert sys.version_info.major == 3'
+python3 -c 'import sys; print(sys.version_info); assert sys.version_info.major == 3'
 
 # Travis CI has this curious “shim” stuff, check that its version also makes sense.
 /opt/pyenv/shims/python3 -c 'import sys; assert sys.version_info.major == 3'
