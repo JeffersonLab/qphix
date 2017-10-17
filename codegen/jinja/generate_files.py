@@ -128,8 +128,7 @@ def main():
 
                         rendered = complete_specialization.render(
                             kernel_base=kernel,
-                            **template_param,
-                        )
+                            **template_param)
                         filename_spec = os.path.join(
                             '../generated',
                             isa,
