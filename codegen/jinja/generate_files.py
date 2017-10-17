@@ -155,8 +155,7 @@ def main():
                                 tbc_ts=tbc_ts,
                                 tbc_true_false=tbc_true_false,
                                 kernel_base=kernel + '_tbc',
-                                **template_param,
-                            )
+                                **template_param)
                             filename_spec = os.path.join(
                                 '../generated',
                                 isa,
