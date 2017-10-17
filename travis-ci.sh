@@ -57,7 +57,19 @@ sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo apt-get update
 sudo apt-get install -y "${ubuntu_packages[@]}"
 
+echo "$PATH"
+
 python3 -m pip install --user jinja2
+
+# Make sure that Python is available.
+python3 -c 'print("Hello, World!")'
+
+# Ensure that we actually get Python 3 when we call it.
+which python3
+python3 -c 'import sys; assert sys.version_info.major == 3'
+
+# Travis CI has this curious “shim” stuff, check that its version also makes sense.
+/opt/pyenv/shims/python3 -c 'import sys; assert sys.version_info.major == 3'
 
 ls -l /usr/lib/ccache
 fold_end update_gcc
