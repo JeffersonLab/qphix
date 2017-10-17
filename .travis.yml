@@ -5,6 +5,9 @@ script: ./travis-ci.sh
 dist: trusty
 sudo: true
 
+python:
+    - "3.5"
+
 notifications:
     slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
 
