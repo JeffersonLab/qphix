@@ -106,7 +106,7 @@ void innerProductSpinor(double results[2],
 template<typename FT, int V, int S, bool compress>
 void norm2Spinor(double &n2,
                  const FullSpinor<FT,V,S,compress>& x,
-                 Geometry<FT, V, S, compress> &geom,
+                 const Geometry<FT, V, S, compress> &geom,
                  int n_blas_simt)
 {
   double norm_cb[2] = {0,0};

@@ -176,7 +176,7 @@ void axpby(const double alpha,
 template <typename FT, int V, int S, bool compress>
 void norm2Spinor(double &n2,
                  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
-                 Geometry<FT, V, S, compress> &geom,
+                 const Geometry<FT, V, S, compress> &geom,
                  int n_blas_simt,
                  bool globalSum=true)
 {
