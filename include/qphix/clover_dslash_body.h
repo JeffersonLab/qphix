@@ -7,8 +7,8 @@
 #include "qphix/print_utils.h"
 #include "qphix/kernel_selector.h"
 
-#include <qphix_codegen/dslash_generated.h>
-#include <qphix_codegen/clov_dslash_generated.h>
+#include "qphix_codegen/dslash_generated.h"
+#include "qphix_codegen/clov_dslash_generated.h"
 
 namespace QPhiX
 {

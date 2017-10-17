@@ -8,8 +8,8 @@
 #include <immintrin.h>
 #include <omp.h>
 
-#include <qphix_codegen/dslash_generated.h>
-#include <qphix_codegen/tm_dslash_generated.h>
+#include "qphix_codegen/dslash_generated.h"
+#include "qphix_codegen/tm_dslash_generated.h"
 
 namespace QPhiX
 {

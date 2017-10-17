@@ -64,7 +64,7 @@ includes with the Jinja2 include.
 #define SOA {{ SOA }}
 #define COMPRESS12 {{ COMPRESS12 }}
 namespace QPhiX {
-{% include 'jinja/%s_spec.h.j2'|format(kernel_base) %}
+{% include '%s_spec.h.j2'|format(kernel_base) %}
 }
 #undef FPTYPE
 #undef VEC

@@ -2,8 +2,7 @@
 
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
-
-#include <qphix_codegen/decl_common.h>
+#include "qphix_codegen/decl_common.h"
 
 #include <cstdlib>
 #include <stdexcept>
