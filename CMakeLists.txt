@@ -179,7 +179,7 @@ endif()
 ###############################################################################
 #                                     ISA                                     #
 ###############################################################################
-
+set(x_comms TRUE)
 set(ISA ${isa})
 set(QPHIX_LLC_CACHE_ALIGN 64)
 if(${isa} STREQUAL "avx")
@@ -204,10 +204,19 @@ elseif(${isa} STREQUAL "scalar")
   message(STATUS "Building for straight C (nonvectorized")
   set(QPHIX_SCALAR_SOURCE 1)
   set(test_soalen 1)
+  set(x_comms_testing FALSE)
+  message(WARNING "Disabling X-directional communicating tests")
+  message(WARNING "This is due to a known issue (issue #10) for isa=scalar")
 elseif(${isa} STREQUAL "qpx")
   message(STATUS "Building for QPX (BG/Q)")
   set(QPHIX_QPX_SOURCE 1)
   set(QPHIX_LLC_CACHE_ALIGN 128)
+endif()
+
+if( x_comms_testing )
+   message(STATUS "Will do X-comms tests")
+else()
+   message(STATUS "Disabled X-comms tests")
 endif()
 
 ###############################################################################

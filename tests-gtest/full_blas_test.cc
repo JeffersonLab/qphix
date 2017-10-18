@@ -302,7 +302,7 @@ TEST(QPhiXFullBlasTest, FullBlasNorm)
 
    double diff = abs( toDouble(n)-n_qphix);
 
-   ASSERT_LT(diff, 5.0e-12);
+   ASSERT_LT(diff, 1.0e-10);
 }
 
 int main(int argc, char *argv[])
