@@ -34,7 +34,7 @@ void qdp_pack_gauge(
     const QDPGauge &u,
     typename Geometry<FT, veclen, soalen, compress>::SU3MatrixBlock *u_cb0,
     typename Geometry<FT, veclen, soalen, compress>::SU3MatrixBlock *u_cb1,
-    Geometry<FT, veclen, soalen, compress> &s)
+    const Geometry<FT, veclen, soalen, compress> &s)
 {
   // Get the subgrid latt size.
   int Nt = s.Nt();
@@ -150,7 +150,7 @@ template <typename FT, int veclen, int soalen, bool compress, typename ClovTerm>
 void qdp_pack_clover(
     const ClovTerm &qdp_clov_in,
     typename ClovDslash<FT, veclen, soalen, compress>::CloverBlock *cl_out,
-    Geometry<FT, veclen, soalen, compress> &s,
+    const Geometry<FT, veclen, soalen, compress> &s,
     int cb)
 {
   // Get the subgrid latt size.
@@ -232,7 +232,7 @@ template <typename FT, int veclen, int soalen, bool compress, typename ClovTerm>
 void qdp_pack_full_clover(
     const ClovTerm &qdp_clov_in,
     typename TMClovDslash<FT, veclen, soalen, compress>::FullCloverBlock *cl_out,
-    Geometry<FT, veclen, soalen, compress> &s,
+    const Geometry<FT, veclen, soalen, compress> &s,
     int cb)
 {
   int index[2][15] = {{1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5},
@@ -330,7 +330,7 @@ template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor
 void qdp_pack_cb_spinor(
     const QDPSpinor &psi_in,
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *psi,
-    Geometry<FT, veclen, soalen, compress> &s,
+    const Geometry<FT, veclen, soalen, compress> &s,
     int cb)
 {
   // Get the subgrid latt size.
@@ -399,7 +399,7 @@ template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor
 void qdp_unpack_cb_spinor(
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *chi_packed,
     QDPSpinor &chi,
-    Geometry<FT, veclen, soalen, compress> &s,
+    const Geometry<FT, veclen, soalen, compress> &s,
     int cb)
 {
   int Nt = s.Nt();
