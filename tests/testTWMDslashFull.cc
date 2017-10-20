@@ -567,10 +567,12 @@ void TestTMDslash::testTWMBiCGStab(int t_bc)
   unsigned long mv_apps = 0;
   InvBiCGStab<T, V, S, compress> solver(M, max_iters);
 
+  int const cb = 0;
+
   for (int isign = 1; isign >= -1; isign -= 2) {
     double start = omp_get_wtime();
-    solver(hs_qphix1[0],
-           hs_source[0],
+    solver(hs_qphix1[cb],
+           hs_source[cb],
            rsd_target,
            niters,
            rsd_final,
@@ -578,7 +580,7 @@ void TestTMDslash::testTWMBiCGStab(int t_bc)
            mv_apps,
            isign,
            verbose,
-           0);
+           cb);
     double end = omp_get_wtime();
     hs_qphix1.unpack();
 
@@ -590,11 +592,11 @@ void TestTMDslash::testTWMBiCGStab(int t_bc)
                        Mu,
                        MuInv,
                        alpha,
-                       0.25,
+                       beta,
                        isign,
-                       isign);
+                       cb);
 
-    expect_near(hs_qdp1, hs_source, 1e-8, geom, 0, "TM Wilson BiCGStab");
+    expect_near(hs_qdp1, hs_source, 1e-8, geom, cb, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
@@ -908,15 +910,15 @@ void TestTMDslash::qdp_dslash(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
-                                       QdpSpinor const &chi,
-                                       QdpSpinor const &psi,
-                                       QDP::multi1d<QdpGauge> const &u_aniso,
-                                       double const Mu,
-                                       double const MuInv,
-                                       double const alpha,
-                                       double const beta,
-                                       int const isign,
-                                       int const target_cb)
+                                  QdpSpinor const &chi,
+                                  QdpSpinor const &psi,
+                                  QDP::multi1d<QdpGauge> const &u_aniso,
+                                  double const Mu,
+                                  double const MuInv,
+                                  double const alpha,
+                                  double const beta,
+                                  int const isign,
+                                  int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 
@@ -931,14 +933,14 @@ void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_apply_operator(QdpSpinor &out,
-                                           QdpSpinor const &in,
-                                           QDP::multi1d<QdpGauge> const &u_aniso,
-                                           double const Mu,
-                                           double const MuInv,
-                                           double const alpha,
-                                           double const beta,
-                                           int const isign,
-                                           int const target_cb)
+                                      QdpSpinor const &in,
+                                      QDP::multi1d<QdpGauge> const &u_aniso,
+                                      double const Mu,
+                                      double const MuInv,
+                                      double const alpha,
+                                      double const beta,
+                                      int const isign,
+                                      int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 
