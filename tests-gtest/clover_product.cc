@@ -6,6 +6,7 @@ using namespace QPhiX;
 
 #include "../tests/veclen.h"
 #include "../tests/tolerance.h"
+#include "compare_spinors.h"
 #include "../tests/clover_fermact_params_w.h"
 #include "../tests/clover_term.h"
 

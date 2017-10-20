@@ -5,6 +5,7 @@ include_directories(${PROJECT_SOURCE_DIR}/external)
 
 if( ${testing})
   if ( ${QDPXX_CXX_FOUND} )
+     list(APPEND HEADERS compare_spinors.h)
      add_executable(tests_g
          main.cc
          ndtm_herm.cc
