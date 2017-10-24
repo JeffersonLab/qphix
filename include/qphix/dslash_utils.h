@@ -122,7 +122,7 @@ inline void BUFFER_FREE(void *addr, size_t length)
     break;
   case EINVAL:
     QPhiX::localPrintf("munmap returned EINVAL\n");
-    abort();
+    std::abort();
     break;
   default:
     break;

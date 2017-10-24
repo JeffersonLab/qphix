@@ -2,7 +2,8 @@
 
 #include "qphix/linearOp.h"
 #include "qphix/tm_clov_dslash_def.h"
-
+#include "qphix/print_utils.h"
+#include <cstdlib>
 #include <memory>
 
 namespace QPhiX
@@ -59,6 +60,25 @@ class EvenOddNDTMWilsonReuseOperator
     D->two_flaw_dslash(tmp, in, u[1], mu, mu_inv, isign, 1);
     D->two_flaw_dslashAChiMinusBDPsi(
         res, tmp, in, u[0], mu, mass_factor_beta, isign, 0);
+  }
+
+  void M_offdiag(FourSpinorBlock *res[2],
+                 const FourSpinorBlock *const in[2],
+                 int isign,
+                 int target_cb) const override
+  {
+    masterPrintf("M_ee_inv not yet implemented for this operator\n");
+    std::abort();
+  }
+
+  // M_ee_inv is always Hermitian so no need for isign?
+  // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
+  void M_ee_inv(FourSpinorBlock *res[2],
+                const FourSpinorBlock *const in[2],
+                int isign) const override
+  {
+    masterPrintf("M_ee_inv not yet implemented for this operator\n");
+    std::abort();
   }
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry()

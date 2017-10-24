@@ -1,6 +1,8 @@
 list(APPEND header_files qphix_config.h dslash_utils.h
         arith_type.h
         abs_solver.h
+        unprec_solver_wrapper.h
+        full_spinor.h
         geometry.h
         comm.h
         dslash_def.h
@@ -11,6 +13,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         wilson.h
         invcg.h
         invbicgstab.h
+				invmr.h
         inv_richardson_multiprec.h
         minvcg.h
         linearOp.h
@@ -21,8 +24,10 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         complex_functors.h
         kernel_selector.h
         site_loops.h
+        blas.h
         blas_c.h
         blas_new_c.h
+        blas_full_spinor.h
         print_utils.h
         threadbind.h
         thread_limits.h
@@ -34,7 +39,7 @@ if( ${QDPXX_CXX_FOUND} )
 endif()
 
 if( ${clover} )
-	list(APPEND header_files clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h)
+	list(APPEND header_files clover.h clover_dslash_def.h clover_dslash_body.h clov_face.h clover_product.h)
 endif()
 
 if( ${twisted_mass} ) 

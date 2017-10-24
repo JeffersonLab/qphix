@@ -21,7 +21,7 @@ if( ${testing} )
        endif()
      endif()
     
-     add_library(testlib ${framework_sources})
+     add_library(testlib ${framework_sources} ${framework_headers} ${header_files})
     target_link_libraries(testlib qphix_codegen)
     
     add_executable(time_dslash_noqdp time_dslash_noqdp.cc timeDslashNoQDP.h timeDslashNoQDP.cc)

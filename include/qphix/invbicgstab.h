@@ -86,30 +86,52 @@ class InvBiCGStab : public AbstractSolver<FT,
                   unsigned long &mv_apps,
                   int isign,
                   bool verbose,
-                  int cb = 1) const override
+                  int cb = 1,
+		  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const override
   {
     site_flops = 0;
     mv_apps = 0;
-    double rhs_sq;
+    double rhs_sq = 0;
     double r_norm;
     // Double chi_sq = norm2(chi,s)
     norm2Spinor<FT, V, S, compress12, num_flav>(rhs_sq, rhs, geom, norm2Threads);
     site_flops += 4 * 12 * num_flav;
 
-    double rsd_sq = rhs_sq * RsdTarget * RsdTarget;
+    double rsd_sq = RsdTarget * RsdTarget;
+    if ( residType == QPhiX::RELATIVE) {
+      if( verbose ) {
+        masterPrintf("BICGSTAB: Relative Residuum requested\n");
+      }
+      rsd_sq *= rhs_sq;
+    }
+    else {
+      if( verbose ){
+          	masterPrintf("BICGSTAB: Absolute Residuum requested\n");
+      }
+    }
+
     if (verbose)
-      masterPrintf("BICGSTAB: ||b||^2 = %e Target Rsd= %e\n", rhs_sq, rsd_sq);
+    	masterPrintf("BICGSTAB: Target Rsd= %e\n", rsd_sq);
+
 
     // Compute r=r0=rhs - A x
     // A(r0,psi,isign)
     M(r0, x, isign, cb);
-    norm2Spinor<FT, V, S, compress12, num_flav>(r_norm, r0, geom, norm2Threads);
     mv_apps++;
 
-    // r = chi - r0
+    // r = chi - r0  -- store result in r0
     bicgstab_xmy<FT, V, S, compress12, num_flav>(rhs, r0, geom, xmyThreads);
     site_flops += 24 * num_flav;
 
+    // Check norm of r0
+    norm2Spinor<FT,V,S,compress12, num_flav>(r_norm, r0, geom, norm2Threads);
+    if( r_norm < rsd_sq ) {
+    	masterPrintf("BICGSTAB converged at iter 0: ||r||=%16.8e target=%16.8e\n",
+    			  	  sqrt(r_norm), sqrt(rsd_sq) );
+    	rsd_sq_final = r_norm;
+    	n_iters = 0;
+        return;
+    }
     // r = r0
     copySpinor<FT, V, S, compress12, num_flav>(r, r0, geom, copyThreads);
 
