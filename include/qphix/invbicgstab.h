@@ -99,12 +99,15 @@ class InvBiCGStab : public AbstractSolver<FT,
 
     double rsd_sq = RsdTarget * RsdTarget;
     if ( residType == QPhiX::RELATIVE) {
-    	masterPrintf("BICGSTAB: Relative Residuum requested\n");
-        rsd_sq *= rhs_sq;
+      if( verbose ) {
+        masterPrintf("BICGSTAB: Relative Residuum requested\n");
+      }
+      rsd_sq *= rhs_sq;
     }
     else {
-    	masterPrintf("BICGSTAB: Absolute Residuum requested\n");
-
+      if( verbose ){
+          	masterPrintf("BICGSTAB: Absolute Residuum requested\n");
+      }
     }
 
     if (verbose)
