@@ -45,9 +45,16 @@ def write_if_changed(filename, content_new):
     with open(filename, 'w') as f:
         f.write(content_new)
 
+    print('Wrote {:07d} chars to {}'.format(len(content_new), filename, ))
+
 
 def main():
     options = _parse_args()
+
+    skip_build = any(options.do_skip == word for word in ['ON', 'TRUE', 'YES'])
+
+    print('options.do_skip:', options.do_skip)
+    print('skip_build:', skip_build)
 
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
 
@@ -124,6 +131,7 @@ def main():
                             'kernel_pattern': kernel_pattern,
                             'extra_includes_local': isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
                             'extra_includes_global': isa_data['extra_includes_global'],
+                            'skip_build': skip_build,
                         }
 
                         rendered = complete_specialization.render(
@@ -193,6 +201,7 @@ def _parse_args():
     '''
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('isa', nargs='+')
+    parser.add_argument('--do-skip')
     options = parser.parse_args()
 
     return options
