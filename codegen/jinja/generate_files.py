@@ -51,7 +51,7 @@ def write_if_changed(filename, content_new):
 def main():
     options = _parse_args()
 
-    skip_build = options.do_skip == 'ON'
+    skip_build = any(options.do_skip == word for word in ['ON', 'TRUE', 'YES'])
 
     print('options.do_skip:', options.do_skip)
     print('skip_build:', skip_build)
