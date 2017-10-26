@@ -53,7 +53,7 @@ def main():
 
     skip_build = options.do_skip == 'ON'
 
-    print('options.do_skip:', options.to_skip)
+    print('options.do_skip:', options.do_skip)
     print('skip_build:', skip_build)
 
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
