@@ -35,7 +35,7 @@ void zeroSpinor(FullSpinor<FT,V,S,compress>& result,
 }
 
 template<typename FT, int V, int S, bool compress>
-void axSpinor(const double& alpha,
+void axSpinor(const double alpha,
               FullSpinor<FT,V,S,compress>& x,
               const Geometry<FT,V,S,compress>& geom,
               int n_blas_simt)
