@@ -357,6 +357,58 @@ class AXYFunctor
 };
 
 template <typename FT, int V, int S, bool compress>
+class AXFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  AXFunctor(double a_,
+            typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_)
+      : a(rep<AT, double>(a_)), x(x_)
+  {
+  }
+  ~AXFunctor() {}
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    FT *xbase = &x[block][0][0][0][0];
+
+// Temporary storage to stream into and out of
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor;
+
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_spinor, xbase, nvec_in_spinor);
+
+    // Now we are hopefully both in L1 and in the right layout so
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        for (int reim = 0; reim < 2; reim++) {
+#pragma omp simd aligned(x_spinor : QPHIX_LLC_CACHE_ALIGN)
+          for (int i = 0; i < S; i++) {
+            x_spinor[col][spin][reim][i] *= a;
+          }
+        }
+      }
+    }
+
+    BLASUtils::streamOutSpinor<FT, V>(xbase, (const AT *)x_spinor, nvec_in_spinor);
+  }
+
+ private:
+  AT a;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
+};
+
+
+template <typename FT, int V, int S, bool compress>
 class Norm2Functor
 {
  public:

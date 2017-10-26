@@ -85,6 +85,18 @@ void axy(const double alpha,
 }
 
 template <typename FT, int V, int S, bool compress>
+void ax(const double alpha,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+
+  AXFunctor<FT, V, S, compress> f(alpha, x);
+  siteLoopNoReduction<FT, V, S, compress, AXFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
+
+template <typename FT, int V, int S, bool compress>
 void aypx(const double alpha,
           const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
           typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,

@@ -40,7 +40,7 @@ void compareSpinors(const LatticeFermion& reference, const QPhiXFullSpinor& qphi
         << " || r || / site = " << norm_diff_cb / vol_cb << "\n";
   }
   QDPIO::cout << "Full: || r || = " << norm_diff << " || r || / site = " << norm_diff_per_site << "\n";
-  // ASSERT_LT( toDouble(norm_diff), tol);
+  ASSERT_LT( toDouble(norm_diff), tol);
 }
 
 TEST(QPhiXFullBlasTest, FullBlasTestCopySpinor)
@@ -303,6 +303,44 @@ TEST(QPhiXFullBlasTest, FullBlasNorm)
    double diff = abs( toDouble(n)-n_qphix);
 
    ASSERT_LT(diff, 1.0e-10);
+}
+
+
+TEST(QPhiXFullBlasTest, FullAx)
+{
+  // This sets up the environment and the lattice
+   const QDPXXTestEnv& testEnv = getQDPXXTestEnv();
+
+   // Get QPhiX Command Line args
+   const QPhiX::QPhiXCLIArgs& CLI = testEnv.getCLIArgs();
+
+   // Set geometry
+   Geom geom(Layout::subgridLattSize().slice(),
+       CLI.getBy(),
+       CLI.getBz(),
+       CLI.getNCores(),
+       CLI.getSy(),
+       CLI.getSz(),
+       CLI.getPxy(),
+       CLI.getPxyz(),
+       CLI.getMinCt(),
+       true);
+   int n_blas_simt = geom.getNSIMT();
+
+   LatticeFermion  x; gaussian(x);
+
+   QPhiXFullSpinor qphix_x(geom);
+
+
+   qdp_pack_spinor<>(x,qphix_x,geom);
+   double alpha = 6.2;
+   Real qalpha(alpha);
+
+
+   axSpinor<>(alpha,qphix_x,geom,n_blas_simt);
+   x *= qalpha;
+   compareSpinors<>(x , qphix_x,geom, 5.0e-14 );
+
 }
 
 int main(int argc, char *argv[])
