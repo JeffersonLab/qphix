@@ -7,6 +7,7 @@ set(isa "" CACHE STRING "select ISA to generate for")
 set(target_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a")
 set(target_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING "select target CXXFLAGS for building libqphix-codege.a")
 set(target_jN 1 CACHE STRING "select -j parameter for making target")
+option(skip_build "Developer only: Reduce building of certain kernels for faster build" OFF)
 
 function(setup_defs target precision soalen lowprec)
 
@@ -366,7 +367,9 @@ endforeach()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja)
 add_custom_target(jinja ALL 
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/jinja/generate_files.py ${isa}
+    COMMAND ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/jinja/generate_files.py ${isa}
+    --do-skip "${skip_build}"
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
     COMMENT "Generating function body source code: with generate_files.py ${isa}"
     DEPENDS ${codegen_targets})

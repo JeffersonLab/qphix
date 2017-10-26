@@ -49,6 +49,8 @@ def write_if_changed(filename, content_new):
 def main():
     options = _parse_args()
 
+    skip_build = options.do_skip == 'ON'
+
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
 
     with open(os.path.join(SOURCEDIR, 'isa.js')) as f:
@@ -124,6 +126,7 @@ def main():
                             'kernel_pattern': kernel_pattern,
                             'extra_includes_local': isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
                             'extra_includes_global': isa_data['extra_includes_global'],
+                            'skip_build': skip_build,
                         }
 
                         rendered = complete_specialization.render(
@@ -193,6 +196,7 @@ def _parse_args():
     '''
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('isa', nargs='+')
+    parser.add_argument('--do-skip')
     options = parser.parse_args()
 
     return options

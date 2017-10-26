@@ -27,6 +27,7 @@ option(mpi_comms "Use plain MPI comms instead of QMP in the kernels" ON)
 set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
 set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
 set(recusive_jN '' CACHE STRING "select -j value for recursive make (defaults to 1)")
+option(skip_build "Developer only: Reduce building of certain kernels for faster build" OFF)
 
 ###############################################################################
 
@@ -286,6 +287,7 @@ else()
       -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
       -DPYTHON_LIBRARY=${PYTHON_LIBRARY}
       -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}
+      -Dskip_build=${skip_build}
       -G ${CMAKE_GENERATOR}
       ${CMAKE_SOURCE_DIR}/codegen
     COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} VERBOSE=1
