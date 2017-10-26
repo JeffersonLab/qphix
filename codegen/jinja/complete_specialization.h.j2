@@ -25,7 +25,7 @@
 insufficient for compiling all 16 variants of the twisted boundary conditions.
 Therefore we only build one of them really, the other ones are empty functions.
 #}
-{% if not skip_build or tbc_ts == 'ttst' -%}
+{% if not skip_build or tbc_ts == 'ttst' or isa == 'scalar' or isa == 'avx' -%}
     #include "{{ filename }}"
 {% endif -%}
 {%- endmacro -%}
