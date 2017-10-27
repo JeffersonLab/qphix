@@ -97,6 +97,31 @@ void ax(const double alpha,
 }
 
 template <typename FT, int V, int S, bool compress>
+void ypeqx(typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+
+  YPEQXFunctor<FT, V, S, compress> f(x,y);
+  siteLoopNoReduction<FT, V, S, compress, YPEQXFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
+
+template <typename FT, int V, int S, bool compress>
+void ymeqx(typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
+    typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,
+    const Geometry<FT, V, S, compress> &geom,
+    int n_blas_simt)
+{
+
+  YMEQXFunctor<FT, V, S, compress> f(x,y);
+  siteLoopNoReduction<FT, V, S, compress, YMEQXFunctor<FT, V, S, compress>>(
+      f, geom, n_blas_simt);
+}
+
+
+template <typename FT, int V, int S, bool compress>
 void aypx(const double alpha,
           const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x,
           typename Geometry<FT, V, S, compress>::FourSpinorBlock *y,

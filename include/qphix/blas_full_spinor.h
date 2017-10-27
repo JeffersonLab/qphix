@@ -71,6 +71,30 @@ void axpySpinor(double alpha,
   }
 }
 
+// Real AXPY
+template<typename FT, int V, int S, bool compress>
+void ypeqxSpinor(const FullSpinor<FT,V,S,compress>& x,
+    FullSpinor<FT,V,S,compress>& y,
+    const Geometry<FT,V,S,compress>& geom,
+    int n_blas_simt)
+{
+  for(int cb=0; cb < 2; ++cb) {
+    ypeqx<FT,V,S,compress>(x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+  }
+}
+
+// Real AXPY
+template<typename FT, int V, int S, bool compress>
+void ymeqxSpinor(const FullSpinor<FT,V,S,compress>& x,
+    FullSpinor<FT,V,S,compress>& y,
+    const Geometry<FT,V,S,compress>& geom,
+    int n_blas_simt)
+{
+  for(int cb=0; cb < 2; ++cb) {
+    ymeqx<FT,V,S,compress>(x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+  }
+}
+
 // XmyNorm2
 template<typename FT, int V, int S, bool compress>
 void xmy2Norm2Spinor( const FullSpinor<FT,V,S,compress>& x,

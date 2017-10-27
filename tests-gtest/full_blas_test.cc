@@ -343,6 +343,87 @@ TEST(QPhiXFullBlasTest, FullAx)
 
 }
 
+TEST(QPhiXFullBlasTest, FullYPeqX)
+{
+  // This sets up the environment and the lattice
+   const QDPXXTestEnv& testEnv = getQDPXXTestEnv();
+
+   // Get QPhiX Command Line args
+   const QPhiX::QPhiXCLIArgs& CLI = testEnv.getCLIArgs();
+
+   // Set geometry
+   Geom geom(Layout::subgridLattSize().slice(),
+       CLI.getBy(),
+       CLI.getBz(),
+       CLI.getNCores(),
+       CLI.getSy(),
+       CLI.getSz(),
+       CLI.getPxy(),
+       CLI.getPxyz(),
+       CLI.getMinCt(),
+       true);
+   int n_blas_simt = geom.getNSIMT();
+
+   LatticeFermion  x; gaussian(x);
+   LatticeFermion  y; gaussian(y);
+
+   QPhiXFullSpinor qphix_x(geom);
+   QPhiXFullSpinor qphix_y(geom);
+
+
+   qdp_pack_spinor<>(x,qphix_x,geom);
+
+   qdp_pack_spinor<>(y,qphix_y,geom);
+
+
+   ypeqxSpinor<>(qphix_x,qphix_y,geom,n_blas_simt);
+   y += x;
+
+   compareSpinors<>(x , qphix_x,geom, 5.0e-14 );
+   compareSpinors<>(y , qphix_y,geom, 5.0e-14 );
+
+}
+
+TEST(QPhiXFullBlasTest, FullYMeqX)
+{
+  // This sets up the environment and the lattice
+   const QDPXXTestEnv& testEnv = getQDPXXTestEnv();
+
+   // Get QPhiX Command Line args
+   const QPhiX::QPhiXCLIArgs& CLI = testEnv.getCLIArgs();
+
+   // Set geometry
+   Geom geom(Layout::subgridLattSize().slice(),
+       CLI.getBy(),
+       CLI.getBz(),
+       CLI.getNCores(),
+       CLI.getSy(),
+       CLI.getSz(),
+       CLI.getPxy(),
+       CLI.getPxyz(),
+       CLI.getMinCt(),
+       true);
+   int n_blas_simt = geom.getNSIMT();
+
+   LatticeFermion  x; gaussian(x);
+   LatticeFermion  y; gaussian(y);
+
+   QPhiXFullSpinor qphix_x(geom);
+   QPhiXFullSpinor qphix_y(geom);
+
+
+   qdp_pack_spinor<>(x,qphix_x,geom);
+
+   qdp_pack_spinor<>(y,qphix_y,geom);
+
+
+   ymeqxSpinor<>(qphix_x,qphix_y,geom,n_blas_simt);
+   y -= x;
+
+   compareSpinors<>(x , qphix_x,geom, 5.0e-14 );
+   compareSpinors<>(y , qphix_y,geom, 5.0e-14 );
+
+}
 int main(int argc, char *argv[])
 {
   return QDPXXTestMain(&argc, argv);
