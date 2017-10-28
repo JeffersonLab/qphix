@@ -93,6 +93,7 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
   }
   initedP = true;
 
+#if 0
   // Copy the remaining arguments back to the argument list. This function will have
   // consumed the arguments that it has understood.
   for (int i = 0; i < argc; ++i) {
@@ -102,6 +103,7 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
   for (int i = 0; i < new_argv.size(); ++i) {
     argv[i] = new_argv[i];
   }
+#endif
 }
 
 void QPhiXCLIArgs::printHelp() const
