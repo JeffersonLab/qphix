@@ -522,6 +522,21 @@ class Comms
         MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
   }
 
+  inline void waitAllComms()
+  {
+#ifndef QPHIX_MPI_COMMS_CALLS
+    if (QMP_wait_all(mh_recvFromDir, 2*numNonLocalDir_) != QMP_SUCCESS) {
+      QMP_error("Failed during QMP_waitall (waitAllComms)\n");
+      QMP_abort(1);
+    }
+#else
+    if (MPI_Waitall(2*numNonLocalDir_, reqRecvFromDir, MPI_STATUS_IGNORE) != QMP_SUCCESS) {
+      QMP_error("Wait on recv from dir failed\n");
+      QMP_abort(1);
+    }
+#endif
+  }
+
   inline bool localX() const { return localDir_[0]; }
   inline bool localY() const { return localDir_[1]; }
 

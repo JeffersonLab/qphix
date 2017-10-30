@@ -136,10 +136,12 @@ class Geometry
            int PadXY_,
            int PadXYZ_,
            int MinCt_,
+           int NCommCores_ = 0,
+           int NCommThreads_ = 0,
            bool const verbose = false)
       : Nd(4), By(By_), Bz(Bz_), num_cores(NCores_), Sy(Sy_), Sz(Sz_), PadXY(PadXY_),
-        PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_ * Sz_),
-        num_threads(NCores_ * Sy_ * Sz_)
+        PadXYZ(PadXYZ_), MinCt(MinCt_), nsimt(Sy_ * Sz_), num_comm_cores(NCommCores_),
+        num_comm_threads(NCommThreads_), num_threads(NCores_ * Sy_ * Sz_)
   {
     Nx_ = latt_size[0];
     Ny_ = latt_size[1];
@@ -231,6 +233,9 @@ class Geometry
       masterPrintf("    Cores              %d\n", num_cores);
       masterPrintf("    Sy Sz              %d %d\n", Sy, Sz);
       masterPrintf("    Total threads      %d\n", num_threads);
+      masterPrintf("  Communication options are:\n");
+      masterPrintf("    CommCores          %d\n", num_comm_cores);
+      masterPrintf("    CommThreads        %d %d\n", num_comm_threads);
     }
   }
 
@@ -258,6 +263,8 @@ class Geometry
   int getMinCt() const { return MinCt; }
   int getVolCB() const { return Nxh_ * Ny_ * Nz_ * Nt_; }
   int getNumPhases() const { return n_phases; }
+  int getNumCommThreads() const { return num_comm_threads; }
+  int getNumCommCores() const { return num_comm_cores; }
 
   CorePhase &getCorePhase(int i) { return phase[i]; }
   const CorePhase &getCorePhase(int i) const { return phase[i]; }
@@ -425,6 +432,8 @@ class Geometry
   const int nsimt;
   const int num_threads;
   const int num_cores;
+  const int num_comm_cores;
+  const int num_comm_threads;
 
   int nvecs_;
   int ngy_;

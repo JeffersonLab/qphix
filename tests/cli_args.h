@@ -52,6 +52,8 @@ struct CliArgs {
   int Sy;
   int Sz;
   int MinCt;
+  int NCommCores;
+  int NCommThreads;
 };
 
 void printHelp(bool const is_timing);

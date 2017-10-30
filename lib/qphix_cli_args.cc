@@ -26,6 +26,8 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
   bool FoundSy = false;
   bool FoundSz = false;
   bool FoundMinCt = false;
+  bool FoundCC = false;
+  bool FoundCT = false;
 
   std::vector<char *> new_argv;
 
@@ -64,6 +66,14 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
       MinCt = atoi(argv[i + 1]);
       i += 2;
       FoundMinCt = true;
+    } else if (arg == "-cc"){
+      NCommCores = atoi(argv[i + 1]);
+      i += 2;
+      FoundCC = true;
+    } else if (arg == "-ct"){
+      NCommThreads = atoi(argv[i + 1]);
+      i += 2;
+      FoundCT = true;
     } else {
       new_argv.push_back(argv[i]);
       i++;
@@ -83,9 +93,18 @@ void QPhiXCLIArgs::init(int &argc, char **&argv)
     MinCt = 1;
     FoundMinCt = true;
   }
+  if (!FoundCC) {
+    NCommCores = 0;
+    FoundCC = true;
+  }
+  if (!FoundCT) {
+    NCommThreads = 0;
+    if( NCommCores > 0 ) NCommThreads = 1;
+    FoundCT = true;
+  }
 
   bool FoundAll = FoundBy && FoundBz && FoundPxy && FoundPxyz && FoundNCores &&
-                  FoundSy && FoundSz & FoundMinCt;
+                  FoundSy && FoundSz & FoundMinCt && FoundCC && FoundCT;
 
   if (!FoundAll) {
     printHelp();
@@ -122,6 +141,10 @@ void QPhiXCLIArgs::printArgHelp() const
                "  -pxyz Pxyz         extra pad in the XYZ plane \n"
                "  -minct MinCt       MinCt\n"
                "\n"
+               "Communication options:\n"
+              "   -cc NCommCores     number of cores reserved for progressing communication\n"
+              "   -ct NCommThreads   number of threads per core used for comms progress\n"
+              "\n"
                "Threading options:\n"
                "  -c NCores          number of cores\n"
                "  -sy Sy             number of SMT threads in Y\n"

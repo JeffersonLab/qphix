@@ -96,6 +96,9 @@ CliArgs processArgs(int &argc, char **&argv, bool const is_timing)
   args.Sz = args.some_user_args.getSz();
   args.MinCt = args.some_user_args.getMinCt();
 
+  args.NCommCores = args.some_user_args.getNCommCores();
+  args.NCommThreads = args.some_user_args.getNCommThreads();
+
   /*
   masterPrintf("argc = %i\n", argc);
   for (int i = 0; i < argc; ++i) {

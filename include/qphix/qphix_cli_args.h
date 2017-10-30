@@ -14,6 +14,8 @@ class QPhiXCLIArgs
   int getPxy() const { return retIfInited(Pxy); }
   int getPxyz() const { return retIfInited(Pxyz); }
   int getNCores() const { return retIfInited(NCores); }
+  int getNCommCores() const { return retIfInited(NCommCores); }
+  int getNCommThreads() const { return retIfInited(NCommThreads); }
   int getSy() const { return retIfInited(Sy); }
   int getSz() const { return retIfInited(Sz); }
   int getMinCt() const { return retIfInited(MinCt); }
@@ -45,5 +47,7 @@ class QPhiXCLIArgs
   int Sy;
   int Sz;
   int MinCt;
+  int NCommCores;
+  int NCommThreads;
 };
 }

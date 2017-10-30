@@ -67,6 +67,8 @@ void TimeClover::operator()()
                                     args_.PadXY,
                                     args_.PadXYZ,
                                     args_.MinCt,
+                                    args_.NCommCores,
+                                    args_.NCommThreads,
                                     true);
   ClovDslash<FT, V, S, compress> D32(&geom, t_boundary, coeff_s, coeff_t);
 
