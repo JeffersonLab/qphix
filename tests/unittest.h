@@ -111,7 +111,7 @@ class TestRunner : public TestCase
     Layout::setLattSize(nrow);
     Layout::create();
 
-    omp_set_num_threads(args_.NCores * args_.Sy * args_.Sz);
+    omp_set_num_threads( (args_.NCores + args_.NCommCores) * args_.Sy * args_.Sz);
   }
 
   CliArgs &args() { return args_; }

@@ -26,8 +26,8 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
       PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
       n_threads_per_core(geom_->getSy() * geom_->getSz()),
-      num_comm_threads(geom_->getNumCommThreads()), 
-      num_comm_cores(geom_->getNumCommCores()),
+      NCommThreads(geom_->getNumCommThreads()), 
+      NCommCores(geom_->getNumCommCores()),
       t_boundary(t_boundary_),
       aniso_coeff_S(dslash_aniso_s_), aniso_coeff_T(dslash_aniso_t_),
       prec_mass_rho(prec_mass_rho)
@@ -90,9 +90,10 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
 
   // sanity: we ought to have at least 'expected_no of threads available'
 
-  int expected_threads = NCores * n_threads_per_core;
+  masterPrintf("NCommCores=%d, num_cores=%d\n",NCommCores,NCores);
+  int expected_threads = (NCores + NCommCores) * n_threads_per_core;
   if (expected_threads != omp_get_max_threads()) {
-    std::cout << "Expected (Cores per Socket x Threads per Core)="
+    std::cout << "clover_dslash_body: Expected (Cores per Socket x Threads per Core)="
               << expected_threads << " but found " << omp_get_max_threads() << "..."
               << std::endl;
     std::cout
@@ -120,7 +121,8 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
 // Set up barriers
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+    masterPrintf("We have %d threads, max_threads: %d\n",omp_get_num_threads(), omp_get_max_threads());
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
     if( tid >= 0 ){
       gBar->init(tid);
       int cid = tid / n_threads_per_core;
@@ -151,7 +153,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
   masterPrintf("Setting Up Blockinfo array: num_phases=%d\n", num_phases);
 #pragma omp parallel shared(num_phases)
   {
-    int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
     if( tid >= 0 ){
       int cid = tid / n_threads_per_core;
       int smtid = tid - n_threads_per_core * cid;
@@ -192,7 +194,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
 
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
     if( tid >= 0 ){
       int *tmpspc = &(tmpspc_all[veclen * 16 * tid]);
 
@@ -1051,7 +1053,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
         if( tid >= 0 ){
           packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
           packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
@@ -1069,9 +1071,9 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 #pragma omp parallel
   {
     // the cores / threads reserved for communication have negative thread ids
-    int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
 #ifdef QPHIX_DO_COMMS
-    if( num_comm_cores > 0 && tid == -num_comm_cores*n_threads_per_core ){
+    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
       // master thread will call waitall to progress all comms
       comms->waitAllComms();
     }
@@ -1090,7 +1092,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
         if( tid >= 0 ){
 
           double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
@@ -1144,7 +1146,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
         
         if( tid >= 0 ){
           packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
@@ -1162,9 +1164,9 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 #pragma omp parallel
   {
     // the cores / threads reserved for communication have negative thread ids
-    int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
 #ifdef QPHIX_DO_COMMS
-    if( num_comm_cores > 0 && tid == -num_comm_cores*n_threads_per_core ){
+    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
       // master thread will call waitall to progress all comms
       comms->waitAllComms();
     }
@@ -1181,7 +1183,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num() - num_comm_cores*n_threads_per_core;
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
         
         if( tid >= 0 ){
           double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);

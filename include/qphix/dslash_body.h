@@ -22,6 +22,8 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
     : s(geom_), comms(new Comms<FT, veclen, soalen, compress12>(geom_)),
       By(geom_->getBy()), Bz(geom_->getBz()), NCores(geom_->getNumCores()),
       Sy(geom_->getSy()), Sz(geom_->getSz()), PadXY(geom_->getPadXY()),
+      NCommThreads(geom_->getNumCommThreads()), 
+      NCommCores(geom_->getNumCommCores()),
       PadXYZ(geom_->getPadXYZ()), MinCt(geom_->getMinCt()),
       n_threads_per_core(geom_->getSy() * geom_->getSz()), t_boundary(t_boundary_),
       aniso_coeff_S(aniso_coeff_S_), aniso_coeff_T(aniso_coeff_T_)
@@ -82,9 +84,9 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
 
   // sanity: we ought to have at least 'expected_no of threads available'
 
-  int expected_threads = NCores * n_threads_per_core;
+  int expected_threads = (NCores + NCommCores) * n_threads_per_core;
   if (expected_threads != omp_get_max_threads()) {
-    std::cout << "Expected (Cores per Socket x Threads per Core)="
+    std::cout << "dslash_body: Expected (Cores per Socket x Threads per Core)="
               << expected_threads << " but found " << omp_get_max_threads() << "..."
               << std::endl;
     std::cout
@@ -112,18 +114,20 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
 // Set up barriers
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num();
-    gBar->init(tid);
-    int cid = tid / n_threads_per_core;
-    for (int ph = 0; ph < num_phases; ph++) {
-      const CorePhase &phase = s->getCorePhase(ph);
-      int nActiveCores = phase.Cyz * phase.Ct;
-      if (cid >= nActiveCores)
-        continue;
-      int cid_t = cid / phase.Cyz;
-      int ngroup = phase.Cyz * Sy * Sz;
-      int group_tid = tid % ngroup;
-      barriers[ph][cid_t]->init(group_tid);
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+    if( tid >= 0 ){
+      gBar->init(tid);
+      int cid = tid / n_threads_per_core;
+      for (int ph = 0; ph < num_phases; ph++) {
+        const CorePhase &phase = s->getCorePhase(ph);
+        int nActiveCores = phase.Cyz * phase.Ct;
+        if (cid >= nActiveCores)
+          continue;
+        int cid_t = cid / phase.Cyz;
+        int ngroup = phase.Cyz * Sy * Sz;
+        int group_tid = tid % ngroup;
+        barriers[ph][cid_t]->init(group_tid);
+      }
     }
   }
 
@@ -141,29 +145,31 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   masterPrintf("Setting Up Blockinfo array: num_phases=%d\n", num_phases);
 #pragma omp parallel shared(num_phases)
   {
-    int tid = omp_get_thread_num();
-    int cid = tid / n_threads_per_core;
-    int smtid = tid - n_threads_per_core * cid;
-    int ly = Ny / By;
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+    if( tid >= 0 ){
+      int cid = tid / n_threads_per_core;
+      int smtid = tid - n_threads_per_core * cid;
+      int ly = Ny / By;
 
-    for (int ph = 0; ph < num_phases; ph++) {
-      const CorePhase &phase = s->getCorePhase(ph);
-      BlockPhase &binfo = block_info[num_phases * tid + ph];
+      for (int ph = 0; ph < num_phases; ph++) {
+        const CorePhase &phase = s->getCorePhase(ph);
+        BlockPhase &binfo = block_info[num_phases * tid + ph];
 
-      int nActiveCores = phase.Cyz * phase.Ct;
-      if (cid > nActiveCores)
-        continue;
-      binfo.cid_t = cid / phase.Cyz;
-      binfo.cid_yz = cid - binfo.cid_t * phase.Cyz;
-      int syz = phase.startBlock + binfo.cid_yz;
-      binfo.bz = syz / ly;
-      binfo.by = syz - binfo.bz * ly;
-      binfo.bt = (Nt * binfo.cid_t) / phase.Ct;
-      binfo.nt = (Nt * (binfo.cid_t + 1)) / phase.Ct - binfo.bt;
-      binfo.by *= By;
-      binfo.bz *= Bz;
-      int ngroup = phase.Cyz * Sy * Sz;
-      binfo.group_tid = tid % ngroup;
+        int nActiveCores = phase.Cyz * phase.Ct;
+        if (cid > nActiveCores)
+          continue;
+        binfo.cid_t = cid / phase.Cyz;
+        binfo.cid_yz = cid - binfo.cid_t * phase.Cyz;
+        int syz = phase.startBlock + binfo.cid_yz;
+        binfo.bz = syz / ly;
+        binfo.by = syz - binfo.bz * ly;
+        binfo.bt = (Nt * binfo.cid_t) / phase.Ct;
+        binfo.nt = (Nt * (binfo.cid_t + 1)) / phase.Ct - binfo.bt;
+        binfo.by *= By;
+        binfo.bz *= Bz;
+        int ngroup = phase.Cyz * Sy * Sz;
+        binfo.group_tid = tid % ngroup;
+      }
     }
   } // OMP parallel
   masterPrintf("Phase info set up\n");
@@ -180,125 +186,128 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
 
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num();
-    int *tmpspc = &(tmpspc_all[veclen * 16 * tid]);
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
 
-    int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
-    int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
-    int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
-    int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
+    if( tid >= 0 ){
+      int *tmpspc = &(tmpspc_all[veclen * 16 * tid]);
 
-    // Why is this needed. tmpspc should already be aligned.
-    int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
-    offs = &atmp[0];
-    xbOffs_xodd[0] = &atmp[veclen * 1];
-    xbOffs_xodd[1] = &atmp[veclen * 2];
-    xbOffs_x0_xodd[0] = &atmp[veclen * 3];
-    xbOffs_x0_xodd[1] = &atmp[veclen * 4];
-    xfOffs_xodd[0] = &atmp[veclen * 5];
-    xfOffs_xodd[1] = &atmp[veclen * 6];
-    xfOffs_xn_xodd[0] = &atmp[veclen * 7];
-    xfOffs_xn_xodd[1] = &atmp[veclen * 8];
-    ybOffs_yn0 = &atmp[veclen * 9];
-    ybOffs_y0 = &atmp[veclen * 10];
-    yfOffs_ynn = &atmp[veclen * 11];
-    yfOffs_yn = &atmp[veclen * 12];
-    gOffs = &atmp[veclen * 13];
-    pfyOffs = &atmp[veclen * 14];
+      int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
+      int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
+      int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
+      int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
 
-    int nvec = s->nVecs();
-    int nyg = s->nGY();
-    const int gauge_line_in_floats =
-        sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge scanline, in floats
-    const int spinor_line_in_floats =
-        sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor scanline, in floats
+      // Why is this needed. tmpspc should already be aligned.
+      int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
+      offs = &atmp[0];
+      xbOffs_xodd[0] = &atmp[veclen * 1];
+      xbOffs_xodd[1] = &atmp[veclen * 2];
+      xbOffs_x0_xodd[0] = &atmp[veclen * 3];
+      xbOffs_x0_xodd[1] = &atmp[veclen * 4];
+      xfOffs_xodd[0] = &atmp[veclen * 5];
+      xfOffs_xodd[1] = &atmp[veclen * 6];
+      xfOffs_xn_xodd[0] = &atmp[veclen * 7];
+      xfOffs_xn_xodd[1] = &atmp[veclen * 8];
+      ybOffs_yn0 = &atmp[veclen * 9];
+      ybOffs_y0 = &atmp[veclen * 10];
+      yfOffs_ynn = &atmp[veclen * 11];
+      yfOffs_yn = &atmp[veclen * 12];
+      gOffs = &atmp[veclen * 13];
+      pfyOffs = &atmp[veclen * 14];
 
-    if (tid == 0) {
-      // Initialize masks
-      xbmask_x0_xodd[0] = -1;
-      xbmask_x0_xodd[1] = -1;
-      xfmask_xn_xodd[0] = -1;
-      xfmask_xn_xodd[1] = -1;
-      ybmask_y0 = -1;
-      yfmask_yn = -1;
-    }
+      int nvec = s->nVecs();
+      int nyg = s->nGY();
+      const int gauge_line_in_floats =
+          sizeof(SU3MatrixBlock) / sizeof(FT); // One gauge scanline, in floats
+      const int spinor_line_in_floats =
+          sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor scanline, in floats
 
-    for (int y = 0; y < nyg; y++) {
-      // Various indexing things
-      int ind = y * soalen;
-      int X = nvecs * y * spinor_line_in_floats;
-      int y1 = y & 1;
-      int y2 = 1 - y1;
-      for (int x = 0; x < soalen; x++) {
-        xbOffs_x0_xodd[y1][ind] = X + x - 1;
-        xbOffs_xodd[y1][ind] = X + x - 1;
-        if (x == 0) {
-          if (comms->localX()) {
-            xbOffs_x0_xodd[y1][ind] -=
-                (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
-          } else {
-            xbOffs_x0_xodd[y1][ind] +=
-                soalen; // This lane is disabled, just set it within same cache line
-            if (tid == 0)
-              xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
-          }
-          xbOffs_xodd[y1][ind] -= (spinor_line_in_floats - soalen);
-        }
-        xfOffs_xodd[y1][ind] = X + x;
-        xfOffs_xn_xodd[y1][ind] = X + x;
-
-        xbOffs_x0_xodd[y2][ind] = X + x;
-        xbOffs_xodd[y2][ind] = X + x;
-        xfOffs_xodd[y2][ind] = X + x + 1;
-        xfOffs_xn_xodd[y2][ind] = X + x + 1;
-        if (x == soalen - 1) {
-          xfOffs_xodd[y2][ind] += (spinor_line_in_floats - soalen);
-          if (comms->localX()) {
-            xfOffs_xn_xodd[y2][ind] +=
-                (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
-          } else {
-            xfOffs_xn_xodd[y2][ind] -=
-                soalen; // This lane is disabled, just set it within same cache line
-            if (tid == 0)
-              xfmask_xn_xodd[y2] &= ~(1 << ind); // reset the ind bit in the mask
-          }
-        }
-
-        ybOffs_y0[ind] = X - nvecs * spinor_line_in_floats +
-                         x; // previous y-neighbor site offsets
-        if (y == 0) {
-          if (comms->localY()) {
-            ybOffs_y0[ind] += Ny * nvecs * spinor_line_in_floats;
-          } else {
-            ybOffs_y0[ind] =
-                X + x; // This lane is disabled, just set it within same cache line
-            if (tid == 0)
-              ybmask_y0 &= ~(1 << ind); // reset the ind bit in the mask
-          }
-        }
-        ybOffs_yn0[ind] = X - nvecs * spinor_line_in_floats +
-                          x; // previous y-neighbor site offsets
-        yfOffs_yn[ind] =
-            X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
-        if (y == nyg - 1) {
-          if (comms->localY()) {
-            yfOffs_yn[ind] -= Ny * nvecs * spinor_line_in_floats;
-          } else {
-            yfOffs_yn[ind] =
-                X + x; // This lane is disabled, just set it within same cache line
-            if (tid == 0)
-              yfmask_yn &= ~(1 << ind); // reset the ind bit in the mask
-          }
-        }
-        yfOffs_ynn[ind] =
-            X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
-        offs[ind] = X + x; // site offsets for z & t neighbors
-
-        gOffs[ind] = ind; // this not used really
-
-        ind++;
+      if (tid == 0) {
+        // Initialize masks
+        xbmask_x0_xodd[0] = -1;
+        xbmask_x0_xodd[1] = -1;
+        xfmask_xn_xodd[0] = -1;
+        xfmask_xn_xodd[1] = -1;
+        ybmask_y0 = -1;
+        yfmask_yn = -1;
       }
-    }
+
+      for (int y = 0; y < nyg; y++) {
+        // Various indexing things
+        int ind = y * soalen;
+        int X = nvecs * y * spinor_line_in_floats;
+        int y1 = y & 1;
+        int y2 = 1 - y1;
+        for (int x = 0; x < soalen; x++) {
+          xbOffs_x0_xodd[y1][ind] = X + x - 1;
+          xbOffs_xodd[y1][ind] = X + x - 1;
+          if (x == 0) {
+            if (comms->localX()) {
+              xbOffs_x0_xodd[y1][ind] -=
+                  (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
+            } else {
+              xbOffs_x0_xodd[y1][ind] +=
+                  soalen; // This lane is disabled, just set it within same cache line
+              if (tid == 0)
+                xbmask_x0_xodd[y1] &= ~(1 << ind); // reset a bit in the mask
+            }
+            xbOffs_xodd[y1][ind] -= (spinor_line_in_floats - soalen);
+          }
+          xfOffs_xodd[y1][ind] = X + x;
+          xfOffs_xn_xodd[y1][ind] = X + x;
+
+          xbOffs_x0_xodd[y2][ind] = X + x;
+          xbOffs_xodd[y2][ind] = X + x;
+          xfOffs_xodd[y2][ind] = X + x + 1;
+          xfOffs_xn_xodd[y2][ind] = X + x + 1;
+          if (x == soalen - 1) {
+            xfOffs_xodd[y2][ind] += (spinor_line_in_floats - soalen);
+            if (comms->localX()) {
+              xfOffs_xn_xodd[y2][ind] +=
+                  (spinor_line_in_floats - soalen - nvecs * spinor_line_in_floats);
+            } else {
+              xfOffs_xn_xodd[y2][ind] -=
+                  soalen; // This lane is disabled, just set it within same cache line
+              if (tid == 0)
+                xfmask_xn_xodd[y2] &= ~(1 << ind); // reset the ind bit in the mask
+            }
+          }
+
+          ybOffs_y0[ind] = X - nvecs * spinor_line_in_floats +
+                           x; // previous y-neighbor site offsets
+          if (y == 0) {
+            if (comms->localY()) {
+              ybOffs_y0[ind] += Ny * nvecs * spinor_line_in_floats;
+            } else {
+              ybOffs_y0[ind] =
+                  X + x; // This lane is disabled, just set it within same cache line
+              if (tid == 0)
+                ybmask_y0 &= ~(1 << ind); // reset the ind bit in the mask
+            }
+          }
+          ybOffs_yn0[ind] = X - nvecs * spinor_line_in_floats +
+                            x; // previous y-neighbor site offsets
+          yfOffs_yn[ind] =
+              X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
+          if (y == nyg - 1) {
+            if (comms->localY()) {
+              yfOffs_yn[ind] -= Ny * nvecs * spinor_line_in_floats;
+            } else {
+              yfOffs_yn[ind] =
+                  X + x; // This lane is disabled, just set it within same cache line
+              if (tid == 0)
+                yfmask_yn &= ~(1 << ind); // reset the ind bit in the mask
+            }
+          }
+          yfOffs_ynn[ind] =
+              X + nvecs * spinor_line_in_floats + x; // next y-neighbor site offsets
+          offs[ind] = X + x; // site offsets for z & t neighbors
+
+          gOffs[ind] = ind; // this not used really
+
+          ind++;
+        }
+      }
+    } // if (tid >= 0)
   } // OMP parallel
   // Info
   if (compress12) {
@@ -1034,9 +1043,11 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num();
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+        if( tid >= 0 ){
+          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+        }
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1049,8 +1060,17 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 // DO BODY DON"T ACCUMULATE BOUNDARY
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num();
-    Dyz(tid, psi_in, res_out, u, is_plus, cb, dir_mask);
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+#ifdef QPHIX_DO_COMMS                                                                                                                             
+    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+      // master thread will call waitall to progress all comms
+      masterPrintf("tid=%d calling waitAllComms()\n",tid);
+      comms->waitAllComms();
+    }
+#endif // QPHIX_DO_COMMS
+    if( tid >= 0 ){
+      Dyz(tid, psi_in, res_out, u, is_plus, cb, dir_mask);
+    }
   }
 
 #ifdef QPHIX_DO_COMMS
@@ -1060,11 +1080,12 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num();
-
-        double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-        completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+        if( tid >= 0 ){
+          double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
+          completeFaceDir(
+              tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+        }
       }
     } else
       comms->recv_queue.push(d);
@@ -1191,10 +1212,11 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num();
-
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+        if( tid >= 0 ){
+          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+        }
       }
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
@@ -1206,8 +1228,16 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #pragma omp parallel
   {
-    int tid = omp_get_thread_num();
-    DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
+    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+#ifdef QPHIX_DO_COMMS                                                                                                                             
+    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+      // master thread will call waitall to progress all comms
+      comms->waitAllComms();
+    }
+#endif // QPHIX_DO_COMMS
+    if( tid >= 0 ){
+      DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
+    }
   }
 
 #ifdef QPHIX_DO_COMMS
@@ -1217,11 +1247,12 @@ void Dslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
 #pragma omp parallel
       {
-        int tid = omp_get_thread_num();
-
-        double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-        completeFaceDir(
-            tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+        if( tid >= 0 ){
+          double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
+          completeFaceDir(
+              tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+        }
       }
     } else
       comms->recv_queue.push(d);

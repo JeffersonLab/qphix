@@ -91,7 +91,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
 
   int expected_threads = NCores * n_threads_per_core;
   if (expected_threads != omp_get_max_threads()) {
-    std::cout << "Expected (Cores per Socket x Threads per Core)="
+    std::cout << "tm_dslash_body: Expected (Cores per Socket x Threads per Core)="
               << expected_threads << " but found " << omp_get_max_threads() << "..."
               << std::endl;
     std::cout

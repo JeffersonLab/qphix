@@ -69,8 +69,8 @@ class ClovDslash
   const int PadXYZ;
   const int MinCt;
 
-  const int num_comm_cores;
-  const int num_comm_threads;
+  const int NCommCores;
+  const int NCommThreads;
 
   const double t_boundary;
   const double aniso_coeff_S;

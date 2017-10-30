@@ -29,7 +29,7 @@ class QmpContext
 #endif
 
     args_ = processArgs(argc, argv, true);
-    omp_set_num_threads(args_.NCores * args_.Sy * args_.Sz);
+    omp_set_num_threads( (args_.NCores + args_.NCommCores) * args_.Sy * args_.Sz);
 
 #ifdef QPHIX_QMP_COMMS
     if (QMP_declare_logical_topology(args_.qmp_geometry, 4) != QMP_SUCCESS) {

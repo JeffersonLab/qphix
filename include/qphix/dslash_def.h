@@ -77,6 +77,9 @@ class Dslash
   const int PadXYZ;
   const int MinCt;
 
+  const int NCommCores;
+  const int NCommThreads;
+  
   // Antiperiodic Boundary
   const double t_boundary;
   bool amIPtMin;
