@@ -1028,6 +1028,9 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
                                                       bool const is_plus,
                                                       int cb)
 {
+  // this is entered by all threads
+  int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+  
   double beta_s = aniso_coeff_S;
   double beta_t_f = aniso_coeff_T;
   double beta_t_b = aniso_coeff_T;
@@ -1043,76 +1046,70 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 
   TSC_tick t_start, t_end;
+
 #ifdef QPHIX_DO_COMMS
   // Pre-initiate all receives
-
-  for (int d = 3; d >= 0; d--) {
-    if (!comms->localDir(d)) {
-      comms->startRecvFromDir(2 * d + 0);
-      comms->startRecvFromDir(2 * d + 1);
-
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
-        if( tid >= 0 ){
-          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
-        }
+  if( tid == -NCommCores*n_threads_per_core ){
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        comms->startRecvFromDir(2 * d + 0);
+        comms->startRecvFromDir(2 * d + 1);
       }
+    }
+  }
+    
+  for (int d = 3; d >= 0; d--) {
+    if( tid >= 0 ){
+      // this should be thread-safe
+      if (!comms->localDir(d)) {
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+      }
+    }
+#pragma omp barrier
+    if( tid == -NCommCores*n_threads_per_core ){
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
-      comms->recv_queue.push(2 * d + 1);
-      comms->recv_queue.push(2 * d + 0);
     }
   }
+  
+  if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+    // master thread will call waitall to progress all comms
+    // here we could also have multiple threads spinning on individual comms
+    comms->waitAllComms();
+  }
 #endif // QPHIX_DO_COMMS
-
-// DO BODY DON"T ACCUMULATE BOUNDARY
-#pragma omp parallel
-  {
-    // the cores / threads reserved for communication have negative thread ids
-    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
-#ifdef QPHIX_DO_COMMS
-    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
-      // master thread will call waitall to progress all comms
-      comms->waitAllComms();
-    }
-#endif // QPHIX_DO_COMMS
-
-    // This will deal with anisotropy and boundaries internally
-    if( tid >= 0 ){
-      Dyz(tid, psi_in, res_out, u, invclov, is_plus, cb);
-    }
+  
+  // do body computation by all non-communicating threads (if any)
+  // This will deal with anisotropy and boundaries internally
+  if( tid >= 0 ){
+    Dyz(tid, psi_in, res_out, u, invclov, is_plus, cb);
   }
 
 #ifdef QPHIX_DO_COMMS
-  while (!comms->recv_queue.empty()) {
-    int d = comms->recv_queue.front();
-    comms->recv_queue.pop();
-    if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
-        if( tid >= 0 ){
+// this barrier will catch all threads, including the one(s) waiting for
+// comms to complete, after this point, all communications are complete
+#pragma omp barrier
 
-          double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-          completeFaceDir(tid,
-                          comms->recvFromDir[d],
-                          res_out,
-                          u,
-                          invclov,
-                          bet,
-                          cb,
-                          d / 2,
-                          d % 2,
-                          is_plus);
-        }
-      }
-    } else
-      comms->recv_queue.push(d);
+  for( int d = 3; d >= 0; d-- ){
+    if( tid >= 0 ){ 
+      double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
+      completeFaceDir(tid,
+                      comms->recvFromDir[d],
+                      res_out,
+                      u,
+                      invclov,
+                      bet,
+                      cb,
+                      d / 2,
+                      d % 2,
+                      is_plus);
+    }
   } // end for
-
 #endif // QPHIX_DO_COMMS
+
+// need to catch all threads before leaving function
+#pragma omp barrier
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -1126,6 +1123,9 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     bool const is_plus,
     int cb)
 {
+  // this is entered by all threads
+  int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+  
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
   double beta_t_b = beta * aniso_coeff_T;
@@ -1138,64 +1138,57 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #ifdef QPHIX_DO_COMMS
   // Pre-initiate all receives
-
-  for (int d = 3; d >= 0; d--) {
-    if (!comms->localDir(d)) {
-      comms->startRecvFromDir(2 * d + 0);
-      comms->startRecvFromDir(2 * d + 1);
-
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
-        
-        if( tid >= 0 ){
-          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
-          packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
-        }
+  if( tid == -NCommCores*n_threads_per_core ){
+    for (int d = 3; d >= 0; d--) {
+      if (!comms->localDir(d)) {
+        comms->startRecvFromDir(2 * d + 0);
+        comms->startRecvFromDir(2 * d + 1);
       }
+    }
+  }
+    
+  for (int d = 3; d >= 0; d--) {
+    if( tid >= 0 ){
+      // this should be thread-safe
+      if (!comms->localDir(d)) {
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
+      }
+    }
+#pragma omp barrier
+    if( tid == -NCommCores*n_threads_per_core ){
       comms->startSendDir(2 * d + 1);
       comms->startSendDir(2 * d + 0);
-      comms->recv_queue.push(2 * d + 1);
-      comms->recv_queue.push(2 * d + 0);
     }
+  }
+  
+  if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+    // master thread will call waitall to progress all comms
+    // here we could also have multiple threads spinning on individual comms
+    comms->waitAllComms();
   }
 #endif // QPHIX_DO_COMMS
 
-#pragma omp parallel
-  {
-    // the cores / threads reserved for communication have negative thread ids
-    int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
+  // body computation by non-communicating workers
+  if( tid >= 0 ){
+    DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, is_plus, cb);
+  }
+
 #ifdef QPHIX_DO_COMMS
-    if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
-      // master thread will call waitall to progress all comms
-      comms->waitAllComms();
-    }
-#endif // QPHIX_DO_COMMS
+// this barrier will catch all threads, including the one(s) spinning
+// on comms to complete. After this point, all comms are complete.
+#pragma omp barrier
+  for( int d = 3; d >= 0; d-- ){
     if( tid >= 0 ){
-      DyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, clov, beta, is_plus, cb);
+      double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
+      completeFaceDirAChiMBDPsi(
+        tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
     }
-  }
-
-#ifdef QPHIX_DO_COMMS
-  while (!comms->recv_queue.empty()) {
-    int d = comms->recv_queue.front();
-    comms->recv_queue.pop();
-    if (comms->testSendToDir(d) && comms->testRecvFromDir(d)) {
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num() - NCommCores*n_threads_per_core;
-        
-        if( tid >= 0 ){
-          double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-          completeFaceDirAChiMBDPsi(
-              tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
-        }
-      }
-    } else
-      comms->recv_queue.push(d);
   } // end for
-
 #endif // QPHIX_DO_COMMS
+
+// need to catch all threads before leaving functions
+#pragma omp barrier
 }
 
 } // Namespace

@@ -158,11 +158,15 @@ public:
       int isign,
       int target_cb = 1) const override
       {
-    double beta = 0.25;
-    int other_cb = 1 - target_cb;
-    D->dslash(tmp, in, u[other_cb], invclov, isign, other_cb);
-    D->dslashAChiMinusBDPsi(
-        res, tmp, in, u[target_cb], clov[1], beta, isign, target_cb);
+#pragma omp parallel
+        {
+        double beta = 0.25;
+        int other_cb = 1 - target_cb;
+        D->dslash(tmp, in, u[other_cb], invclov, isign, other_cb);
+        // there's an internal barrier at the end of the dslash scope
+        D->dslashAChiMinusBDPsi(
+            res, tmp, in, u[target_cb], clov[1], beta, isign, target_cb);
+        }
       }
 
   // Offdiag is just the dslash
