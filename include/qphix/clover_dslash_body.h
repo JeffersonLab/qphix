@@ -1087,6 +1087,10 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 
 #ifdef QPHIX_DO_COMMS
+// if we're not waiting for comms above, let's wait here
+if( NCommCores == 0 && tid == 0 ){
+  comms->waitAllComms();
+}
 // this barrier will catch all threads, including the one(s) waiting for
 // comms to complete, after this point, all communications are complete
 #pragma omp barrier
@@ -1175,6 +1179,10 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
   }
 
 #ifdef QPHIX_DO_COMMS
+// if we're not waiting for comms above, let's wait here
+if( NCommCores == 0 && tid == 0 ){
+  comms->waitAllComms();
+}
 // this barrier will catch all threads, including the one(s) spinning
 // on comms to complete. After this point, all comms are complete.
 #pragma omp barrier
