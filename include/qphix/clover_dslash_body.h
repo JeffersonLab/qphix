@@ -1102,7 +1102,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 #endif // QPHIX_DO_COMMS
   
-  // do body computation by all non-communicating threads (if any)
+  // do body computation by all non-communicating threads
   // This will deal with anisotropy and boundaries internally
   if( tid >= 0 ){
     Dyz(tid, psi_in, res_out, u, invclov, is_plus, cb);
@@ -1123,16 +1123,25 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
   for( int d = 3; d >= 0; d-- ){
     if( tid >= 0 && !comms->localDir(d) ){ 
-      double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
       completeFaceDir(tid,
-                      comms->recvFromDir[d],
+                      comms->recvFromDir[2*d + 0],
                       res_out,
                       u,
                       invclov,
-                      bet,
+                      (d == 3 : beta_t_b : beta_s ),
                       cb,
-                      d / 2,
-                      d % 2,
+                      d,
+                      0,
+                      is_plus);
+      completeFaceDir(tid,
+                      comms->recvFromDir[2*d + 1],
+                      res_out,
+                      u,
+                      invclov,
+                      (d == 3 : beta_t_b : beta_s ),
+                      cb,
+                      d,
+                      1,
                       is_plus);
     }
   } // end for
@@ -1194,8 +1203,10 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
         packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
         if( NCommCores == 0 ){
           // this barrier ensures that all packing has completed and that we
-          // don't have multiple threads calling startSendDir
+          // don't accidentally have multiple threads calling comms functions
 #pragma omp barrier
+          // while a single thread starts comms, the others are free to move to the
+          // next direction, if any
 #pragma omp single nowait
           {
             comms->startSendDir(2 * d + 1);
@@ -1205,14 +1216,15 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
       }
     }
     if( NCommCores > 0 && !comms->localDir(d) ) {
-      // this barrier ensures that all packing has completed
+      // this barrier ensures that all packing has completed and that all threads
+      // are caught here
 #pragma omp barrier
       if( tid == -NCommCores*n_threads_per_core ){
         comms->startSendDir(2 * d + 1);
         comms->startSendDir(2 * d + 0);
       }
     }
-  }
+  } // for(d)
 
   // the thread which started comms is also tasked with waiting for
   // completion -> no risk of missing something in the waitAllComms below
@@ -1241,9 +1253,24 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
   for( int d = 3; d >= 0; d-- ){
     if( tid >= 0 && !comms->localDir(d) ){
-      double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
-      completeFaceDirAChiMBDPsi(
-        tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+      completeFaceDirAChiMBDPsi(tid, 
+                                comms->recvFromDir[2*d + 0], 
+                                res_out, 
+                                u, 
+                                ( d == 3 ? beta_t_b : beta_s ), 
+                                cb, 
+                                d, 
+                                0, 
+                                is_plus);
+      completeFaceDirAChiMBDPsi(tid, 
+                                comms->recvFromDir[2*d + 1], 
+                                res_out, 
+                                u, 
+                                ( d == 3 ? beta_t_f : beta_s ), 
+                                cb, 
+                                d, 
+                                1, 
+                                is_plus);
     }
   } // end for
 #endif // QPHIX_DO_COMMS
