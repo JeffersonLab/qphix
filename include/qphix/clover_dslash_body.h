@@ -1049,25 +1049,15 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
 #ifdef QPHIX_DO_COMMS
   // Pre-initiate all receives
-  if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+  if( tid == -NCommCores*n_threads_per_core ){
     for (int d = 3; d >= 0; d--) {
       if (!comms->localDir(d)) {
         comms->startRecvFromDir(2 * d + 0);
         comms->startRecvFromDir(2 * d + 1);
       }
     }
-  } else if (NCommCores == 0) {
-#pragma omp single nowait
-    {
-      for (int d = 3; d >= 0; d--) {
-        if (!comms->localDir(d)) {
-          comms->startRecvFromDir(2 * d + 0);
-          comms->startRecvFromDir(2 * d + 1);
-        }
-      }
-    }
   }
-    
+  
   for (int d = 3; d >= 0; d--) {
     if( tid >= 0 ){
       if (!comms->localDir(d)) { // this access to comms should be thread-safe
@@ -1077,8 +1067,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
           // this barrier ensures that all packing has completed and that we
           // don't have multiple threads calling startSendDir
 #pragma omp barrier
-#pragma omp single nowait
-          {
+          if(tid==0){
             comms->startSendDir(2 * d + 1);
             comms->startSendDir(2 * d + 0);
           }
@@ -1110,16 +1099,11 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 
 #ifdef QPHIX_DO_COMMS
   // when NCommCores == 0, we need to wait for comms to complete here
-  if( NCommCores == 0 ){
-#pragma omp single
-    {
-      comms->waitAllComms();
-    } // this implicit barrier catches all threads
-  } else {
-    // this barrier will catch all threads, including the one(s) waiting for
-    // comms to complete, after this point, all communications are complete
-#pragma omp barrier
+  if( NCommCores == 0 && tid == 0){
+    comms->waitAllComms();
   }
+// need to catch all threads here
+#pragma omp barrier
 
   for( int d = 3; d >= 0; d-- ){
     if( tid >= 0 && !comms->localDir(d) ){ 
@@ -1146,9 +1130,6 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     }
   } // end for
 #endif // QPHIX_DO_COMMS
-
-// need to catch all threads before leaving function
-#pragma omp barrier
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -1177,21 +1158,11 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #ifdef QPHIX_DO_COMMS
   // Pre-initiate all receives
-  if( NCommCores > 0 && tid == -NCommCores*n_threads_per_core ){
+  if( tid == -NCommCores*n_threads_per_core ){
     for (int d = 3; d >= 0; d--) {
       if (!comms->localDir(d)) {
         comms->startRecvFromDir(2 * d + 0);
         comms->startRecvFromDir(2 * d + 1);
-      }
-    }
-  } else if (NCommCores == 0) {
-#pragma omp single nowait
-    {
-      for (int d = 3; d >= 0; d--) {
-        if (!comms->localDir(d)) {
-          comms->startRecvFromDir(2 * d + 0);
-          comms->startRecvFromDir(2 * d + 1);
-        }
       }
     }
   }
@@ -1207,8 +1178,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 #pragma omp barrier
           // while a single thread starts comms, the others are free to move to the
           // next direction, if any
-#pragma omp single nowait
-          {
+          if( tid == 0 ){
             comms->startSendDir(2 * d + 1);
             comms->startSendDir(2 * d + 0);
           }
@@ -1240,16 +1210,11 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 
 #ifdef QPHIX_DO_COMMS
   // when NCommCores == 0, we need to wait for comms to complete here
-  if( NCommCores == 0 ){
-#pragma omp single
-    {
+  if( NCommCores == 0 && tid == 0 ){
       comms->waitAllComms();
-    } // this implicit barrier catches all threads
-  } else {
-    // this barrier will catch all threads, including the one(s) waiting for
-    // comms to complete, after this point, all communications are complete
-#pragma omp barrier
   }
+  // need to catch all threads
+#pragma omp barrier
 
   for( int d = 3; d >= 0; d-- ){
     if( tid >= 0 && !comms->localDir(d) ){
@@ -1274,9 +1239,6 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     }
   } // end for
 #endif // QPHIX_DO_COMMS
-
-// need to catch all threads before leaving functions
-#pragma omp barrier
 }
 
 } // Namespace

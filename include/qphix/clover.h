@@ -163,7 +163,10 @@ public:
         double beta = 0.25;
         int other_cb = 1 - target_cb;
         D->dslash(tmp, in, u[other_cb], invclov, isign, other_cb);
-        // there's an internal barrier at the end of the dslash scope
+#pragma omp single
+        {
+          MPI_Barrier(MPI_COMM_WORLD);
+        }
         D->dslashAChiMinusBDPsi(
             res, tmp, in, u[target_cb], clov[1], beta, isign, target_cb);
         }
