@@ -26,14 +26,14 @@ option(mpi_comms "Use plain MPI comms instead of QMP in the kernels" ON)
 # Codegen stuff
 set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
 set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
-set(recusive_jN 1 CACHE STRING  "select -j value for recursive make (defaults to 1)")
+set(recusive_jN '' CACHE STRING "select -j value for recursive make (defaults to 1)")
+option(skip_build "Developer only: Reduce building of certain kernels for faster build" OFF)
 
 ###############################################################################
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 set(QDPXX_CXX_FOUND FALSE)
 set(QMP_C_FOUND FALSE)
-
 
 # Include our own files first.
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -180,7 +180,7 @@ endif()
 ###############################################################################
 #                                     ISA                                     #
 ###############################################################################
-
+set(x_comms_testing TRUE)
 set(ISA ${isa})
 set(QPHIX_LLC_CACHE_ALIGN 64)
 if(${isa} STREQUAL "avx")
@@ -205,10 +205,19 @@ elseif(${isa} STREQUAL "scalar")
   message(STATUS "Building for straight C (nonvectorized")
   set(QPHIX_SCALAR_SOURCE 1)
   set(test_soalen 1)
+  set(x_comms_testing FALSE)
+  message(WARNING "Disabling X-directional communicating tests")
+  message(WARNING "This is due to a known issue (issue #10) for isa=scalar")
 elseif(${isa} STREQUAL "qpx")
   message(STATUS "Building for QPX (BG/Q)")
   set(QPHIX_QPX_SOURCE 1)
   set(QPHIX_LLC_CACHE_ALIGN 128)
+endif()
+
+if( x_comms_testing )
+   message(STATUS "Will do X-comms tests")
+else()
+   message(STATUS "Disabled X-comms tests")
 endif()
 
 ###############################################################################
@@ -251,19 +260,37 @@ if(QPHIX_CODEGEN)
 else()
 
   MESSAGE(INFO, "Looking for Python")
-  find_package(PythonLibs 3.0 REQUIRED)
   find_package(PythonInterp 3.0 REQUIRED)
   MESSAGE(INFO, "Python interpreter is ${PYTHON_EXECUTABLE}")
   # A build directory for building qphix-codegen
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/codegen)
+
+  if ("${recursive_jN}" STREQUAL "")
+    set(make_program_arguments "")
+  else()
+    set(make_program_arguments "-j${recursive_jN}")
+  endif()
+  message(STATUS "make_program_arguments: ${make_program_arguments}")
 
   # The custom command will make at least this `libqphix_codegen.a`. It will
   # use the build directory (specified by the `WORKING_DIRECTORY`) When this
   # command is executed, it will also install the library to
   # `CMAKE_INSTALL_PREFIX`.
   add_custom_command(OUTPUT ${CMAKE_INSTALL_PREFIX}/lib/libqphix_codegen.a
-                   COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags} cmake -Disa=${isa} -Dtarget_cxx=${CMAKE_CXX_COMPILER} -Dtarget_cxxflags=${CMAKE_CXX_FLAGS} -Dtarget_jN=${recursive_jN}  -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE} -DPYTHON_LIBRARY=${PYTHON_LIBRARY} -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/codegen
-                   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${recursive_jN}
+    COMMAND CXX=${host_cxx} CXXFLAGS=${host_cxxflags}
+      cmake
+      -Disa=${isa}
+      -Dtarget_cxx=${CMAKE_CXX_COMPILER}
+      -Dtarget_cxxflags=${CMAKE_CXX_FLAGS}
+      -Dtarget_jN=${recursive_jN}
+      -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
+      -DPYTHON_LIBRARY=${PYTHON_LIBRARY}
+      -DPYTHON_INCLUDE_DIR=${PYTHON_INCLUDE_DIR}
+      -Dskip_build=${skip_build}
+      -G ${CMAKE_GENERATOR}
+      ${CMAKE_SOURCE_DIR}/codegen
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} VERBOSE=1
                    COMMENT "Generating Libcodegen"
                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/codegen )
 
@@ -303,15 +330,15 @@ configure_file(
 )
 
 add_subdirectory(include/qphix)
+add_subdirectory(include/qphix_codegen)
 add_subdirectory(lib)
 if( ${testing} )
-
   # GTest lives here
   add_subdirectory(external)
   add_subdirectory(tests-gtest)
 endif()
 add_subdirectory(tests)
 
-
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/QPhiXConfig.cmake DESTINATION cmake)
+
 # vim: sts=2 sw=2

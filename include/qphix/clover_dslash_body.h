@@ -7,8 +7,8 @@
 #include "qphix/print_utils.h"
 #include "qphix/kernel_selector.h"
 
-#include <qphix_codegen/dslash_generated.h>
-#include <qphix_codegen/clov_dslash_generated.h>
+#include "qphix_codegen/dslash_generated.h"
+#include "qphix_codegen/clov_dslash_generated.h"
 
 namespace QPhiX
 {
@@ -70,7 +70,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
     printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n",
            Nxh,
            soalen);
-    abort();
+    std::abort();
   }
 
   // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
@@ -78,7 +78,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
   if (Ny % ngy != 0) {
     printf(
         "Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n", Ny, ngy);
-    abort();
+    std::abort();
   }
 
   if (Sy > By / ngy) {
@@ -139,7 +139,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
                                             QPHIX_LLC_CACHE_ALIGN);
   if (block_info == 0x0) {
     fprintf(stderr, "Could not allocate Block Info array\n");
-    abort();
+    std::abort();
   }
 
   // Set up blockinfo
@@ -180,7 +180,7 @@ ClovDslash<FT, veclen, soalen, compress12>::ClovDslash(
   tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, QPHIX_LLC_CACHE_ALIGN);
   if (tmpspc_all == 0x0) {
     masterPrintf("Failed to allocate xy offset tmpspc\n");
-    abort();
+    std::abort();
   }
 
 #pragma omp parallel

@@ -65,7 +65,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
     printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n",
            Nxh,
            soalen);
-    abort();
+    std::abort();
   }
 
   // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
@@ -73,7 +73,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   if (Ny % ngy != 0) {
     printf(
         "Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n", Ny, ngy);
-    abort();
+    std::abort();
   }
 
   if (Sy > By / ngy) {
@@ -134,7 +134,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
                                             QPHIX_LLC_CACHE_ALIGN);
   if (block_info == 0x0) {
     fprintf(stderr, "Could not allocate Block Info array\n");
-    abort();
+    std::abort();
   }
 
   // Set up blockinfo
@@ -175,7 +175,7 @@ Dslash<FT, veclen, soalen, compress12>::Dslash(
   tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, QPHIX_LLC_CACHE_ALIGN);
   if (tmpspc_all == 0x0) {
     printf("Failed to allocate xy offset tmpspc\n");
-    abort();
+    std::abort();
   }
 
 #pragma omp parallel
@@ -346,6 +346,18 @@ void Dslash<FT, veclen, soalen, compress12>::dslash(
   DPsi(u, psi, res, isign == 1, cb);
 }
 
+template<typename FT, int veclen, int soalen, bool compress12>
+void Dslash<FT, veclen, soalen, compress12>::dslashDir(
+    FourSpinorBlock *res,
+    const FourSpinorBlock *psi,
+    const SU3MatrixBlock *u,
+    int cb,
+    int dir)
+{
+  DPsiDir(u,psi,res,cb,dir);
+}
+
+
 template <typename FT, int veclen, int soalen, bool compress12>
 void Dslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     FourSpinorBlock *res,
@@ -366,7 +378,8 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                                                  FourSpinorBlock *res,
                                                  const SU3MatrixBlock *u,
                                                  bool const is_plus,
-                                                 int cb)
+                                                 int cb,
+                                                 const unsigned int *dir_mask)
 {
   auto kernel =
       (is_plus
@@ -623,6 +636,10 @@ void Dslash<FT, veclen, soalen, compress12>::Dyz(int tid,
                 accumulate[2] = (yi == 0 ? 0 : -1);
                 accumulate[3] = (yi == Ny - 1 ? 0 : -1);
               }
+            }
+
+            for(int mu=0; mu < 8;++mu) {
+              accumulate[mu] &= dir_mask[mu];
             }
 
             FT aniso_coeff_s_T = rep<FT, double>(aniso_coeff_S);
@@ -995,7 +1012,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   double beta_s = -aniso_coeff_S;
   double beta_t_f = -aniso_coeff_T;
   double beta_t_b = -aniso_coeff_T;
-
+  static const unsigned int dir_mask[8] = {-1U,-1U,-1U,-1U,-1U,-1U,-1U,-1U };
   // Antiperiodic BCs on back links
   if (amIPtMin) {
     beta_t_b *= t_boundary;
@@ -1033,7 +1050,7 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    Dyz(tid, psi_in, res_out, u, is_plus, cb);
+    Dyz(tid, psi_in, res_out, u, is_plus, cb, dir_mask);
   }
 
 #ifdef QPHIX_DO_COMMS
@@ -1048,6 +1065,90 @@ void Dslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
         double bet = (d / 2 == 3 ? (d % 2 == 0 ? beta_t_b : beta_t_f) : beta_s);
         completeFaceDir(
             tid, comms->recvFromDir[d], res_out, u, bet, cb, d / 2, d % 2, is_plus);
+      }
+    } else
+      comms->recv_queue.push(d);
+  }
+#endif // QPHIX_DO_COMMS
+}
+template <typename FT, int veclen, int soalen, bool compress12>
+void Dslash<FT, veclen, soalen, compress12>::DPsiDir(const SU3MatrixBlock *u,
+                                                  const FourSpinorBlock *psi_in,
+                                                  FourSpinorBlock *res_out,
+                                                  int cb,
+                                                  int dir)
+{
+  double beta_s = -aniso_coeff_S;
+  double beta_t_f = -aniso_coeff_T;
+  double beta_t_b = -aniso_coeff_T;
+  const bool is_plus = true; // hardwire for now.
+  // directions are
+  // dir:
+  //  0: 0,BACKWARD
+  //  1: 0,FORWARD
+  //  2: 1,BACKWARD
+  //  3: 1,FORWARD
+  int mu = dir/2;
+  int send_to = dir%2;
+  int recv_from = 1 - send_to;
+
+
+  // Antiperiodic BCs on back links
+  if (amIPtMin) {
+    beta_t_b *= t_boundary;
+  }
+
+  // Antiperiodic BCs on forw links
+  if (amIPtMax) {
+    beta_t_f *= t_boundary;
+  }
+
+  TSC_tick t_start, t_end;
+#ifdef QPHIX_DO_COMMS
+  // Pre-initiate all receives
+
+
+  if (!comms->localDir(mu)) {
+      comms->startRecvFromDir(2*mu + recv_from); // receive from forward
+
+#pragma omp parallel
+      {
+        int tid = omp_get_thread_num();
+        // Pack backwards
+        packFaceDir(tid, psi_in, comms->sendToDir[2 * mu + send_to], cb, mu, send_to, is_plus);
+
+      }
+      // Send backwards
+      comms->startSendDir(2 * mu + send_to);
+      comms->recv_queue.push(dir);
+
+
+  }
+#endif // QPHIX_DO_COMMS
+
+// DO BODY DON"T ACCUMULATE BOUNDARY
+#pragma omp parallel
+  {
+    int tid = omp_get_thread_num();
+    unsigned int dir_mask[8] = {0,0,0,0,0,0,0,0};
+    dir_mask[2*mu + recv_from]=-1U; // Mask only the direction we shift from
+
+
+    Dyz(tid, psi_in, res_out, u, is_plus, cb, dir_mask);
+  }
+
+#ifdef QPHIX_DO_COMMS
+  while (!comms->recv_queue.empty()) {
+    int d = comms->recv_queue.front();
+    comms->recv_queue.pop();
+    if (comms->testSendToDir(2*mu + send_to) && comms->testRecvFromDir(2*mu+recv_from)) {
+#pragma omp parallel
+      {
+        int tid = omp_get_thread_num();
+
+        double bet = (mu == 3 ? (recv_from == 0 ? beta_t_b : beta_t_f) : beta_s);
+        completeFaceDir(
+            tid, comms->recvFromDir[2*mu+recv_from], res_out, u, bet, cb, mu, recv_from, is_plus);
       }
     } else
       comms->recv_queue.push(d);

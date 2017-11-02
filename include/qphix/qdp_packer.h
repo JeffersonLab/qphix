@@ -2,7 +2,7 @@
 
 #include "qdp.h"
 #include "qphix/geometry.h"
-
+#include "qphix/full_spinor.h"
 #include "qphix/dslash_def.h"
 #include "qphix/qphix_config.h"
 
@@ -22,10 +22,20 @@ void qdp_pack_spinor(
     const QDPSpinor &psi_in,
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *psi_even,
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *psi_odd,
-    Geometry<FT, veclen, soalen, compress> &s)
+    const Geometry<FT, veclen, soalen, compress> &s)
 {
   qdp_pack_cb_spinor(psi_in, psi_even, s, 0);
   qdp_pack_cb_spinor(psi_in, psi_odd, s, 1);
+}
+
+template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+void qdp_pack_spinor(
+    const QDPSpinor &psi_in,
+    FullSpinor<FT, veclen, soalen, compress>& psi,
+    const Geometry<FT, veclen, soalen, compress> &s)
+{
+  qdp_pack_cb_spinor(psi_in, psi.getCBData(0), s, 0);
+  qdp_pack_cb_spinor(psi_in, psi.getCBData(1), s, 1);
 }
 
 template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
@@ -33,12 +43,21 @@ void qdp_unpack_spinor(
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *chi_even,
     typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock *chi_odd,
     QDPSpinor &chi,
-    Geometry<FT, veclen, soalen, compress> &s)
+    const Geometry<FT, veclen, soalen, compress> &s)
 {
   qdp_unpack_cb_spinor(chi_even, chi, s, 0);
   qdp_unpack_cb_spinor(chi_odd, chi, s, 1);
 }
 
+template <typename FT, int veclen, int soalen, bool compress, typename QDPSpinor>
+void qdp_unpack_spinor(
+    const FullSpinor<FT,veclen,soalen,compress>& chi_qphix,
+    QDPSpinor &chi,
+    const Geometry<FT, veclen, soalen, compress> &s)
+{
+  qdp_unpack_cb_spinor(chi_qphix.getCBData(0), chi, s, 0);
+  qdp_unpack_cb_spinor(chi_qphix.getCBData(1), chi, s, 1);
+}
 #if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX512_SOURCE)
 
 // Downconvert an array of float-vecs to an array of float 16 vecs
@@ -60,7 +79,7 @@ inline void downconvert_array(const float *from, half *to, const unsigned int nv
 inline void upconvert_array(const half *from, float *to, const unsigned int nvecs)
 {
 #pragma omp parallel for shared(from, to)
-    for (int i = 0; i < nvecs; i++) {
+  for (int i = 0; i < nvecs; i++) {
 #if defined(QPHIX_MIC_SOURCE)
     __m512 in = _mm512_extload_ps(
         (from + 16 * i), _MM_UPCONV_PS_FLOAT16, _MM_BROADCAST32_NONE, _MM_HINT_T0);
@@ -78,7 +97,7 @@ void qdp_pack_gauge(
     const QDPGauge &u,
     typename Geometry<half, 16, soalen, compress>::SU3MatrixBlock *u_cb0,
     typename Geometry<half, 16, soalen, compress>::SU3MatrixBlock *u_cb1,
-    Geometry<half, 16, soalen, compress> &s)
+    const Geometry<half, 16, soalen, compress> &s)
 {
 
   typedef typename Geometry<float, 16, soalen, compress>::SU3MatrixBlock GaugeF;
@@ -127,7 +146,7 @@ void qdp_pack_spinor(
     const QDPSpinor &psi_in,
     typename Geometry<half, 16, soalen, compress>::FourSpinorBlock *psi_even,
     typename Geometry<half, 16, soalen, compress>::FourSpinorBlock *psi_odd,
-    Geometry<half, 16, soalen, compress> &s)
+    const Geometry<half, 16, soalen, compress> &s)
 {
   typedef typename Geometry<float, 16, soalen, compress>::FourSpinorBlock SpinorF;
 
@@ -180,7 +199,7 @@ void qdp_unpack_spinor(
     typename Geometry<half, 16, soalen, compress>::FourSpinorBlock *chi_even,
     typename Geometry<half, 16, soalen, compress>::FourSpinorBlock *chi_odd,
     QDPSpinor &chi,
-    Geometry<half, 16, soalen, compress> &s)
+    const Geometry<half, 16, soalen, compress> &s)
 {
 
   typedef typename Geometry<float, 16, soalen, compress>::FourSpinorBlock SpinorF;
@@ -235,7 +254,7 @@ template <int soalen, bool compress, typename ClovTerm>
 void qdp_pack_clover(
     const ClovTerm &qdp_clov_in,
     typename Geometry<half, 16, soalen, compress>::CloverBlock *cl_out,
-    Geometry<half, 16, soalen, compress> &s,
+    const Geometry<half, 16, soalen, compress> &s,
     int cb)
 {
   typedef typename Geometry<float, 16, soalen, compress>::CloverBlock ClovF;

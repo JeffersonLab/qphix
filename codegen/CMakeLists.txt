@@ -7,65 +7,66 @@ set(isa "" CACHE STRING "select ISA to generate for")
 set(target_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a")
 set(target_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING "select target CXXFLAGS for building libqphix-codege.a")
 set(target_jN 1 CACHE STRING "select -j parameter for making target")
+option(skip_build "Developer only: Reduce building of certain kernels for faster build" OFF)
 
 function(setup_defs target precision soalen lowprec)
 
-    if( ${SERIAL_SPIN} )  
-    	list(APPEND yesnolist SERIAL_SPIN ) 
+    if( ${SERIAL_SPIN} )
+    	list(APPEND yesnolist SERIAL_SPIN )
     endif()
-    if( ${PREF_L1_SPINOR_IN} ) 
-    	list( APPEND yesnolist PREF_L1_SPINOR_IN)  
+    if( ${PREF_L1_SPINOR_IN} )
+    	list( APPEND yesnolist PREF_L1_SPINOR_IN)
     endif()
     if( ${PREF_L2_SPINOR_IN} )
-    	 list( APPEND yesnolist PREF_L2_SPINOR_IN)  
+    	 list( APPEND yesnolist PREF_L2_SPINOR_IN)
     endif()
-    if( ${PREF_L1_SPINOR_OUT} ) 
-    	list( APPEND yesnolist PREF_L1_SPINOR_OUT)  
+    if( ${PREF_L1_SPINOR_OUT} )
+    	list( APPEND yesnolist PREF_L1_SPINOR_OUT)
    endif()
-    if( ${PREF_L2_SPINOR_OUT} ) 
-    	list( APPEND yesnolist PREF_L2_SPINOR_OUT)  
+    if( ${PREF_L2_SPINOR_OUT} )
+    	list( APPEND yesnolist PREF_L2_SPINOR_OUT)
     endif()
     if( ${PREF_L1_GAUGE} )
-    	 list( APPEND yesnolist PREF_L1_GAUGE)  
+    	 list( APPEND yesnolist PREF_L1_GAUGE)
     endif()
     if( ${PREF_L2_GAUGE} )
-    	 list( APPEND yesnolist PREF_L2_GAUGE) 
+    	 list( APPEND yesnolist PREF_L2_GAUGE)
     endif()
-    if( ${PREF_L1_CLOVER} ) 
-    	list( APPEND yesnolist PREF_L1_CLOVER)  
+    if( ${PREF_L1_CLOVER} )
+    	list( APPEND yesnolist PREF_L1_CLOVER)
     endif()
     if( ${PREF_L2_CLOVER} )
-    	 list( APPEND yesnolist PREF_L2_CLOVER)  
+    	 list( APPEND yesnolist PREF_L2_CLOVER)
     endif()
     if( ${USE_LDUNPK} )
-    	 list( APPEND yesnolist USE_LDUNPK)  
+    	 list( APPEND yesnolist USE_LDUNPK)
     endif()
-    if( ${USE_PKST} ) 
-    	list( APPEND yesnolist USE_PKST)  
+    if( ${USE_PKST} )
+    	list( APPEND yesnolist USE_PKST)
     endif()
-    if( ${USE_SHUFFLES} ) 
-    	list( APPEND yesnolist USE_SHUFFLES) 
+    if( ${USE_SHUFFLES} )
+    	list( APPEND yesnolist USE_SHUFFLES)
     endif()
     if( ${USE_NO_GPREF_L1} )
-    	 list( APPEND yesnolist USE_NO_GPREF_L2)  
+    	 list( APPEND yesnolist USE_NO_GPREF_L2)
     endif()
-    if( ${USE_NO_GPREF_L2} ) 
-    	list( APPEND yesnolist USE_NO_GPREF_L2) 
+    if( ${USE_NO_GPREF_L2} )
+    	list( APPEND yesnolist USE_NO_GPREF_L2)
     endif()
-    if( ${ENABLE_STREAMING_STORES} ) 
-    	list( APPEND yesnolist ENABLE_STREAMING_STORES)  
+    if( ${ENABLE_STREAMING_STORES} )
+    	list( APPEND yesnolist ENABLE_STREAMING_STORES)
     endif()
-    if( ${USE_PACKED_GAUGES} ) 
-    	list( APPEND yesnolist USE_PACKED_GAUGES)  
+    if( ${USE_PACKED_GAUGES} )
+    	list( APPEND yesnolist USE_PACKED_GAUGES)
     endif()
-    if( ${USE_PACKED_CLOVER} ) 
-    	list( APPEND yesnolist USE_PACKED_CLOVER)  
+    if( ${USE_PACKED_CLOVER} )
+    	list( APPEND yesnolist USE_PACKED_CLOVER)
     endif()
-    if( ${NO_HW_MASKING} ) 
-    	list( APPEND yesnolist NO_HW_MASKING ) 
+    if( ${NO_HW_MASKING} )
+    	list( APPEND yesnolist NO_HW_MASKING )
     endif()
-    if( ${NO_MASKS} ) 
-    	list( APPEND yesnolist NO_MASKS) 
+    if( ${NO_MASKS} )
+    	list( APPEND yesnolist NO_MASKS)
     endif()
 
    #Enable AVX2 or AVX512
@@ -99,7 +100,7 @@ function(setup_defs target precision soalen lowprec)
           LIST(APPEND deflist VECLEN=1)
       endif()
 
-   else() 
+   else()
 
       #Double precision vector lengths
       if (  ( ${isa} STREQUAL "avx" ) OR ( ${isa} STREQUAL "avx2" ) )
@@ -119,34 +120,25 @@ MESSAGE(STATUS "Deflist2 is ${deflist}")
 target_compile_definitions(${target} PRIVATE ${yesnolist} PRIVATE ${deflist} )
 endfunction()
 
-
 MESSAGE(STATUS "Looking for Python")
-find_package(PythonLibs 3.0 REQUIRED)
 find_package(PythonInterp 3.0 REQUIRED)
 MESSAGE(STATUS "Python interpreter is ${PYTHON_EXECUTABLE}")
-
-MESSAGE(STATUS "Copying JINJA Directory")
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/jinja DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-#MESSAGE(INFO "Copying Include Directory")
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 LIST(APPEND codegen_sources codegen.cc
 	    data_types.cc
 	    dslash.cc
 	    dslash_common.cc
-	    inst_dp_vec8.cc 
+	    inst_dp_vec8.cc
 	    inst_sp_vec16.cc
- 	    inst_dp_vec4.cc 
-	    inst_sp_vec8.cc 
-	    inst_sp_vec4.cc 
-	    inst_dp_vec2.cc 
+ 	    inst_dp_vec4.cc
+	    inst_sp_vec8.cc
+	    inst_sp_vec4.cc
+	    inst_dp_vec2.cc
 	    inst_scalar.cc
-	    address_types.h 
-	    data_types.h 
-	    dslash.h 
+	    address_types.h
+	    data_types.h
+	    dslash.h
 	    instructions.h)
-
 
 if( ${isa} STREQUAL "avx" OR ${isa} STREQUAL "avx2" )
 
@@ -168,12 +160,12 @@ if( ${isa} STREQUAL "avx" OR ${isa} STREQUAL "avx2" )
     set( USE_PACKED_GAUGES TRUE)
     set( USE_PACKED_CLOVER TRUE)
     set( NO_HW_MASKING TRUE )
-    set( NO_MASKS FALSE) 
+    set( NO_MASKS FALSE)
 
 elseif( ${isa} STREQUAL "avx512" )
 
     set( SERIAL_SPIN  TRUE)
-    set( PREF_L1_SPINOR_IN FALSE ) 
+    set( PREF_L1_SPINOR_IN FALSE )
     set( PREF_L2_SPINOR_IN FALSE )
     set( PREF_L1_SPINOR_OUT FALSE )
     set( PREF_L2_SPINOR_OUT FALSE )
@@ -182,7 +174,7 @@ elseif( ${isa} STREQUAL "avx512" )
     set( PREF_L1_CLOVER FALSE)
     set( PREF_L2_CLOVER FALSE  )
     set( USE_LDUNPK TRUE)
-    set( USE_PKST TRUE) 
+    set( USE_PKST TRUE)
     set( USE_SHUFFLES  FALSE)
     set( NO_GPREF_L1 TRUE )
     set( NO_GPREF_L2 TRUE )
@@ -190,9 +182,9 @@ elseif( ${isa} STREQUAL "avx512" )
     set( USE_PACKED_GAUGES TRUE)
     set( USE_PACKED_CLOVER TRUE)
     set( NO_HW_MASKING FALSE )
-    set( NO_MASKS FALSE) 
+    set( NO_MASKS FALSE)
 
-elseif( ${isa} STREQUAL "sse" ) 
+elseif( ${isa} STREQUAL "sse" )
 
     set( SERIAL_SPIN  TRUE)
     set( PREF_L1_SPINOR_IN  FALSE)
@@ -204,7 +196,7 @@ elseif( ${isa} STREQUAL "sse" )
     set( PREF_L1_CLOVER FALSE )
     set( PREF_L2_CLOVER FALSE )
     set( USE_LDUNPK TRUE)
-    set( USE_PKST TRUE) 
+    set( USE_PKST TRUE)
     set( USE_SHUFFLES  FALSE)
     set( NO_GPREF_L1 TRUE )
     set( NO_GPREF_L2 TRUE )
@@ -212,7 +204,7 @@ elseif( ${isa} STREQUAL "sse" )
     set( USE_PACKED_GAUGES TRUE)
     set( USE_PACKED_CLOVER TRUE)
     set( NO_HW_MASKING TRUE )
-    set( NO_MASKS TRUE) 
+    set( NO_MASKS TRUE)
 
 elseif( ${isa} STREQUAL "scalar" )
 
@@ -226,7 +218,7 @@ elseif( ${isa} STREQUAL "scalar" )
     set( PREF_L1_CLOVER FALSE )
     set( PREF_L2_CLOVER FALSE )
     set( USE_LDUNPK TRUE)
-    set( USE_PKST TRUE) 
+    set( USE_PKST TRUE)
     set( USE_SHUFFLES  FALSE)
     set( NO_GPREF_L1 TRUE )
     set( NO_GPREF_L2 TRUE )
@@ -234,7 +226,7 @@ elseif( ${isa} STREQUAL "scalar" )
     set( USE_PACKED_GAUGES TRUE)
     set( USE_PACKED_CLOVER TRUE)
     set( NO_HW_MASKING TRUE )
-    set( NO_MASKS TRUE) 
+    set( NO_MASKS TRUE)
 
 endif()
 
@@ -245,10 +237,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h.in ${CMAKE_CURRENT_BINAR
 LIST(APPEND ${codegen_sources} ${CMAKE_CURRENT_SOURCE_DIR}/output_dir.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-if( ${isa} STREQUAL "avx")
-
-    
-
+if(${isa} STREQUAL "avx")
     set(target avx_PRECISION-2_SOALEN-2)
     add_executable(${target} ${codegen_sources})
     setup_defs(${target} 2 2 FALSE)
@@ -269,13 +258,13 @@ if( ${isa} STREQUAL "avx")
     setup_defs(${target} 1 8 FALSE)
     list(APPEND target_list ${target})
 
-   elseif( ${isa} STREQUAL "avx2" ) 
+   elseif( ${isa} STREQUAL "avx2" )
 
 	set(target avx_PRECISION-2_SOALEN_2_AVX2-1)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 2 2 FALSE)
         list(APPEND target_list ${target})
- 
+
 	set(target avx_PRECISION-2_SOALEN_4_AVX2-1)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 2 4 FALSE)
@@ -312,7 +301,7 @@ elseif( ${isa} STREQUAL "avx512" )
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 2 4 FALSE)
         list(APPEND target_list ${target})
-	
+
 	set(target mic_PRECISION-1_SOALEN-16)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 1 16  FALSE)
@@ -343,20 +332,18 @@ elseif( ${isa} STREQUAL "avx512" )
 	setup_defs(${target} 1 4 TRUE)
         list(APPEND target_list ${target})
 
-elseif( ${isa} STREQUAL "sse" ) 
+elseif( ${isa} STREQUAL "sse" )
 	set(target  sse_PRECISION-2)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 2 2 FALSE)
     list(APPEND target_list ${target})
-	
-	
+
 	set(target  sse_PRECISION-1)
 	add_executable(${target} ${codegen_sources})
 	setup_defs(${target} 1 4 FALSE)
     list(APPEND target_list ${target})
-	
-elseif( ${isa} STREQUAL "scalar" )
 
+elseif( ${isa} STREQUAL "scalar" )
 
 	set(target scalar_PRECISION-2)
 	add_executable(${target} ${codegen_sources})
@@ -378,29 +365,16 @@ foreach(targ ${target_list})
 	LIST(APPEND codegen_targets codegen_${targ})
 endforeach()
 
-# 
-add_custom_target( jinja ALL 
-				   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/jinja/generate_files.py ${isa}
-				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
-				   COMMENT "Generating function body source code: with generate_files.py ${isa}"
-				   DEPENDS ${codegen_targets})
-				   
-export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja)
+add_custom_target(jinja ALL 
+    COMMAND ${PYTHON_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/jinja/generate_files.py ${isa}
+    --do-skip "${skip_build}"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/jinja
+    COMMENT "Generating function body source code: with generate_files.py ${isa}"
+    DEPENDS ${codegen_targets})
 
-# Copy some headers over into the directory for the generated code
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/decl_common.h
- 		   				${CMAKE_CURRENT_BINARY_DIR}/include/decl_common.h)
-    				
-if ( (${isa} STREQUAL "avx") OR (${isa} STREQUAL "avx2") )
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/avx_utils.h
-					${CMAKE_CURRENT_BINARY_DIR}/include/avx_utils.h)
-elseif( ${isa} STREQUAL "sse" )
-    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/sse_utils.h
-   				${CMAKE_CURRENT_BINARY_DIR}/include/sse_utils.h)
-elseif( ${isa} STREQUAL "qpx" ) 
-	configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/include/qpx_utils.h
-    				${CMAKE_CURRENT_BINARY_DIR}/include/qpx_utils.h)
-endif()
+export(TARGETS ${target_list} FILE qphix-codegen-exports.cmake )
 
 # Create the sub build -- this just sets CXX, CXXFLAGS and the CMake directory in compile_lib.sh
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BINARY_DIR}/build_lib/compile_lib.sh)
@@ -408,16 +382,23 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/compile_lib.sh.in ${CMAKE_CURRENT_BI
 message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 message(STATUS "target_cxx: ${target_cxx}")
 
+if ("${target_jN}" STREQUAL "")
+    set(make_program_arguments)
+else()
+    set(make_program_arguments "-j${target_jN}")
+endif()
+message(STATUS "make_program_arguments: ${make_program_arguments}")
+
 # This custom target executes 
 add_custom_target( codegen_lib ALL 
-				   COMMAND cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
-				   		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                                                -DCMAKE_CXX_COMPILER=${target_cxx}
-                                                -DCMAKE_CXX_FLAGS=${target_cxxflags} 
-				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN}
-				   COMMAND ${CMAKE_MAKE_PROGRAM} -j ${target_jN} install
-				   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
-				   DEPENDS jinja)
+    COMMAND cmake ${CMAKE_CURRENT_BINARY_DIR}/generated/${isa} 
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+    -DCMAKE_CXX_COMPILER=${target_cxx}
+    -DCMAKE_CXX_FLAGS=${target_cxxflags} 
+    -Dmain_source_dir=${CMAKE_CURRENT_SOURCE_DIR}/..
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} VERBOSE=1
+    COMMAND ${CMAKE_MAKE_PROGRAM} ${make_program_arguments} install
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build_lib
+    DEPENDS jinja)
 
-
-
+# vim: sts=2 sw=2

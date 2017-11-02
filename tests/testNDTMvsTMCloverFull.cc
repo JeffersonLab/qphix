@@ -2,11 +2,6 @@
 #include "unittest.h"
 #include "testNDTMvsTMCloverFull.h"
 
-// Stupid compiler thing
-#undef SEEK_SET
-#undef SEEK_CUR
-#undef SEEK_END
-
 #include "qphix/ndtm_clov_dslash_def.h"
 #include "qphix/ndtm_clov_dslash_body.h"
 

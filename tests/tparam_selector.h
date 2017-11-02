@@ -6,7 +6,7 @@
 #include <qphix/print_utils.h>
 
 #include <qdp.h>
-#include <qphix_codegen/decl_common.h>
+#include "qphix_codegen/decl_common.h"
 
 using namespace QDP;
 
@@ -48,8 +48,14 @@ template <class TestClass>
 void call(TestClass &instance, Prec prec, int soalen, bool compress12)
 {
   if (prec == HALF_PREC) {
-#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
-    defined(QPHIX_AVX512_SOURCE)
+
+// FIXME: Clover Product in EO-Clover operator breaks for half precision
+// We do not see any architectural advantage to half prec on current generation
+// and the clover product right now is not Vectorized (which is the place to get
+// the half prec ops (convert entire vectors). So I am disabling this for now.
+//#if defined(QPHIX_MIC_SOURCE) || defined(QPHIX_AVX2_SOURCE) ||                      \
+//    defined(QPHIX_AVX512_SOURCE)
+#if 0
     call_1<TestClass, QPhiX::half>(instance, soalen, compress12);
 #else
     QPhiX::masterPrintf("This architecture does not support half-precision floating "

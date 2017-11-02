@@ -2,8 +2,7 @@
 
 #include "qphix/dslash_utils.h"
 #include "qphix/print_utils.h"
-
-#include <qphix_codegen/decl_common.h>
+#include "qphix_codegen/decl_common.h"
 
 #include <cstdlib>
 #include <stdexcept>
@@ -274,7 +273,7 @@ class Geometry
     FourSpinorBlock *ret_val = (FourSpinorBlock *)BUFFER_MALLOC(spinor_bytes, 128);
     if (ret_val == (FourSpinorBlock *)0x0) {
       masterPrintf("Failed to allocate FourSpinorBlock\n");
-      abort();
+      std::abort();
     }
 
     // Zero the field.
@@ -315,7 +314,7 @@ class Geometry
     SU3MatrixBlock *ret_val = (SU3MatrixBlock *)BUFFER_MALLOC(gauge_bytes, 128);
     if (ret_val == (SU3MatrixBlock *)0x0) {
       masterPrintf("Failed to allocate SU3MatrixBlock\n");
-      abort();
+      std::abort();
     }
 
     // For AVX we should loop and zero it here....
@@ -344,7 +343,7 @@ class Geometry
     CloverBlock *ret_val = (CloverBlock *)BUFFER_MALLOC(clover_bytes, 128);
     if (ret_val == (CloverBlock *)0x0) {
       masterPrintf("Failed to allocate CloverBlock\n");
-      abort();
+      std::abort();
     }
 
     // For AVX we should loop and zero it here....
@@ -374,7 +373,7 @@ class Geometry
         (FullCloverBlock *)BUFFER_MALLOC(full_clover_bytes, 128);
     if (ret_val == (FullCloverBlock *)0x0) {
       masterPrintf("Failed to allocate FullCloverBlock\n");
-      abort();
+      std::abort();
     }
 
     // For AVX we should loop and zero it here....

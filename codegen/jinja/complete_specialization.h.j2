@@ -21,7 +21,13 @@
 {% set suffix = '_12' if compress12 == 'true' else '_18' -%}
 {% endif -%}
 {% set filename = 'generated/%s_%s_%s_%s_v%d_s%d%s_%s'|format(kernel, operator, fptype, fptype, vec, soa, suffix, tbc_ts) -%}
+{# Travis CI has a limit of 50 minutes of building time. This time is
+insufficient for compiling all 16 variants of the twisted boundary conditions.
+Therefore we only build one of them really, the other ones are empty functions.
+#}
+{% if not skip_build or tbc_ts == 'ttst' or isa == 'scalar' or isa == 'avx' -%}
     #include "{{ filename }}"
+{% endif -%}
 {%- endmacro -%}
 
 {% macro definition_instantiation(operator) %}
@@ -64,7 +70,7 @@ includes with the Jinja2 include.
 #define SOA {{ SOA }}
 #define COMPRESS12 {{ COMPRESS12 }}
 namespace QPhiX {
-{% include 'jinja/%s_spec.h.j2'|format(kernel_base) %}
+{% include '%s_spec.h.j2'|format(kernel_base) %}
 }
 #undef FPTYPE
 #undef VEC

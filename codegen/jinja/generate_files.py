@@ -10,8 +10,16 @@ import itertools
 import json
 import os
 import socket
+import sys
 
 import jinja2
+
+
+assert sys.version_info.major >= 3, 'This script must run with Python 3, not {}.{}.{}.'.format(
+    sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+
+
+SOURCEDIR = os.path.dirname(sys.argv[0])
 
 
 def get_kernel_files_for_isa(kernel_pattern, isa, fptypes):
@@ -37,26 +45,33 @@ def write_if_changed(filename, content_new):
     with open(filename, 'w') as f:
         f.write(content_new)
 
+    print('Wrote {:07d} chars to {}'.format(len(content_new), filename, ))
+
 
 def main():
     options = _parse_args()
 
+    skip_build = any(options.do_skip == word for word in ['ON', 'TRUE', 'YES'])
+
+    print('options.do_skip:', options.do_skip)
+    print('skip_build:', skip_build)
+
     generated_warning = 'This file has been automatically generated. Do not change it manually, rather look for the template in qphix-codegen.'
 
-    with open('isa.js') as f:
+    with open(os.path.join(SOURCEDIR, 'isa.js')) as f:
         isas = json.load(f)
 
-    with open('kernels.js') as f:
+    with open(os.path.join(SOURCEDIR, 'kernels.js')) as f:
         kernel_patterns = json.load(f)
-
-    all_header_files = [os.path.join('..', x) for x in glob.glob('../include/*.h')]
 
     # Setting up Jinja
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader('..')
+        loader=jinja2.FileSystemLoader(SOURCEDIR)
     )
-    complete_specialization = env.get_template('jinja/complete_specialization.h.j2')
-    kernel_generated_h = env.get_template('jinja/kernel_generated.h.j2')
+    complete_specialization = env.get_template('complete_specialization.h.j2')
+    kernel_generated_h = env.get_template('kernel_generated.h.j2')
+
+    all_header_files = []
 
     for kernel_pattern in kernel_patterns:
         kernel = kernel_pattern % {'fptype_underscore': ''}
@@ -69,7 +84,6 @@ def main():
         filename = '../generated/{}_generated.h'.format(kernel)
         write_if_changed(filename, rendered)
         all_header_files.append(os.path.join('..', os.path.basename(filename)))
-
 
     for isa, isa_data in sorted(isas.items()):
         if len(options.isa) > 0 and not isa in options.isa:
@@ -96,7 +110,7 @@ def main():
             kernel = kernel_pattern % {'fptype_underscore': ''}
 
             filename_decl = os.path.join('..', 'generated', isa, 'include', '{}_{}_decl.h'.format(kernel, isa))
-            template_decl = env.get_template('jinja/{}_decl.h.j2'.format(kernel))
+            template_decl = env.get_template('{}_decl.h.j2'.format(kernel))
 
             rendered = template_decl.render()
             write_if_changed(filename_decl, rendered)
@@ -117,12 +131,12 @@ def main():
                             'kernel_pattern': kernel_pattern,
                             'extra_includes_local': isa_data['extra_includes_local'] + [os.path.join('include', os.path.basename(filename_decl))],
                             'extra_includes_global': isa_data['extra_includes_global'],
+                            'skip_build': skip_build,
                         }
 
                         rendered = complete_specialization.render(
                             kernel_base=kernel,
-                            **template_param,
-                        )
+                            **template_param)
                         filename_spec = os.path.join(
                             '../generated',
                             isa,
@@ -148,8 +162,7 @@ def main():
                                 tbc_ts=tbc_ts,
                                 tbc_true_false=tbc_true_false,
                                 kernel_base=kernel + '_tbc',
-                                **template_param,
-                            )
+                                **template_param)
                             filename_spec = os.path.join(
                                 '../generated',
                                 isa,
@@ -168,7 +181,7 @@ def main():
                             source_files.append(filename_spec)
 
 
-        cmake_template = env.get_template('jinja/CMakeLists.txt.j2')
+        cmake_template = env.get_template('CMakeLists.txt.j2')
         filename_cmake = os.path.join('../generated', isa, 'CMakeLists.txt')
         rendered = cmake_template.render(
             source_files=[
@@ -188,6 +201,7 @@ def _parse_args():
     '''
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('isa', nargs='+')
+    parser.add_argument('--do-skip')
     options = parser.parse_args()
 
     return options

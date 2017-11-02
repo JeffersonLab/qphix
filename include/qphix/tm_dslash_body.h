@@ -8,8 +8,8 @@
 #include <immintrin.h>
 #include <omp.h>
 
-#include <qphix_codegen/dslash_generated.h>
-#include <qphix_codegen/tm_dslash_generated.h>
+#include "qphix_codegen/dslash_generated.h"
+#include "qphix_codegen/tm_dslash_generated.h"
 
 namespace QPhiX
 {
@@ -72,7 +72,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
     printf("X length after checkerboarding (%d) must be divisible by soalen (%d)\n",
            Nxh,
            soalen);
-    abort();
+    std::abort();
   }
 
   // We must have Ny be divisible by nGY (ratio of VECLEN to SOALEN)
@@ -80,7 +80,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
   if (Ny % ngy != 0) {
     printf(
         "Y length (%d) must be divisible by ratio of VECLEN/SOALEN=%d\n", Ny, ngy);
-    abort();
+    std::abort();
   }
 
   if (Sy > By / ngy) {
@@ -140,7 +140,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
   block_info = (BlockPhase *)ALIGNED_MALLOC(num_blockinfo * sizeof(BlockPhase), 64);
   if (block_info == 0x0) {
     fprintf(stderr, "Could not allocate Block Info array\n");
-    abort();
+    std::abort();
   }
 
   // Set up blockinfo
@@ -181,7 +181,7 @@ TMDslash<FT, veclen, soalen, compress12>::TMDslash(
   tmpspc_all = (int *)ALIGNED_MALLOC(tmpspc_size, 64);
   if (tmpspc_all == 0x0) {
     printf("Failed to allocate xy offset tmpspc\n");
-    abort();
+    std::abort();
   }
 
 #pragma omp parallel

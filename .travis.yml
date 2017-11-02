@@ -5,6 +5,9 @@ script: ./travis-ci.sh
 dist: trusty
 sudo: true
 
+python:
+    - "3.5"
+
 notifications:
     slack: qphix:CL3hceIh0CHiXctnpvR6hXZs
 
@@ -13,3 +16,5 @@ cache: ccache
 env:
     - QPHIX_ARCH=SCALAR
     - QPHIX_ARCH=AVX
+    - QPHIX_ARCH=AVX2
+    - QPHIX_ARCH=AVX512
