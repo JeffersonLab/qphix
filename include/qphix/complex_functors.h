@@ -421,7 +421,7 @@ class BiCGStabRXUpdateFunctor
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *p;
   AT alpha[2];
   AT omega[2];
-}
+};
 
 template <typename FT, int V, int S, bool compress>
 class TwistedMassFunctor

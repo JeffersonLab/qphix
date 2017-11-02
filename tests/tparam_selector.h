@@ -121,4 +121,4 @@ void Call2<soalen>::call_2(TestClass &instance, bool compress12)
 
 template <>
 template <class TestClass, typename FT>
-void Call2<0>::call_2(TestClass &instance, bool compress12){};
+void Call2<0>::call_2(TestClass &instance, bool compress12){}
