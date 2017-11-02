@@ -5,6 +5,8 @@ include(CTest)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_definitions(-Wall -pedantic)
+
 ###############################################################################
 #                                User Options                                 #
 ###############################################################################
