@@ -151,6 +151,8 @@ class Comms
 
   inline void progressComms() {}
 
+  inline void waitAllComms() {}
+
   inline T *getSendToDirBuf(int dir) { return sendToDir[dir]; }
   inline T *getRecvFromDirBuf(int dir) { return recvFromDir[dir]; }
 
