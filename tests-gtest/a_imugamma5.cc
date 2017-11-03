@@ -8,7 +8,7 @@
 #include <qdp.h>
 #include <qphix/blas_new_c.h>
 
-#include "../tests/compare_qdp_spinors.h"
+#include "../tests/compare_qdp_spinors_gtest.h"
 
 #include <cmath>
 

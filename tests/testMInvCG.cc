@@ -27,7 +27,7 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "RandomGauge.h"
-#include "compare_qdp_spinors.h"
+#include "compare_qdp_spinors_custom.h"
 
 void TestMultishift::run()
 {

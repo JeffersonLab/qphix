@@ -6,6 +6,7 @@ using namespace QPhiX;
 
 #include "../tests/veclen.h"
 #include "../tests/tolerance.h"
+#include "../tests/compare_qdp_spinors_gtest.h"
 
 #include <qphix/blas_new_c.h>
 #include <qphix/ndtm_reuse_operator.h>
@@ -15,9 +16,7 @@ using namespace QPhiX;
 #include <qphix/wilson.h>
 
 #include <qdp.h>
-#include <gtest/gtest.h>
 
-#include "../tests/compare_qdp_spinors.h"
 
 #include <iostream>
 #include <vector>

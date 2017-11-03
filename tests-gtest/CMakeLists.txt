@@ -3,6 +3,8 @@
 # Include GTest Headers
 include_directories(${PROJECT_SOURCE_DIR}/external)
 
+include_directories(${PROJECT_SOURCE_DIR})
+
 if( ${testing})
   if ( ${QDPXX_CXX_FOUND} )
      add_library(gtestlib STATIC process_args.cc random_gauge.cc qdpxx_test_env.cc)

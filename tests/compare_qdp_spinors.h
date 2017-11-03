@@ -1,5 +1,9 @@
 #pragma once
 
+#if !defined(COMPARE_QDP_SPINORS_GTEST) && !defined(COMPARE_QDP_SPINORS_CUSTOM)
+#error "This header must not be included directly, use the versions with _gtest or _custom in their filename."
+#endif
+
 #include <qphix/geometry.h>
 #include <qphix/print_utils.h>
 #include <qphix/qdp_packer.h>

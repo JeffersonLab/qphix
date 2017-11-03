@@ -8,6 +8,7 @@ using namespace QPhiX;
 #include "../tests/tolerance.h"
 #include "../tests/clover_fermact_params_w.h"
 #include "../tests/clover_term.h"
+#include "../tests/compare_qdp_spinors_gtest.h"
 
 #include <qphix/clover.h>
 #include <qphix/clover_product.h>
@@ -17,8 +18,6 @@ using namespace QPhiX;
 #include <qphix/wilson.h>
 
 #include <qdp.h>
-#include <gtest/gtest.h>
-#include "../tests/compare_qdp_spinors.h"
 
 #include <iostream>
 

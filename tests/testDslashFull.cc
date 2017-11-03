@@ -27,7 +27,7 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "tparam_selector.h"
-#include "compare_qdp_spinors.h"
+#include "compare_qdp_spinors_custom.h"
 #include "RandomGauge.h"
 
 int Nx, Ny, Nz, Nt, Nxh;

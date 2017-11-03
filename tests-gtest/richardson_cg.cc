@@ -3,7 +3,6 @@
   outer solver.
   */
 
-#include <gtest/gtest.h>
 #include <qphix/blas_new_c.h>
 #include <qdp.h>
 #include <qphix/qphix_cli_args.h>
@@ -11,7 +10,7 @@
 #include <qphix/invcg.h>
 #include <qphix/inv_richardson_multiprec.h>
 
-#include "../tests/compare_qdp_spinors.h"
+#include "../tests/compare_qdp_spinors_gtest.h"
 #include "../tests/RandomGauge.h"
 #include "../tests/veclen.h"
 
