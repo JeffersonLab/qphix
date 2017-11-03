@@ -65,12 +65,13 @@ void expect_near(QdpSpinor &spinor_a,
   if (message != nullptr) {
     QDPIO::cout << "Spinor comparison: " << message << ": ";
   }
-  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err
-              << "\nA = control, B = candidate" << std::endl;
+  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err << std::endl;
 
   if (QDP::toBool(diff_norm < abs_err)) {
     return;
   }
+
+  QDPIO::cout << "A = control, B = candidate" << std::endl;
 
   uint64_t printed_out = 0;
 
@@ -133,17 +134,4 @@ void expect_near(QdpSpinor &spinor_a,
 #else
                   assertion(false);
 #endif
-}
-
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
-void expect_near(HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_a,
-                 HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_b,
-                 double const abs_err,
-                 QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
-                 int const target_cb,
-                 char const *const message = nullptr)
-{
-  spinor_a.unpack();
-  spinor_b.unpack();
-  expect_near(spinor_a.qdp(), spinor_b.qdp(), abs_err, geom, target_cb, message);
 }

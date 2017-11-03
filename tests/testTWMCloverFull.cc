@@ -156,6 +156,7 @@ void TestTMClover::operator()()
                  gauge_inv_clov_array[target_cb],
                  isign,
                  target_cb);
+      hs_qphix1.unpack();
 
       // (b) Apply QDP Dslash
       qdp_dslash(hs_qdp1.qdp(),
@@ -165,8 +166,12 @@ void TestTMClover::operator()()
                  isign,
                  target_cb);
 
-      expect_near(
-          hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "Twisted-mass clover dslash");
+      expect_near(hs_qdp1.qdp(),
+                  hs_qphix1.qdp(),
+                  1e-6,
+                  geom,
+                  target_cb,
+                  "Twisted-mass clover dslash");
     } // cb
   } // isign
 #endif
@@ -190,7 +195,7 @@ void TestTMClover::operator()()
                                beta,
                                isign,
                                target_cb);
-
+      hs_qphix1.unpack();
 
       // (b) Apply QDP Dslash
       qdp_achimbdpsi(hs_qdp1.qdp(),
@@ -201,7 +206,7 @@ void TestTMClover::operator()()
                      isign,
                      target_cb);
 
-      expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "Twisted-mass clover achimbdpsi");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "Twisted-mass clover achimbdpsi");
     } // cb
   } // isign
 #endif
@@ -228,7 +233,8 @@ void TestTMClover::operator()()
   for (int const isign : {1, -1}) {
 
     // (a) Apply QPhiX Operator
-    M(hs_qphix1[1], hs_source[1], isign);
+    M(hs_qphix1[cb], hs_source[cb], isign);
+    hs_qphix1.unpack();
 
     // (b) Apply QDP Dslash
     qdp_apply_operator(hs_qdp1.qdp(),
@@ -239,7 +245,7 @@ void TestTMClover::operator()()
                        isign,
                        cb);
 
-    expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, cb, "TM clover linop");
+    expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, cb, "TM clover linop");
 
   } // isign
 
@@ -282,6 +288,7 @@ void TestTMClover::operator()()
                        gauge.invclov_qdp,
                        1,
                        cb);
+    hs_qphix2.unpack();
 
     // chi3 = M^\dagger chi2
     qdp_apply_operator(hs_qdp1.qdp(),
@@ -292,7 +299,7 @@ void TestTMClover::operator()()
                        -1,
                        cb);
 
-    expect_near(hs_source, hs_qdp1, 1e-8, geom, cb, "TM Clover CG");
+    expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-8, geom, cb, "TM Clover CG");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
@@ -344,7 +351,7 @@ void TestTMClover::operator()()
                        1,
                        cb);
 
-    expect_near(hs_source, hs_qphix2, 1e-8, geom, cb, "TM Clover BiCGStab");
+    expect_near(hs_source.qdp(), hs_qphix2.qdp(), 1e-8, geom, cb, "TM Clover BiCGStab");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;

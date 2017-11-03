@@ -231,7 +231,7 @@ void TestTMDslash::testTWMDslash(int t_bc)
                  isign,
                  target_cb);
 
-      expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "Dslash");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "Dslash");
     } // cb
   } // isign
 }
@@ -312,7 +312,7 @@ void TestTMDslash::testTWMDslashAChiMBDPsi(int t_bc)
                      isign,
                      target_cb);
 
-      expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "A chi - b D psi");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "A chi - b D psi");
     } // cb
   } // isign
 }
@@ -385,7 +385,7 @@ void TestTMDslash::testTWMM(int t_bc)
                          isign,
                          target_cb);
 
-      expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
@@ -502,7 +502,7 @@ void TestTMDslash::testTWMCG(int t_bc)
       (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
 
-  expect_near(hs_source, hs_qdp2, 1e-8, geom, source_target_cb, "CG");
+  expect_near(hs_source.qdp(), hs_qdp2.qdp(), 1e-8, geom, source_target_cb, "CG");
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
@@ -596,7 +596,7 @@ void TestTMDslash::testTWMBiCGStab(int t_bc)
                        isign,
                        cb);
 
-    expect_near(hs_source, hs_qdp1, 1e-8, geom, cb, "TM Wilson BiCGStab");
+    expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-8, geom, cb, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =

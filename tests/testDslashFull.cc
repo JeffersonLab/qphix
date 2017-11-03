@@ -157,8 +157,12 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
 
       dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
 
-      expect_near(
-          hs_qdp1, hs_qphix1, tolerance<T>::value, geom, target_cb, "Wilson::Dslash");
+      expect_near(hs_qdp1.qdp(),
+                  hs_qphix1.qdp(),
+                  tolerance<T>::value,
+                  geom,
+                  target_cb,
+                  "Wilson::Dslash");
     } // cb
   } // isign
 }
