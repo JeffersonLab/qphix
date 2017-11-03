@@ -117,7 +117,7 @@ void TestTMClover::operator()()
                                     args_.MinCt,
                                     true);
 
-  RandomGauge<FT, V, S, compress> gauge(geom);
+  RandomGauge<FT, V, S, compress> gauge(geom, 1, 0.01);
 
   // The TM clover operator expects an array of inverse clover terms such that
   // it is the normal and hermitian conjugate. Since there is no twisted mass
@@ -134,11 +134,9 @@ void TestTMClover::operator()()
   HybridSpinor<FT, V, S, compress> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
 
-  if (true) {
-    gaussian(hs_source.qdp());
-  } else {
-    make_point_source(hs_source.qdp());
-  }
+  //gaussian(hs_source.qdp());
+  make_point_source(hs_source.qdp());
+
   hs_source.pack();
 
   TMClovDslash<FT, V, S, compress> D32(
@@ -216,44 +214,44 @@ void TestTMClover::operator()()
   } // isign
 #endif
 
-  // This tests the full even/odd operators
-  QDPIO::cout << std::endl
-              << std::endl
-              << "TESTING TWISTED MASS EVEN/ODD (DEGENERATE) DSLASH CLOVER OPERATOR"
-              << std::endl;
+  for (int const cb : {1, 0}) {
+    // This tests the full even/odd operators
+    QDPIO::cout << std::endl
+                << std::endl
+                << "TESTING TWISTED MASS EVEN/ODD (DEGENERATE) DSLASH CLOVER OPERATOR"
+                << std::endl;
 
-  int const cb = 1;
-  int const other_cb = 1 - cb;
+    int const other_cb = 1 - cb;
 
-  EvenOddTMCloverOperator<FT, V, S, compress> M(gauge.u_packed,
-                                                gauge.clov_packed[cb],
-                                                gauge_inv_clov_array[other_cb],
-                                                &geom,
-                                                gauge.t_boundary,
-                                                gauge.aniso_fac_s,
-                                                gauge.aniso_fac_t);
-  Phi ltmp = zero;
-  Real betaFactor = Real(0.25);
+    EvenOddTMCloverOperator<FT, V, S, compress> M(gauge.u_packed,
+                                                  gauge.clov_packed[cb],
+                                                  gauge_inv_clov_array[other_cb],
+                                                  &geom,
+                                                  gauge.t_boundary,
+                                                  gauge.aniso_fac_s,
+                                                  gauge.aniso_fac_t);
+    Phi ltmp = zero;
+    Real betaFactor = Real(0.25);
 
-  for (int const isign : {1, -1}) {
-    masterPrintf("isign: %d\n", isign);
+    for (int const isign : {1, -1}) {
+      masterPrintf("isign: %d\n", isign);
 
-    // (a) Apply QPhiX Operator
-    M(hs_qphix1[cb], hs_source[cb], isign);
-    hs_qphix1.unpack();
+      // (a) Apply QPhiX Operator
+      M(hs_qphix1[cb], hs_source[cb], isign);
+      hs_qphix1.unpack();
 
-    // (b) Apply QDP Dslash
-    qdp_apply_operator(hs_qdp1.qdp(),
-                       hs_source.qdp(),
-                       gauge.u_aniso,
-                       gauge.clov_qdp,
-                       gauge.invclov_qdp,
-                       isign,
-                       cb);
+      // (b) Apply QDP Dslash
+      qdp_apply_operator(hs_qdp1.qdp(),
+                         hs_source.qdp(),
+                         gauge.u_aniso,
+                         gauge.clov_qdp,
+                         gauge.invclov_qdp,
+                         isign,
+                         cb);
 
-    expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-20, geom, cb, "TM clover linop");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-20, geom, cb, "TM clover linop");
 
-  } // isign
+    } // isign
 
 // This tests the CG
 #if 1
@@ -367,6 +365,7 @@ void TestTMClover::operator()()
     masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
   }
 #endif
+  }
 
   QDPIO::cout << std::endl;
 }
