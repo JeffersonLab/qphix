@@ -50,7 +50,7 @@ class EvenOddTMCloverOperator
     clov = clov_;
     invclov[0] = invclov_[0];
     invclov[1] = invclov_[1];
-    tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
+    tmp = geom.allocCBFourSpinor();
   }
 
   EvenOddTMCloverOperator(Geometry<FT, veclen, soalen, compress12> *const geom_,
