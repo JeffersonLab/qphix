@@ -1052,6 +1052,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   if( NCommCores == 0 ){
 #pragma omp single nowait
     {
+      comms->resetComms();
       for (int d = 3; d >= 0; d--) {
         if (!comms->localDir(d)) {
           comms->startRecvFromDir(2 * d + 0);
@@ -1061,6 +1062,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
     }
   } else {
     if( tid == -NCommCores*n_threads_per_core ){
+      comms->resetComms();
       for (int d = 3; d >= 0; d--) {
         if (!comms->localDir(d)) {
           comms->startRecvFromDir(2 * d + 0);
@@ -1072,10 +1074,11 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   
   for (int d = 3; d >= 0; d--) {
     if( tid >= 0 ){
-      if (!comms->localDir(d)) { // this access to comms should be thread-safe
+      if (!comms->localDir(d)) {
         packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
         packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
         if( NCommCores == 0 ){
+          // when all threads are in here, we can issue the sends here
           // this barrier ensures that all packing has completed and that we
           // don't have multiple threads calling startSendDir
 #pragma omp barrier
@@ -1083,11 +1086,12 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
           {
             comms->startSendDir(2 * d + 1);
             comms->startSendDir(2 * d + 0);
-            // here we could also do the receive queue
           }
         }
       }
     }
+    // when only the working threads are packing above, we need to issue the send
+    // here
     if( NCommCores > 0 && !comms->localDir(d) ) {
       // this barrier ensures that all packing has completed
 #pragma omp barrier
@@ -1112,40 +1116,36 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsi(const SU3MatrixBlock *u,
   }
 
 #ifdef QPHIX_DO_COMMS
-  // when NCommCores == 0, we need to wait for comms to complete here
-  if( NCommCores == 0 ){
-#pragma omp single
-    {
-      comms->waitAllComms();
-    }
-  } else {
+  int drecv = 20;
+  while( ! (drecv < 0) ){
+// this barrier should not be required, but apparently it is
+// because otherwise weird things happen to drecv
 #pragma omp barrier
-  }
+#pragma omp single copyprivate(drecv)
+    {
+      drecv = comms->spinRecvQueue();
+    } // implicit barrier! 
+    
+    // note that in the the case NCommCores > 0, the barrier above will also
+    // catch the thread(s) spinning on [QMP/MPI]_Waitall
+    // which means that while we'll process the first direction to arrive below,
+    // all of them will have arrived at this stage...
+    // In the case NCommCores == 0 instead, the behaviour will be as
+    // in the implementation with receive queues
 
-  for( int d = 3; d >= 0; d-- ){
-    if( tid >= 0 && !comms->localDir(d) ){ 
+    if( tid >= 0 && drecv >= 0 && drecv < 8){
       completeFaceDir(tid,
-                      comms->recvFromDir[2*d + 0],
+                      comms->recvFromDir[drecv],
                       res_out,
                       u,
                       invclov,
-                      (d == 3 ? beta_t_b : beta_s ),
+                      ((drecv / 2) == 3 ? beta_t_b : beta_s ),
                       cb,
-                      d,
-                      0,
-                      is_plus);
-      completeFaceDir(tid,
-                      comms->recvFromDir[2*d + 1],
-                      res_out,
-                      u,
-                      invclov,
-                      (d == 3 ? beta_t_f : beta_s ),
-                      cb,
-                      d,
-                      1,
+                      drecv / 2,
+                      drecv % 2,
                       is_plus);
     }
-  } // end for
+  } // end while
 
   // this barrier is required because otherwise we might have some nodes moving on
   // to AChiMinusBDPsi
@@ -1188,6 +1188,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
   if( NCommCores == 0 ){
 #pragma omp single nowait
     {
+      comms->resetComms();
       for (int d = 3; d >= 0; d--) {
         if (!comms->localDir(d)) {
           comms->startRecvFromDir(2 * d + 0);
@@ -1197,6 +1198,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
     }
   } else {
     if( tid == -NCommCores*n_threads_per_core ){
+      comms->resetComms();
       for (int d = 3; d >= 0; d--) {
         if (!comms->localDir(d)) {
           comms->startRecvFromDir(2 * d + 0);
@@ -1212,6 +1214,7 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
         packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 1], cb, d, 1, is_plus);
         packFaceDir(tid, psi_in, comms->sendToDir[2 * d + 0], cb, d, 0, is_plus);
         if( NCommCores == 0 ){
+          // when all threads are in here, we can issue the sends here
           // this barrier ensures that all packing has completed and that we
           // don't accidentally have multiple threads calling comms functions
 #pragma omp barrier
@@ -1226,6 +1229,8 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
       }
     }
 
+    // when only the working threads are packing above, we need to issue the sends
+    // out here
     if( NCommCores > 0 && !comms->localDir(d) ) {
       // this barrier ensures that all packing has completed and that all threads
       // are caught here
@@ -1250,39 +1255,29 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
   }
 
 #ifdef QPHIX_DO_COMMS
-  // when NCommCores == 0, we need to wait for comms to complete here
-  if( NCommCores == 0 ){
-#pragma omp single
-    {
-      comms->waitAllComms();
-    } // implicit omp barrier!
-  } else {
-  // need to catch all threads
+  int drecv = 20;
+  while( ! (drecv<0) ){
+// this barrier should not be required, but apparently it is
+// because otherwise weird things happen to drecv
 #pragma omp barrier
-  }
+#pragma omp single copyprivate(drecv)
+    {
+      drecv = comms->spinRecvQueue();
+    } // implicit barrier, all threads should now be caught and have d from the single section
 
-  for( int d = 3; d >= 0; d-- ){
-    if( tid >= 0 && !comms->localDir(d) ){
+    if( tid >= 0 && drecv >= 0 && drecv < 8 ){
       completeFaceDirAChiMBDPsi(tid, 
-                                comms->recvFromDir[2*d + 0], 
+                                comms->recvFromDir[drecv], 
                                 res_out, 
                                 u, 
-                                ( d == 3 ? beta_t_b : beta_s ), 
+                                ( (drecv / 2) == 3 ? beta_t_b : beta_s ), 
                                 cb, 
-                                d, 
-                                0, 
-                                is_plus);
-      completeFaceDirAChiMBDPsi(tid, 
-                                comms->recvFromDir[2*d + 1], 
-                                res_out, 
-                                u, 
-                                ( d == 3 ? beta_t_f : beta_s ), 
-                                cb, 
-                                d, 
-                                1, 
+                                drecv/2, 
+                                drecv%2, 
                                 is_plus);
     }
-  } // end for
+  } // end while
+
 #pragma omp single
   {
     MPI_Barrier(MPI_COMM_WORLD);

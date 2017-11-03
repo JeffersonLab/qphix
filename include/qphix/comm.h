@@ -255,6 +255,30 @@ class Comms
     int fw_neigh_coords[4];
     int bw_neigh_coords[4];
 
+    numNonLocalDir_ = 0;
+    int numLocalDir = 0;
+    // Count the number of non local dirs
+    // and keep a compact map
+    for (int d = 0; d < 4; d++) {
+      if (!localDir(d)) {
+        nonLocalDir_[numNonLocalDir_] = d;
+        // these offsets give us arrays of handles without holes
+        handleOffset[2*d + 0] = 2*numNonLocalDir_ + 0; 
+        handleOffset[2*d + 1] = 2*numNonLocalDir_ + 1;
+#ifdef QMP_DIAGNOSTICS
+        masterPrintf("handleOffset[%d] = %d\n", 2*d+0, 2*numNonLocalDir_ + 0);
+        masterPrintf("handleOffset[%d] = %d\n", 2*d+1, 2*numNonLocalDir_ + 1);
+#endif
+        numNonLocalDir_++;
+      } else {
+        // local directions go at the end of the handle array, such that
+        // they can be NULL'ed below
+        handleOffset[2*d + 0] = 7 - 2*numLocalDir - 0;
+        handleOffset[2*d + 1] = 7 - 2*numLocalDir - 1;
+        numLocalDir++;
+      }
+    }
+
     totalBufSize = 0;
     for (int d = 0; d < 4; d++) {
       if (!localDir(d)) {
@@ -297,13 +321,13 @@ class Comms
         msgmem_recvFromDir[2 * d + 1] =
             QMP_declare_msgmem(recvFromDir[2 * d + 1], faceInBytes[d]);
 
-        mh_sendToDir[2 * d + 1] = QMP_declare_send_to(
+        mh_sendToDir[handleOffset[2 * d + 1]] = QMP_declare_send_to(
             msgmem_sendToDir[2 * d + 1], myNeighboursInDir[2 * d + 1], 0);
-        mh_recvFromDir[2 * d + 0] = QMP_declare_receive_from(
+        mh_recvFromDir[handleOffset[2 * d + 0]] = QMP_declare_receive_from(
             msgmem_recvFromDir[2 * d + 0], myNeighboursInDir[2 * d + 0], 0);
-        mh_sendToDir[2 * d + 0] = QMP_declare_send_to(
+        mh_sendToDir[handleOffset[2 * d + 0]] = QMP_declare_send_to(
             msgmem_sendToDir[2 * d + 0], myNeighboursInDir[2 * d + 0], 0);
-        mh_recvFromDir[2 * d + 1] = QMP_declare_receive_from(
+        mh_recvFromDir[handleOffset[2 * d + 1]] = QMP_declare_receive_from(
             msgmem_recvFromDir[2 * d + 1], myNeighboursInDir[2 * d + 1], 0);
 #endif
       } else {
@@ -317,15 +341,15 @@ class Comms
         msgmem_recvFromDir[2 * d + 0] = NULL;
         msgmem_recvFromDir[2 * d + 1] = NULL;
 
-        mh_sendToDir[2 * d + 1] = NULL;
-        mh_recvFromDir[2 * d + 0] = NULL;
-        mh_sendToDir[2 * d + 0] = NULL;
-        mh_recvFromDir[2 * d + 1] = NULL;
+        mh_sendToDir[handleOffset[2 * d + 1]] = NULL;
+        mh_recvFromDir[handleOffset[2 * d + 0]] = NULL;
+        mh_sendToDir[handleOffset[2 * d + 0]] = NULL;
+        mh_recvFromDir[handleOffset[2 * d + 1]] = NULL;
 #endif
       }
 #ifdef QPHIX_MPI_COMMS_CALLS
-      reqSendToDir[2 * d + 0] = reqRecvFromDir[2 * d + 0] = MPI_REQUEST_NULL;
-      reqSendToDir[2 * d + 1] = reqRecvFromDir[2 * d + 1] = MPI_REQUEST_NULL;
+      reqSendToDir[handleOffset[2 * d + 0]] = reqRecvFromDir[handleOffset[2 * d + 0]] = MPI_REQUEST_NULL;
+      reqSendToDir[handleOffset[2 * d + 1]] = reqRecvFromDir[handleOffset[2 * d + 1]] = MPI_REQUEST_NULL;
 #endif
     } // End loop over dir
 
@@ -336,15 +360,6 @@ class Comms
     amIPtMin_ = (logical_coordinates[3] == 0);
     amIPtMax_ = (logical_coordinates[3] == (logical_dimensions[3] - 1));
 
-    numNonLocalDir_ = 0;
-    // Count the number of non local dirs
-    // and keep a compact map
-    for (int d = 0; d < 4; d++) {
-      if (!localDir(d)) {
-        nonLocalDir_[numNonLocalDir_] = d;
-        numNonLocalDir_++;
-      }
-    }
   }
 
   ~Comms(void)
@@ -357,10 +372,10 @@ class Comms
         ALIGNED_FREE(recvFromDir[2 * d + 1]);
 
 #ifndef QPHIX_MPI_COMMS_CALLS
-        QMP_free_msghandle(mh_sendToDir[2 * d + 1]);
-        QMP_free_msghandle(mh_sendToDir[2 * d + 0]);
-        QMP_free_msghandle(mh_recvFromDir[2 * d + 1]);
-        QMP_free_msghandle(mh_recvFromDir[2 * d + 0]);
+        QMP_free_msghandle(mh_sendToDir[handleOffset[2 * d + 1]]);
+        QMP_free_msghandle(mh_sendToDir[handleOffset[2 * d + 0]]);
+        QMP_free_msghandle(mh_recvFromDir[handleOffset[2 * d + 1]]);
+        QMP_free_msghandle(mh_recvFromDir[handleOffset[2 * d + 0]]);
 
         QMP_free_msgmem(msgmem_sendToDir[2 * d + 1]);
         QMP_free_msgmem(msgmem_sendToDir[2 * d + 0]);
@@ -374,7 +389,7 @@ class Comms
   inline void startSendDir(int d)
   {
 #ifndef QPHIX_MPI_COMMS_CALLS
-    if (QMP_start(mh_sendToDir[d]) != QMP_SUCCESS) {
+    if (QMP_start(mh_sendToDir[handleOffset[d]]) != QMP_SUCCESS) {
       QMP_error("Failed to start send\n");
       QMP_abort(1);
     }
@@ -386,7 +401,7 @@ class Comms
                   myNeighboursInDir[d],
                   QPHIX_DSLASH_MPI_TAG,
                   MPI_COMM_WORLD,
-                  &reqSendToDir[d]) != MPI_SUCCESS) {
+                  &reqSendToDir[handleOffset[d]]) != MPI_SUCCESS) {
       QMP_error("Failed to start send in forward T direction\n");
       QMP_abort(1);
     }
@@ -414,14 +429,14 @@ class Comms
 #endif
 
 #ifndef QPHIX_MPI_COMMS_CALLS
-    if (QMP_wait(mh_sendToDir[d]) != QMP_SUCCESS) {
+    if (QMP_wait(mh_sendToDir[handleOffset[d]]) != QMP_SUCCESS) {
       QMP_error("Failed to finish send\n");
       QMP_abort(1);
     }
 #else
 
     /* **** MPI HERE ******* */
-    if (MPI_Wait(&reqSendToDir[d], MPI_STATUS_IGNORE) != MPI_SUCCESS) {
+    if (MPI_Wait(&reqSendToDir[handleOffset[d]], MPI_STATUS_IGNORE) != MPI_SUCCESS) {
       QMP_error("Wait on send failed \n");
       QMP_abort(1);
     }
@@ -431,7 +446,7 @@ class Comms
   inline void startRecvFromDir(int d)
   {
 #ifndef QPHIX_MPI_COMMS_CALLS
-    if (QMP_start(mh_recvFromDir[d]) != QMP_SUCCESS) {
+    if (QMP_start(mh_recvFromDir[handleOffset[d]]) != QMP_SUCCESS) {
       QMP_error("Failed to start recv\n");
       QMP_abort(1);
     }
@@ -442,11 +457,13 @@ class Comms
                   myNeighboursInDir[d],
                   QPHIX_DSLASH_MPI_TAG,
                   MPI_COMM_WORLD,
-                  &reqRecvFromDir[d]) != MPI_SUCCESS) {
+                  &reqRecvFromDir[handleOffset[d]]) != MPI_SUCCESS) {
       QMP_error("Recv from dir failed\n");
       QMP_abort(1);
     }
 #endif
+
+    recv_queue.push(d);
 
 #ifdef QMP_DIAGNOSTICS
     printf("My Rank: %d, start recv from dir %d,  My Records: srce=%d, dest=%d "
@@ -472,12 +489,12 @@ class Comms
 #endif
 
 #ifndef QPHIX_MPI_COMMS_CALLS
-    if (QMP_wait(mh_recvFromDir[d]) != QMP_SUCCESS) {
+    if (QMP_wait(mh_recvFromDir[handleOffset[d]]) != QMP_SUCCESS) {
       QMP_error("Failed to finish recv dir\n");
       QMP_abort(1);
     }
 #else
-    if (MPI_Wait(&reqRecvFromDir[d], MPI_STATUS_IGNORE) != QMP_SUCCESS) {
+    if (MPI_Wait(&reqRecvFromDir[handleOffset[d]], MPI_STATUS_IGNORE) != QMP_SUCCESS) {
       QMP_error("Wait on recv from dir failed\n");
       QMP_abort(1);
     }
@@ -489,10 +506,10 @@ class Comms
   {
     bool flag;
 #ifndef QPHIX_MPI_COMMS_CALLS
-    flag = QMP_is_complete(mh_sendToDir[d]);
+    flag = QMP_is_complete(mh_sendToDir[handleOffset[d]]);
 #else
     int iflag;
-    if (MPI_Test(&reqSendToDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
+    if (MPI_Test(&reqSendToDir[handleOffset[d]], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
       QMP_error("Test on send to dir failed\n");
       QMP_abort(1);
     }
@@ -505,10 +522,10 @@ class Comms
   {
     bool flag;
 #ifndef QPHIX_MPI_COMMS_CALLS
-    flag = QMP_is_complete(mh_recvFromDir[d]);
+    flag = QMP_is_complete(mh_recvFromDir[handleOffset[d]]);
 #else
     int iflag;
-    if (MPI_Test(&reqRecvFromDir[d], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
+    if (MPI_Test(&reqRecvFromDir[handleOffset[d]], &iflag, MPI_STATUS_IGNORE) != MPI_SUCCESS) {
       QMP_error("Test on recv from dir failed\n");
       QMP_abort(1);
     }
@@ -517,21 +534,90 @@ class Comms
     return flag;
   }
 
+  inline int spinRecvQueue() {
+    if( recv_queue.empty() ){
+      return -1;
+    } else {
+      do {
+        int d = recv_queue.front();
+        recv_queue.pop();
+        if( testRecvFromDir(d) ){
+          return(d);
+        } else {
+          recv_queue.push(d);
+        }
+        if( recv_queue.empty() ){
+          return -1;
+        }
+      } while(1);
+    }
+  }
+
   inline void progressComms()
   {
     int flag = 0;
     MPI_Iprobe(
         MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
   }
+  
+  inline void waitAllRecv()
+  {
+#ifndef QPHIX_MPI_COMMS_CALLS
+    if (QMP_wait_all(mh_recvFromDir, 2*numNonLocalDir_) != QMP_SUCCESS) {
+      QMP_error("Failed in QMP recvFrom waitall (waitAllComms)\n");
+      QMP_abort(1);
+    }
+#else
+    if (MPI_Waitall(2*numNonLocalDir_, reqRecvFromDir, MPI_STATUSES_IGNORE) != QMP_SUCCESS) {
+      QMP_error("Waitall in MPI recvFrom failed\n");
+      QMP_abort(1);
+    }
+#endif //QPHIX_MPI_COMMS_CALLS
+    // this could easily be multi-threaded manually instead
+    // but it's not currently used
+    //  for(int d = 3; d >= 0; d--){
+    //    if( !localDir(d) ){
+    //        finishRecvFromDir(d);
+    //    }
+    //  }
+  }
 
-  // this can (easily) be multithreaded
   inline void waitAllComms()
   {
-    for(int d = 3; d >= 0; d--){
-      if( !localDir(d) ){
-          finishSendDir(d);
-          finishRecvFromDir(d);
-      }
+#ifndef QPHIX_MPI_COMMS_CALLS
+    if (QMP_wait_all(mh_recvFromDir, 2*numNonLocalDir_) != QMP_SUCCESS) {
+      QMP_error("Failed in QMP recvFrom waitall (waitAllComms)\n");
+      QMP_abort(1);
+    }
+    if (QMP_wait_all(mh_sendToDir, 2*numNonLocalDir_) != QMP_SUCCESS) {
+      QMP_error("Failed in QMP sendTo waitall (waitAllComms)\n");
+      QMP_abort(1);
+    }
+#else
+    if (MPI_Waitall(2*numNonLocalDir_, reqRecvFromDir, MPI_STATUSES_IGNORE) != QMP_SUCCESS) {
+      QMP_error("Waitall in MPI recvFrom failed\n");
+      QMP_abort(1);
+    }
+    if (MPI_Waitall(2*numNonLocalDir_, reqSendToDir, MPI_STATUSES_IGNORE) != QMP_SUCCESS) {
+      QMP_error("Waitall in MPI sendTo failed\n");
+      QMP_abort(1);
+    }
+#endif //QPHIX_MPI_COMMS_CALLS
+    // this could easily be multi-threaded manually instead
+    // but it's not currently used
+    //for(int d = 3; d >= 0; d--){
+    //  if( !localDir(d) ){
+    //      finishRecvFromDir(d);
+    //  }
+    //}
+  }
+
+  // to make sure that we don't grow the recv_queue endlessly if we don't
+  // consume it
+  inline void resetComms() 
+  {
+    while( !recv_queue.empty() ){
+      recv_queue.pop();
     }
   }
 
@@ -551,6 +637,7 @@ class Comms
   /* Am I the process with the largest (t=P_t - 1)  coordinate in time */
   inline bool amIPtMax() const { return amIPtMax_; }
 
+
   T *sendToDir[8]; // Send Buffers
   T *recvFromDir[8]; // Recv Buffers
   std::queue<int> recv_queue; // communication queue
@@ -566,6 +653,10 @@ class Comms
 #ifdef QPHIX_MPI_COMMS_CALLS
   MPI_Request reqSendToDir[8];
   MPI_Request reqRecvFromDir[8];
+  
+  // arrays without gaps for doing true Waitall
+  MPI_Request reqSendToDirLinear[8];
+  MPI_Request reqRecvFromDirLinear[8];
 #else
   QMP_msgmem_t msgmem_sendToDir[8];
   QMP_msgmem_t msgmem_recvFromDir[8];
@@ -583,6 +674,7 @@ class Comms
   bool amIPtMax_;
   int numNonLocalDir_;
   int nonLocalDir_[4];
+  int handleOffset[8];
 };
 
 namespace CommsUtils
