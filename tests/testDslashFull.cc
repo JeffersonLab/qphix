@@ -158,7 +158,7 @@ void TestDslash::testDslash(const multi1d<U> &u, int t_bc)
       dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
 
       expect_near(
-          hs_qphix1, hs_qdp1, tolerance<T>::value, geom, target_cb, "Wilson::Dslash");
+          hs_qdp1, hs_qphix1, tolerance<T>::value, geom, target_cb, "Wilson::Dslash");
     } // cb
   } // isign
 }
@@ -573,7 +573,7 @@ void TestDslash::testCG(const multi1d<U> &u, int t_bc)
       QDPIO::cout << "Wilson CG Solve isign=" << isign
                   << " True norm is: " << true_norm << endl;
 
-      expect_near(chi3, psi, 1e-9, geom, cb, "Wilson CG");
+      expect_near(psi, chi3, 1e-9, geom, cb, "Wilson CG");
 
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =
@@ -712,7 +712,7 @@ void TestDslash::testBiCGStab(const multi1d<U> &u, int t_bc)
         Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
         QDPIO::cout << "BiCGStab Solve isign=" << isign
                     << " True norm is: " << true_norm << endl;
-        expect_near(chi2, psi, 1e-9, geom, cb, "BiCGstab: ");
+        expect_near(psi, chi2, 1e-9, geom, cb, "BiCGstab: ");
         assertion(toBool(true_norm < (rsd_target + tolerance<T>::small)));
         int Nxh = Nx / 2;
         unsigned long num_cb_sites = Layout::vol() / 2;
@@ -900,7 +900,7 @@ void TestDslash::testRichardson(const multi1d<U> &u, int t_bc)
         Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(psi, rb[cb]));
         QDPIO::cout << "RICHARDSON Solve isign=" << isign
                     << " True norm is: " << true_norm << endl;
-        expect_near(chi2, psi, 1e-9, geom_outer, cb, "BiCGstab: ");
+        expect_near(psi, chi2, 1e-9, geom_outer, cb, "BiCGstab: ");
 
         assertion(toBool(true_norm < (rsd_target + tolerance<T1>::small)));
         unsigned long num_cb_sites = Layout::vol() / 2;

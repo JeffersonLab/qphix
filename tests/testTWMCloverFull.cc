@@ -201,7 +201,7 @@ void TestTMClover::operator()()
                      isign,
                      target_cb);
 
-      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "Twisted-mass clover achimbdpsi");
+      expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, target_cb, "Twisted-mass clover achimbdpsi");
     } // cb
   } // isign
 #endif
@@ -239,7 +239,7 @@ void TestTMClover::operator()()
                        isign,
                        cb);
 
-    expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, cb, "TM clover linop");
+    expect_near(hs_qdp1, hs_qphix1, 1e-6, geom, cb, "TM clover linop");
 
   } // isign
 

@@ -66,7 +66,7 @@ void expect_near(QdpSpinor &spinor_a,
     QDPIO::cout << "Spinor comparison: " << message << ": ";
   }
   QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err
-              << std::endl;
+              << "\nA = control, B = candidate" << std::endl;
 
   if (QDP::toBool(diff_norm < abs_err)) {
     return;
