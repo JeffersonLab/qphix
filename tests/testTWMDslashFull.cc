@@ -506,7 +506,7 @@ void TestTMDslash::testTWMCG(int t_bc)
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
+void TestTMDslash::testTWMBiCGStab(int t_bc)
 {
   RNG::setrn(rng_seed);
 
@@ -541,52 +541,20 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
                                    args_.PadXYZ,
                                    args_.MinCt);
 
-  Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
-  Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
-  Spinor *psi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *psi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_even = (Spinor *)geom.allocCBFourSpinor();
-  Spinor *chi_odd = (Spinor *)geom.allocCBFourSpinor();
-  Gauge *u_packed[2];
-  u_packed[0] = packed_gauge_cb0;
-  u_packed[1] = packed_gauge_cb1;
-  Spinor *psi_s[2] = {psi_even, psi_odd};
-  Spinor *chi_s[2] = {chi_even, chi_odd};
-  QDPIO::cout << "Fields allocated" << endl;
-
-  QDPIO::cout << "Filling psi with gaussian noise... ";
-  Phi psi;
-  gaussian(psi);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing gauge field... ";
-  qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Packing fermions... ";
-  qdp_pack_spinor<>(psi, psi_even, psi_odd, geom);
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Applying anisotropy to test gauge field... ";
-  U u_test(Nd);
-  for (int mu = 0; mu < Nd; mu++) {
-    Real factor = Real(aniso_fac_s);
-    if (mu == Nd - 1) {
-      factor = Real(aniso_fac_t);
-    }
-    u_test[mu] = factor * u[mu];
-  }
-  QDPIO::cout << "done." << endl;
-
-  QDPIO::cout << "Applying BCs to test gauge field... ";
-  u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3] - 1),
-                     Real(t_boundary),
-                     Real(1));
-  QDPIO::cout << "done." << endl;
+  RandomGauge<T, V, S, compress, U, Phi> gauge(geom, t_bc);
+  HybridSpinor<T, V, S, compress, Phi> hs_source(geom), hs_qphix1(geom),
+      hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
 
   QDPIO::cout << "Constructing TM Wilson Fermion Matrix... " << endl;
-  EvenOddTMWilsonOperator<T, V, S, compress> M(
-      Mass, TwistedMass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
+  EvenOddTMWilsonOperator<T, V, S, compress> M(Mass,
+                                               TwistedMass,
+                                               gauge.u_packed,
+                                               &geom,
+                                               gauge.t_boundary,
+                                               gauge.aniso_fac_s,
+                                               gauge.aniso_fac_t);
   QDPIO::cout << "done." << endl;
 
   // 0. Setup Solver
@@ -599,13 +567,12 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
   unsigned long mv_apps = 0;
   InvBiCGStab<T, V, S, compress> solver(M, max_iters);
 
-  for (int isign = 1; isign >= -1; isign -= 2) {
+  int const cb = 0;
 
-    Phi chi = zero;
-    qdp_pack_cb_spinor<>(chi, chi_even, geom, 0);
+  for (int isign = 1; isign >= -1; isign -= 2) {
     double start = omp_get_wtime();
-    solver(chi_s[0],
-           psi_s[0],
+    solver(hs_qphix1[cb],
+           hs_source[cb],
            rsd_target,
            niters,
            rsd_final,
@@ -613,21 +580,23 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
            mv_apps,
            isign,
            verbose,
-           0);
+           cb);
     double end = omp_get_wtime();
-    qdp_unpack_cb_spinor<>(chi_s[0], chi, geom, 0);
+    hs_qphix1.unpack();
 
     // Multiply back
     // chi2 = M chi
-    Phi chi2 = zero;
-    Phi ltmp = zero;
-    dslash(chi2, u_test, chi, isign, 1);
-    applyInvTwist<>(chi2, Mu, MuInv, isign, 1);
-    dslash(ltmp, u_test, chi2, isign, 0);
-    applyTwist<>(chi, Mu, alpha, isign, 0);
-    chi2[rb[0]] = chi - beta * ltmp;
+    qdp_apply_operator(hs_qdp1.qdp(),
+                       hs_qphix1.qdp(),
+                       gauge.u_aniso,
+                       Mu,
+                       MuInv,
+                       alpha,
+                       beta,
+                       isign,
+                       cb);
 
-    expect_near(chi2, psi, 1e-8, geom, 0, "TM Wilson BiCGStab");
+    expect_near(hs_qdp1, hs_source, 1e-8, geom, cb, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
@@ -638,13 +607,6 @@ void TestTMDslash::testTWMBiCGStab(const U &u, int t_bc)
     QDPIO::cout << endl;
 
   } // isign
-
-  geom.free(packed_gauge_cb0);
-  geom.free(packed_gauge_cb1);
-  geom.free(psi_even);
-  geom.free(psi_odd);
-  geom.free(chi_even);
-  geom.free(chi_odd);
 }
 
 template <typename T1,
@@ -948,15 +910,15 @@ void TestTMDslash::qdp_dslash(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
-                                       QdpSpinor const &chi,
-                                       QdpSpinor const &psi,
-                                       QDP::multi1d<QdpGauge> const &u_aniso,
-                                       double const Mu,
-                                       double const MuInv,
-                                       double const alpha,
-                                       double const beta,
-                                       int const isign,
-                                       int const target_cb)
+                                  QdpSpinor const &chi,
+                                  QdpSpinor const &psi,
+                                  QDP::multi1d<QdpGauge> const &u_aniso,
+                                  double const Mu,
+                                  double const MuInv,
+                                  double const alpha,
+                                  double const beta,
+                                  int const isign,
+                                  int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 
@@ -971,14 +933,14 @@ void TestTMDslash::qdp_achimbdpsi(QdpSpinor &out,
 
 template <typename QdpGauge, typename QdpSpinor>
 void TestTMDslash::qdp_apply_operator(QdpSpinor &out,
-                                           QdpSpinor const &in,
-                                           QDP::multi1d<QdpGauge> const &u_aniso,
-                                           double const Mu,
-                                           double const MuInv,
-                                           double const alpha,
-                                           double const beta,
-                                           int const isign,
-                                           int const target_cb)
+                                      QdpSpinor const &in,
+                                      QDP::multi1d<QdpGauge> const &u_aniso,
+                                      double const Mu,
+                                      double const MuInv,
+                                      double const alpha,
+                                      double const beta,
+                                      int const isign,
+                                      int const target_cb)
 {
   int const other_cb = 1 - target_cb;
 
