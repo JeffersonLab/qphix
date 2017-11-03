@@ -218,4 +218,19 @@ void RandomGauge<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>::init_clov
     qdp_pack_full_clover<>(invclov_qdp, invfullclov_packed[cb], geom, cb);
   }
 }
+
+template <typename QdpSpinor>
+void make_point_source(QdpSpinor &source) {
+    source = zero;
+    source
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .real() = 1.0;
+    source
+        .elem(0) // Lattice
+        .elem(0) // Spin
+        .elem(0) // Color
+        .imag() = 0.0;
+}
 }

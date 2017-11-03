@@ -133,7 +133,12 @@ void TestTMClover::operator()()
 
   HybridSpinor<FT, V, S, compress> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
-  gaussian(hs_source.qdp());
+
+  if (true) {
+    gaussian(hs_source.qdp());
+  } else {
+    make_point_source(hs_source.qdp());
+  }
   hs_source.pack();
 
   TMClovDslash<FT, V, S, compress> D32(
@@ -246,7 +251,7 @@ void TestTMClover::operator()()
                        isign,
                        cb);
 
-    expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, cb, "TM clover linop");
+    expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-20, geom, cb, "TM clover linop");
 
   } // isign
 
