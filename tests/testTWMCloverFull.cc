@@ -231,6 +231,7 @@ void TestTMClover::operator()()
   Real betaFactor = Real(0.25);
 
   for (int const isign : {1, -1}) {
+    masterPrintf("isign: %d\n", isign);
 
     // (a) Apply QPhiX Operator
     M(hs_qphix1[cb], hs_source[cb], isign);
