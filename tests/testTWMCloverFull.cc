@@ -255,7 +255,7 @@ void TestTMClover::operator()()
                          isign,
                          cb);
 
-      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-20, geom, cb, "TM clover linop");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-9, geom, cb, "TM clover linop");
 
     } // isign
 
