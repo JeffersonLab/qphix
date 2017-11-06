@@ -88,11 +88,8 @@ void qdp_apply_operator(QdpSpinor &out,
 {
   int const other_cb = 1 - target_cb;
 
-  //QdpSpinor D_psi = zero;
   QdpSpinor A_inv_D_psi = zero;
-
   qdp_dslash(A_inv_D_psi, in, u_aniso, inv_clov, isign, other_cb);
-  //inv_clov.apply(A_inv_D_psi, D_psi, isign, other_cb);
 
   qdp_achimbdpsi(out, in, A_inv_D_psi, u_aniso, clov, isign, target_cb);
 }
@@ -143,8 +140,8 @@ void TestTMClover::operator()()
   HybridSpinor<FT, V, S, compress> hs_source(geom), hs_qphix1(geom),
       hs_qphix2(geom), hs_qdp1(geom), hs_qdp2(geom);
 
-  //gaussian(hs_source.qdp());
-  make_point_source(hs_source.qdp());
+  gaussian(hs_source.qdp());
+  //make_point_source(hs_source.qdp());
 
   hs_source.pack();
 
