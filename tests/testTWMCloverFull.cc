@@ -255,7 +255,7 @@ void TestTMClover::operator()()
                          isign,
                          cb);
 
-      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-9, geom, cb, "TM clover linop");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-7, geom, cb, "TM clover linop");
 
     } // isign
 
@@ -284,7 +284,8 @@ void TestTMClover::operator()()
            site_flops,
            mv_apps,
            1,
-           verbose);
+           verbose,
+           cb);
     double end = omp_get_wtime();
 
     hs_qphix1.unpack();
@@ -298,7 +299,6 @@ void TestTMClover::operator()()
                        gauge.invclov_qdp,
                        1,
                        cb);
-    hs_qphix2.unpack();
 
     // chi3 = M^\dagger chi2
     qdp_apply_operator(hs_qdp1.qdp(),
@@ -309,7 +309,7 @@ void TestTMClover::operator()()
                        -1,
                        cb);
 
-    expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-8, geom, cb, "TM Clover CG");
+    expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-7, geom, cb, "TM Clover CG");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
@@ -347,7 +347,8 @@ void TestTMClover::operator()()
            site_flops,
            mv_apps,
            isign,
-           verbose);
+           verbose,
+           cb);
     double end = omp_get_wtime();
     hs_qphix1.unpack();
 
@@ -361,7 +362,7 @@ void TestTMClover::operator()()
                        1,
                        cb);
 
-    expect_near(hs_source.qdp(), hs_qphix2.qdp(), 1e-8, geom, cb, "TM Clover BiCGStab");
+    expect_near(hs_source.qdp(), hs_qphix2.qdp(), 1e-7, geom, cb, "TM Clover BiCGStab");
 
     int Nxh = Nx / 2;
     unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
