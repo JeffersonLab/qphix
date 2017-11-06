@@ -1,13 +1,22 @@
 #pragma once
 
+#if !defined(COMPARE_QDP_SPINORS_GTEST) && !defined(COMPARE_QDP_SPINORS_CUSTOM)
+#error "This header must not be included directly, use the versions with _gtest or _custom in their filename."
+#endif
+
 #include <qphix/geometry.h>
 #include <qphix/print_utils.h>
+#include <qphix/qdp_packer.h>
 
 #include <qdp.h>
 
 #include <iomanip>
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
 class HybridSpinor
 {
  public:
@@ -19,7 +28,7 @@ class HybridSpinor
   {
   }
 
-  Spinor *operator[](int cb) { return cb == 0 ? even_.get() : odd_.get(); }
+  Spinor *operator[](int const cb) { return cb == 0 ? even_.get() : odd_.get(); }
 
   void pack() { QPhiX::qdp_pack_spinor<>(qdp_, even_.get(), odd_.get(), geom_); }
   void unpack() { QPhiX::qdp_unpack_spinor<>(even_.get(), odd_.get(), qdp_, geom_); }
@@ -40,28 +49,34 @@ class HybridSpinor
   QdpSpinor qdp_;
 };
 
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
-void expect_near(QdpSpinor &spinor_a,
-                 QdpSpinor &spinor_b,
+template <typename FT,
+          int veclen,
+          int soalen,
+          bool compress12,
+          typename QdpSpinor = QDP::LatticeDiracFermionD>
+void expect_near(QdpSpinor const &spinor_a,
+                 QdpSpinor const &spinor_b,
                  double const abs_err,
-                 QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
+                 QPhiX::Geometry<FT, veclen, soalen, compress12> const &geom,
                  int const target_cb,
                  char const *const message = nullptr)
 {
-  QdpSpinor diff = spinor_b - spinor_a;
+  QdpSpinor const diff = spinor_b - spinor_a;
 
-  QDP::Double diff_norm = sqrt(QDP::norm2(diff, QDP::rb[target_cb])) /
-                          (QDP::Real(4 * 3 * 2 * QDP::Layout::vol()) / QDP::Real(2));
+  QDP::Double const diff_norm =
+      sqrt(QDP::norm2(diff, QDP::rb[target_cb])) /
+      (QDP::Real(4 * 3 * 2 * QDP::Layout::vol()) / QDP::Real(2));
 
   if (message != nullptr) {
     QDPIO::cout << "Spinor comparison: " << message << ": ";
   }
-  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err
-              << std::endl;
+  QDPIO::cout << "diff/volume = " << diff_norm << ", limit = " << abs_err << std::endl;
 
   if (QDP::toBool(diff_norm < abs_err)) {
     return;
   }
+
+  QDPIO::cout << "A = control, B = candidate" << std::endl;
 
   uint64_t printed_out = 0;
 
@@ -71,12 +86,12 @@ void expect_near(QdpSpinor &spinor_a,
         for (int x = 0; x < geom.Nxh(); x++) {
 
           // These are unpadded QDP++ indices...
-          int ind = x + geom.Nxh() * (y + geom.Ny() * (z + geom.Nz() * t));
+          int const ind = x + geom.Nxh() * (y + geom.Ny() * (z + geom.Nz() * t));
           for (int s = 0; s < QDP::Ns; s++) {
             for (int c = 0; c < QDP::Nc; c++) {
-              auto &a =
+              auto const &a =
                   spinor_a.elem(QDP::rb[target_cb].start() + ind).elem(s).elem(c);
-              auto &b =
+              auto const &b =
                   spinor_b.elem(QDP::rb[target_cb].start() + ind).elem(s).elem(c);
               double const diff_real = a.real() - b.real();
               double const diff_imag = a.imag() - b.imag();
@@ -101,11 +116,14 @@ void expect_near(QdpSpinor &spinor_a,
 
                 ++printed_out;
 
-                if (printed_out > 100) {
-                  QPhiX::masterPrintf(
-                      "More elements are not printed in order to make the "
-                      "output readable.\n");
+                if (printed_out > 20) {
+                  QPhiX::masterPrintf("More elements are not printed in order to "
+                                      "make the output readable.\n");
+#ifdef FAIL
+                  FAIL();
+#else
                   assertion(false);
+#endif
                   break;
                 }
               }
@@ -116,16 +134,9 @@ void expect_near(QdpSpinor &spinor_a,
     } // z
   } // t
 
-  assertion(false);
-}
-
-template <typename FT, int veclen, int soalen, bool compress12, typename QdpSpinor>
-void expect_near(HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_a,
-                 HybridSpinor<FT, veclen, soalen, compress12, QdpSpinor> &spinor_b,
-                 double const abs_err,
-                 QPhiX::Geometry<FT, veclen, soalen, compress12> &geom,
-                 int const target_cb,
-                 char const *const message = nullptr)
-{
-  expect_near(spinor_a.qdp(), spinor_b.qdp(), abs_err, geom, target_cb, message);
+#ifdef FAIL
+                  FAIL();
+#else
+                  assertion(false);
+#endif
 }

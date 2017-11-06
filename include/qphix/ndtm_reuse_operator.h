@@ -1,6 +1,8 @@
 #pragma once
 
 #include "qphix/linearOp.h"
+#include "qphix/tm_dslash_def.h"
+#include "qphix/dslash_def.h"
 #include "qphix/tm_clov_dslash_def.h"
 #include "qphix/print_utils.h"
 #include <cstdlib>
@@ -14,12 +16,10 @@ class EvenOddNDTMWilsonReuseOperator
     : public TwoFlavEvenOddLinearOperator<FT, veclen, soalen, compress12>
 {
  public:
-  typedef typename Geometry<FT, veclen, soalen, compress12>::FullCloverBlock
-      FullCloverBlock;
-  typedef typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
-      FourSpinorBlock;
-  typedef typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock
-      SU3MatrixBlock;
+  typedef
+      typename Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock FourSpinorBlock;
+  typedef
+      typename Geometry<FT, veclen, soalen, compress12>::SU3MatrixBlock SU3MatrixBlock;
 
   EvenOddNDTMWilsonReuseOperator(const double mass,
                                  const double mu,
@@ -29,17 +29,25 @@ class EvenOddNDTMWilsonReuseOperator
                                  double t_boundary,
                                  double aniso_coeff_s,
                                  double aniso_coeff_t,
-                                 bool mu_plus,
                                  bool use_tbc_[4] = nullptr,
                                  double tbc_phases_[4][2] = nullptr)
-      : mass(mass), mass_factor_alpha(4 + mass),
-        mass_factor_beta(0.25 / mass_factor_alpha),
-        mu(-2.0 * mu * (mu_plus ? 1 : -1) * mass_factor_beta),
-        mu_inv(1.0 / (1.0 + Mu * Mu)), epsilon(epsilon),
-        D(new TMClovDslash<FT, veclen, soalen, compress12>(
+      : mass(mass), mass_factor_alpha(4 + mass), mass_factor_beta(0.25), mu(mu),
+        epsilon(epsilon),
+        mu_inv(1.0 / ((4 + mass) * (4 + mass) + mu * mu - epsilon * epsilon)),
+        Dtm(new TMDslash<FT, veclen, soalen, compress12>(geom,
+                                                         t_boundary,
+                                                         aniso_coeff_s,
+                                                         aniso_coeff_t,
+                                                         mass,
+                                                         mu,
+                                                         use_tbc_,
+                                                         tbc_phases_)),
+        Dw(new Dslash<FT, veclen, soalen, compress12>(
             geom, t_boundary, aniso_coeff_s, aniso_coeff_t, use_tbc_, tbc_phases_)),
-        tmp({D->getGeometry().allocCBFourSpinor(),
-             D->getGeometry().allocCBFourSpinor()})
+        Dw_tmp{Dw->getGeometry().allocCBFourSpinor(),
+               Dw->getGeometry().allocCBFourSpinor()},
+        mu_p_eps_Dw_tmp{Dtm->getGeometry().allocCBFourSpinor(),
+                        Dtm->getGeometry().allocCBFourSpinor()}
   {
     this->u[0] = u[0];
     this->u[1] = u[1];
@@ -47,19 +55,56 @@ class EvenOddNDTMWilsonReuseOperator
 
   ~EvenOddNDTMWilsonReuseOperator()
   {
-    Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
-    for (int f : {0, 1}) {
-      geom.free(tmp[f]);
+    Geometry<FT, veclen, soalen, compress12> &geom = Dtm->getGeometry();
+    for (int i = 0; i < 2; i++) {
+      geom.free(Dw_tmp[i]);
+      geom.free(mu_p_eps_Dw_tmp[i]);
     }
   }
 
-  void operator()(FourSpinorBlock *res[2],
-                  const FourSpinorBlock *const in[2],
-                  int isign) override
+  void operator()(FourSpinorBlock *const res[2],
+                  FourSpinorBlock const *const in[2],
+                  int isign,
+                  int target_cb = 1) override
   {
-    D->two_flaw_dslash(tmp, in, u[1], mu, mu_inv, isign, 1);
-    D->two_flaw_dslashAChiMinusBDPsi(
-        res, tmp, in, u[0], mu, mass_factor_beta, isign, 0);
+    constexpr int up = 0;
+    constexpr int dn = 1;
+
+    const int other_cb = 1 - target_cb;
+
+    /* for the non-degenerate case, we need to apply the
+     * hopping matrix ("Wilson dslash" or Dslash::dslash()) rather than TMDslash::dslash()
+     * which would also apply the twisted mass term right after */
+    Dw->dslash(Dw_tmp[up], in[up], u[other_cb], isign, other_cb);
+    Dw->dslash(Dw_tmp[dn], in[dn], u[other_cb], isign, other_cb);
+
+    //// now we apply the inverse twisted mass term and the epsilon flavour cross term
+    ////   (alpha - i*mu*gamma_5*tau3 + eps*tau1) / (alpha^2 + mu^2 - eps^2)
+    //// hence the change of sign on the twisted mass
+    //// ALSO NOTE: the sign of the off-diagonal contribution will be corrected
+    //// by AChiMinusBDPsi below
+    const double apimu[2] = {mass_factor_alpha * mu_inv, -isign * mu * mu_inv};
+    two_flav_twisted_mass(apimu,
+                          epsilon * mu_inv,
+                          Dw_tmp,
+                          mu_p_eps_Dw_tmp,
+                          Dw->getGeometry(),
+                          Dw->getGeometry().getNSIMT());
+
+    ///* now the two-flavour AChiMinusBDPsi puts it all together
+    // *  M_oo^{f=0} = (alpha + i*mu*gamma5 ) \chi^{f=0} - eps*\chi^{f=1} -
+    // *               1/(4*(alpha^2 + mu^2 - eps^2)) D_oe *
+    // *               ( (alpha - i*mu*gamma5) Deo \chi^{f=0} + eps*Deo \chi^{f=1} )
+    // */
+    Dtm->two_flav_AChiMinusBDPsi(res,
+                                 mu_p_eps_Dw_tmp,
+                                 in,
+                                 u[target_cb],
+                                 mass_factor_alpha,
+                                 mass_factor_beta,
+                                 epsilon,
+                                 isign,
+                                 target_cb);
   }
 
   void M_offdiag(FourSpinorBlock *res[2],
@@ -81,22 +126,25 @@ class EvenOddNDTMWilsonReuseOperator
     std::abort();
   }
 
-  Geometry<FT, veclen, soalen, compress12> &getGeometry()
-  {
-    return D->getGeometry();
-  }
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() { return Dtm->getGeometry(); }
 
  private:
   double mass;
-  double mass_factor_alpha, mass_factor_beta;
-  double mu, mu_inv;
+  double mass_factor_alpha;
+  double mass_factor_beta;
   double epsilon;
-
-  std::unique_ptr<TMClovDslash<FT, veclen, soalen, compress12>> D;
+  double mu;
+  double mu_inv;
 
   SU3MatrixBlock *u[2];
 
-  FourSpinorBlock *tmp[2];
+  // we need the twisted mass Dslash for AChiMinusBDPsi
+  std::unique_ptr<TMDslash<FT, veclen, soalen, compress12>> Dtm;
+  // and the Wilson Dslash to get the flavour-off-diagonal part right
+  std::unique_ptr<Dslash<FT, veclen, soalen, compress12>> Dw;
+
+  FourSpinorBlock *Dw_tmp[2];
+  FourSpinorBlock *mu_p_eps_Dw_tmp[2];
 
 }; // Class
 }; // Namespace

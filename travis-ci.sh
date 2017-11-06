@@ -151,7 +151,7 @@ fi
 make-make-install() {
     if ! [[ -f build-succeeded ]]; then
         fold_start $repo.make
-        time make $make_smp_flags "$@"
+        time make $make_smp_flags || make VERBOSE=1
         fold_end $repo.make
 
         fold_start $repo.make_install

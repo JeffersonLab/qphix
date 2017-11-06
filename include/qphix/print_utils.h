@@ -9,5 +9,4 @@ namespace QPhiX
 {
 void masterPrintf(const char *format, ...);
 void localPrintf(const char *format, ...);
-};
-
+}

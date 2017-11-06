@@ -26,7 +26,7 @@ using namespace std;
 using namespace QPhiX;
 
 #include "RandomGauge.h"
-#include "compare_qdp_spinors.h"
+#include "compare_qdp_spinors_custom.h"
 #include "veclen.h"
 #include "tolerance.h"
 
@@ -93,6 +93,13 @@ void TestClover::operator()()
   }
   hs_source.pack();
 
+  {
+    double norm;
+    norm2Spinor(norm, hs_source[0], geom, 1);
+    masterPrintf("Norm-sq of source: %g\n", norm);
+    assert(norm > 0.0 && "Norm-sq of source must be positive");
+  }
+
 #if 1
   // Test only Dslash operator.
   // For clover this will be: A^{-1}_(1-cb,1-cb) D_(1-cb, cb)  psi_cb
@@ -137,8 +144,21 @@ void TestClover::operator()()
       dslash(hs_qdp1.qdp(), gauge.u_aniso, hs_source.qdp(), isign, target_cb);
       gauge.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), isign, target_cb);
 
-      expect_near(hs_qphix1,
-                  hs_qdp2,
+      {
+        hs_qdp1.pack();
+        hs_qdp2.pack();
+
+        double norm;
+
+        norm2Spinor(norm, hs_qdp1[target_cb], geom, 1);
+        masterPrintf("Norm-sq of hs_qdp1[target_cb]: %g\n", norm);
+
+        norm2Spinor(norm, hs_qdp2[target_cb], geom, 1);
+        masterPrintf("Norm-sq of hs_qdp2[target_cb]: %g\n", norm);
+      }
+
+      expect_near(hs_qdp2.qdp(),
+                  hs_qphix1.qdp(),
                   1e-6,
                   geom,
                   target_cb,
@@ -181,8 +201,8 @@ void TestClover::operator()()
       res[rb[target_cb]] -= beta * hs_qdp1.qdp();
 
       // Check the difference per number in chi vector
-      expect_near(hs_qphix1.qdp(),
-                  res,
+      expect_near(res,
+                  hs_qphix1.qdp(),
                   1e-6,
                   geom,
                   target_cb,
@@ -225,8 +245,8 @@ void TestClover::operator()()
       dslash(hs_qdp1.qdp(), gauge_antip.u_aniso, hs_source.qdp(), isign, target_cb);
       gauge_antip.invclov_qdp.apply(hs_qdp2.qdp(), hs_qdp1.qdp(), isign, target_cb);
 
-      expect_near(hs_qphix1,
-                  hs_qdp2,
+      expect_near(hs_qdp2.qdp(),
+                  hs_qphix1.qdp(),
                   1e-6,
                   geom,
                   target_cb,
@@ -307,8 +327,8 @@ void TestClover::operator()()
 
       hs_qdp1.qdp()[rb[target_cb]] -= betaFactor * ltmp;
 
-      expect_near(hs_qdp1,
-                  hs_qphix1,
+      expect_near(hs_qdp1.qdp(),
+                  hs_qphix1.qdp(),
                   1e-6,
                   geom,
                   target_cb,
@@ -379,7 +399,7 @@ void TestClover::operator()()
       // dslash(ltmp,u,chi3, (-1), 0);
       // chi3[rb[0]] = massFactor*chi2 - betaFactor*ltmp;
 
-      expect_near(chi3, hs_source.qdp(), 1e-9, geom, cb, "CG");
+      expect_near(hs_source.qdp(), chi3, 1e-9, geom, cb, "CG");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;
@@ -443,7 +463,7 @@ void TestClover::operator()()
       QDPIO::cout << " cb = " << cb << " True norm is: "
                   << sqrt(norm2(diff, rb[cb]) / norm2(hs_source.qdp(), rb[cb]))
                   << endl;
-      expect_near(hs_qdp1.qdp(), hs_source.qdp(), 1e-6, geom, cb, "BiCGStab");
+      expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-6, geom, cb, "BiCGStab");
 
       int Nxh = Nx / 2;
       unsigned long num_cb_sites = Nxh * Ny * Nz * Nt;

@@ -15,6 +15,7 @@ list(APPEND header_files qphix_config.h dslash_utils.h
         invbicgstab.h
 				invmr.h
         inv_richardson_multiprec.h
+        inv_dummy_hermtest.h
         minvcg.h
         linearOp.h
         memmap.h
@@ -43,11 +44,11 @@ if( ${clover} )
 endif()
 
 if( ${twisted_mass} ) 
-	list(APPEND header_files twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
+	list(APPEND header_files ndtm_reuse_operator.h twisted_mass.h tm_dslash_def.h tm_dslash_body.h tm_dslash_face.h)
 endif()
 
 if( ${tm_clover} )
-	list(APPEND header_files twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
+	list(APPEND header_files ndtm_reuse_operator_clover.h twisted_mass_clover.h tm_clov_dslash_def.h tm_clov_dslash_body.h tm_clov_dslash_face.h)
 endif()
 
 list(APPEND header_files ${PROJECT_BINARY_DIR}/include/qphix/qphix_config_internal.h)

@@ -16,8 +16,9 @@ template <typename FT,
           int VInner,
           int SInner,
           bool CompressInner,
+          bool MdagM = false,
           typename EvenOddLinearOperatorBase =
-              EvenOddLinearOperator<FT, V, S, Compress>>
+              EvenOddLinearOperator<FT, V, S, Compress> >
 class InvRichardsonMultiPrec
     : public AbstractSolver<FT, V, S, Compress, EvenOddLinearOperatorBase::num_flav>
 {
@@ -71,8 +72,14 @@ class InvRichardsonMultiPrec
 	masterPrintf("RICHARDSON: Absolut Residuum requested\n");
     }
 
-    m_outer(tmp, x, isign, cb);
-    mv_apps_outer++;
+    if( MdagM ){
+      m_outer(tmp_MdagM, x, isign, cb);
+      m_outer(tmp, tmp_MdagM, -isign, cb);
+      mv_apps_outer += 2;
+    } else {
+      m_outer(tmp, x, isign, cb);
+      mv_apps_outer++;
+    }
 
     // r = rhs - M x
     xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
@@ -148,10 +155,16 @@ class InvRichardsonMultiPrec
       // Up convert and un-normalize (Again don't count the flops, since its not
       // 'useful'?
       convert<FT, V, S, Compress, FTInner, VInner, SInner, CompressInner, num_flav>(
-          delta_x, r_norm, dx_inner, geom, geom_inner, convertFromThreads);
+          delta_x, r_norm, dx_inner, geom, geom_inner, convertFromThreads); 
 
-      m_outer(tmp, delta_x, isign, cb);
-      mv_apps_outer++;
+      if( MdagM ){
+        m_outer(tmp_MdagM, delta_x, isign, cb);
+        m_outer(tmp, tmp_MdagM, -isign, cb);
+        mv_apps_outer += 2;
+      }else{
+        m_outer(tmp, delta_x, isign, cb);
+        mv_apps_outer++;
+      }
 
       richardson_rxupdateNormR<FT, V, S, Compress, num_flav>(
           x, r, delta_x, tmp, r_norm_sq, geom, rxUpdateThreads);
@@ -164,8 +177,14 @@ class InvRichardsonMultiPrec
 
       if (r_norm_sq < rsd_t) {
         // Converged. Compute final residuum.
-        m_outer(tmp, x, isign, cb);
-        mv_apps_outer++;
+        if( MdagM ){
+          m_outer(tmp_MdagM, x, isign, cb);
+          m_outer(tmp, tmp_MdagM, -isign, cb);
+          mv_apps_outer += 2;
+        } else {
+          m_outer(tmp, x, isign, cb);
+          mv_apps_outer++;
+        }
 
         xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
             r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
@@ -189,8 +208,14 @@ class InvRichardsonMultiPrec
     }
 
     // Not Converged. Compute final residuum.
-    m_outer(tmp, x, isign, cb);
-    mv_apps_outer++;
+    if( MdagM ){
+      m_outer(tmp_MdagM, x, isign, cb);
+      m_outer(tmp, tmp_MdagM, -isign, cb);
+      mv_apps_outer += 2;
+    } else {
+      m_outer(tmp, x, isign, cb);
+      mv_apps_outer++;
+    }
 
     xmyNorm2Spinor<FT, V, S, Compress, num_flav>(
         r, rhs, tmp, r_norm_sq, geom, xmyNormThreads);
@@ -214,8 +239,8 @@ class InvRichardsonMultiPrec
   }
 
   InvRichardsonMultiPrec(
-      EvenOddLinearOperator<FT, V, S, Compress> &m_outer_,
-      AbstractSolver<FTInner, VInner, SInner, CompressInner> &solver_inner_,
+      EvenOddLinearOperatorBase &m_outer_,
+      AbstractSolver<FTInner, VInner, SInner, CompressInner, EvenOddLinearOperatorBase::num_flav > &solver_inner_,
       const double delta_,
       const int max_iters_)
       : m_outer(m_outer_), solver_inner(solver_inner_), delta(delta_),
@@ -232,6 +257,13 @@ class InvRichardsonMultiPrec
       r_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
     for (uint8_t f = 0; f < num_flav; ++f)
       dx_inner[f] = (SpinorInner *)geom_inner.allocCBFourSpinor();
+    for (uint8_t f = 0; f < num_flav; ++f){
+      if( MdagM ){
+        tmp_MdagM[f] = (Spinor *)geom.allocCBFourSpinor();
+      } else {
+        tmp_MdagM[f] = nullptr;
+      }
+    }
 
     // Initial value for norm2threads. Use all threads
     norm2Threads = geom.getNSIMT();
@@ -247,6 +279,7 @@ class InvRichardsonMultiPrec
     for (uint8_t f = 0; f < num_flav; ++f) {
       geom.free(r[f]);
       geom.free(tmp[f]);
+      geom.free(tmp_MdagM[f]);
       geom.free(delta_x[f]);
 
       geom_inner.free(r_inner[f]);
@@ -267,6 +300,8 @@ class InvRichardsonMultiPrec
   // Internal Spinors
   Spinor *r[num_flav];
   Spinor *tmp[num_flav]; // For computing residua  and also Ddelta_x
+  Spinor *tmp_MdagM[num_flav]; // when the inner solver is CG, we need to apply MdagM to get the
+                              // true residual
   Spinor *delta_x[num_flav];
   SpinorInner *r_inner[num_flav];
   SpinorInner *dx_inner[num_flav];

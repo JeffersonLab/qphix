@@ -359,9 +359,10 @@ void TMDslash<FT, veclen, soalen, compress12>::dslashAChiMinusBDPsi(
     double alpha,
     double beta,
     int isign,
-    int cb)
+    int cb,
+    const double musign)
 {
-  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb);
+  TMDPsiAChiMinusBDPsi(u, psi, chi, res, alpha, beta, isign == 1, cb, musign);
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
@@ -685,7 +686,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
     double alpha,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    const double musign)
 {
   auto kernel =
       (is_plus
@@ -981,7 +983,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDyzAChiMinusBDPsi(
                    beta_t_f_T,
                    beta_t_b_T,
                    tbc_phases,
-                   derived_mu,
+                   musign*derived_mu,
                    accumulate);
           }
         } // End for over scanlines y
@@ -1088,7 +1090,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
     double alpha,
     double beta,
     bool const is_plus,
-    int cb)
+    int cb,
+    const double musign)
 {
   double beta_s = beta * aniso_coeff_S;
   double beta_t_f = beta * aniso_coeff_T;
@@ -1128,7 +1131,7 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb);
+    TMDyzAChiMinusBDPsi(tid, psi_in, chi_in, res_out, u, alpha, beta, is_plus, cb, musign);
   }
 
 #ifdef QPHIX_DO_COMMS
@@ -1168,20 +1171,8 @@ void TMDslash<FT, veclen, soalen, compress12>::TMDPsiAChiMinusBDPsi(
 }
 
 template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::two_flav(
-    FourSpinorBlock *res[2],
-    const FourSpinorBlock *const psi[2],
-    const SU3MatrixBlock *u,
-    double mu,
-    double mu_inv,
-    int isign,
-    int cb)
-{
-}
-
-template <typename FT, int veclen, int soalen, bool compress12>
-void TMDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
-    FourSpinorBlock *res[2],
+void TMDslash<FT, veclen, soalen, compress12>::two_flav_AChiMinusBDPsi(
+    FourSpinorBlock * const res[2],
     const FourSpinorBlock *const psi[2],
     const FourSpinorBlock *const chi[2],
     const SU3MatrixBlock *u,
@@ -1191,17 +1182,30 @@ void TMDslash<FT, veclen, soalen, compress12>::two_flav_achimbdpsi(
     int isign,
     int cb)
 {
-  const int n_blas_simt = 1;
+  const int n_blas_simt = s->getNSIMT();
 
   // Iterate over the two result flavors …
   for (int f : {0, 1}) {
-    // Compute the flavor-diagonal part.
-    tmdslashAChiMinusBDPsi(res[f], chi[f], psi[f], u, alpha, beta, isign, cb);
+    // The following does:
+    //
+    //   \alpha*{(1 + i(\mu/\alpha)\tau3\gamma5)} \chi - \beta*Doe \psi
+    // = {\alpha + i\mu\tau3\gamma5} \chi - \beta*Doe\psi
+    //
+    // where \psi at this stage is expected to be
+    //
+    //        (\alpha - i\mu\tau3\gamma5 + \eps\tau1) Deo \chi
+    // \psi = ------------------------------------------------
+    //                ( \alpha^2 + \mu^2 - \eps^2 )
+    //
+    // such that all signs come out correct and \beta should be 1/4
+    // we use "musign" to implement tau3
+    double musign = 1.0-2.0*f;
+    dslashAChiMinusBDPsi(res[f], psi[f], chi[f], u, alpha, beta, isign, cb, musign);
 
-    // The `res[f]` contains the flavor-diagonal part. Now the flavor
-    // off-diagonal part has to be added. This is just the opposite
-    // flavor χ multiplied with ε.
-    axpy(epsilon, chi[1 - f], res[f], *s, n_blas_simt);
+    // now 
+    //   \res += -\eps\tau1 \chi
+    // (note the minus sign) to get the full \tilde{M}_{cb,cb}
+    axpy(-epsilon, chi[1 - f], res[f], *s, n_blas_simt);
   }
 }
 

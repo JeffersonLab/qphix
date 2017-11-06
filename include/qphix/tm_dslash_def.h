@@ -44,25 +44,68 @@ class TMDslash
                             double alpha,
                             double beta,
                             int isign,
-                            int cb);
+                            int cb,
+                            const double musign = 1.0);
 
-  void two_flav(FourSpinorBlock *res[2],
-                const FourSpinorBlock *const psi[2],
-                const SU3MatrixBlock *u,
-                double mu,
-                double mu_inv,
-                int isign,
-                int cb);
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               const FourSpinorBlock *const psi[2],
+                               const FourSpinorBlock *const chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb);
 
-  void two_flav_achimbdpsi(FourSpinorBlock *res[2],
-                           const FourSpinorBlock *const psi[2],
-                           const FourSpinorBlock *const chi[2],
-                           const SU3MatrixBlock *u,
-                           double alpha,
-                           double beta,
-                           double epsilon,
-                           int isign,
-                           int cb);
+#ifdef __INTEL_COMPILER  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock *const psi[2],
+                               FourSpinorBlock *const chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               FourSpinorBlock * chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+  
+  void two_flav_AChiMinusBDPsi(FourSpinorBlock * const res[2],
+                               FourSpinorBlock * psi[2],
+                               const FourSpinorBlock * const chi[2],
+                               const SU3MatrixBlock *u,
+                               double alpha,
+                               double beta,
+                               double epsilon,
+                               int isign,
+                               int cb)
+  {
+    this->two_flav_AChiMinusBDPsi(res, 
+                                  const_cast<const FourSpinorBlock * const *>(psi),
+                                  const_cast<const FourSpinorBlock * const *>(chi),
+                                  u, alpha, beta, epsilon, isign, cb); 
+  }
+#endif
 
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
@@ -137,7 +180,8 @@ class TMDslash
                            double alpha,
                            double beta,
                            bool const is_plus,
-                           int cb);
+                           int cb,
+                           const double musign = 1.0);
 
   void TMDPsi(const SU3MatrixBlock *u,
               const FourSpinorBlock *psi_in,
@@ -152,7 +196,8 @@ class TMDslash
                             double alpha,
                             double beta,
                             bool const is_plus,
-                            int cb);
+                            int cb,
+                            const double musign = 1.0);
 
 // packTMFaceDir: same as standard wilson.
 #ifdef QPHIX_QMP_COMMS

@@ -21,6 +21,12 @@ extern string clOffs;
 extern string mu_name;
 extern string mu_inv_name;
 
+// kernel parameter names for the two-flavour kernel(s)
+extern string chi2Base;
+extern string out2Base;
+extern string fclBase;
+extern string fcl2Base;
+
 extern string prec_mass_rho_name;
 
 FVec b_S0_C0_RE("b_S0_C0_RE");
@@ -101,6 +107,45 @@ FVec out_spinor[4][3][2] = {{{out_S0_C0_RE, out_S0_C0_IM},
                              {out_S3_C1_RE, out_S3_C1_IM},
                              {out_S3_C2_RE, out_S3_C2_IM}}};
 
+// for two-flavour kernels we have a second output spinor
+FVec out2_S0_C0_RE("out2_S0_C0_RE");
+FVec out2_S0_C0_IM("out2_S0_C0_IM");
+FVec out2_S0_C1_RE("out2_S0_C1_RE");
+FVec out2_S0_C1_IM("out2_S0_C1_IM");
+FVec out2_S0_C2_RE("out2_S0_C2_RE");
+FVec out2_S0_C2_IM("out2_S0_C2_IM");
+FVec out2_S1_C0_RE("out2_S1_C0_RE");
+FVec out2_S1_C0_IM("out2_S1_C0_IM");
+FVec out2_S1_C1_RE("out2_S1_C1_RE");
+FVec out2_S1_C1_IM("out2_S1_C1_IM");
+FVec out2_S1_C2_RE("out2_S1_C2_RE");
+FVec out2_S1_C2_IM("out2_S1_C2_IM");
+FVec out2_S2_C0_RE("out2_S2_C0_RE");
+FVec out2_S2_C0_IM("out2_S2_C0_IM");
+FVec out2_S2_C1_RE("out2_S2_C1_RE");
+FVec out2_S2_C1_IM("out2_S2_C1_IM");
+FVec out2_S2_C2_RE("out2_S2_C2_RE");
+FVec out2_S2_C2_IM("out2_S2_C2_IM");
+FVec out2_S3_C0_RE("out2_S3_C0_RE");
+FVec out2_S3_C0_IM("out2_S3_C0_IM");
+FVec out2_S3_C1_RE("out2_S3_C1_RE");
+FVec out2_S3_C1_IM("out2_S3_C1_IM");
+FVec out2_S3_C2_RE("out2_S3_C2_RE");
+FVec out2_S3_C2_IM("out2_S3_C2_IM");
+
+FVec out2_spinor[4][3][2] = {{{out2_S0_C0_RE, out2_S0_C0_IM},
+                              {out2_S0_C1_RE, out2_S0_C1_IM},
+                              {out2_S0_C2_RE, out2_S0_C2_IM}},
+                             {{out2_S1_C0_RE, out2_S1_C0_IM},
+                              {out2_S1_C1_RE, out2_S1_C1_IM},
+                              {out2_S1_C2_RE, out2_S1_C2_IM}},
+                             {{out2_S2_C0_RE, out2_S2_C0_IM},
+                              {out2_S2_C1_RE, out2_S2_C1_IM},
+                              {out2_S2_C2_RE, out2_S2_C2_IM}},
+                             {{out2_S3_C0_RE, out2_S3_C0_IM},
+                              {out2_S3_C1_RE, out2_S3_C1_IM},
+                              {out2_S3_C2_RE, out2_S3_C2_IM}}};
+
 FVec clout_spinor[2][6][2] = {{{out_S0_C0_RE, out_S0_C0_IM},
                                {out_S0_C1_RE, out_S0_C1_IM},
                                {out_S0_C2_RE, out_S0_C2_IM},
@@ -151,6 +196,45 @@ FVec chi_spinor[4][3][2] = {{{chi_S0_C0_RE, chi_S0_C0_IM},
                             {{chi_S3_C0_RE, chi_S3_C0_IM},
                              {chi_S3_C1_RE, chi_S3_C1_IM},
                              {chi_S3_C2_RE, chi_S3_C2_IM}}};
+
+// for two-flavour kernels, we have a second input spinor
+FVec chi2_S0_C0_RE("chi2_S0_C0_RE");
+FVec chi2_S0_C0_IM("chi2_S0_C0_IM");
+FVec chi2_S0_C1_RE("chi2_S0_C1_RE");
+FVec chi2_S0_C1_IM("chi2_S0_C1_IM");
+FVec chi2_S0_C2_RE("chi2_S0_C2_RE");
+FVec chi2_S0_C2_IM("chi2_S0_C2_IM");
+FVec chi2_S1_C0_RE("chi2_S1_C0_RE");
+FVec chi2_S1_C0_IM("chi2_S1_C0_IM");
+FVec chi2_S1_C1_RE("chi2_S1_C1_RE");
+FVec chi2_S1_C1_IM("chi2_S1_C1_IM");
+FVec chi2_S1_C2_RE("chi2_S1_C2_RE");
+FVec chi2_S1_C2_IM("chi2_S1_C2_IM");
+FVec chi2_S2_C0_RE("chi2_S2_C0_RE");
+FVec chi2_S2_C0_IM("chi2_S2_C0_IM");
+FVec chi2_S2_C1_RE("chi2_S2_C1_RE");
+FVec chi2_S2_C1_IM("chi2_S2_C1_IM");
+FVec chi2_S2_C2_RE("chi2_S2_C2_RE");
+FVec chi2_S2_C2_IM("chi2_S2_C2_IM");
+FVec chi2_S3_C0_RE("chi2_S3_C0_RE");
+FVec chi2_S3_C0_IM("chi2_S3_C0_IM");
+FVec chi2_S3_C1_RE("chi2_S3_C1_RE");
+FVec chi2_S3_C1_IM("chi2_S3_C1_IM");
+FVec chi2_S3_C2_RE("chi2_S3_C2_RE");
+FVec chi2_S3_C2_IM("chi2_S3_C2_IM");
+
+FVec chi2_spinor[4][3][2] = {{{chi2_S0_C0_RE, chi2_S0_C0_IM},
+                              {chi2_S0_C1_RE, chi2_S0_C1_IM},
+                              {chi2_S0_C2_RE, chi2_S0_C2_IM}},
+                             {{chi2_S1_C0_RE, chi2_S1_C0_IM},
+                              {chi2_S1_C1_RE, chi2_S1_C1_IM},
+                              {chi2_S1_C2_RE, chi2_S1_C2_IM}},
+                             {{chi2_S2_C0_RE, chi2_S2_C0_IM},
+                              {chi2_S2_C1_RE, chi2_S2_C1_IM},
+                              {chi2_S2_C2_RE, chi2_S2_C2_IM}},
+                             {{chi2_S3_C0_RE, chi2_S3_C0_IM},
+                              {chi2_S3_C1_RE, chi2_S3_C1_IM},
+                              {chi2_S3_C2_RE, chi2_S3_C2_IM}}};
 
 FVec dout_S0_C0_RE("dout_S0_C0_RE");
 FVec dout_S0_C0_IM("dout_S0_C0_IM");
@@ -464,12 +548,20 @@ void declare_u_gaus(InstVector &ivector)
   }
 }
 
-void declare_outs(InstVector &ivector)
+void declare_outs(InstVector &ivector, bool two_flav = false)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
       declareFVecFromFVec(ivector, out_spinor[s][c][RE]);
       declareFVecFromFVec(ivector, out_spinor[s][c][IM]);
+    }
+  }
+  if(two_flav){
+    for (int s = 0; s < 4; s++) {
+      for (int c = 0; c < 3; c++) {
+        declareFVecFromFVec(ivector, out2_spinor[s][c][RE]);
+        declareFVecFromFVec(ivector, out2_spinor[s][c][IM]);
+      }
     }
   }
 }
@@ -484,12 +576,20 @@ void declare_douts(InstVector &ivector)
   }
 }
 
-void declare_chi(InstVector &ivector)
+void declare_chi(InstVector &ivector, bool two_flav = false)
 {
   for (int s = 0; s < 4; s++) {
     for (int c = 0; c < 3; c++) {
       declareFVecFromFVec(ivector, chi_spinor[s][c][RE]);
       declareFVecFromFVec(ivector, chi_spinor[s][c][IM]);
+    }
+  }
+  if(two_flav){
+    for (int s = 0; s < 4; s++) {
+      for (int c = 0; c < 3; c++) {
+        declareFVecFromFVec(ivector, chi2_spinor[s][c][RE]);
+        declareFVecFromFVec(ivector, chi2_spinor[s][c][IM]);
+      }
     }
   }
 }
@@ -1095,6 +1195,154 @@ void zeroResult(InstVector &ivector, FVec *outspinor)
   }
 }
 
+void two_flav_clover_term(InstVector &ivector,
+                          FVec in_spinor[4][3][2],
+                          FVec in2_spinor[4][3][2],
+                          FVec out_spinor[4][3][2],
+                          FVec out2_spinor[4][3][2],
+                          string _mask,
+                          bool acc){
+
+  FVec clout_tmp[2] = {tmp_1_re, tmp_1_im};
+  for (int block = 0; block < 2; block++) {
+    // BaKo, August 2017: we leave out all prefetches because they don's seem to
+    // do anything here
+    //PrefetchL1FullCloverBlockIn(ivector, clBase, clOffs, block);
+    LoadFullCloverBlock(
+        ivector, clov_diag, clov_offdiag, clBase, clOffs, block);
+
+    for (int c1 = 0; c1 < 6; c1++) {
+      int spin = 2 * block + c1 / 3;
+      int col = c1 % 3;
+      string mask = _mask;
+
+      // tau1 in flavour imlpemented on the in spinors
+      FVec *clout = out_spinor[spin][col];
+      FVec *clout2 = out2_spinor[spin][col];
+      FVec *clin = in2_spinor[spin][col];
+      FVec *clin2 = in_spinor[spin][col];
+#ifdef NO_HW_MASKING
+
+      if (_mask != "") {
+        acc = false;
+        clout = clout_tmp;
+        mask = "";
+      }
+
+#endif
+
+      if (acc) {
+        fmaddFVec(ivector, clout[RE], clov_diag[c1], clin[RE], clout[RE], mask);
+        fmaddFVec(ivector, clout2[RE], clov_diag[c1], clin2[RE], clout2[RE], mask);
+        fmaddFVec(ivector, clout[IM], clov_diag[c1], clin[IM], clout[IM], mask);
+        fmaddFVec(ivector, clout2[IM], clov_diag[c1], clin2[IM], clout2[IM], mask);
+      } else {
+        mulFVec(ivector, clout[RE], clov_diag[c1], clin[RE], mask);
+        mulFVec(ivector, clout2[RE], clov_diag[c1], clin2[RE], mask);
+        mulFVec(ivector, clout[IM], clov_diag[c1], clin[IM], mask);
+        mulFVec(ivector, clout2[IM], clov_diag[c1], clin2[IM], mask);
+      }
+
+      for (int c2 = 0; c2 < 6; c2++) {
+        if (c1 == c2) {
+          continue; // diagonal case
+        }
+
+        if (c1 < c2) {
+          int od = c2 * (c2 - 1) / 2 + c1;
+          // note the tau1 in flavour
+          fmaddConjCVec(ivector, clout, clov_offdiag[od], in2_spinor[2 * block + c2 / 3][c2 % 3], clout, mask);
+          fmaddConjCVec(ivector, clout2, clov_offdiag[od], in_spinor[2 * block + c2 / 3][c2 % 3], clout2, mask);
+        } else {
+          int od = c1 * (c1 - 1) / 2 + c2;
+          // note tha tau1 in flavour
+          fmaddCVec(ivector, clout, clov_offdiag[od], in2_spinor[2 * block + c2 / 3][c2 % 3], clout, mask);
+          fmaddCVec(ivector, clout2, clov_offdiag[od], in_spinor[2 * block + c2 / 3][c2 % 3], clout2, mask);
+        }
+      } // c2
+
+#ifdef NO_HW_MASKING
+
+      if (_mask != "") {
+        if(acc){
+          addCVec(ivector, out_spinor[spin][col], clout, out_spinor[block][c1], _mask);
+          addCVec(ivector, out2_spinor[spin][col], clout2, out2_spinor[block][c1], _mask);
+        }else{
+          movCVec(ivector, out_spinor[spin][col], clout, _mask);
+          movCVec(ivector, out2_spinor[spin][col], clout2, _mask);
+        }
+      }
+
+#endif
+    } // c1
+  } // block
+
+}
+
+void two_flav_full_clover_term(InstVector &ivector,
+                               FVec in_spinor[4][3][2],
+                               FVec out_spinor[4][3][2],
+                               string cloverBase,
+                               string _mask,
+                               bool acc){
+  for (int block = 0; block < 2; block++) {
+
+    // BaKo, August 2017: we leave out all prefetches because they don's seem to
+    // do anything here
+    //PrefetchL1FullCloverFullBlockIn(ivector, cloverBase, clOffs, block);
+    LoadFullCloverFullBlock(
+        ivector, clov_full, cloverBase, clOffs, block);
+
+    for (int sc1 = 0; sc1 < 6; sc1++) { // half-spin-colour row
+
+      int spin_out = 2 * block + sc1 / 3;
+      int col_out = sc1 % 3;
+      FVec *clout = out_spinor[spin_out][col_out];
+
+      for (int sc2 = 0; sc2 < 6; sc2++) { // half-spin-colour column
+
+        int spin_in = 2 * block + sc2 / 3;
+        int col_in = sc2 % 3;
+        FVec *clin = in_spinor[spin_in][col_in];
+
+        if (sc2 == 0 && !acc) {
+          mulCVec(ivector, clout, clov_full[sc1][sc2], clin, _mask);
+        } else {
+          fmaddCVec(ivector,
+                    clout,
+                    clov_full[sc1][sc2],
+                    clin,
+                    clout,
+                    _mask);
+        }
+      } // half-spin-colour column
+    } // half-spin-colour row
+  } // block
+}
+
+void two_flav_tm_inverse_clover_term(InstVector &ivector,
+                                     string _mask)
+{
+  declare_outs(ivector, true);
+  declare_chi(ivector, true);
+  declare_clover(ivector);
+  declare_full_clover(ivector);
+
+  LoadFullSpinor(ivector, chi_spinor, chiBase, chiOffs, _mask);
+  LoadFullSpinor(ivector, chi2_spinor, chi2Base, chiOffs, _mask);
+  // first we apply the inverse full clover term on the diagonal
+  // we do so flavour by flavour because otherwise we would jump around in memory a lot
+  two_flav_full_clover_term(ivector, chi_spinor, out_spinor, fclBase, _mask, false);
+  two_flav_full_clover_term(ivector, chi2_spinor, out2_spinor, fcl2Base, _mask, false);
+  // and then we add the flavour-off-diagonal contribution which comes with
+  // just a Wilson-type clover term with a real spin-colour diagonal
+  // it makes sense to do this in one go because the same term is applied to both flavours
+  two_flav_clover_term(ivector, chi_spinor, chi2_spinor,
+                       out_spinor, out2_spinor, _mask, true);
+
+}
+
+
 void clover_term(InstVector &ivector,
                  FVec in_spinor[4][3][2],
                  bool face,
@@ -1588,22 +1836,11 @@ void achiResult(InstVector &ivector,
                           "");
       }
     }
-
-    // Apply clover term, and store result in out spinor.
-    // This is only on the AChi - bDPsi op (achimbdpsi = true)
-    // This is only in body kernel (face = false)
-    if (twisted_mass == TwistedMassVariant::none) {
-      clover_term(ivector, chi_spinor, false);
-    } else if (twisted_mass == TwistedMassVariant::degenerate) {
-      full_clover_term(ivector, chi_spinor, false);
-    } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
-      full_clover_term(ivector, chi_spinor, false);
-    } else {
-      unsupported_twisted_mass_variant();
-    }
+    
+    // BaKo, August 2017: for AChiMBDPsi we can use the standard clover
+    // term also for twisted mass operators. We pass in the twisted mass
+    // via the pre-conditioning mass "rho"
+    clover_term(ivector, chi_spinor, false);
   } else { // NO CLOVER
     if (twisted_mass == TwistedMassVariant::none) {
       for (int col = 0; col < 3; col++) {
@@ -1641,9 +1878,10 @@ void achiResult(InstVector &ivector,
       // for pure twisted mass and stores result in out_spinor
       twisted_term(ivector, isPlus);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
+      // BaKo, August 2017:
+      // the full ND twisted mass term with mass splitting is implemented
+      // as a linalg functor in QPhiX, for now this branch is never
+      // entered
 
       // Loads spinor elements from chiBase, multiplies with A
       // for pure twisted mass and stores result in out_spinor
@@ -1753,6 +1991,15 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       declare_full_clover(ivector);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted clover term with mass splitting is implemented
+      // as a separate operator which applies the flavour-diagonal
+      // and off-diagonal contributions of the inverse clover term
+      // after the hopping matrix has been called on both
+      // flavours seperately
+      //
+      // this branch of the code generator is presently never entered
+      
       // TODO Here something new for the ND case has to be
       // implemented.
       // Currently this is just copied from the degenerate case.
@@ -1799,6 +2046,14 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       full_clover_term(ivector, *outspinor, false);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted clover term with mass splitting is implemented
+      // as a separate operator which applies the flavour-diagonal
+      // and off-diagonal contributions of the inverse clover term
+      // after the hopping matrix has been called on both
+      // flavours seperately
+      //
+      // this branch of the code generator is presently never entered
       full_clover_term(ivector, *outspinor, false);
       // TODO Here something new for the ND case has to be
       // implemented.
@@ -1812,6 +2067,10 @@ void dslash_plain_body(InstVector &ivector,
     } else if (twisted_mass == TwistedMassVariant::degenerate) {
       inverse_twisted_term(ivector, *outspinor, false, isPlus);
     } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
+      // BaKo, August 2017:
+      // the full ND twisted mass term with mass splitting is implemented
+      // as a linalg functor in QPhiX, for now this branch is never
+      // entered
       // TODO Here something new for the ND case has to be
       // implemented.
       // Currently this is just copied from the degenerate case.
@@ -1853,18 +2112,10 @@ void dslash_achimbdpsi_body(InstVector &ivector,
   }
 
   if (clover) {
-    if (twisted_mass == TwistedMassVariant::none) {
-      declare_clover(ivector);
-    } else if (twisted_mass == TwistedMassVariant::degenerate) {
-      declare_full_clover(ivector);
-    } else if (twisted_mass == TwistedMassVariant::non_degenerate) {
-      // TODO Here something new for the ND case has to be
-      // implemented.
-      // Currently this is just copied from the degenerate case.
-      declare_full_clover(ivector);
-    } else {
-      unsupported_twisted_mass_variant();
-    }
+    // whether we are using twisted mass or not, the clover term in AChiMinusBDPsi
+    // is always of the Wilson form. The twisted mass is added via the preconditioning
+    // mass below.
+    declare_clover(ivector);
   }
 
   // Fill result with a*chi

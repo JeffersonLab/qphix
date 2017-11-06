@@ -71,6 +71,8 @@ void recons_add(InstVector &ivector,
                 string &mask,
                 int s);
 void zeroResult(InstVector &ivector, FVec *outspinor);
+void two_flav_tm_inverse_clover_term(InstVector &ivector,
+                                     string _mask = "");
 void clover_term(InstVector &ivector,
                  FVec in_spinor[4][3][2],
                  bool face,

@@ -62,7 +62,7 @@ void tm_clov_dslash_achimbdpsi_{{ isign }}_vec(
     typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
     const typename Types<FT, veclen, soalen, compress12>::SU3MatrixBlock
         *gBase,
-    const typename Types<FT, veclen, soalen, compress12>::FullCloverBlock
+    const typename Types<FT, veclen, soalen, compress12>::CloverBlock
         *clBase,
     const int xbOffs[veclen],
     const int xfOffs[veclen],
@@ -112,5 +112,16 @@ void tm_clov_face_finish_dir_{{ isign }}(
     int dir,
     const FT tbc_phases[4][2]);
 {% endfor %}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+void tm_clov_two_flav_inverse_clover_term(
+  typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+  typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *o2Base,
+  const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *chiBase,
+  const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *chi2Base,
+  const typename Types<FT, veclen, soalen, compress12>::FullCloverBlock *fclBase,
+  const typename Types<FT, veclen, soalen, compress12>::FullCloverBlock *fcl2Base,
+  const typename Types<FT, veclen, soalen, compress12>::CloverBlock *clBase,
+  const int offs[veclen]);
 
 }

@@ -33,7 +33,7 @@ using namespace QPhiX;
 #include "veclen.h"
 #include "tolerance.h"
 #include "tparam_selector.h"
-#include "compare_qdp_spinors.h"
+#include "compare_qdp_spinors_custom.h"
 
 int Nx, Ny, Nz, Nt, Nxh;
 bool verbose = true;
@@ -231,7 +231,7 @@ void TestTMDslash::testTWMDslash(int t_bc)
                  isign,
                  target_cb);
 
-      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "Dslash");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "Dslash");
     } // cb
   } // isign
 }
@@ -312,7 +312,7 @@ void TestTMDslash::testTWMDslashAChiMBDPsi(int t_bc)
                      isign,
                      target_cb);
 
-      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "A chi - b D psi");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "A chi - b D psi");
     } // cb
   } // isign
 }
@@ -385,7 +385,7 @@ void TestTMDslash::testTWMM(int t_bc)
                          isign,
                          target_cb);
 
-      expect_near(hs_qphix1, hs_qdp1, 1e-6, geom, target_cb, "TM Fermion Matrix");
+      expect_near(hs_qdp1.qdp(), hs_qphix1.qdp(), 1e-6, geom, target_cb, "TM Fermion Matrix");
     }
   }
 }
@@ -502,7 +502,7 @@ void TestTMDslash::testTWMCG(int t_bc)
       (site_flops + (72 + 2 * 1320) * mv_apps) * num_cb_sites;
   masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
 
-  expect_near(hs_qdp2, hs_source, 1e-8, geom, source_target_cb, "CG");
+  expect_near(hs_source.qdp(), hs_qdp2.qdp(), 1e-8, geom, source_target_cb, "CG");
 }
 
 template <typename T, int V, int S, bool compress, typename U, typename Phi>
@@ -596,7 +596,7 @@ void TestTMDslash::testTWMBiCGStab(int t_bc)
                        isign,
                        cb);
 
-    expect_near(hs_qdp1, hs_source, 1e-8, geom, cb, "TM Wilson BiCGStab");
+    expect_near(hs_source.qdp(), hs_qdp1.qdp(), 1e-8, geom, cb, "TM Wilson BiCGStab");
 
     unsigned long num_cb_sites = Layout::vol() / 2;
     unsigned long total_flops =
@@ -780,7 +780,7 @@ void TestTMDslash::testTWMRichardson(const U &u, int t_bc)
       dslash(ltmp, u_test, chi2, isign, 0);
       chi2[rb[0]] = massFactor * chi - betaFactor * ltmp;
 
-      expect_near(chi2, psi, 1e-8, geom_outer, 0, "TM Wilson Richardson");
+      expect_near(psi, chi2, 1e-8, geom_outer, 0, "TM Wilson Richardson");
 
       unsigned long num_cb_sites = Layout::vol() / 2;
       unsigned long total_flops =
