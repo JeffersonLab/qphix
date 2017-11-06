@@ -38,6 +38,9 @@ void TestTMClover::run()
 
 namespace
 {
+/**
+  Computes \f$ \psi_\text{out} = A^{-1} D \psi_\text{in} \f$.
+  */
 template <typename QdpClover, typename QdpGauge, typename QdpSpinor>
 void qdp_dslash(QdpSpinor &out,
                 QdpSpinor const &in,
@@ -51,6 +54,9 @@ void qdp_dslash(QdpSpinor &out,
   inv_clov.apply(out, D_psi, isign, target_cb);
 }
 
+/**
+  Computes \f$ \psi_\text{out} = A \chi_\text{chi} - 0.25 D \psi_\text{psi} \f$.
+  */
 template <typename QdpClover, typename QdpGauge, typename QdpSpinor>
 void qdp_achimbdpsi(QdpSpinor &out,
                     QdpSpinor const &chi,
@@ -68,6 +74,9 @@ void qdp_achimbdpsi(QdpSpinor &out,
   out[rb[target_cb]] -= 0.25 * D_psi;
 }
 
+/**
+  Applies the full operator, \f$ A - 0.25 D A^{-1} D \f$.
+  */
 template <typename QdpClover, typename QdpGauge, typename QdpSpinor>
 void qdp_apply_operator(QdpSpinor &out,
                         QdpSpinor const &in,
@@ -79,11 +88,11 @@ void qdp_apply_operator(QdpSpinor &out,
 {
   int const other_cb = 1 - target_cb;
 
-  QdpSpinor D_psi = zero;
+  //QdpSpinor D_psi = zero;
   QdpSpinor A_inv_D_psi = zero;
 
-  qdp_dslash(D_psi, in, u_aniso, inv_clov, isign, other_cb);
-  inv_clov.apply(A_inv_D_psi, D_psi, isign, other_cb);
+  qdp_dslash(A_inv_D_psi, in, u_aniso, inv_clov, isign, other_cb);
+  //inv_clov.apply(A_inv_D_psi, D_psi, isign, other_cb);
 
   qdp_achimbdpsi(out, in, A_inv_D_psi, u_aniso, clov, isign, target_cb);
 }
@@ -117,7 +126,7 @@ void TestTMClover::operator()()
                                     args_.MinCt,
                                     true);
 
-  RandomGauge<FT, V, S, compress> gauge(geom, 1, 0.01);
+  RandomGauge<FT, V, S, compress> gauge(geom, 1, 0.1);
 
   // The TM clover operator expects an array of inverse clover terms such that
   // it is the normal and hermitian conjugate. Since there is no twisted mass
@@ -214,7 +223,7 @@ void TestTMClover::operator()()
   } // isign
 #endif
 
-  for (int const cb : {1, 0}) {
+  for (int const cb : {0, 1}) {
     // This tests the full even/odd operators
     QDPIO::cout << std::endl
                 << std::endl
@@ -234,7 +243,7 @@ void TestTMClover::operator()()
     Real betaFactor = Real(0.25);
 
     for (int const isign : {1, -1}) {
-      masterPrintf("isign: %d\n", isign);
+      masterPrintf("isign: %d, cb: %d\n", isign, cb);
 
       // (a) Apply QPhiX Operator
       M(hs_qphix1[cb], hs_source[cb], isign);
