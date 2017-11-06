@@ -243,7 +243,7 @@ void TestTMClover::operator()()
       masterPrintf("isign: %d, cb: %d\n", isign, cb);
 
       // (a) Apply QPhiX Operator
-      M(hs_qphix1[cb], hs_source[cb], isign);
+      M(hs_qphix1[cb], hs_source[cb], isign, cb);
       hs_qphix1.unpack();
 
       // (b) Apply QDP Dslash
