@@ -55,7 +55,7 @@ class AbstractSolver
                           int isign,
                           bool verboseP,
                           int target_cb = 1,
-						  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const
+                          QPhiX::ResiduumType residType = QPhiX::RELATIVE) const
   {
     Spinor *x_array[1] = {x};
     const Spinor *rhs_array[1] = {rhs};
