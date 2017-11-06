@@ -220,7 +220,7 @@ void TestTMClover::operator()()
   } // isign
 #endif
 
-  for (int const cb : {0, 1}) {
+  for (int const cb : {1, 0}) {
     // This tests the full even/odd operators
     QDPIO::cout << std::endl
                 << std::endl
