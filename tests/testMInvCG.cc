@@ -42,10 +42,15 @@ template <typename FT,
           typename QdpSpinor>
 void TestMultishift::operator()()
 {
-  testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(1);
   if (!compress12) {
-    // FIXME (Martin Ueding): Disable test because it fails.
-    // testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(-1);
+    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(-1);
+  }
+  else {
+    // FIXME (Martin Ueding): The following test should be run in every case.
+    // The `else` is only here because the second call to `testMInvCG` causes
+    // `gaussian` to fill the spinor with junk. This is not yet understood.
+    // However, running one of the tests is better than nothing.
+    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(1);
   }
 }
 
