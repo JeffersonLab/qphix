@@ -84,7 +84,7 @@ class InvDummyHermTest : public AbstractSolver<FT,
   // here. See http://stackoverflow.com/a/42588534/653152 for the full answer.
   using AbstractSolver<FT, veclen, soalen, compress12, num_flav>::operator();
 
-  virtual void operator()(Spinor *const x[num_flav],
+  void operator()(Spinor *const x[num_flav],
                           const Spinor *const rhs[num_flav],
                           const double RsdTarget,
                           int &n_iters,
@@ -93,7 +93,8 @@ class InvDummyHermTest : public AbstractSolver<FT,
                           unsigned long &mv_apps,
                           int isign,
                           bool verboseP,
-                          int cb = 1) const override
+                          int cb = 1,
+			  QPhiX::ResiduumType residType=QPhiX::RELATIVE) const override
   {
     if (verboseP) {
       masterPrintf("Entering isign=%d hermiticity test with num_flav=%d and cb=%d\n", isign, num_flav, cb);

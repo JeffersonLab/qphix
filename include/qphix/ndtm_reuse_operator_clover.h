@@ -141,9 +141,9 @@ class EvenOddNDTMCloverReuseOperator
     std::abort();
   }
 
-  // M_ee_inv is always Hermitian so no need for isign?
+  // M_diag_inv is always Hermitian so no need for isign?
   // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
-  void M_ee_inv(FourSpinorBlock *res[2],
+  void M_diag_inv(FourSpinorBlock *res[2],
                 const FourSpinorBlock *const in[2],
                 int isign) const override
   {
