@@ -65,10 +65,9 @@ struct InnerCloverProduct {
   clover term.
   */
   static void multiply(
-      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
-          &out,
-      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
-          FourSpinorBlock const &in,
+      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock &out,
+      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock const
+          &in,
       Clover const &clover,
       int const xi,
       int const veclen_idx);
@@ -84,8 +83,8 @@ struct InnerCloverProduct<
   static void multiply(
       typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
           &spinor_out,
-      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
-          FourSpinorBlock const &spinor_in,
+      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock const
+          &spinor_in,
       typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::CloverBlock const
           &clov_block,
       int const xi,
@@ -128,17 +127,20 @@ struct InnerCloverProduct<
                 cplx_mul_acc(spinor_out[c_out][four_s_out][re][xi],
                              spinor_out[c_out][four_s_out][im][xi],
                              diag_in[sc_in][veclen_idx],
-                             FT{0},
+                             QPhiX::rep<FT, double>(0.0),
                              spinor_in[c_in][four_s_in][re][xi],
                              spinor_in[c_in][four_s_in][im][xi]);
               } else if (sc_out < sc_in) {
                 auto const idx15 = sc_in * (sc_in - 1) / 2 + sc_out;
-                cplx_mul_acc(spinor_out[c_out][four_s_out][re][xi],
-                             spinor_out[c_out][four_s_out][im][xi],
-                             off_diag_in[idx15][re][veclen_idx],
-                             -off_diag_in[idx15][im][veclen_idx],
-                             spinor_in[c_in][four_s_in][re][xi],
-                             spinor_in[c_in][four_s_in][im][xi]);
+                cplx_mul_acc(
+                    spinor_out[c_out][four_s_out][re][xi],
+                    spinor_out[c_out][four_s_out][im][xi],
+                    off_diag_in[idx15][re][veclen_idx],
+                    // aww hell, maybe one should just add negation to QPhiX::half ?
+                    QPhiX::rep<FT, double>(
+                        -QPhiX::rep<double, FT>(off_diag_in[idx15][im][veclen_idx])),
+                    spinor_in[c_in][four_s_in][re][xi],
+                    spinor_in[c_in][four_s_in][im][xi]);
               } else {
                 auto const idx15 = sc_out * (sc_out - 1) / 2 + sc_in;
                 cplx_mul_acc(spinor_out[c_out][four_s_out][re][xi],
@@ -166,10 +168,10 @@ struct InnerCloverProduct<
   static void multiply(
       typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock
           &spinor_out,
-      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
-          FourSpinorBlock const &spinor_in,
-      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::
-          FullCloverBlock const &clov_block,
+      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FourSpinorBlock const
+          &spinor_in,
+      typename ::QPhiX::Geometry<FT, veclen, soalen, compress12>::FullCloverBlock const
+          &clov_block,
       int const xi,
       int const veclen_idx)
   {
@@ -309,8 +311,8 @@ void clover_product(
   for (int i = 0; i != clover_touches.size(); ++i) {
     if (clover_touches[i] != veclen) {
       std::cout << "Clover missmatch: Block " << std::setw(4) << i << " accessed "
-                << std::setw(4) << clover_touches[i] << " times instead of "
-                << veclen << "\n";
+                << std::setw(4) << clover_touches[i] << " times instead of " << veclen
+                << "\n";
     }
   }
 
