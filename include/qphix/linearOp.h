@@ -114,7 +114,7 @@ class TwoFlavEvenOddLinearOperator
                             int isign,
                             int target_cb) const
   {
-    this->M_offdiag(res, const_cast<FourSpinorBlock const *const *>(in), isign);
+    this->M_offdiag(res, const_cast<FourSpinorBlock const *const *>(in), isign, target_cb);
   }
 
   // M_ee_inv is always Hermitian so no need for isign?
