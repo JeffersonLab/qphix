@@ -93,8 +93,8 @@ void expect_near(QdpSpinor const &spinor_a,
                   spinor_a.elem(QDP::rb[target_cb].start() + ind).elem(s).elem(c);
               auto const &b =
                   spinor_b.elem(QDP::rb[target_cb].start() + ind).elem(s).elem(c);
-              double const diff_real = a.real() - b.real();
-              double const diff_imag = a.imag() - b.imag();
+              double const diff_real = QDP::toDouble(a.real() - b.real());
+              double const diff_imag = QDP::toDouble(a.imag() - b.imag());
 
               if (std::fabs(diff_real) > abs_err || std::fabs(diff_imag) > abs_err) {
                 QPhiX::masterPrintf("(xyzt)=(%2d,%2d,%2d,%2d) site=%5d s=%d c=%d "
@@ -107,10 +107,10 @@ void expect_near(QdpSpinor const &spinor_a,
                                     ind,
                                     s,
                                     c,
-                                    a.real(),
-                                    a.imag(),
-                                    b.real(),
-                                    b.imag(),
+                                    QDP::toDouble(a.real()),
+                                    QDP::toDouble(a.imag()),
+                                    QDP::toDouble(b.real()),
+                                    QDP::toDouble(b.imag()),
                                     diff_real,
                                     diff_imag);
 
