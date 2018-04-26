@@ -90,6 +90,15 @@ struct InnerCloverProduct<
       int const xi,
       int const veclen_idx)
   {
+
+    // Zero output
+    for( auto c_out : {0, 1, 2} ) {
+     for( auto s_out : {0, 1, 2, 3}) {
+        spinor_out[c_out][s_out][0][xi] = QPhiX::rep<FT,double>(0);
+        spinor_out[c_out][s_out][1][xi] = QPhiX::rep<FT,double>(0);
+     }
+    }
+
     // The clover term is block-diagonal in spin. Therefore we need
     // to iterate over the two blocks of spin.
     for (auto s_block : {0, 1}) {
@@ -175,6 +184,16 @@ struct InnerCloverProduct<
       int const xi,
       int const veclen_idx)
   {
+
+    // Zero ouput
+    for( auto c_out : {0,1,2} ) {
+      for( auto s_out : {0,1,2,3}) {
+        spinor_out[c_out][s_out][0][xi] = QPhiX::rep<FT,double>(0);
+        spinor_out[c_out][s_out][1][xi] = QPhiX::rep<FT,double>(0);
+      }
+    }
+
+
     // The clover term is block-diagonal in spin. Therefore we need
     // to iterate over the two blocks of spin.
     for (auto s_block : {0, 1}) {
@@ -237,7 +256,7 @@ void clover_product(
     Clover *clover,
     ::QPhiX::Geometry<FT, veclen, soalen, compress12> &geom)
 {
-  ::QPhiX::zeroSpinor<FT, veclen, soalen, compress12>(out, geom, n_blas_simt);
+  //::QPhiX::zeroSpinor<FT, veclen, soalen, compress12>(out, geom, n_blas_simt);
 
 #ifdef PRINT_MAPPING
   std::vector<int> spin_touches(geom.getPxyz() * geom.Nt(), 0);
@@ -249,11 +268,17 @@ void clover_product(
             << "\n";
 #endif
 
+  int Nt=geom.Nt();
+  int Nz=geom.Nz();
+  int Ny=geom.Ny();
+  int Nxh=geom.Nxh();
+
   // Iterate through all the block.
-  for (int t = 0; t < geom.Nt(); ++t) {
-    for (int z = 0; z < geom.Nz(); ++z) {
-      for (int y = 0; y < geom.Ny(); ++y) {
-        for (int x = 0; x < geom.Nxh(); ++x) {
+#pragma omp parallel for collapse(4) schedule(static)
+  for (int t = 0; t < Nt; ++t) {
+    for (int z = 0; z < Nz; ++z) {
+      for (int y = 0; y < Ny; ++y) {
+        for (int x = 0; x < Nxh; ++x) {
           // First element in the current XY plane at desired Z and T.
           auto const xyBase = t * geom.getPxyz() + z * geom.getPxy();
           // Index of the SoA along the X direction.
@@ -282,7 +307,7 @@ void clover_product(
                     << std::setw(5) << clov_block_idx << "\n";
 #endif
 
-          assert(xi + xb * soalen == x);
+          // assert(xi + xb * soalen == x);
 
           // References to the objects at desired block.
           auto const &clov_block = clover[clov_block_idx];
