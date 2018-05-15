@@ -874,52 +874,57 @@ void convert(
   int Pxy_in = geom_in.getPxy();
   int Pxyz_in = geom_in.getPxyz();
 
-#pragma omp parallel for collapse(4)
+#pragma omp parallel for collapse(6)
   for (int t = 0; t < Nt; t++) {
     for (int z = 0; z < Nz; z++) {
       for (int y = 0; y < Ny; y++) {
         for (int s = 0; s < nvecs_out; s++) {
           for (int col = 0; col < 3; col++) {
             for (int spin = 0; spin < 4; spin++) {
-              for (int x = 0; x < SOut; x++) {
-                // Index of the soavector from the output.
-                int const ind_out = t * Pxyz_out + z * Pxy_out + y * nvecs_out + s;
+              
+              // Index of the soavector from the output.
+              int const ind_out = t * Pxyz_out + z * Pxy_out + y * nvecs_out + s;
+              
+              // Do real and imaginary part.
+#pragma unroll
+              for (int const reim : {0, 1}) {
+              
+#pragma omp simd
+                for (int x = 0; x < SOut; x++) {
+                  
+                  // Actual X coordinate is given by the number of elements in each
+                  // soavector `SOut` and the position within the soavector `x`.
+                  int const x_coord = s * SOut + x;
 
-                // Actual X coordinate is given by the number of elements in each
-                // soavector `SOut` and the position within the soavector `x`.
-                int const x_coord = s * SOut + x;
+                  // The soavector on the current line of X elements is computed from the
+                  // actual X coordinate `x_coord` and the input soalen `SIn`.
+                  int const s_in = x_coord / SIn;
 
-                // The soavector on the current line of X elements is computed from the
-                // actual X coordinate `x_coord` and the input soalen `SIn`.
-                int const s_in = x_coord / SIn;
+                  // The position within the input soavector is given by subtracting the X
+                  // coordinate of the head of the input soavector from the actual X
+                  // coordinate.
+                  int const x_in = x_coord - SIn * s_in;
 
-                // The position within the input soavector is given by subtracting the X
-                // coordinate of the head of the input soavector from the actual X
-                // coordinate.
-                int const x_in = x_coord - SIn * s_in;
+                  // The index of the input soavector is computed analogous to the output
+                  // soavector.
+                  int const ind_in = t * Pxyz_in + z * Pxy_in + y * nvecs_in + s_in;
+                  
+                  // Extract source and target from the data structures.
+                  auto const source = spinor_in[ind_in][col][spin][reim][x_in];
+                  auto &target = spinor_out[ind_out][col][spin][reim][x];
 
-                // The index of the input soavector is computed analogous to the output
-                // soavector.
-                int const ind_in = t * Pxyz_in + z * Pxy_in + y * nvecs_in + s_in;
+                  // Convert the input numbers into the arithmetic type.
+                  auto const scale_factor_rep = rep<AT_out, double>(scale_factor);
+                  auto const source_rep = rep<AT_out, FTIn>(source);
 
-                // Iterate over real and imaginary part.
-                for (int const reim : {0, 1}) {
-                    // Extract source and target from the data structures.
-                    auto const source = spinor_in[ind_in][col][spin][reim][x_in];
-                    auto &target = spinor_out[ind_out][col][spin][reim][x];
+                  // Perform the multiplication within the arithmetic types.
+                  auto const result_rep = scale_factor_rep * source_rep;
 
-                    // Convert the input numbers into the arithmetic type.
-                    auto const scale_factor_rep = rep<AT_out, double>(scale_factor);
-                    auto const source_rep = rep<AT_out, FTIn>(source);
+                  // Convert the result back into the storage type.
+                  auto const result = rep<FTOut, AT_out>(result_rep);
 
-                    // Perform the multiplication within the arithmetic types.
-                    auto const result_rep = scale_factor_rep * source_rep;
-
-                    // Convert the result back into the storage type.
-                    auto const result = rep<FTOut, AT_out>(result_rep);
-
-                    // Assign the result into the target array element.
-                    target = result;
+                  // Assign the result into the target array element.
+                  target = result;
                 }
               }
             }
