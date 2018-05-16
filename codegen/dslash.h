@@ -138,6 +138,8 @@ void dslash_body(InstVector &ivector,
                  FVec outspinor[4][3][2],
                  bool const *const tbc);
 
+void clover_mult(InstVector &ivector);
+
 void pack_face_vec(InstVector &ivector,
                    FVec spinor[2][3][2],
                    proj_ops proj[],

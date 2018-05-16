@@ -56,5 +56,31 @@ void face_clov_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_templ
     unsigned int mask,
     int dir,
     const FPTYPE tbc_phases[4][2]);
+    
+    
+    
+    
 {% endfor %}
 {% endfor %}
+
+     template <>
+void clov_mult_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+    const typename Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock
+        *chiBase,
+    typename Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const typename Types<FPTYPE, VEC, SOA,COMPRESS12>::CloverBlock
+        *clBase,
+    const int offs[VEC]) {
+
+        {{ include_generated_kernel_cm(ISA, kernel, "clov_mult", FPTYPE, VEC, SOA) }}
+
+}
+
+    template
+void clov_mult_vec<FPTYPE, VEC, SOA, COMPRESS12>(
+    const typename Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock
+        *chiBase,
+    typename Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+    const typename Types<FPTYPE, VEC, SOA,COMPRESS12>::CloverBlock
+        *clBase,
+    const int offs[VEC]);

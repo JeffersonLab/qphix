@@ -2182,6 +2182,39 @@ void dslash_achimbdpsi_body(InstVector &ivector,
   StreamFullSpinor(ivector, out_spinor, outBase, outOffs);
 }
 
+void clover_mult(InstVector &ivector)
+{
+  declare_chi(ivector);
+  declare_outs(ivector);
+  declare_clover(ivector);
+  declare_misc(ivector);
+  for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        LoadSpinorElement(ivector,
+                          chi_spinor[spin][col][RE],
+                          chiBase,
+                          chiOffs,
+                          spin,
+                          col,
+                          RE,
+                          false,
+                          "");
+        LoadSpinorElement(ivector,
+                          chi_spinor[spin][col][IM],
+                          chiBase,
+                          chiOffs,
+                          spin,
+                          col,
+                          IM,
+                          false,
+                          "");
+      }
+  }
+  clover_term(ivector, chi_spinor, false);
+  StreamFullSpinor(ivector, out_spinor, outBase, outOffs);
+}
+
+
 void pack_face_to_dir_dim_vec(InstVector &ivector,
                               bool isPlus,
                               int dir,

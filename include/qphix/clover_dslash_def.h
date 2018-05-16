@@ -48,6 +48,10 @@ class ClovDslash
                             int isign,
                             int cb);
 
+  void clovMult(FourSpinorBlock *res,
+		  const FourSpinorBlock *chi,
+		  const CloverBlock *clov);
+
   void free(void *p);
   Geometry<FT, veclen, soalen, compress12> &getGeometry(void) { return (*s); }
 
@@ -106,6 +110,13 @@ class ClovDslash
            const CloverBlock *invclov,
            bool const is_plus,
            int cb);
+
+  void ClovYz(int tid,
+		  FourSpinorBlock *res,
+		  const FourSpinorBlock *chi,
+		  const CloverBlock *clov);
+
+
 
   void DyzAChiMinusBDPsi(int tid,
                          const FourSpinorBlock *psi,

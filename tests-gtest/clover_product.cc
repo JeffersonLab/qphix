@@ -340,6 +340,7 @@ TYPED_TEST(CloverProductTest, AinvA)
   }
 }
 
+
 TYPED_TEST(CloverProductTest, AinvAFull)
 {
   for (int isign = 1; isign >= -1; isign -= 2) {
@@ -369,3 +370,4 @@ TYPED_TEST(CloverProductTest, AinvAFull)
     }
   }
 }
+

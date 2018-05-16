@@ -779,9 +779,24 @@ void generate_code(void)
     dumpIVector(ivector, filename.str()); 
   }
 
+  for( auto kernel : {"dslash_clov_mult"}) {
+	  std::ostringstream filename;
+	  InstVector ivector;
+	  filename << output_dir << "/generated/" << ARCH_NAME << "/generated/"
+	             << "clov_" << CloverTypeName << "_"
+	             << kernel << "_"
+	             << SpinorTypeName << "_v"
+	             << VECLEN << "_s" << SOALEN;
+	  	  clover_mult(ivector);
+	  	  dumpIVector(ivector,filename.str());
+  }
+
+
   data_types<float, VECLEN, SOALEN, true>::Gauge cmped;
   data_types<float, VECLEN, SOALEN, false>::Gauge uncmped;
 
   cout << "Compressed Gauge size is " << sizeof(cmped) << endl;
   cout << "Uncompressed Gauge size is " << sizeof(uncmped) << endl;
+
+
 }
