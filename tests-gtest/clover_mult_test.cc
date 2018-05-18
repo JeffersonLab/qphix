@@ -344,7 +344,7 @@ TEST(CloverMultTest, TestGeneratedCloverTermEOOp)
 }
 #endif
 
-
+#if 0
 TEST(CloverMultTest, TestGeneratedCloverTermSpeed)
 {
   // This sets up the environment and the lattice
@@ -481,6 +481,7 @@ TEST(CloverMultTest, TestGeneratedCloverTermSpeed)
          << " || diff || / site = " << perSiteDiff << "\n";
 
 }
+#endif
 
 int main(int argc, char *argv[])
 {
