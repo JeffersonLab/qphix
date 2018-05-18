@@ -10,7 +10,7 @@
 #include "qphix/arith_type.h"
 
 #include <omp.h>
-
+#include <iostream>
 namespace QPhiX
 {
 
@@ -840,6 +840,63 @@ mr_rxupdate(
     mr_rxupdate(
 		x[f], r[f], Mr[f], a, geom, n_blas_simt);
   }
+}
+
+template <typename FTOut,
+          int VOut,
+          int SOut,
+          bool CompressOut,
+          typename FTIn,
+          int VIn,
+          bool CompressIn>
+void convert(
+    typename Geometry<FTOut, VOut, SOut, CompressOut>::FourSpinorBlock *spinor_out,
+    double scale_factor,
+    const typename Geometry<FTIn, VIn,SOut, CompressIn>::FourSpinorBlock *spinor_in,
+    const Geometry<FTOut, VOut, SOut, CompressOut> &geom_out,
+    const Geometry<FTIn, VIn, SOut, CompressIn> &geom_in,
+    int n_blas_threads)
+{
+  typedef typename ArithType<FTOut>::Type AT_out;
+
+  // Get the subgrid latt size.
+  int Nt = geom_out.Nt();
+  int Nz = geom_out.Nz();
+  int Ny = geom_out.Ny();
+  int Nxh = geom_out.Nxh();
+  int nvecs_out = geom_out.nVecs();
+  int Pxy_out = geom_out.getPxy();
+  int Pxyz_out = geom_out.getPxyz();
+
+  int nvecs_in = geom_in.nVecs();
+  int Pxy_in = geom_in.getPxy();
+  int Pxyz_in = geom_in.getPxyz();
+
+  const int n_floats = 3*4*2*nvecs_out*SOut;
+  AT_out sf = rep<AT_out,double>(scale_factor);
+
+#pragma omp parallel for collapse(3)
+  for (int t = 0; t < Nt; t++) {
+    for (int z = 0; z < Nz; z++) {
+      for (int y = 0; y < Ny; y++) {
+    	  int const ind_in = t * Pxyz_out + z * Pxy_out + y * nvecs_out;
+
+    	  AT_out buffer[n_floats] __attribute__((aligned(64)));
+    	  const FTIn const* source = &spinor_in[ind_in][0][0][0][0];
+    	  FTOut* target = &spinor_out[ind_in][0][0][0][0];
+
+#pragma omp simd safelen(8*SOut) aligned(source:64) aligned(buffer:64)
+    	  for(int i =0; i < n_floats; ++i) {
+    		  buffer[i] = sf*rep<AT_out,FTIn>(source[i]);
+    	  }
+
+#pragma omp simd safelen(8*SOut) aligned(target:64) aligned(buffer:64)
+    	  for (int i=0; i < n_floats; ++i) {
+    		  target[i] = rep<FTOut,AT_out>(buffer[i]);
+    	  }
+      }// y
+    }//z
+  }//t
 }
 
 
