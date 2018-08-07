@@ -261,7 +261,7 @@ public:
   : baseSolver(M_, MaxIters_, Omega)
   {}
 
-  Geometry<FT, V, S, compress12> &getGeometry() { return baseSolver.getGeometry(); }
+  Geometry<FT, V, S, compress12> &getGeometry() override { return baseSolver.getGeometry(); }
   // This class overrides the `operator()` from `AbstractSolver`. Due to “name
   // hiding”, the overloads of `operator()` in the base class are no longer
   // visible in this class. Therefore the single-flavor interface is not found
@@ -314,7 +314,7 @@ public:
   : baseSolver(M_, MaxIters_, Omega)
   {}
 
-  Geometry<FT, V, S, compress12> &getGeometry() { return baseSolver.getGeometry(); }
+  Geometry<FT, V, S, compress12> &getGeometry() override { return baseSolver.getGeometry(); }
   // This class overrides the `operator()` from `AbstractSolver`. Due to “name
       // hiding”, the overloads of `operator()` in the base class are no longer
       // visible in this class. Therefore the single-flavor interface is not found

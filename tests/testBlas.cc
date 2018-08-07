@@ -17,7 +17,10 @@ using namespace Assertions;
 
 #include "veclen.h"
 
+#ifdef QPHIX_SOALEN
+#undef QPHIX_SOALEN
 #define QPHIX_SOALEN VECLEN_SP
+#endif
 
 void copy(Geometry<float, VECLEN_SP, QPHIX_SOALEN, true>::FourSpinorBlock *x1,
           Geometry<float, VECLEN_SP, QPHIX_SOALEN, true>::FourSpinorBlock *x2,
@@ -223,7 +226,7 @@ void TestBlas::run()
         assertion(toBool(fabs(yf2[s] - yf1[s]) < 1.0e-6));
       }
       masterPrintf("OK\n");
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("FAILED \n");
     }
   }
@@ -270,7 +273,7 @@ void TestBlas::run()
         }
 
         masterPrintf("OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAILED \n");
       }
     }
@@ -353,7 +356,7 @@ void TestBlas::run()
         assertion(toBool(fabs(yf2[s] - yf1[s]) < 1.0e-6));
       }
       masterPrintf("OK\n");
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("FAILED \n");
     }
 
@@ -391,7 +394,7 @@ void TestBlas::run()
           }
         }
         masterPrintf("OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e ) {
         masterPrintf("FAILED \n");
       }
     }
@@ -507,7 +510,7 @@ void TestBlas::run()
                    norm2,
                    fabs(norm2 - norm) / norm);
 
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("FAILED \n");
     }
 
@@ -551,14 +554,14 @@ void TestBlas::run()
           }
         }
         masterPrintf("OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAILED\n");
       }
 
       try {
         assertion(toBool(fabs(norm2 - norm) / norm < 1.0e-12));
         masterPrintf("Sum is OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative "
                      "diff =%4.16e\n",
                      norm,
@@ -691,7 +694,7 @@ void TestBlas::run()
         }
       }
       masterPrintf("Vector x is OK\n");
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("Vector x is broken\n");
     }
 
@@ -718,13 +721,13 @@ void TestBlas::run()
         }
       }
       masterPrintf("Vector z is OK\n");
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("Vector z is broken\n");
     }
 
     try {
       assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n",
                    norm,
                    norm2,
@@ -770,7 +773,7 @@ void TestBlas::run()
         }
         masterPrintf("Vector X is OK\n");
 
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAIL x is bad\n");
       }
 
@@ -798,14 +801,14 @@ void TestBlas::run()
           }
         }
         masterPrintf("Vector R is OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAIL: r is bad \n");
       }
 
       try {
         assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
         masterPrintf("Sum is OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf(
             "FAIL:  norm = %4.20e \n norm2= %4.20e\n relative diff =%4.16e\n",
             norm,
@@ -878,7 +881,7 @@ void TestBlas::run()
     try {
       assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
       masterPrintf("Sum OK\n");
-    } catch (std::exception) {
+    } catch (std::exception& e) {
       masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative "
                    "diff =%4.16e\n",
                    norm,
@@ -892,7 +895,7 @@ void TestBlas::run()
       try {
         assertion(toBool(fabs(norm2 - norm) / norm < 2.0e-12));
         masterPrintf("Sum OK\n");
-      } catch (std::exception) {
+      } catch (std::exception& e) {
         masterPrintf("FAIL:  norm = %4.20e \n norm2= %4.20e\n relative "
                      "diff =%4.16e\n",
                      norm,

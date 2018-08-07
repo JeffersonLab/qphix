@@ -289,7 +289,7 @@ class InvRichardsonMultiPrec
 
   void tune(void) { solver_inner.tune(); }
 
-  Geometry<FT, V, S, Compress> &getGeometry() { return geom; }
+  Geometry<FT, V, S, Compress> &getGeometry() override { return geom; }
 
  private:
   EvenOddLinearOperatorBase &m_outer;

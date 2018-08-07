@@ -882,7 +882,7 @@ void convert(
     	  int const ind_in = t * Pxyz_out + z * Pxy_out + y * nvecs_out;
 
     	  AT_out buffer[n_floats] __attribute__((aligned(64)));
-    	  const FTIn const* source = &spinor_in[ind_in][0][0][0][0];
+    	  FTIn const* source = &spinor_in[ind_in][0][0][0][0];
     	  FTOut* target = &spinor_out[ind_in][0][0][0][0];
 
 #pragma omp simd safelen(8*SOut) aligned(source:64) aligned(buffer:64)

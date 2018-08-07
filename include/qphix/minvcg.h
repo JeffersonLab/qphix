@@ -386,7 +386,7 @@ class MInvCG : public AbstractMultiSolver<FT,
     return;
   }
 
-  Geometry<FT, veclen, soalen, compress12> &getGeometry() { return geom; }
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() override{ return geom; }
 
  private:
   EvenOddLinearOperatorBase &M;

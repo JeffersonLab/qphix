@@ -467,7 +467,7 @@ class InvCG : public AbstractSolver<FT,
   int getRmammpNorm2rxpapThreads(void) { return rmammpNorm2rxpapThreads; }
   int getNorm2Threads(void) { return norm2Threads; }
 
-  Geometry<FT, veclen, soalen, compress12> &getGeometry() { return geom; }
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() override { return geom; }
 
  private:
   EvenOddLinearOperatorBase &M;

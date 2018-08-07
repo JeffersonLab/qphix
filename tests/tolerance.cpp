@@ -1,5 +1,5 @@
 #include "tolerance.h"
-
+#if 0
 template <>
 const QDP::Double tolerance<QPhiX::half>::small = QDP::Double(5.0e-3);
 template <>
@@ -23,3 +23,4 @@ const double rsdTarget<float>::value = (double)(1.0e-7);
 
 template <>
 const double rsdTarget<double>::value = (double)(1.0e-12);
+#endif

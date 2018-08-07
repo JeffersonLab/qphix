@@ -66,7 +66,7 @@ class EvenOddTMCloverOperator
                                                            aniso_coeff_t,
                                                            use_tbc_,
                                                            tbc_phases_,
-                                                           prec_mass_rho))
+                                                           prec_mass_rho)),u({nullptr,nullptr}), clov(nullptr), invclov({nullptr,nullptr})
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
@@ -120,13 +120,13 @@ class EvenOddTMCloverOperator
     std::abort();
   }
 
-  Geometry<FT, veclen, soalen, compress12> &getGeometry()
+  Geometry<FT, veclen, soalen, compress12> &getGeometry() override
   {
     return D->getGeometry();
   }
 
  private:
-  double Mass;
+  //double Mass;
   TMClovDslash<FT, veclen, soalen, compress12> *D;
   SU3MatrixBlock *u[2];
   CloverBlock *clov;
