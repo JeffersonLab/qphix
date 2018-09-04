@@ -162,7 +162,6 @@ inline void streamOutSpinor(FT *dst, const FT *src, int numvec)
 {
 
   for (int v = 0; v < numvec; v++) {
-#pragma vector temporal(dst)
 #pragma omp simd aligned(dst, src : V)
     for (int s = 0; s < V; s++) {
       dst[v * V + s] = src[v * V + s];
@@ -196,7 +195,6 @@ streamInSpinor(typename ArithType<FT>::Type *dst, const FT *src, int numvec)
 #else
   // Generic
   for (int v = 0; v < numvec; v++) {
-#pragma vector temporal(dst)
 #pragma omp simd aligned(dst, src : V)
     for (int s = 0; s < V; s++) {
       dst[v * V + s] = src[v * V + s];
