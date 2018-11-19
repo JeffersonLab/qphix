@@ -62,7 +62,7 @@ class EvenOddLinearOperator
 
 #endif
 
-   virtual void operator()(FourSpinorBlock *const res[1],
+  virtual void operator()(FourSpinorBlock *const res[1],
                           FourSpinorBlock const *const in[1],
                           int isign,
                           int target_cb = 1) const
@@ -88,13 +88,15 @@ class EvenOddLinearOperator
    }
 
 
-  virtual Geometry<FT, veclen, soalen, compress>& getGeometry(void) = 0;
+  virtual Geometry<FT, veclen, soalen, compress> &getGeometry(void) = 0;
 };
 
 template <typename FT, int veclen, int soalen, bool compress>
 class TwoFlavEvenOddLinearOperator
 {
  public:
+  virtual ~TwoFlavEvenOddLinearOperator(){};
+
   typedef typename Geometry<FT, veclen, soalen, compress>::FourSpinorBlock
       FourSpinorBlock;
 
@@ -102,9 +104,9 @@ class TwoFlavEvenOddLinearOperator
 
 #ifdef __INTEL_COMPILER
   virtual void
-  operator()(FourSpinorBlock *res[2], FourSpinorBlock *const in[2], int isign)
+  operator()(FourSpinorBlock * const res[2], FourSpinorBlock *const in[2], int isign, int target_cb = 1)
   {
-    (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign);
+    (*this)(res, const_cast<FourSpinorBlock const *const *>(in), isign, target_cb);
   }
 
   virtual void M_offdiag(FourSpinorBlock *res[2],
@@ -112,7 +114,7 @@ class TwoFlavEvenOddLinearOperator
                             int isign,
                             int target_cb) const
   {
-    this->M_offdiag(res, const_cast<FourSpinorBlock const *const *>(in), isign);
+    this->M_offdiag(res, const_cast<FourSpinorBlock const *const *>(in), isign, target_cb);
   }
 
   // M_ee_inv is always Hermitian so no need for isign?
@@ -125,8 +127,8 @@ class TwoFlavEvenOddLinearOperator
   }
 #endif
 
-  virtual void operator()(FourSpinorBlock *res[2],
-                          const FourSpinorBlock *const in[2],
+  virtual void operator()(FourSpinorBlock * const res[2],
+                          FourSpinorBlock const *const in[2],
                           int isign,
                           int target_cb = 1) = 0;
 

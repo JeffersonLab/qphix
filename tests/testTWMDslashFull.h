@@ -26,6 +26,7 @@ class TestTMDslash : public TestFixture
           t_bc);
       testTWMM<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
       testTWMCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
+      testTWMBiCGStab<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(t_bc);
     }
   }
 
@@ -85,14 +86,14 @@ class TestTMDslash : public TestFixture
 
 #if 1
   template <typename T, int V, int S, typename U, typename Phi>
-  void testTWMBiCGStabWrapper(const U &u)
+  void testTWMBiCGStabWrapper()
   {
     // for(int t_bc=-1; t_bc <= +1; t_bc+=2) {
     int t_bc = -1;
     if (args_.compress12) {
-      testTWMBiCGStab<T, V, S, true, U, Phi>(u, t_bc);
+      testTWMBiCGStab<T, V, S, true, U, Phi>(t_bc);
     } else {
-      testTWMBiCGStab<T, V, S, false, U, Phi>(u, t_bc);
+      testTWMBiCGStab<T, V, S, false, U, Phi>(t_bc);
     }
     //}
   }
@@ -130,7 +131,7 @@ class TestTMDslash : public TestFixture
   void testTWMCG(int t_bc);
 
   template <typename T, int V, int S, bool compress, typename U, typename Phi>
-  void testTWMBiCGStab(const U &u, int t_bc);
+  void testTWMBiCGStab(int t_bc);
 
   template <typename T1,
             int VEC1,

@@ -60,3 +60,28 @@ void tm_clov_face_finish_dir_{{ isign }}<FPTYPE, VEC, SOA, COMPRESS12, {{ tbc_te
     const FPTYPE tbc_phases[4][2]);
 {% endfor %}
 {% endfor %}
+
+template <>
+void tm_clov_two_flav_inverse_clover_term<FPTYPE, VEC, SOA, COMPRESS12>(
+  Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+  Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *o2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chiBase,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chi2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *fclBase,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *fcl2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::CloverBlock *clBase,
+  const int offs[VEC]){
+    {{ include_generated_kernel(ISA, kernel, "two_flav_inverse_clover_term", FPTYPE, VEC, SOA, "") }}
+}
+
+template
+void tm_clov_two_flav_inverse_clover_term<FPTYPE, VEC, SOA, COMPRESS12>(
+  Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *oBase,
+  Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *o2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chiBase,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FourSpinorBlock *chi2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *fclBase,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::FullCloverBlock *fcl2Base,
+  const Types<FPTYPE, VEC, SOA, COMPRESS12>::CloverBlock *clBase,
+  const int offs[VEC]);
+

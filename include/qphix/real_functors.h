@@ -174,6 +174,129 @@ class AYPXFunctor
 };
 
 template <typename FT, int V, int S, bool compress>
+class YPEQXFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  YPEQXFunctor(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+              typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      :  x(x_), y(y_)
+  {
+  }
+
+  YPEQXFunctor(const YPEQXFunctor<FT, V, S, compress> &rhs)
+      : x(rhs.x), y(rhs.y)
+  {
+  }
+
+  ~YPEQXFunctor() {}
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    const FT *xbase = &x[block][0][0][0][0];
+    FT *ybase = &y[block][0][0][0][0];
+
+// Temporary storage to stream into and out of
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor;
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_spinor, xbase, nvec_in_spinor);
+    BLASUtils::streamInSpinor<FT, V>((AT *)y_spinor, ybase, nvec_in_spinor);
+
+    // Now we are hopefully both in L1 and in the right layout so
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        for (int reim = 0; reim < 2; reim++) {
+#pragma omp simd aligned(y_spinor, x_spinor : QPHIX_LLC_CACHE_ALIGN)
+          for (int i = 0; i < S; i++) {
+            y_spinor[col][spin][reim][i] += x_spinor[col][spin][reim][i];
+          }
+        }
+      }
+    }
+
+    BLASUtils::streamOutSpinor<FT, V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+  }
+
+ private:
+  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+};
+
+template <typename FT, int V, int S, bool compress>
+class YMEQXFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  YMEQXFunctor(const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_,
+              typename Geometry<FT, V, S, compress>::FourSpinorBlock *y_)
+      :  x(x_), y(y_)
+  {
+  }
+
+  YMEQXFunctor(const YPEQXFunctor<FT, V, S, compress> &rhs)
+      : x(rhs.x), y(rhs.y)
+  {
+  }
+
+  ~YMEQXFunctor() {}
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    const FT *xbase = &x[block][0][0][0][0];
+    FT *ybase = &y[block][0][0][0][0];
+
+// Temporary storage to stream into and out of
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor;
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock y_spinor;
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_spinor, xbase, nvec_in_spinor);
+    BLASUtils::streamInSpinor<FT, V>((AT *)y_spinor, ybase, nvec_in_spinor);
+
+    // Now we are hopefully both in L1 and in the right layout so
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        for (int reim = 0; reim < 2; reim++) {
+#pragma omp simd aligned(y_spinor, x_spinor : QPHIX_LLC_CACHE_ALIGN)
+          for (int i = 0; i < S; i++) {
+            y_spinor[col][spin][reim][i] -= x_spinor[col][spin][reim][i];
+          }
+        }
+      }
+    }
+
+    BLASUtils::streamOutSpinor<FT, V>(ybase, (const AT *)y_spinor, nvec_in_spinor);
+  }
+
+ private:
+  const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
+};
+
+
+template <typename FT, int V, int S, bool compress>
 class AXPYFunctor
 {
  public:
@@ -355,6 +478,58 @@ class AXYFunctor
   const typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
   typename Geometry<FT, V, S, compress>::FourSpinorBlock *y;
 };
+
+template <typename FT, int V, int S, bool compress>
+class AXFunctor
+{
+ public:
+  typedef typename ArithType<FT>::Type AT;
+
+  AXFunctor(double a_,
+            typename Geometry<FT, V, S, compress>::FourSpinorBlock *x_)
+      : a(rep<AT, double>(a_)), x(x_)
+  {
+  }
+  ~AXFunctor() {}
+
+  inline void func(int block)
+  {
+    int nvec_in_spinor = (3 * 4 * 2 * S) / V;
+    FT *xbase = &x[block][0][0][0][0];
+
+// Temporary storage to stream into and out of
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+    typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor
+        __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN)));
+
+#else
+    __declspec(align(QPHIX_LLC_CACHE_ALIGN))
+        typename Geometry<AT, V, S, compress>::FourSpinorBlock x_spinor;
+
+#endif
+
+    BLASUtils::streamInSpinor<FT, V>((AT *)x_spinor, xbase, nvec_in_spinor);
+
+    // Now we are hopefully both in L1 and in the right layout so
+    for (int col = 0; col < 3; col++) {
+      for (int spin = 0; spin < 4; spin++) {
+        for (int reim = 0; reim < 2; reim++) {
+#pragma omp simd aligned(x_spinor : QPHIX_LLC_CACHE_ALIGN)
+          for (int i = 0; i < S; i++) {
+            x_spinor[col][spin][reim][i] *= a;
+          }
+        }
+      }
+    }
+
+    BLASUtils::streamOutSpinor<FT, V>(xbase, (const AT *)x_spinor, nvec_in_spinor);
+  }
+
+ private:
+  AT a;
+  typename Geometry<FT, V, S, compress>::FourSpinorBlock *x;
+};
+
 
 template <typename FT, int V, int S, bool compress>
 class Norm2Functor

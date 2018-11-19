@@ -185,7 +185,7 @@ public:
       FourSpinorBlock const *in,
       int isign) const override {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
-    clover_product(res,in,invclov,geom);
+   D->clovMult(res,in,invclov);
   }
 
   using SpinorFull = FullSpinor<FT,veclen,soalen,compress12>;
@@ -200,7 +200,7 @@ public:
     assert(clov[0]!=nullptr);
     assert(clov[1]!=nullptr);
     for(int cb=0; cb < 2;++cb)
-      clover_product( res.getCBData(cb), in.getCBData(cb), clov[cb], geom);
+      D->clovMult( res.getCBData(cb), in.getCBData(cb), clov[cb]);
   }
   // Extra operations: Clover Term
    inline void M_diag(SpinorFull& res,
@@ -210,7 +210,7 @@ public:
    {
      Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
      assert(clov[cb]!=nullptr);
-     clover_product( res.getCBData(cb), in.getCBData(cb), clov[cb], geom);
+     D->clovMult( res.getCBData(cb), in.getCBData(cb), clov[cb]);
    }
 
   inline void M_unprec(SpinorFull& res,

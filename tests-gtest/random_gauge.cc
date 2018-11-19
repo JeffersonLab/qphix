@@ -1,7 +1,6 @@
-#include <gtest/gtest.h>
-
 #include "../tests/RandomGauge.h"
-#include "compare_spinors.h"
+#include "../tests/compare_qdp_spinors_gtest.h"
+
 #include <qphix/qphix_cli_args.h>
 
 using namespace QPhiX;

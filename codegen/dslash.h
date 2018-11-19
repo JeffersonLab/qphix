@@ -71,6 +71,8 @@ void recons_add(InstVector &ivector,
                 string &mask,
                 int s);
 void zeroResult(InstVector &ivector, FVec *outspinor);
+void two_flav_tm_inverse_clover_term(InstVector &ivector,
+                                     string _mask = "");
 void clover_term(InstVector &ivector,
                  FVec in_spinor[4][3][2],
                  bool face,
@@ -135,6 +137,8 @@ void dslash_body(InstVector &ivector,
                  recons_ops *rec_ops_fw,
                  FVec outspinor[4][3][2],
                  bool const *const tbc);
+
+void clover_mult(InstVector &ivector);
 
 void pack_face_vec(InstVector &ivector,
                    FVec spinor[2][3][2],

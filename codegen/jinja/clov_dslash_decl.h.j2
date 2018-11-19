@@ -93,6 +93,16 @@ void clov_dslash_achimbdpsi_{{ isign }}_vec(
     const unsigned int accumulate[8],
     const FT prec_mass_rho);
 
+template <typename FT, int veclen, int soalen, bool compress12>
+void clov_mult_vec(
+    const typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock
+        *chiBase,
+    typename Types<FT, veclen, soalen, compress12>::FourSpinorBlock *oBase,
+    const typename Types<FT, veclen, soalen, compress12>::CloverBlock
+        *clBase,
+    const int offs[veclen]);
+    
+    
 template <typename FT, int veclen, int soalen, bool compress12, bool tbc = false>
 void face_clov_finish_dir_{{ isign }}(
     const FT *inbuf,

@@ -469,10 +469,7 @@ void TimeDslash::runTest()
         unsigned long mv_apps = 0;
 
         FT *psi_0 = (FT *)psi_s[0];
-#if defined(__INTEL_COMPILER)
-#pragma simd
-#endif
-#pragma omp parallel for
+#pragma omp parallel for simd
         for (int i = 0; i < len; i++) {
           c_s0[i] = rep<FT, double>(0);
           psi_0[i] = rep<FT, double>(0);
@@ -538,10 +535,7 @@ void TimeDslash::runTest()
       unsigned long mv_apps;
 
       FT *psi_0 = (FT *)psi_s[0];
-#if defined(__INTEL_COMPILER)
-#pragma simd
-#endif
-#pragma omp parallel for
+#pragma omp parallel for simd
       for (int i = 0; i < len; i++) {
         c_s0[i] = rep<FT, double>(0);
         psi_0[i] = rep<FT, double>(0);

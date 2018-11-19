@@ -262,7 +262,7 @@ class InvBiCGStab : public AbstractSolver<FT,
     return;
   }
 
-  Geometry<FT, V, S, compress12> &getGeometry() { return geom; }
+  Geometry<FT, V, S, compress12> &getGeometry() override { return geom; }
 
  private:
   EvenOddLinearOperatorBase &M;

@@ -84,7 +84,7 @@ public:
      M.M_diag_inv(out_other_cb,tmp_space2,isign);
  }
 
- AbstractSolver<FT,V,S,compress12>& getEOSolver() const
+ AbstractSolver<FT,V,S,compress12>& getEOSolver() const override
  {
    return theEOSolver;
  }

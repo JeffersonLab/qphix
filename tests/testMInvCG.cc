@@ -26,11 +26,11 @@ using namespace QPhiX;
 
 #include "veclen.h"
 #include "tolerance.h"
+#include "RandomGauge.h"
+#include "compare_qdp_spinors_custom.h"
 
-int Nx, Ny, Nz, Nt, Nxh;
-bool verbose = true;
-
-void TestMultishift::run() {
+void TestMultishift::run()
+{
   call(*this, args_.prec, args_.soalen, args_.compress12);
 }
 
@@ -42,133 +42,84 @@ template <typename FT,
           typename QdpSpinor>
 void TestMultishift::operator()()
 {
-  Nx = args_.nrow_in[0];
-  Ny = args_.nrow_in[1];
-  Nz = args_.nrow_in[2];
-  Nt = args_.nrow_in[3];
-
-  QDPIO::cout << "Inititalizing QDP++ gauge field" << endl;
-  // Make a random gauge field
-  multi1d<QdpGauge> u(4);
-  QdpGauge g;
-  QdpGauge uf;
-  for (int mu = 0; mu < 4; mu++) {
-    uf = 1; // Unit gauge
-
-    Real factor = Real(0.09);
-    gaussian(g);
-    u[mu] = uf + factor * g;
-    reunit(u[mu]);
-  }
-
-  testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, 1);
   if (!compress12) {
-    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(u, -1);
+    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(-1);
+  }
+  else {
+    // FIXME (Martin Ueding): The following test should be run in every case.
+    // The `else` is only here because the second call to `testMInvCG` causes
+    // `gaussian` to fill the spinor with junk. This is not yet understood.
+    // However, running one of the tests is better than nothing.
+    testMInvCG<FT, veclen, soalen, compress12, QdpGauge, QdpSpinor>(1);
   }
 }
 
-template <typename T, int V, int S, bool compress, typename U, typename Phi>
-void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
+template <typename T,
+          int V,
+          int S,
+          bool compress,
+          typename QdpGauge,
+          typename QdpSpinor>
+void TestMultishift::testMInvCG(int t_bc)
 {
+  typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
+  typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
+
+  QDPIO::cout << "In testMInvCG:" << endl;
+
+  Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
+                                   args_.By,
+                                   args_.Bz,
+                                   args_.NCores,
+                                   args_.Sy,
+                                   args_.Sz,
+                                   args_.PadXY,
+                                   args_.PadXYZ,
+                                   args_.MinCt,
+                                   true);
+
+  RandomGauge<T, V, S, compress, QdpGauge, QdpSpinor> gauge(geom, t_bc);
+
+  HybridSpinor<T, V, S, compress, QdpSpinor> hs_source(geom);
+  gaussian(hs_source.qdp());
+  hs_source.pack();
+
+  int const threads_per_core = args_.Sy * args_.Sz;
+  int n_shift = 4;
+  double shifts[4] = {0.01, 0.02, 0.03, 0.04};
+
   for (int cb = 0; cb < 2; ++cb) {
     int other_cb = 1 - cb;
     RNG::setrn(rng_seed);
-    typedef typename Geometry<T, V, S, compress>::SU3MatrixBlock Gauge;
-    typedef typename Geometry<T, V, S, compress>::FourSpinorBlock Spinor;
-
-    int threads_per_core = args_.Sy * args_.Sz;
-
-    QDPIO::cout << "In testMInvCG:" << endl;
-
-    Phi chi;
-    QDPIO::cout << "Filling chi with gaussian noise" << endl;
-    gaussian(chi);
-
-    QDPIO::cout << "Norm2 || psi || = " << norm2(chi, rb[cb]) << endl;
-    QDPIO::cout << "Done" << endl;
-    double aniso_fac_s = (double)(0.35);
-    double aniso_fac_t = (double)(1.4);
-    double t_boundary = (double)(t_bc);
-
-    Geometry<T, V, S, compress> geom(Layout::subgridLattSize().slice(),
-                                     args_.By,
-                                     args_.Bz,
-                                     args_.NCores,
-                                     args_.Sy,
-                                     args_.Sz,
-                                     args_.PadXY,
-                                     args_.PadXYZ,
-                                     args_.MinCt, true);
-
-    // NEED TO MOVE ALL THIS INTO DSLASH AT SOME POINT
-    // -- Allocate the gauge field
-    Gauge *packed_gauge_cb0 = (Gauge *)geom.allocCBGauge();
-    Gauge *packed_gauge_cb1 = (Gauge *)geom.allocCBGauge();
-    Gauge *u_packed[2] = {packed_gauge_cb0, packed_gauge_cb1};
-
-    // Allocate the right hand side
-    Spinor *chi_d = (Spinor *)geom.allocCBFourSpinor();
-    if (chi_d == 0x0) {
-      QDPIO::cout << "Error allocating chi" << endl;
-      QDP_abort(1);
-    }
-
-    int n_shift = 4;
-    double shifts[4] = {0.01, 0.02, 0.03, 0.04};
 
     // Allocate the solutions
     Spinor *psi_d[4];
     for (int s = 0; s < n_shift; s++) {
-      psi_d[s] = (Spinor *)geom.allocCBFourSpinor();
-      if (psi_d[s] == 0x0) {
-        QDPIO::cout << "Error allocating psi[" << s << "]" << endl;
-        QDP_abort(1);
-      }
+      psi_d[s] = geom.allocCBFourSpinor();
     }
 
     QDPIO::cout << "Fields allocated" << endl;
 
-    // Pack the gauge field
-    QDPIO::cout << "Packing gauge field...";
-    qdp_pack_gauge<>(u, packed_gauge_cb0, packed_gauge_cb1, geom);
-    QDPIO::cout << "done" << endl;
-
-    QDPIO::cout << " Packing chi";
-    qdp_pack_cb_spinor<>(chi, chi_d, geom, cb);
-
-    QDPIO::cout << " Zeroing the psis";
+    QDPIO::cout << " Zeroing the psis" << endl;
     for (int s = 0; s < n_shift; s++) {
       zeroSpinor<T, V, S, compress>(psi_d[s], geom, threads_per_core);
     }
+
     QDPIO::cout << "done" << endl;
-    QDPIO::cout << "T BCs = " << t_boundary << endl;
 
-    QDPIO::cout << "Applying anisotropy to test gauge field" << endl;
-    multi1d<U> u_test(Nd);
-    for (int mu = 0; mu < Nd; mu++) {
-      Real factor = Real(aniso_fac_s);
-      if (mu == Nd - 1) {
-        factor = Real(aniso_fac_t);
-      }
-      u_test[mu] = factor * u[mu];
-    }
-    // Apply BCs on u-test for QDP++ test (Dslash gets unmodified field)
-    u_test[3] *= where(Layout::latticeCoordinate(3) == (Layout::lattSize()[3] - 1),
-                       Real(t_boundary),
-                       Real(1));
+    EvenOddWilsonOperator<T, V, S, compress> M(gauge.clover_mass,
+                                               gauge.u_packed,
+                                               &geom,
+                                               gauge.t_boundary,
+                                               gauge.aniso_fac_s,
+                                               gauge.aniso_fac_t);
 
-    double Mass = 0.01;
-    EvenOddWilsonOperator<T, V, S, compress> M(
-        Mass, u_packed, &geom, t_boundary, aniso_fac_s, aniso_fac_t);
-    Phi ltmp = zero;
-    Real massFactor = Real(4) + Real(Mass);
-    Real betaFactor = Real(0.25) / massFactor;
     double rsd_target[4];
     double rsd_final[4];
-
     for (int s = 0; s < n_shift; s++) {
       rsd_target[s] = rsdTarget<T>::value;
     }
+
     int max_iters = 200;
     int niters;
     unsigned long site_flops;
@@ -177,15 +128,17 @@ void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
     double isign = 1;
     double start = 0;
     double end = 0;
+
     {
       MInvCG<T, V, S, compress> solver(M, max_iters, n_shift);
-      norm2Spinor<T, V, S, compress>(r2, chi_d, geom, threads_per_core);
+      norm2Spinor<T, V, S, compress>(r2, hs_source[cb], geom, threads_per_core);
       masterPrintf("chi has norm2 = %16.8e\n", r2);
 
       start = omp_get_wtime();
 
+      bool verbose = true;
       solver(psi_d,
-             chi_d,
+             hs_source[cb],
              n_shift,
              shifts,
              rsd_target,
@@ -202,32 +155,31 @@ void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
       QDPIO::cout << " cb= " << cb << " Solver Completed. Iters = " << niters
                   << " Wallclock = " << end - start << " sec." << endl;
     }
+
     // check solutions
-    Phi psi, psi2, psi3;
+    QdpSpinor psi, psi2, psi3, ltmp;
     for (int s = 0; s < n_shift; s++) {
+      Real massFactor = Real(4) + Real(gauge.clover_mass);
+      Real betaFactor = Real(0.25) / massFactor;
       Real shiftFactor = Real(shifts[s]);
+
       // Unpack solution s into 'psi'
       qdp_unpack_cb_spinor<>(psi_d[s], psi, geom, cb);
 
       // psi2 = M psi
-      dslash(psi2, u_test, psi, isign, other_cb);
-      dslash(ltmp, u_test, psi2, isign, cb);
+      dslash(psi2, gauge.get_u_aniso(), psi, isign, other_cb);
+      dslash(ltmp, gauge.get_u_aniso(), psi2, isign, cb);
       psi2[rb[cb]] = massFactor * psi - betaFactor * ltmp;
 
       // psi3 = M^\dagger psi2
-      dslash(psi3, u_test, psi2, (-isign), other_cb);
-      dslash(ltmp, u_test, psi3, (-isign), cb);
+      dslash(psi3, gauge.get_u_aniso(), psi2, (-isign), other_cb);
+      dslash(ltmp, gauge.get_u_aniso(), psi3, (-isign), cb);
       psi3[rb[cb]] = massFactor * psi2 - betaFactor * ltmp;
 
       // psi2 = psi3 + shift * psi = M^\dagger M psi + shift psi;
       psi2[rb[cb]] = shiftFactor * psi + psi3;
 
-      Phi diff = chi - psi2;
-      Double true_norm = sqrt(norm2(diff, rb[cb]) / norm2(chi, rb[cb]));
-      QDPIO::cout << "cb = " << cb << " True norm for shift[" << s
-                  << "]=" << shifts[s] << " is: " << true_norm << endl;
-      //    assertion( toBool( true_norm < (rsd_target +
-      //    tolerance<T>::small) ) );
+      expect_near(hs_source.qdp(), psi2, 1e-9, geom, cb, "multi-shift CG");
     }
 
     unsigned long num_cb_sites = Layout::vol() / 2;
@@ -236,15 +188,8 @@ void TestMultishift::testMInvCG(const multi1d<U> &u, int t_bc)
 
     masterPrintf("GFLOPS=%e\n", 1.0e-9 * (double)(total_flops) / (end - start));
 
-#if 1
-
-    geom.free(packed_gauge_cb0);
-    geom.free(packed_gauge_cb1);
-    geom.free(chi_d);
     for (int i = 0; i < 4; i++) {
       geom.free(psi_d[i]);
     }
-
-#endif
   }
 }

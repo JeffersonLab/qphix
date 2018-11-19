@@ -1286,6 +1286,158 @@ void ClovDslash<FT, veclen, soalen, compress12>::DPsiAChiMinusBDPsi(
 // in the non-communicating case we need to catch all threads
 #pragma omp barrier
 #endif // QPHIX_DO_COMMS
+
+
 }
 
+template <typename FT, int veclen, int soalen, bool compress12>
+void ClovDslash<FT, veclen, soalen, compress12>::clovMult(
+		FourSpinorBlock *res,
+		const FourSpinorBlock *chi,
+		const CloverBlock *clov)
+		{
+
+#pragma omp parallel
+	{
+		int tid=omp_get_thread_num();
+		ClovYz(tid,res,chi,clov);
+	}
+
+		}
+
+template <typename FT, int veclen, int soalen, bool compress12>
+void ClovDslash<FT, veclen, soalen, compress12>::ClovYz(int tid,
+		FourSpinorBlock *res,
+		const FourSpinorBlock *chi,
+		const CloverBlock *clov)
+
+		{
+	const int Nxh = s->Nxh();
+	const int Nx = s->Nx();
+	const int Ny = s->Ny();
+	const int Nz = s->Nz();
+	const int Nt = s->Nt();
+	const int By = s->getBy();
+	const int Bz = s->getBz();
+	const int Sy = s->getSy();
+	const int Sz = s->getSz();
+	const int ngy = s->nGY();
+	const int Pxy = s->getPxy();
+	const int Pxyz = s->getPxyz();
+
+	// Get Core ID and SIMT ID
+	int cid = tid / n_threads_per_core;
+	int smtid = tid - n_threads_per_core * cid;
+
+	// Compute smt ID Y and Z indices
+	int smtid_z = smtid / Sy;
+	int smtid_y = smtid - Sy * smtid_z;
+
+	int nvecs = s->nVecs();
+
+	const int spinor_line_in_floats =
+			sizeof(FourSpinorBlock) / sizeof(FT); //  One spinor soavecto
+
+	// Indexing constants
+	const int V1 = 2 * nvecs; // No of vectors in x (without checkerboarding)
+	const int NyV1 = Ny * V1;
+	const int NzNyV1 = Nz * Ny * V1;
+
+	const int Nxm1 = 2 * Nxh - 1;
+	const int Nym1 = Ny - 1;
+	const int Nzm1 = Nz - 1;
+	const int Ntm1 = Nt - 1;
+
+	const int NyV1mV1 = V1 * (Ny - 1);
+	const int NzNyV1mNyV1 = V1 * Ny * (Nz - 1);
+	const int NtNzNyV1mNzNyV1 = V1 * Nz * Ny * (Nt - 1);
+
+	const int nyg = s->nGY();
+	// Get the number of checkerboarded sites and various indexing constants
+	int soprefdist = 0;
+
+#if defined(__GNUG__) && !defined(__INTEL_COMPILER)
+	int *tmpspc __attribute__((aligned(QPHIX_LLC_CACHE_ALIGN))) =
+			&(tmpspc_all[veclen * 16 * tid]);
+#else
+	__declspec(align(QPHIX_LLC_CACHE_ALIGN)) int *tmpspc =
+			&(tmpspc_all[veclen * 16 * tid]);
+#endif
+
+	int *offs, *xbOffs, *xfOffs, *ybOffs, *yfOffs, *gOffs, *pfyOffs;
+	int *xbOffs_xodd[2], *xbOffs_x0_xodd[2];
+	int *xfOffs_xodd[2], *xfOffs_xn_xodd[2];
+	int *ybOffs_yn0, *ybOffs_y0, *yfOffs_ynn, *yfOffs_yn;
+	int *atmp = (int *)((((unsigned long long)tmpspc) + 0x3F) & ~0x3F);
+	offs = &atmp[0];
+	xbOffs_xodd[0] = &atmp[veclen * 1];
+	xbOffs_xodd[1] = &atmp[veclen * 2];
+	xbOffs_x0_xodd[0] = &atmp[veclen * 3];
+	xbOffs_x0_xodd[1] = &atmp[veclen * 4];
+	xfOffs_xodd[0] = &atmp[veclen * 5];
+	xfOffs_xodd[1] = &atmp[veclen * 6];
+	xfOffs_xn_xodd[0] = &atmp[veclen * 7];
+	xfOffs_xn_xodd[1] = &atmp[veclen * 8];
+	ybOffs_yn0 = &atmp[veclen * 9];
+	ybOffs_y0 = &atmp[veclen * 10];
+	yfOffs_ynn = &atmp[veclen * 11];
+	yfOffs_yn = &atmp[veclen * 12];
+	gOffs = &atmp[veclen * 13];
+	pfyOffs = &atmp[veclen * 14];
+
+	int num_phases = s->getNumPhases();
+
+	for (int ph = 0; ph < num_phases; ph++) {
+		const CorePhase &phase = s->getCorePhase(ph);
+		const BlockPhase &binfo = block_info[tid * num_phases + ph];
+
+		int nActiveCores = phase.Cyz * phase.Ct;
+		if (cid >= nActiveCores)
+			continue;
+
+		int ph_next = ph;
+		int Nct = binfo.nt;
+
+		// Loop over timeslices
+		for (int ct = 0; ct < Nct; ct++) {
+			int t = ct + binfo.bt;
+
+			// Loop over z. Start at smtid_z and work up to Ncz
+			// (Ncz truncated for the last block so should be OK)
+			for (int cz = smtid_z; cz < Bz; cz += Sz) {
+
+				int z = cz + binfo.bz; // Add on origin of block
+
+				const FourSpinorBlock *chiBase =
+						&chi[t * Pxyz + z * Pxy]; // base address for x & y neighbours
+
+				FourSpinorBlock *oBase = &res[t * Pxyz + z * Pxy];
+
+				// Loop over y. Start at smtid_y and work up to Ncy
+				// (Ncy truncated for the last block so should be OK)
+				for (int cy = nyg * smtid_y; cy < By; cy += nyg * Sy) {
+					int yi = cy + binfo.by;
+
+					// cx loops over the soalen partial vectors
+					for (int cx = 0; cx < nvecs; cx++) {
+
+						const CloverBlock *clBase =
+								&clov[(t * Pxyz + z * Pxy + yi * nvecs) / nyg + cx];
+
+
+						int X = nvecs * yi + cx;
+
+
+
+						clov_mult_vec<FT,veclen,soalen,compress12>(chiBase + X,
+								oBase + X,
+								clBase,
+								offs);
+					}
+				} // End for over scanlines y
+			} // End for over scalines z
+		} // end for over t
+	} // phases
+
+		}
 } // Namespace

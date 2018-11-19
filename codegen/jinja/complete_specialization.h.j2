@@ -14,6 +14,11 @@
     #include "{{ filename }}"
 {%- endmacro -%}
 
+{% macro include_generated_kernel_cm(isa, kernel, operator, fptype, vec, soa) -%}
+{% set filename = 'generated/%s_%s_%s_v%d_s%d'|format(kernel, operator, fptype, vec, soa) -%}
+    #include "{{ filename }}"
+{%- endmacro -%}
+
 {% macro include_generated_kernel_ts(isa, kernel, operator, fptype, vec, soa, compress12, tbc_ts) -%}
 {% if compress12 == '' -%}
 {% set suffix = '' -%}

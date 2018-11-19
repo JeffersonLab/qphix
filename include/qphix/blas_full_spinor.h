@@ -14,67 +14,121 @@ namespace QPhiX {
 
 template<typename FT, int V, int S, bool compress>
 void copySpinor(FullSpinor<FT,V,S,compress>& result,
-                const FullSpinor<FT,V,S,compress>& src,
-                const Geometry<FT,V,S,compress>& geom,
-                int n_blas_simt)
+		const FullSpinor<FT,V,S,compress>& src,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  for(int cb=0; cb < 2; ++cb) {
-    copySpinor<FT,V,S,compress>(result.getCBData(cb),src.getCBData(cb),geom,n_blas_simt);
-  }
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		copySpinor<FT,V,S,compress>(result.getCBData(cb),src.getCBData(cb),geom,n_blas_simt);
+	}
 }
 
 template<typename FT, int V, int S, bool compress>
 void zeroSpinor(FullSpinor<FT,V,S,compress>& result,
-                const Geometry<FT,V,S,compress>& geom,
-                int n_blas_simt)
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  for(int cb=0; cb < 2; ++cb) {
-    zeroSpinor<FT,V,S,compress>(result.getCBData(cb),geom,n_blas_simt);
-  }
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		zeroSpinor<FT,V,S,compress>(result.getCBData(cb),geom,n_blas_simt);
+	}
+
+}
+
+template<typename FT, int V, int S, bool compress>
+void axSpinor(const double alpha,
+		FullSpinor<FT,V,S,compress>& x,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
+{
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		ax<FT,V,S,compress>(alpha, x.getCBData(cb),geom,n_blas_simt);
+	}
 
 }
 // Complex AXPY
 template<typename FT, int V, int S, bool compress>
 void caxpySpinor(double alpha[2],
-    const FullSpinor<FT,V,S,compress>& x,
-    FullSpinor<FT,V,S,compress>& y,
-    const Geometry<FT,V,S,compress>& geom,
-    int n_blas_simt)
+		const FullSpinor<FT,V,S,compress>& x,
+		FullSpinor<FT,V,S,compress>& y,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  for(int cb=0; cb < 2; ++cb) {
-    caxpySpinor<FT,V,S,compress>(alpha, x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
-  }
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		caxpySpinor<FT,V,S,compress>(alpha, x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+	}
 }
 
 // Real AXPY
 template<typename FT, int V, int S, bool compress>
 void axpySpinor(double alpha,
-    const FullSpinor<FT,V,S,compress>& x,
-    FullSpinor<FT,V,S,compress>& y,
-    const Geometry<FT,V,S,compress>& geom,
-    int n_blas_simt)
+		const FullSpinor<FT,V,S,compress>& x,
+		FullSpinor<FT,V,S,compress>& y,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  for(int cb=0; cb < 2; ++cb) {
-    axpy<FT,V,S,compress>(alpha, x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
-  }
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		axpy<FT,V,S,compress>(alpha, x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+	}
+}
+
+// Real AXPY
+template<typename FT, int V, int S, bool compress>
+void ypeqxSpinor(const FullSpinor<FT,V,S,compress>& x,
+		FullSpinor<FT,V,S,compress>& y,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
+{
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		ypeqx<FT,V,S,compress>(x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+	}
+}
+
+// Real AXPY
+template<typename FT, int V, int S, bool compress>
+void ymeqxSpinor(const FullSpinor<FT,V,S,compress>& x,
+		FullSpinor<FT,V,S,compress>& y,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
+{
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		ymeqx<FT,V,S,compress>(x.getCBData(cb), y.getCBData(cb), geom, n_blas_simt);
+	}
 }
 
 // XmyNorm2
 template<typename FT, int V, int S, bool compress>
 void xmy2Norm2Spinor( const FullSpinor<FT,V,S,compress>& x,
-                     FullSpinor<FT,V,S,compress>& y,
-                     double &r_norm,
-                     const Geometry<FT,V,S,compress>& geom,
-                     int n_blas_simt)
+		FullSpinor<FT,V,S,compress>& y,
+		double &r_norm,
+		const Geometry<FT,V,S,compress>& geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-    double res_cb[2] = { 0,0 };
-    for(int cb=0; cb < 2; ++cb) {
-      xmy2Norm2Spinor<FT,V,S,compress>(x.getCBData(cb),y.getCBData(cb), res_cb[cb],geom,n_blas_simt,
-          false);
-    }
+	r_norm = (double)0;
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		double res_cb=(double)0;
 
-    r_norm = res_cb[0] + res_cb[1];
-    CommsUtils::sumDouble(&r_norm);
+		xmy2Norm2Spinor<FT,V,S,compress>(x.getCBData(cb),y.getCBData(cb), res_cb,geom,n_blas_simt,
+				false);
+
+		r_norm += res_cb;
+	}
+	CommsUtils::sumDouble(&r_norm);
 
 }
 
@@ -82,35 +136,33 @@ void xmy2Norm2Spinor( const FullSpinor<FT,V,S,compress>& x,
 // InnerProduct
 template <typename FT, int V, int S, bool compress>
 void innerProductSpinor(double results[2],
-                  const FullSpinor<FT,V,S,compress>& x,
-                  const FullSpinor<FT,V,S,compress>& y,
-                  const Geometry<FT, V, S, compress> &geom,
-                  int n_blas_simt)
+		const FullSpinor<FT,V,S,compress>& x,
+		const FullSpinor<FT,V,S,compress>& y,
+		const Geometry<FT, V, S, compress> &geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  results[0] = (double) 0;
-  results[1] = (double) 0;
+	results[0] = (double) 0;
+	results[1] = (double) 0;
 
-  double cb_results_0[2] = {0,0};
-  double cb_results_1[2] = {0,0};
 
-  innerProduct<FT,V,S,compress>(cb_results_0,
-               x.getCBData(0),
-               y.getCBData(0),
-               geom,
-               n_blas_simt,
-               false);
+	for(int cb=min_cb; cb < max_cb; ++cb) {
+		double cb_results[2] = {0,0};
 
-  innerProduct<FT,V,S,compress>(cb_results_1,
-                 x.getCBData(1),
-                 y.getCBData(1),
-                 geom,
-                 n_blas_simt,
-                 false);
+		innerProduct<FT,V,S,compress>(cb_results,
+				x.getCBData(cb),
+				y.getCBData(cb),
+				geom,
+				n_blas_simt,
+				false);
 
-  results[0] = cb_results_0[0]+cb_results_1[0];
-  results[1] = cb_results_0[1]+cb_results_1[1];
+		results[0] += cb_results[0];
+		results[1] += cb_results[1];
 
-  CommsUtils::sumDoubleArray(results,2);
+	}
+
+	CommsUtils::sumDoubleArray(results,2);
 
 }
 
@@ -118,16 +170,19 @@ void innerProductSpinor(double results[2],
 // Norm2
 template<typename FT, int V, int S, bool compress>
 void norm2Spinor(double &n2,
-                 const FullSpinor<FT,V,S,compress>& x,
-                 const Geometry<FT, V, S, compress> &geom,
-                 int n_blas_simt)
+		const FullSpinor<FT,V,S,compress>& x,
+		const Geometry<FT, V, S, compress> &geom,
+		int n_blas_simt,
+		const int min_cb=0,
+		const int max_cb=2)
 {
-  double norm_cb[2] = {0,0};
-  for(int cb=0; cb < 2; ++cb )  {
-    norm2Spinor<FT,V,S,compress>(norm_cb[cb], x.getCBData(cb),geom,n_blas_simt,false );
-  }
-  n2 = norm_cb[0] + norm_cb[1];
-  CommsUtils::sumDouble(&n2);
+	n2 = (double)0;
+	for(int cb=min_cb; cb < max_cb; ++cb )  {
+		double norm_cb = (double)0;
+		norm2Spinor<FT,V,S,compress>(norm_cb, x.getCBData(cb),geom,n_blas_simt,false );
+		n2 += norm_cb;
+	}
+	CommsUtils::sumDouble(&n2);
 }
 
 

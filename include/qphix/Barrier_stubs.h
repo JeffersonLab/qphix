@@ -19,4 +19,4 @@ class Barrier
   int dummy;
 };
 
-}; // end namespace
+} // end namespace
