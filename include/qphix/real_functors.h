@@ -5,6 +5,7 @@
 #include "qphix/blas_utils.h"
 #include "qphix/print_utils.h"
 #include "qphix/arith_type.h"
+#include <array>
 
 namespace QPhiX
 {
@@ -26,7 +27,7 @@ class CopyFunctor
 
   ~CopyFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *srcbase = &src[block][0][0][0][0];
@@ -77,7 +78,7 @@ class ZeroFunctor
   }
   ~ZeroFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *resbase = &res[block][0][0][0][0];
@@ -129,7 +130,7 @@ class AYPXFunctor
 
   ~AYPXFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -192,7 +193,7 @@ class YPEQXFunctor
 
   ~YPEQXFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -253,7 +254,7 @@ class YMEQXFunctor
 
   ~YMEQXFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -316,7 +317,7 @@ class AXPYFunctor
 
   ~AXPYFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -379,7 +380,7 @@ class AXPBYFunctor
   }
   ~AXPBYFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -437,7 +438,7 @@ class AXYFunctor
   }
   ~AXYFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -492,7 +493,7 @@ class AXFunctor
   }
   ~AXFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *xbase = &x[block][0][0][0][0];
@@ -543,7 +544,7 @@ class Norm2Functor
   }
   ~Norm2Functor() {}
 
-  inline void func(int block, double *reduction)
+  inline void func(int block, std::array<double, S> &reduction) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -590,7 +591,7 @@ class XMYNorm2Functor
 
   ~XMYNorm2Functor() {}
 
-  inline void func(int block, double *red)
+  inline void func(int block, std::array<double, S> &red) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -666,7 +667,7 @@ class XMY2Norm2Functor
 
   ~XMY2Norm2Functor() {}
 
-  inline void func(int block, double *red)
+  inline void func(int block, std::array<double, S> &red) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -740,7 +741,7 @@ class AXPYNorm2Functor
   }
   ~AXPYNorm2Functor() {}
 
-  inline void func(int block, double *reduction)
+  inline void func(int block, std::array<double, S> &reduction) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -811,7 +812,7 @@ class XMYFunctor
 
   ~XMYFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *xbase = &x[block][0][0][0][0];
@@ -874,7 +875,7 @@ class RmammpNorm2rxpapFunctor
 
   ~RmammpNorm2rxpapFunctor() {}
 
-  inline void func(int block, double *reduction)
+  inline void func(int block, std::array<double, S> &reduction) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *rbase = &r[block][0][0][0][0];
@@ -964,7 +965,7 @@ class RichardsonRXUpdateNormRFunctor
 
   ~RichardsonRXUpdateNormRFunctor() {}
 
-  inline void func(int block, double *reduction)
+  inline void func(int block, std::array<double, S> &reduction) const
   {
     FT *xbase = &x[block][0][0][0][0];
     FT *rbase = &r[block][0][0][0][0];
