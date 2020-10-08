@@ -32,7 +32,7 @@ class EvenOddLinearOperator
   // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
   virtual void M_diag_inv(FourSpinorBlock *res,
                         FourSpinorBlock const *in,
-                        int isign) const = 0;
+                        int isign, int cb=0) const = 0;
 
 #ifdef __INTEL_COMPILER
   virtual void operator()(FourSpinorBlock *const res[1],

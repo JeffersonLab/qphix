@@ -30,14 +30,15 @@ public:
 
   EvenOddCloverOperator(SU3MatrixBlock *u_[2],
       CloverBlock *clov_,
-      CloverBlock *invclov_,
+      CloverBlock *invclov_even,
       Geometry<FT, veclen, soalen, compress12> *geom_,
       double t_boundary,
       double aniso_coeff_s,
       double aniso_coeff_t,
       bool use_tbc_[4] = nullptr,
       double tbc_phases_[4][2] = nullptr,
-      double const prec_mass_rho = 0.0)
+      double const prec_mass_rho = 0.0,
+      CloverBlock *invclov_odd=nullptr)
   : D(new ClovDslash<FT, veclen, soalen, compress12>(geom_,
       t_boundary,
       aniso_coeff_s,
@@ -57,7 +58,8 @@ public:
     u[1] = u_[1];
     clov[0] = nullptr;
     clov[1] = clov_;
-    invclov = invclov_;
+    invclov[0] = invclov_even;
+    invclov[1] = invclov_odd;
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
   }
 
@@ -66,14 +68,15 @@ public:
   // BOTH CLOVER PArities are passed
   EvenOddCloverOperator(SU3MatrixBlock *u_[2],
       CloverBlock *clov_[2],
-      CloverBlock *invclov_,
+      CloverBlock *invclov_even,
       Geometry<FT, veclen, soalen, compress12> *geom_,
       double t_boundary,
       double aniso_coeff_s,
       double aniso_coeff_t,
       bool use_tbc_[4] = nullptr,
       double tbc_phases_[4][2] = nullptr,
-      double const prec_mass_rho = 0.0)
+      double const prec_mass_rho = 0.0,
+      CloverBlock *invclov_odd=nullptr)
   : D(new ClovDslash<FT, veclen, soalen, compress12>(geom_,
       t_boundary,
       aniso_coeff_s,
@@ -93,7 +96,8 @@ public:
     u[1] = u_[1];
     clov[0] = clov_[0];
     clov[1] = clov_[1];
-    invclov = invclov_;
+    invclov[0] = invclov_even;
+    invclov[1] = invclov_odd;
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
   }
 
@@ -118,7 +122,7 @@ public:
           aniso_coeff_t,
           use_tbc_,
           tbc_phases_)),
-          u({nullptr,nullptr}), clov({nullptr,nullptr}),invclov(nullptr)
+          u({nullptr,nullptr}), clov({nullptr,nullptr}),invclov({nullptr,nullptr})
   {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
     tmp = (FourSpinorBlock *)geom.allocCBFourSpinor();
@@ -131,7 +135,8 @@ public:
     u[1] = u_[1];
     clov[0] = nullptr;
     clov[1] = clov_;
-    invclov = invclov_;
+    invclov[0] = invclov_;
+    invclov[1] = nullptr;
   }
 
   // Both Parities of clover are passed
@@ -142,7 +147,8 @@ public:
 
      clov[0] = clov_[0];
      clov[1] = clov_[1];
-     invclov = invclov_;
+     invclov[0] = invclov_;
+     invclov[1] = nullptr;
    }
 
   ~EvenOddCloverOperator()
@@ -160,7 +166,7 @@ public:
       {
     double beta = 0.25;
     int other_cb = 1 - target_cb;
-    D->dslash(tmp, in, u[other_cb], invclov, isign, other_cb);
+    D->dslash(tmp, in, u[other_cb], invclov[0], isign, other_cb);
     D->dslashAChiMinusBDPsi(
         res, tmp, in, u[target_cb], clov[1], beta, isign, target_cb);
       }
@@ -176,12 +182,13 @@ public:
     axy(beta,tmp,res,geom,geom.getNSIMT());
   }
 
-  // EE-inv is just the identity
+  // EE-inv is just the identity (I don't think so)
   inline void M_diag_inv(FourSpinorBlock *res,
       FourSpinorBlock const *in,
-      int isign) const override {
+      int isign, int cb=0) const override {
     Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
-   D->clovMult(res,in,invclov);
+   assert(invclov[cb]!=nullptr);
+   D->clovMult(res,in,invclov[cb]);
   }
 
   using SpinorFull = FullSpinor<FT,veclen,soalen,compress12>;
@@ -255,7 +262,7 @@ private:
   Dslash<FT, veclen, soalen, compress12> *D_dslash;
   SU3MatrixBlock *u[2];
   CloverBlock *clov[2];
-  CloverBlock *invclov;
+  CloverBlock *invclov[2];
   FourSpinorBlock *tmp;
 }; // Class
 }; // Namespace

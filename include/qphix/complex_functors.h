@@ -2,6 +2,7 @@
 
 #include "qphix/blas_utils.h"
 #include "qphix/arith_type.h"
+#include <array>
 
 namespace QPhiX
 {
@@ -20,7 +21,7 @@ class InnerProductFunctor
 
   ~InnerProductFunctor() {}
 
-  inline void func(int block, double *reduction_re, double *reduction_im)
+  inline void func(int block, std::array<double, S> &reduction_re, std::array<double, S> &reduction_im) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *lbase = &l[block][0][0][0][0];
@@ -76,7 +77,7 @@ class InnerProductNormFunctor
 
   ~InnerProductNormFunctor() {}
 
-  inline void func(int block, double *reduction_re, double *reduction_im, double *norm_l)
+  inline void func(int block, std::array<double, S> &reduction_re, std::array<double, S> &reduction_im, std::array<double, S> &norm_l) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *lbase = &l[block][0][0][0][0];
@@ -143,7 +144,7 @@ class BiCGStabPUpdateFunctor
 
   ~BiCGStabPUpdateFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *rbase = &r[block][0][0][0][0];
@@ -221,7 +222,7 @@ class BiCGStabSUpdateFunctor
 
   ~BiCGStabSUpdateFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *sbase = &s[block][0][0][0][0];
@@ -280,7 +281,7 @@ class CAXPYFunctor
 
   ~CAXPYFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *ybase = &y[block][0][0][0][0];
@@ -351,7 +352,7 @@ class BiCGStabRXUpdateFunctor
 
   ~BiCGStabRXUpdateFunctor() {}
 
-  inline void func(int block, double *reduction)
+  inline void func(int block, std::array<double, S> &reduction) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *xbase = &x[block][0][0][0][0];
@@ -438,7 +439,7 @@ class TwistedMassFunctor
 
   ~TwistedMassFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     BLASUtils::StreamInSpinor<FT, AT, V, S, compress> x_spinor(&x[block][0][0][0][0]);
 
@@ -490,7 +491,7 @@ class TwoFlavTwistedMassFunctor
   }
 #endif
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     const FT *x_up_base = &x[0][block][0][0][0][0];
@@ -570,7 +571,7 @@ class MRRXUpdateFunctor
 
   ~MRRXUpdateFunctor() {}
 
-  inline void func(int block)
+  inline void func(int block) const
   {
     int nvec_in_spinor = (3 * 4 * 2 * S) / V;
     FT *xbase = &x[block][0][0][0][0];

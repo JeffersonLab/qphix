@@ -114,7 +114,7 @@ class EvenOddTMCloverOperator
   // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
   void M_diag_inv(FourSpinorBlock *const res,
                          FourSpinorBlock const *const in,
-                         int const isign) const override
+                         int const isign, int cb=0) const override
   {
     masterPrintf("M_ee_inv not yet implemented for this operator\n");
     std::abort();
