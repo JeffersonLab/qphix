@@ -1,5 +1,10 @@
 # QPhiX Dslash and Solver Library: version 1.0.0
 
+Build status:
+
+- `devel` ![](https://api.travis-ci.org/JeffersonLab/qphix.svg?branch=devel)
+- `master` ![](https://api.travis-ci.org/JeffersonLab/qphix.svg?branch=master)
+
 ## Licensing Copying and Distribution:
 
 Please see the `LICENSE` file for the License. Jefferson Science Associates

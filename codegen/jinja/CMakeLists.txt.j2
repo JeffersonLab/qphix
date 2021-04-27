@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 2.8.11)
+
+project(qphix_codegen C CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+include_directories(".")
+include_directories("${main_source_dir}/include")
+
+message(STATUS "compiler: ${CMAKE_CXX_COMPILER}")
+
+add_library(qphix_codegen
+
+    {% for source_file in source_files -%}
+    "src/{{ source_file }}"
+    {% endfor -%}
+    )
+
+install(TARGETS qphix_codegen EXPORT QPhiXCodegenConfig
+	ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin )
+
+install(FILES
+    {% for header_file in header_files -%}
+    "{{ header_file }}"
+    {% endfor -%}
+
+    DESTINATION "include/qphix_codegen")
+
+install(EXPORT QPhiXCodegenConfig DESTINATION cmake)

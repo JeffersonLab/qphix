@@ -1,7 +1,7 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  LLVM
-AccessModifierOffset: -4
+AccessModifierOffset: -1
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
@@ -11,7 +11,7 @@ AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
+AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
@@ -36,7 +36,7 @@ BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Linux
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
-ColumnLimit:     80
+ColumnLimit:     90
 CommentPragmas:  '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 ConstructorInitializerIndentWidth: 4
@@ -54,7 +54,7 @@ IncludeCategories:
   - Regex:           '.*'
     Priority:        1
 IndentCaseLabels: false
-IndentWidth:     4
+IndentWidth:     2
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: true
 MacroBlockBegin: ''
