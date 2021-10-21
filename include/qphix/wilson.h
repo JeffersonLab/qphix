@@ -78,7 +78,8 @@ class EvenOddWilsonOperator
    // EE-inv is just the identity
    inline void M_diag_inv(FourSpinorBlock *res,
                          FourSpinorBlock const *in,
-                         int isign) const override {
+                         int isign, int cb=0) const override {
+     assert(cb == 0);
      double beta = static_cast<double>(1)/mass_factor_alpha;
      Geometry<FT, veclen, soalen, compress12> &geom = D->getGeometry();
      axy(beta,in,res, geom, geom.getNSIMT());
