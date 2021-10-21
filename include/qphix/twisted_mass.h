@@ -83,12 +83,12 @@ class EvenOddTMWilsonOperator
     masterPrintf("M_offdiag not yet implemented for this operator\n");
     std::abort();
   }
-
   // M_ee_inv is always Hermitian so no need for isign?
   // for wilson it is the identity, for clover it is hermitian, for TWM it is gamma_5?
   inline void M_diag_inv(FourSpinorBlock *res,
                         FourSpinorBlock const *in,
-                        int isign) const override {
+                        int isign,
+                        int cb = 0) const override {
 
     masterPrintf("M_ee_inv not yet implemented for this operator\n");
     std::abort();
