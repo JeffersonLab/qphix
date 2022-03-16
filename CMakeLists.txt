@@ -50,15 +50,8 @@ endif()
 ###############################################################################
 #                                   OpenMP                                    #
 ###############################################################################
-
-find_package(OpenMP)
-if(OPENMP_FOUND)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-else()
-  add_definitions("-Wno-unknown-pragmas")
-  message(ERROR "OpenMP not found")
-endif()
+include(FindOpenMP)
+find_package(OpenMP REQUIRED)
 
 ###############################################################################
 #                                    QDP++                                    #
@@ -66,20 +59,12 @@ endif()
 
 if(QDPXX_DIR)
   message(STATUS "Looking for QDP++")
-  set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "${QDPXX_DIR}")
-  find_package(QDPXX)
-  if(${QDPXX_CXX_FOUND})
-    include_directories(${QDPXX_CXX_INCLUDE_PATH})
-    list(APPEND EXT_CXXFLAGS "${QDPXX_CXX_COMPILE_FLAGS}")
-    list(REMOVE_DUPLICATES EXT_CXXFLAGS)
-    list(APPEND EXT_LIBS ${QDPXX_CXX_LINK_FLAGS})
-    list(APPEND EXT_LIBS ${QDPXX_CXX_LIBRARIES})
-    set(QPHIX_USE_QDPXX TRUE)
-    set(parallel_arch ${QDPXX_PARALLEL_ARCH})
-    if(${qdpalloc}) 
-      message(INFO "Using QDPAlloc for memory allocation")
-      set(QPHIX_USE_QDPXX_ALLOC 1)
-    endif()
+  find_package(QDPXX REQUIRED)
+  set(QPHIX_USE_QDPXX TRUE)
+  set(parallel_arch ${QDPXX_PARALLEL_ARCH})
+  if(${qdpalloc}) 
+    message(INFO "Using QDPAlloc for memory allocation")
+    set(QPHIX_USE_QDPXX_ALLOC 1)
   endif()
 else()
   message(STATUS "Not Looking for QDP++")
@@ -90,27 +75,14 @@ endif()
 #                                     QMP                                     #
 ###############################################################################
 
-if(QMP_DIR)
+if(QMP_DIR AND NOT QPHIX_USE_QDPXX )
   message(STATUS "Looking for QMP")
-  set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "${QMP_DIR}")
-
-  # Find package QMP
-  find_package(QMP)
-
-  # Check for QMP
-  if(${QMP_C_FOUND})
-    include_directories(${QMP_C_INCLUDE_PATH})
-    list(APPEND ${EXT_LIBS} ${QMP_C_LINK_FLAGS})
-    list(APPEND ${EXT_LIBS} ${QMP_C_LIBRARIES})
-  endif()
-else()
-  message(STATUS "Not Looking for QMP")
+  find_package(QMP REQUIRED)
 endif()
 
 ###############################################################################
 #                            Parallel Architecture                            #
 ###############################################################################
-
 if(${parallel_arch} STREQUAL "scalar")
   # set in configure file
   set(QPHIX_SCALAR 1)
@@ -128,13 +100,9 @@ elseif(${parallel_arch} STREQUAL "parscalar")
     message(FATAL_ERROR "Cannot do fake comms in parscalar mode")
   endif()
 
-  if(NOT (${QDPXX_CXX_FOUND} OR ${QMP_C_FOUND}))
-    message(FATAL_ERROR "Parscalar arch requested but neither QMP nor QDPXX specified")
-  else()
-    message(STATUS "Regular QMP Comms")
-    set(QPHIX_DO_COMMS 1)
-    set(QPHIX_QMP_COMMS 1)
-  endif()
+  message(STATUS "Regular QMP Comms")
+  set(QPHIX_DO_COMMS 1)
+  set(QPHIX_QMP_COMMS 1)
 else()
   message(FATAL_ERROR "Only scalar or parscalar modes supported")
 endif()
