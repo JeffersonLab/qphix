@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(QPhiX)
 include(CTest)
+include(CheckFunctionExists)
+include(CheckIncludeFiles)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -31,8 +33,18 @@ option(mpi_comms "Use plain MPI comms instead of QMP in the kernels" ON)
 # Codegen stuff
 set(host_cxx ${CMAKE_CXX_COMPILER} CACHE STRING "select target CXX Compiler for building libqphix-codegen.a" )
 set(host_cxxflags ${CMAKE_CXX_FLAGS} CACHE STRING  "select target CXXFLAGS for building libqphix-codege.a")
-set(recursive_jN '' CACHE STRING "select -j value for recursive make (defaults to 1)")
+set(recursive_jN 1 CACHE STRING "select -j value for recursive make (defaults to 1)")
 option(skip_build "Developer only: Reduce building of certain kernels for faster build" OFF)
+
+###############################################################################
+#                         check system includes                               #
+###############################################################################
+check_function_exists(sysconf QPHIX_HAVE_SYSCONF)
+check_include_files("sys/sysctl.h" QPHIX_HAVE_SYSCTL)
+
+if(NOT DEFINED QPHIX_HAVE_SYSCONF OR NOT DEFINED QPHIX_HAVE_SYSCTL)
+  message(FATAL_ERROR "either sysconf or sys/sysctl.h must be available")
+endif()
 
 ###############################################################################
 
