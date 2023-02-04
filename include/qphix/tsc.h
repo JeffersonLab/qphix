@@ -2,9 +2,9 @@
 
 // Stuff for rdtsc
 #include <sys/types.h>
-#ifdef HAVE_SYSCONF
+#ifdef QPHIX_HAVE_SYSCONF
 // no need for any headers
-#elif defined HAVE_SYSCTL
+#elif defined QPHIX_HAVE_SYSCTL
 #include <sys/sysctl.h>
 #endif
 

@@ -39,10 +39,10 @@ option(skip_build "Developer only: Reduce building of certain kernels for faster
 ###############################################################################
 #                         check system includes                               #
 ###############################################################################
-check_function_exists(sysconf HAVE_SYSCONF)
-check_include_files("sys/sysctl.h" HAVE_SYSCTL)
+check_function_exists(sysconf QPHIX_HAVE_SYSCONF)
+check_include_files("sys/sysctl.h" QPHIX_HAVE_SYSCTL)
 
-if(NOT DEFINED HAVE_SYSCONF OR NOT DEFINED HAVE_SYSCTL)
+if(NOT DEFINED QPHIX_HAVE_SYSCONF OR NOT DEFINED QPHIX_HAVE_SYSCTL)
   message(FATAL_ERROR "either sysconf or sys/sysctl.h must be available")
 endif()
 
