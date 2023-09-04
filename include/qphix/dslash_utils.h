@@ -66,7 +66,7 @@ struct BlockPhase {
   int cid_yz;
 };
 
-inline void *aligned_malloc(int size, int alignment)
+inline void *aligned_malloc(size_t size, int alignment)
 {
   void *v;
   int ok;
