@@ -1,0 +1,22 @@
+Original Authors:
+
+Balint Joo, Jefferson Lab           email: bjoo AT jab.org
+Dhiraj D. Kalamkar, Intel Parallel Computing Labs, Bangalore, India   email: dhiraj.d.kalamkar AT intel.com
+Karthikeyan Vaidyanathan, Intel Parallel Computing Labs, Bangalore, India  email:  karthikeyan.vaidyanathan AT intel.com
+Mikhail Smelyanskiy, Intel Parallel Computing Labs, Santa Clara, USA   email: mikhail.smelianskiy AT intel.com
+
+Contributors:
+*) Thorsten Kurth (LBL) 
+*) Aaron Walden (ODU) - for integrating the AVX512 output from the code-generator and testing in Intel SDE
+
+*) Mario Schroeck (INFN) (mario.schroeck AT roma3.infn.it) and Alexei Strelchenko (FNAL, astrel AT fnal.gov) - for work on the Twisted Mass Fermion (qphix-tmf) branch
+*) Peter Labus (HISKP Uni Bonn + SISSA) (plabus AT sissa.it) - work on twisted mass and twisted clover operators
+*) Martin Ueding (HISKP Uni Bonn) () - cleanup of codebase and tests, overhaul of QPhiX build system, merge of code generator, 
+   work on twisted, twisted clover, non-degenerate twisted, non-degenerate twisted clover, Hasenbusch-style mass
+   preconditioning for Wilson clover operator
+*) Bartosz Kostrzewa (HISKP, Uni Bonn) (bartosz_kostrzewa AT fastmail.com) - work on twisted, twisted clover,
+   non-degenerate twisted, non-degenerate twisted clover
+
+*) Diptorup Deb, RENCI University of North Carolina Chapel Hill (diptorup AT cs.unc.edu)-is working on portability to other compilers
+
+*) Thanks to Kiran Pamnany, Intel Parallel Computing Labs, Bangalore, India  for the MIC Barrier routine (Barrier_mic.h) email: kiran.pamndany AT intel.com
